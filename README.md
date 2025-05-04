@@ -1,36 +1,187 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Flashcard Learning App
+
+A modern flashcard application for effective learning using the Spaced Repetition System (SRS). Built with Next.js 15, TypeScript, and Turso database.
+
+## Features
+
+- 🗂️ Create and manage flashcard decks
+- 📚 Study cards with spaced repetition algorithm
+- 👤 User authentication via email (Resend)
+- 📊 Track learning progress
+- 🔄 Import/export cards via JSON
+- 📱 Responsive design with dark mode support
+
+## Tech Stack
+
+- **Framework**: Next.js 15.3.1
+- **Language**: TypeScript
+- **Database**: Turso (SQLite) with Drizzle ORM
+- **Authentication**: NextAuth.js
+- **Email**: Resend
+- **UI**: shadcn/ui + Tailwind CSS
+- **Animations**: Framer Motion
+
+## Prerequisites
+
+- Node.js 20+ (for React 19 support)
+- pnpm
+- A Turso account (database)
+- A Resend account (email authentication)
 
 ## Getting Started
 
-First, run the development server:
+### 1. Clone the Repository
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/Fx64b/learn
+cd learn
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Install Dependencies
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. Environment Setup
 
-## Learn More
+Create a `.env.local` file based on `.env.local.example`:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+cp .env.local.example .env.local
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Fill in the required environment variables:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```env
+# Turso Database
+DATABASE_URL="your-turso-database-url"
+DATABASE_AUTH_TOKEN="your-turso-auth-token"
 
-## Deploy on Vercel
+# NextAuth
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="your-random-secret"
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Resend (for email authentication)
+RESEND_API_KEY="your-resend-api-key"
+EMAIL_FROM="noreply@yourdomain.com"
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 4. Database Setup
+
+1. Create a Turso database:
+```bash
+turso db create flashcard-app
+```
+
+2. Get your database credentials:
+```bash
+turso db url flashcard-app
+turso db token create flashcard-app --write
+```
+
+3. Run migrations:
+```bash
+pnpm db:generate
+pnpm db:migrate
+```
+
+4. Seed the database with example data:
+```bash
+pnpm db:seed
+```
+
+### 5. Run the Development Server
+
+```bash
+pnpm dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) to view the application.
+
+## Available Scripts
+
+```json
+{
+  "dev": "next dev --turbopack",         // Start development server with Turbopack
+  "build": "next build",                 // Build for production
+  "start": "next start",                 // Start production server
+  "lint": "next lint",                   // Run ESLint
+  "format": "prettier --write .",        // Format code with Prettier
+  "db:generate": "drizzle-kit generate",  // Generate DB migrations
+  "db:migrate": "drizzle-kit migrate",    // Run DB migrations
+  "db:seed": "node seed-standalone.js"    // Seed the database
+}
+```
+
+## Project Structure
+
+```
+.
+├── app/                    # Next.js app directory
+│   ├── actions/           # Server actions
+│   ├── api/auth/          # NextAuth configuration
+│   ├── deck/              # Deck management pages
+│   ├── lernen/            # Learning/study pages
+│   └── ...
+├── components/            # React components
+│   ├── ui/               # shadcn/ui components
+│   └── ...
+├── db/                    # Database setup
+│   ├── migrations/       # Drizzle migrations
+│   └── ...
+├── lib/                   # Utilities & helpers
+└── types/                 # TypeScript types
+```
+
+## Authentication
+
+The app uses NextAuth with email-based authentication via Resend:
+
+1. Users enter their email
+2. They receive a login link via email
+3. Clicking the link logs them in
+
+## Database Schema
+
+Key tables:
+- `users` - User accounts
+- `accounts` - OAuth/email account details
+- `sessions` - User sessions
+- `decks` - Flashcard collections
+- `flashcards` - Individual cards
+- `card_reviews` - Spaced repetition tracking
+
+## Usage
+
+### Creating a Deck
+
+1. Click "Neues Deck" on the home page
+2. Fill in the title, description, and category
+3. Click "Deck erstellen"
+4. You'll be redirected to the edit page to add cards
+
+### Adding Cards
+
+1. On the edit page, you can:
+    - Add individual cards manually
+    - Import multiple cards from JSON
+2. Cards automatically appear in the learning queue
+
+### Learning
+
+1. Click "Lernen starten" on a deck
+2. Review cards and rate them (1-4):
+    - 1: Again (hard)
+    - 2: Hard
+    - 3: Good
+    - 4: Easy
+3. The system schedules reviews based on your ratings
+
+## License
+
+MIT License
+
+## Support
+
+For issues and feature requests, please create an issue in the repository.
