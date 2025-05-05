@@ -260,7 +260,7 @@ export default function LernModusClient({
                         Karte {aktuellerIndex + 1} von {flashcards.length}
                     </div>
                     <div className="text-lg font-semibold">
-                        Verbleibend: {flashcards.length - aktuellerIndex - 1}
+                        Verbleibend: {flashcards.length - aktuellerIndex}
                     </div>
                 </div>
                 <div className="bg-secondary h-3 w-full rounded-full">
