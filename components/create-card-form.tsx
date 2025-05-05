@@ -73,7 +73,7 @@ export function CreateCardForm({ deckId }: { deckId: string }) {
 
     return (
         <Tabs defaultValue="single" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid h-full w-full grid-cols-2">
                 <TabsTrigger value="single">Einzelne Karte</TabsTrigger>
                 <TabsTrigger value="bulk">Mehrere Karten (JSON)</TabsTrigger>
             </TabsList>
@@ -117,7 +117,7 @@ export function CreateCardForm({ deckId }: { deckId: string }) {
                                         }))
                                     }
                                     placeholder="Antwort oder Definition"
-                                    className="h-48 w-full rounded border p-2"
+                                    className="h-56 w-full rounded border p-2"
                                     required
                                 />
                             </div>
@@ -147,7 +147,7 @@ export function CreateCardForm({ deckId }: { deckId: string }) {
                                     onChange={(e) =>
                                         setJsonCards(e.target.value)
                                     }
-                                    className="h-48 w-full rounded border p-2"
+                                    className="h-72 w-full rounded border p-2"
                                     placeholder={`[
   {
     "vorderseite": "Was ist ...?",

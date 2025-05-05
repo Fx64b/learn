@@ -71,10 +71,17 @@ export async function getTimeOfDayAnalysis() {
 
         const hourlyData = await db
             .select({
-                startTime: sql<number>`${studySessions.startTime}`.as('startTime'),
+                startTime: sql<number>`${studySessions.startTime}`.as(
+                    'startTime'
+                ),
                 sessions: sql<number>`COUNT(*)`.as('sessions'),
-                cardsTotal: sql<number>`SUM(${studySessions.cardsReviewed})`.as('cardsTotal'),
-                avgCards: sql<number>`CAST(AVG(${studySessions.cardsReviewed}) AS REAL)`.as('avgCards'),
+                cardsTotal: sql<number>`SUM(${studySessions.cardsReviewed})`.as(
+                    'cardsTotal'
+                ),
+                avgCards:
+                    sql<number>`CAST(AVG(${studySessions.cardsReviewed}) AS REAL)`.as(
+                        'avgCards'
+                    ),
             })
             .from(studySessions)
             .where(eq(studySessions.userId, session.user.id))

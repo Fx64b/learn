@@ -4,7 +4,7 @@ import { type FlashcardType } from '@/types'
 import { Clock, RotateCw, Settings2 } from 'lucide-react'
 import { toast } from 'sonner'
 
-import {useCallback, useEffect, useRef, useState} from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import Link from 'next/link'
 
@@ -51,8 +51,8 @@ export default function LernModusClient({
         studyTime,
         aktuellerIndex,
         deckId,
-        hasUnsavedSession
-    });
+        hasUnsavedSession,
+    })
 
     // Animation settings
     const [animationSpeed, setAnimationSpeed] = useState(200) // ms
@@ -67,9 +67,9 @@ export default function LernModusClient({
             studyTime,
             aktuellerIndex,
             deckId,
-            hasUnsavedSession
-        };
-    }, [startTime, studyTime, aktuellerIndex, deckId, hasUnsavedSession]);
+            hasUnsavedSession,
+        }
+    }, [startTime, studyTime, aktuellerIndex, deckId, hasUnsavedSession])
 
     // Timer effect
     useEffect(() => {
@@ -171,13 +171,15 @@ export default function LernModusClient({
     // Auto-save session every 20 seconds
     useEffect(() => {
         const autoSaveInterval = setInterval(() => {
-            const { hasUnsavedSession } = sessionDataRef.current;
+            const { hasUnsavedSession } = sessionDataRef.current
 
             if (hasUnsavedSession) {
                 const saveSession = async (isCompleted: boolean) => {
-                    const { startTime, studyTime, aktuellerIndex, deckId } = sessionDataRef.current;
-                    const endTime = new Date();
-                    const duration = studyTime || Date.now() - startTime.getTime();
+                    const { startTime, studyTime, aktuellerIndex, deckId } =
+                        sessionDataRef.current
+                    const endTime = new Date()
+                    const duration =
+                        studyTime || Date.now() - startTime.getTime()
 
                     const result = await saveStudySession({
                         deckId: deckId,
@@ -186,21 +188,21 @@ export default function LernModusClient({
                         duration: duration,
                         cardsReviewed: aktuellerIndex,
                         isCompleted: isCompleted,
-                    });
+                    })
 
                     if (result.success) {
-                        sessionDataRef.current.hasUnsavedSession = false;
-                        setHasUnsavedSession(false);
+                        sessionDataRef.current.hasUnsavedSession = false
+                        setHasUnsavedSession(false)
                     }
-                };
+                }
 
-                console.debug("Auto-saving session...");
-                saveSession(false);
+                console.debug('Auto-saving session...')
+                saveSession(false)
             }
-        }, 20000);
+        }, 20000)
 
-        return () => clearInterval(autoSaveInterval);
-    }, []);
+        return () => clearInterval(autoSaveInterval)
+    }, [])
 
     if (flashcards.length === 0) {
         return (
@@ -260,14 +262,20 @@ export default function LernModusClient({
             <div className="mb-6 flex items-center justify-between">
                 <div className="flex items-center gap-4">
                     <Button
+                        className="hidden md:inline-flex"
                         variant="ghost"
                         size="icon"
                         onClick={() => setShowSettings(!showSettings)}
                     >
                         <Settings2 className="h-5 w-5" />
                     </Button>
-                    <Button variant="ghost" size="icon" onClick={shuffleCards}>
-                        <RotateCw className="h-5 w-5" />
+                    <Button
+                        className="h-10 w-10 md:h-5 md:w-5"
+                        variant="ghost"
+                        size="icon"
+                        onClick={shuffleCards}
+                    >
+                        <RotateCw />
                     </Button>
                 </div>
                 <div className="text-muted-foreground flex items-center gap-2 text-sm">
@@ -372,7 +380,7 @@ export default function LernModusClient({
                     />
                 )}
 
-                <div className="text-muted-foreground mt-4 text-center text-sm">
+                <div className="text-muted-foreground mt-4 text-center text-sm opacity-0 md:opacity-100">
                     <p>
                         Drücke die{' '}
                         <kbd className="bg-muted border-border rounded-md border px-2 py-1.5 text-xs font-semibold">

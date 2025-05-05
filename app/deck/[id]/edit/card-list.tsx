@@ -11,6 +11,7 @@ import { deleteFlashcard, updateFlashcard } from '@/app/actions/flashcard'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 
 interface CardListProps {
     flashcards: FlashcardType[]
@@ -98,7 +99,7 @@ export default function CardList({ flashcards }: CardListProps) {
                                     <label className="block text-sm font-medium">
                                         Rückseite
                                     </label>
-                                    <Input
+                                    <Textarea
                                         value={editing.rückseite}
                                         onChange={(e) =>
                                             setEditing((prev) => ({
@@ -106,18 +107,21 @@ export default function CardList({ flashcards }: CardListProps) {
                                                 rückseite: e.target.value,
                                             }))
                                         }
+                                        placeholder="Antwort oder Definition"
+                                        className="h-56 w-full rounded border p-2"
+                                        required
                                     />
                                 </div>
                                 <div className="flex gap-2">
                                     <Button
-                                        size="sm"
+                                        size="default"
                                         onClick={saveEdit}
                                         disabled={isSubmitting}
                                     >
                                         <Check className="h-4 w-4" />
                                     </Button>
                                     <Button
-                                        size="sm"
+                                        size="default"
                                         variant="ghost"
                                         onClick={cancelEditing}
                                     >

@@ -25,13 +25,10 @@ export default async function Home() {
 
     const progressData = session ? await getLearningProgress() : null
 
-    // Get actual card counts and due status for the user
     const deckStats = await Promise.all(
         decks.map(async (deck) => {
-            // Count total cards
             const totalCards = await getFlashcardsByDeckId(deck.id)
 
-            // Get due cards for this deck
             const dueCards = session ? await getDueCards(session?.user.id) : []
             const deckDueCards = dueCards.filter(
                 (card) => card.flashcard.deckId === deck.id
@@ -48,9 +45,9 @@ export default async function Home() {
     return (
         <main className="container mx-auto max-w-5xl px-4 py-6 sm:py-10">
             <div className="mb-10">
-                <h1 className="mb-2 text-3xl font-bold">Allgemeinbildung</h1>
+                <h1 className="mb-2 text-3xl font-bold">Flashcard App</h1>
                 <p className="text-muted-foreground">
-                    Lernkarten für die Abschlussprüfung
+                    Eine einfache Flashcard-App mit spaced repetition.
                 </p>
             </div>
 
@@ -73,19 +70,19 @@ export default async function Home() {
             <div className="mb-6">
                 <div className="mb-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-0">
                     <h2 className="text-xl font-semibold">Lernkategorien</h2>
-                    <div className="flex flex-wrap gap-2">
-                        <Button variant="outline" size="sm" asChild>
+                    <div className="flex flex-wrap justify-center gap-2 md:justify-end">
+                        <Button variant="outline" size="default" asChild>
                             <Link href="/deck/create">
                                 <Plus className="mr-2 h-4 w-4" />
                                 Neues Deck
                             </Link>
                         </Button>
-                        <Button variant="outline" size="sm" asChild>
+                        <Button variant="outline" size="default" asChild>
                             <Link href="/learn/all">
                                 Alle Karten wiederholen
                             </Link>
                         </Button>
-                        <Button variant="outline" size="sm" asChild>
+                        <Button variant="outline" size="default" asChild>
                             <Link href="/learn/difficult">
                                 Schwierige Karten üben
                             </Link>
@@ -108,14 +105,14 @@ export default async function Home() {
                             <CardContent className="pb-2">
                                 <div className="space-y-1">
                                     <p className="text-sm">
-                                        {totalCards} Karten insgesamt
+                                        <b>{totalCards}</b> Karten insgesamt
                                     </p>
                                     <p className="text-sm">
-                                        {dueCards} Karten zu wiederholen
+                                        <b>{dueCards}</b> Karten zu wiederholen
                                     </p>
                                 </div>
                             </CardContent>
-                            <CardFooter className="flex gap-2">
+                            <CardFooter className="flex gap-8 md:gap-2">
                                 <Link
                                     href={`/learn/${deck.id}`}
                                     className="flex-1"

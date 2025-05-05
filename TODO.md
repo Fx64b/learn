@@ -2,7 +2,6 @@
 
 Todos and improvements according to ai.
 
-
 ## Critical Missing Features:
 
 1. **Profile/Settings Page**
