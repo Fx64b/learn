@@ -212,7 +212,7 @@ Key tables:
 
 ### Learning
 
-1. Click "Lernen starten" on a deck
+1. Click "Lernen" on a deck
 2. Review cards and rate them (1-4):
     - 1: Again (hard)
     - 2: Hard

@@ -121,7 +121,7 @@ export default async function Home() {
                                     className="flex-1"
                                 >
                                     <Button className="w-full" size="sm">
-                                        Lernen starten
+                                        Lernen
                                     </Button>
                                 </Link>
                                 <Button variant="outline" size="sm" asChild>
