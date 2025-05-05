@@ -16,26 +16,14 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card'
-
-// Add this function to get learned cards
-async function getLearnedCards(userId: string) {
-    const { db } = await import('@/db')
-    const { cardReviews } = await import('@/db/schema')
-    const { eq, sql } = await import('drizzle-orm')
-
-    const result = await db
-        .select({
-            count: sql<number>`COUNT(DISTINCT ${cardReviews.flashcardId})`,
-        })
-        .from(cardReviews)
-        .where(eq(cardReviews.userId, userId))
-
-    return result[0]?.count || 0
-}
+import {ProgressDashboard} from "@/components/progress-dashboard";
+import {getLearningProgress} from "@/app/actions/progress";
 
 export default async function Home() {
     const session = await getServerSession(authOptions)
     const decks = await getAllDecks()
+
+    const progressData = session ? await getLearningProgress() : null
 
     // Get actual card counts and due status for the user
     const deckStats = await Promise.all(
@@ -57,21 +45,6 @@ export default async function Home() {
         })
     )
 
-    // Calculate overall statistics
-    const totalCardsCount = deckStats.reduce(
-        (acc, curr) => acc + curr.totalCards,
-        0
-    )
-    const totalDueCards = deckStats.reduce(
-        (acc, curr) => acc + curr.dueCards,
-        0
-    )
-    const learnedCards = session ? await getLearnedCards(session?.user.id) : 0
-    const progress =
-        totalCardsCount > 0
-            ? Math.round((learnedCards / totalCardsCount) * 100)
-            : 0
-
     return (
         <main className="container mx-auto max-w-5xl px-4 py-6 sm:py-10">
             <div className="mb-10">
@@ -81,40 +54,16 @@ export default async function Home() {
                 </p>
             </div>
 
-            {/* Enhanced Statistics Section */}
             <div className="mb-6">
                 <h2 className="mb-4 text-xl font-semibold">Lernstatistik</h2>
                 <div className="bg-card rounded-lg border p-4">
-                    <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-4">
-                        <div className="bg-primary/10 rounded p-3 text-center">
-                            <p className="text-2xl font-bold">
-                                {totalCardsCount}
-                            </p>
-                            <p className="text-muted-foreground text-xs">
-                                Karten insgesamt
-                            </p>
+                    {progressData ? (
+                        <ProgressDashboard data={progressData} />
+                    ) : (
+                        <div className="text-center text-muted-foreground py-8">
+                            <p>Bitte melde dich an, um deine Lernstatistiken zu sehen.</p>
                         </div>
-                        <div className="rounded bg-blue-500/10 p-3 text-center">
-                            <p className="text-2xl font-bold">{learnedCards}</p>
-                            <p className="text-muted-foreground text-xs">
-                                Gelernte Karten
-                            </p>
-                        </div>
-                        <div className="rounded bg-yellow-500/10 p-3 text-center">
-                            <p className="text-2xl font-bold">
-                                {totalDueCards}
-                            </p>
-                            <p className="text-muted-foreground text-xs">
-                                Für heute fällig
-                            </p>
-                        </div>
-                        <div className="rounded bg-green-500/10 p-3 text-center">
-                            <p className="text-2xl font-bold">{progress}%</p>
-                            <p className="text-muted-foreground text-xs">
-                                Lernfortschritt
-                            </p>
-                        </div>
-                    </div>
+                    )}
                 </div>
             </div>
 

@@ -135,13 +135,14 @@ export async function reviewCard(data: {
 
     // Neue Wiederholung speichern
     const id = nanoid()
+    const now = new Date()
     await db.insert(cardReviews).values({
         id,
         flashcardId: data.flashcardId,
         userId: data.userId,
-        bewertetAm: new Date(),
+        bewertetAm: now,
         bewertung: data.bewertung,
-        easeFaktor: Math.round(newEaseFactor * 100), // Skaliert zu Integer
+        easeFaktor: Math.round(newEaseFactor * 100),
         intervall: nextInterval,
         nächsteWiederholung: nextReviewDate,
     })

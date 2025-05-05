@@ -8,3 +8,14 @@ export interface FlashcardType {
     erstelltAm: Date
     nextReview?: Date
 }
+
+export interface ProgressData {
+    date: string
+    cardsReviewed: number
+    correctPercentage: number
+}
+
+export interface CardsByDifficulty {
+    difficultyCategory: number
+    count: number
+}

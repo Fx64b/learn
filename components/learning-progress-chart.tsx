@@ -54,10 +54,6 @@ export function LearningProgressChart({ data }: LearningProgressChartProps) {
                         </div>
                     ))}
                 </div>
-                <div className="text-muted-foreground mt-4 flex justify-between text-sm">
-                    <span>Weniger geübt</span>
-                    <span>Mehr geübt</span>
-                </div>
             </CardContent>
         </Card>
     )
