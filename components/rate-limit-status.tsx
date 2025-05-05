@@ -46,7 +46,11 @@ export function RateLimitStatus() {
     }, [])
 
     if (isLoading) {
-        return <div className="text-sm text-muted-foreground">Loading rate limit...</div>
+        return (
+            <div className="text-muted-foreground text-sm">
+                Loading rate limit...
+            </div>
+        )
     }
 
     if (error) {
@@ -58,8 +62,9 @@ export function RateLimitStatus() {
     const resetTime = new Date(status.reset * 1000).toLocaleTimeString()
 
     return (
-        <div className="text-sm text-muted-foreground">
-            API Requests: {status.remaining}/{status.limit} (resets at {resetTime})
+        <div className="text-muted-foreground text-sm">
+            API Requests: {status.remaining}/{status.limit} (resets at{' '}
+            {resetTime})
         </div>
     )
 }

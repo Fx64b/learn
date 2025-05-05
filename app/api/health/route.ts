@@ -1,4 +1,5 @@
 import { checkRateLimit } from '@/lib/rate-limit'
+
 import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {

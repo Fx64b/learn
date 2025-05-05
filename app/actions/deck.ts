@@ -2,10 +2,10 @@
 
 import * as dbUtils from '@/db/utils'
 import { authOptions } from '@/lib/auth'
+import { DeckType } from '@/types'
 
 import { getServerSession } from 'next-auth'
 import { revalidatePath } from 'next/cache'
-import {DeckType} from "@/types";
 
 export async function createDeck(formData: FormData) {
     try {

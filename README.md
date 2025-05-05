@@ -1,27 +1,38 @@
+I'll update the README to make it more accurate to the current state of the project and add a development note as requested.
+
+````markdown
 # Flashcard Learning App
 
 A modern flashcard application for effective learning using the Spaced Repetition System (SRS). Built with Next.js 15, TypeScript, and Turso database.
 
 [![Build and Lint](https://github.com/Fx64b/learn/actions/workflows/build-lint.yml/badge.svg)](https://github.com/Fx64b/learn/actions/workflows/build-lint.yml)
 
+> [!IMPORTANT]  
+> This project is currently in **early development**. Features may change, and the application is not yet ready for production use.
+
 ## Features
 
-- 🗂️ Create and manage flashcard decks
-- 📚 Study cards with spaced repetition algorithm
-- 👤 User authentication via email (Resend)
-- 📊 Track learning progress
-- 🔄 Import/export cards via JSON
-- 📱 Responsive design with dark mode support
+- 🗂️ **Deck Management**: Create and organize flashcard decks by categories
+- 📚 **Spaced Repetition**: Study cards with an intelligent SRS algorithm
+- 👤 **User Authentication**: Secure email-based login via Resend
+- 📊 **Progress Tracking**: Monitor learning streaks, success rates, and daily progress
+- 🔄 **Bulk Import**: Import multiple cards via JSON format
+- ⏱️ **Study Sessions**: Track study time and analyze productive hours
+- 📱 **Responsive Design**: Works perfectly on desktop and mobile devices
+- 🌙 **Dark Mode**: Eye-friendly interface with dark mode support
+- ⌨️ **Keyboard Shortcuts**: Learn faster with keyboard navigation
 
 ## Tech Stack
 
-- **Framework**: Next.js 15.3.1
+- **Framework**: Next.js 15.3.1 with App Router
 - **Language**: TypeScript
 - **Database**: Turso (SQLite) with Drizzle ORM
-- **Authentication**: NextAuth.js
+- **Authentication**: NextAuth.js with email provider
 - **Email**: Resend
 - **UI**: shadcn/ui + Tailwind CSS
 - **Animations**: Framer Motion
+- **State Management**: Zustand
+- **Rate Limiting**: Upstash Redis
 
 ## Prerequisites
 
@@ -29,6 +40,7 @@ A modern flashcard application for effective learning using the Spaced Repetitio
 - pnpm
 - A Turso account (database)
 - A Resend account (email authentication)
+- Optional: Redis/Upstash for rate limiting
 
 ## Getting Started
 
@@ -38,6 +50,7 @@ A modern flashcard application for effective learning using the Spaced Repetitio
 git clone https://github.com/Fx64b/learn
 cd learn
 ```
+````
 
 ### 2. Install Dependencies
 
@@ -67,6 +80,11 @@ NEXTAUTH_SECRET="your-random-secret"
 # Resend (for email authentication)
 RESEND_API_KEY="your-resend-api-key"
 EMAIL_FROM="noreply@yourdomain.com"
+
+# Optional: Redis for rate limiting
+REDIS_URL="your-redis-url"
+KV_REST_API_TOKEN="your-api-token"
+KV_REST_API_URL="your-api-url"
 ```
 
 ### 4. Database Setup
@@ -91,7 +109,7 @@ pnpm db:generate
 pnpm db:migrate
 ```
 
-4. Seed the database with example data:
+4. Seed the database with example data (optional):
 
 ```bash
 pnpm db:seed
@@ -107,53 +125,16 @@ Open [http://localhost:3000](http://localhost:3000) to view the application.
 
 ## Available Scripts
 
-**Start development server with Turbopack**
-
-```bash
-pnpm dev
-```
-
-**Build for production**
-
-```bash
-pnpm build
-```
-
-**Start production server**
-
-```bash
-pnpm start
-```
-
-**Run ESLint**
-
-```bash
-pnpm lint
-```
-
-**Format code with Prettier**
-
-```bash
-pnpm format
-```
-
-**Generate DB migrations**
-
-```bash
-pnpm db:generate
-```
-
-**Run DB migrations**
-
-```bash
-pnpm db:migrate
-```
-
-**Seed the database**
-
-```bash
-pnpm db:seed
-```
+| Command            | Description                             |
+| ------------------ | --------------------------------------- |
+| `pnpm dev`         | Start development server with Turbopack |
+| `pnpm build`       | Build for production                    |
+| `pnpm start`       | Start production server                 |
+| `pnpm lint`        | Run ESLint                              |
+| `pnpm format`      | Format code with Prettier               |
+| `pnpm db:generate` | Generate DB migrations                  |
+| `pnpm db:migrate`  | Run DB migrations                       |
+| `pnpm db:seed`     | Seed the database                       |
 
 ## Project Structure
 
@@ -161,38 +142,44 @@ pnpm db:seed
 .
 ├── app/                    # Next.js app directory
 │   ├── actions/           # Server actions
-│   ├── api/auth/          # NextAuth configuration
+│   ├── api/               # API routes
 │   ├── deck/              # Deck management pages
-│   ├── lernen/            # Learning/study pages
+│   ├── learn/             # Learning/study pages
 │   └── ...
 ├── components/            # React components
 │   ├── ui/               # shadcn/ui components
+│   ├── flashcard.tsx     # Main flashcard component
 │   └── ...
 ├── db/                    # Database setup
 │   ├── migrations/       # Drizzle migrations
-│   └── ...
+│   ├── schema.ts         # Database schema
+│   └── utils.ts          # Database utilities
 ├── lib/                   # Utilities & helpers
-└── types/                 # TypeScript types
+│   ├── auth.ts           # Authentication setup
+│   ├── srs.ts            # Spaced repetition algorithm
+│   └── ...
+├── types/                 # TypeScript types
+└── ...
 ```
 
 ## Authentication
 
 The app uses NextAuth with email-based authentication via Resend:
 
-1. Users enter their email
+1. Users enter their email address
 2. They receive a login link via email
 3. Clicking the link logs them in
+4. Sessions are managed with JWT
 
 ## Database Schema
 
 Key tables:
 
 - `users` - User accounts
-- `accounts` - OAuth/email account details
-- `sessions` - User sessions
 - `decks` - Flashcard collections
 - `flashcards` - Individual cards
 - `card_reviews` - Spaced repetition tracking
+- `study_sessions` - Study time tracking
 
 ## Usage
 
@@ -219,6 +206,56 @@ Key tables:
     - 3: Good
     - 4: Easy
 3. The system schedules reviews based on your ratings
+4. Use keyboard shortcuts for faster navigation:
+    - Space: Flip card
+    - 1-4: Rate card
+    - Arrow keys: Rate card (when flipped)
+
+### Study Analytics
+
+The dashboard provides insights into:
+
+- Daily learning progress
+- Streak tracking
+- Time of day analysis
+- Cards by difficulty
+- Due cards overview
+
+## Development Roadmap
+
+### Upcoming Features
+
+1. **Profile/Settings Page**
+
+    - User preferences
+    - Account management
+    - Theme customization
+
+2. **Export Functionality**
+
+    - Export decks to JSON/CSV
+    - Backup/restore capabilities
+    - Print flashcards
+
+3. **Advanced Learning Features**
+
+    - Image support for flashcards
+    - Audio pronunciation
+    - Rich text formatting
+    - Multi-language support
+
+4. **Collaboration**
+
+    - Share decks with others
+    - Community deck library
+    - Group studying
+
+5. **Gamification**
+    - Achievement system
+    - Experience points
+    - Daily challenges
+
+See [TODO.md](./TODO.md) for a complete list of planned features.
 
 ## License
 
@@ -227,3 +264,7 @@ MIT License
 ## Support
 
 For issues and feature requests, please create an issue in the repository.
+
+## Contributing
+
+Contributions are welcome! Please fork the repository and submit a pull request.

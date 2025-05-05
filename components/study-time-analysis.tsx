@@ -19,7 +19,6 @@ export function StudyTimeAnalysis({
     data,
     mostProductiveHour,
 }: StudyTimeAnalysisProps) {
-
     return (
         <Card>
             <CardHeader>
