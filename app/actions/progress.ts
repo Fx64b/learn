@@ -136,7 +136,7 @@ async function calculateStreak(userId: string): Promise<number> {
     console.log('Today:', todayStr)
 
     let streak = 0
-    let currentDate = new Date(today)
+    const currentDate = new Date(today)
 
     // Beginne von heute und gehe rückwärts
     for (let i = 0; i < reviewDates.length; i++) {
