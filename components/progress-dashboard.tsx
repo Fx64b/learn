@@ -3,6 +3,10 @@
 import { ProgressData } from '@/types'
 import { Calendar, Clock, TrendingUp } from 'lucide-react'
 
+import Link from 'next/link'
+
+import { StudyTimeAnalysis } from '@/components/study-time-analysis'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 import { LearningProgressChart } from './learning-progress-chart'
@@ -38,6 +42,18 @@ interface ProgressDashboardProps {
                 nächsteWiederholung: Date
             } | null
         }>
+        timeOfDay: {
+            data: Array<{
+                hour: number
+                sessions: number
+                cardsTotal: number
+                avgCards: number
+            }>
+            mostProductiveHour: {
+                hour: number
+                avgCards: number
+            } | null
+        }
     }
 }
 
@@ -122,9 +138,16 @@ export function ProgressDashboard({ data }: ProgressDashboardProps) {
                             </div>
                             <Clock className="ml-2 h-4 w-4 text-orange-500" />
                         </div>
-                        <p className="text-muted-foreground text-xs">
+                        <p className="text-muted-foreground mb-2 text-xs">
                             Karten für heute
                         </p>
+                        {data.needsReview.length > 0 && (
+                            <Link href="/learn/due">
+                                <Button size="sm" variant="outline">
+                                    Jetzt lernen
+                                </Button>
+                            </Link>
+                        )}
                     </CardContent>
                 </Card>
             </div>
@@ -192,19 +215,10 @@ export function ProgressDashboard({ data }: ProgressDashboardProps) {
                 </Card>
             </div>
 
-            {/* Time of Day Analysis - Optional addition */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>Lernzeiten-Analyse</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="text-muted-foreground text-sm">
-                        <p>
-                            Analyse der effektivsten Lernzeiten (in Entwicklung)
-                        </p>
-                    </div>
-                </CardContent>
-            </Card>
+            <StudyTimeAnalysis
+                data={data.timeOfDay.data}
+                mostProductiveHour={data.timeOfDay.mostProductiveHour}
+            />
         </div>
     )
 }

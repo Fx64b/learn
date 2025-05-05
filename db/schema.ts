@@ -51,3 +51,21 @@ export const cardReviews = sqliteTable('card_reviews', {
         mode: 'timestamp',
     }).notNull(),
 })
+
+export const studySessions = sqliteTable('study_sessions', {
+    id: text('id').primaryKey().notNull(),
+    userId: text('user_id')
+        .notNull()
+        .references(() => users.id),
+    deckId: text('deck_id').notNull(),
+    startTime: integer('start_time', { mode: 'timestamp' }).notNull(),
+    endTime: integer('end_time', { mode: 'timestamp' }).notNull(),
+    duration: integer('duration').notNull(), // in Millisekunden
+    cardsReviewed: integer('cards_reviewed').notNull(),
+    isCompleted: integer('is_completed', { mode: 'boolean' })
+        .notNull()
+        .default(false),
+    erstelltAm: integer('erstellt_am', { mode: 'timestamp' })
+        .default(sql`CURRENT_TIMESTAMP`)
+        .notNull(),
+})

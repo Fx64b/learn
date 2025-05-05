@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 
 import { reviewCard } from '@/app/actions/flashcard'
+import { saveStudySession } from '@/app/actions/study-session'
 
 import { Flashcard } from '@/components/flashcard'
 import { Button } from '@/components/ui/button'
@@ -29,7 +30,7 @@ interface LernModusClientProps {
 }
 
 export default function LernModusClient({
-    deckId, // eslint-disable-line @typescript-eslint/no-unused-vars
+    deckId,
     deckTitel, // eslint-disable-line @typescript-eslint/no-unused-vars
     flashcards: initialFlashcards,
 }: LernModusClientProps) {
@@ -39,10 +40,12 @@ export default function LernModusClient({
     const [istLernprozessAbgeschlossen, setIstLernprozessAbgeschlossen] =
         useState(false)
 
-    // New state for improvements
+    // Session tracking
     const [startTime, setStartTime] = useState(new Date())
     const [studyTime, setStudyTime] = useState(0)
     const [showSettings, setShowSettings] = useState(false)
+    const [isTimerRunning, setIsTimerRunning] = useState(true)
+    const [hasUnsavedSession, setHasUnsavedSession] = useState(true)
 
     // Animation settings
     const [animationSpeed, setAnimationSpeed] = useState(200) // ms
@@ -53,21 +56,65 @@ export default function LernModusClient({
 
     // Timer effect
     useEffect(() => {
-        const timer = setInterval(() => {
-            setStudyTime(Date.now() - startTime.getTime())
-        }, 1000)
+        let timer: NodeJS.Timeout | null = null
 
-        return () => clearInterval(timer)
-    }, [startTime])
+        if (isTimerRunning) {
+            timer = setInterval(() => {
+                setStudyTime(Date.now() - startTime.getTime())
+            }, 1000)
+        }
 
+        return () => {
+            if (timer) clearInterval(timer)
+        }
+    }, [startTime, isTimerRunning])
+
+    // Update progress
     useEffect(() => {
-        // Fortschritt aktualisieren
         if (flashcards.length > 0) {
             setFortschritt(
                 Math.round((aktuellerIndex / flashcards.length) * 100)
             )
         }
     }, [aktuellerIndex, flashcards.length])
+
+    // Save session on completion
+    useEffect(() => {
+        if (istLernprozessAbgeschlossen) {
+            setIsTimerRunning(false)
+            saveCurrentSession(true)
+        }
+    }, [istLernprozessAbgeschlossen])
+
+    // Save session on page unload
+    useEffect(() => {
+        const handleUnload = () => {
+            if (hasUnsavedSession) {
+                saveCurrentSession(false)
+            }
+        }
+
+        window.addEventListener('beforeunload', handleUnload)
+        return () => window.removeEventListener('beforeunload', handleUnload)
+    }, [hasUnsavedSession, aktuellerIndex, studyTime])
+
+    const saveCurrentSession = async (isCompleted: boolean) => {
+        const endTime = new Date()
+        const duration = studyTime || Date.now() - startTime.getTime()
+
+        const result = await saveStudySession({
+            deckId: deckId,
+            startTime: startTime,
+            endTime: endTime,
+            duration: duration,
+            cardsReviewed: aktuellerIndex,
+            isCompleted: isCompleted,
+        })
+
+        if (result.success) {
+            setHasUnsavedSession(false)
+        }
+    }
 
     // Format study time
     const formatTime = (ms: number) => {
@@ -85,25 +132,22 @@ export default function LernModusClient({
         setIstLernprozessAbgeschlossen(false)
         setStartTime(new Date())
         setStudyTime(0)
+        setHasUnsavedSession(true)
         toast.success('Karten gemischt!')
     }
 
-    // Handler für die Bewertung einer Karte
     const handleBewertung = async (bewertung: number) => {
         if (flashcards.length === 0 || aktuellerIndex >= flashcards.length)
             return
 
         const aktuelleKarte = flashcards[aktuellerIndex]
 
-        // Karte bewerten und in DB speichern
         const result = await reviewCard(aktuelleKarte.id, bewertung)
 
         if (result.success) {
-            // Zur nächsten Karte gehen
             if (aktuellerIndex < flashcards.length - 1) {
                 setAktuellerIndex(aktuellerIndex + 1)
             } else {
-                // Alle Karten wurden wiederholt
                 setIstLernprozessAbgeschlossen(true)
                 toast.success('Alle Karten wiederholt!', {
                     description: 'Lerneinheit abgeschlossen',

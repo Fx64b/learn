@@ -7,6 +7,8 @@ import { and, desc, eq, gte, isNull, lte, or, sql } from 'drizzle-orm'
 
 import { getServerSession } from 'next-auth'
 
+import { getTimeOfDayAnalysis } from '@/app/actions/study-session'
+
 export async function getLearningProgress() {
     const session = await getServerSession(authOptions)
     if (!session?.user?.id) return null
@@ -63,10 +65,10 @@ export async function getLearningProgress() {
         .select({
             difficultyCategory: sql<number>`
                 CASE 
-                WHEN t.ease_faktor >= 265 THEN 4  -- Einfach (Grade 4)
-                WHEN t.ease_faktor >= 250 THEN 3  -- Gut (Grade 3)
-                WHEN t.ease_faktor >= 235 THEN 2  -- Schwer (Grade 2)
-                ELSE 1                           -- Wieder (Grade 1)
+                WHEN t.ease_faktor >= 265 THEN 4
+                WHEN t.ease_faktor >= 250 THEN 3
+                WHEN t.ease_faktor >= 235 THEN 2
+                ELSE 1
                 END`.as('difficultyCategory'),
             count: sql<number>`COUNT(*)`.as('count'),
         })
@@ -105,7 +107,8 @@ export async function getLearningProgress() {
                 lte(cardReviews.nächsteWiederholung, now)
             )
         )
-        .limit(5)
+
+    const timeOfDayData = await getTimeOfDayAnalysis()
 
     return {
         dailyProgress,
@@ -114,6 +117,15 @@ export async function getLearningProgress() {
         streak,
         cardsByDifficulty,
         needsReview,
+        timeOfDay: timeOfDayData.success
+            ? {
+                  data: timeOfDayData.data,
+                  mostProductiveHour: timeOfDayData.mostProductiveHour,
+              }
+            : {
+                  data: [],
+                  mostProductiveHour: null,
+              },
     }
 }
 
@@ -133,13 +145,11 @@ async function calculateStreak(userId: string): Promise<number> {
 
     if (reviewDates.length === 0) return 0
 
-    // Aktuelles Datum ohne Zeit
     const today = new Date()
 
     let streak = 0
     const currentDate = new Date(today)
 
-    // Beginne von heute und gehe rückwärts
     for (let i = 0; i < reviewDates.length; i++) {
         const dateStr = currentDate.toISOString().split('T')[0]
 
@@ -147,7 +157,6 @@ async function calculateStreak(userId: string): Promise<number> {
             streak++
             currentDate.setDate(currentDate.getDate() - 1)
         } else {
-            // Wenn wir einen Tag überspringen, ist der Streak unterbrochen
             break
         }
     }
