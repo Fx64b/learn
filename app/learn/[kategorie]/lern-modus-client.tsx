@@ -20,6 +20,7 @@ import {
     SelectValue,
 } from '@/components/ui/select'
 import { Slider } from '@/components/ui/slider'
+import { Switch } from '@/components/ui/switch'
 
 interface LernModusClientProps {
     deckId: string
@@ -48,6 +49,7 @@ export default function LernModusClient({
     const [animationDirection, setAnimationDirection] = useState<
         'horizontal' | 'vertical'
     >('horizontal')
+    const [animationsEnabled, setAnimationsEnabled] = useState(true)
 
     // Timer effect
     useEffect(() => {
@@ -193,43 +195,60 @@ export default function LernModusClient({
                         Animations-Einstellungen
                     </h3>
                     <div className="space-y-4">
-                        <div>
-                            <label className="text-sm">Geschwindigkeit</label>
-                            <Slider
-                                value={[animationSpeed]}
-                                onValueChange={([value]) =>
-                                    setAnimationSpeed(value)
-                                }
-                                max={1000}
-                                min={100}
-                                step={50}
-                                className="mt-2"
+                        <div className="flex items-center justify-between">
+                            <label className="text-sm">
+                                Animationen aktivieren
+                            </label>
+                            <Switch
+                                checked={animationsEnabled}
+                                onCheckedChange={setAnimationsEnabled}
                             />
-                            <p className="text-muted-foreground mt-1 text-xs">
-                                {animationSpeed}ms
-                            </p>
                         </div>
-                        <div>
-                            <label className="text-sm">Richtung</label>
-                            <Select
-                                value={animationDirection}
-                                onValueChange={(
-                                    value: 'horizontal' | 'vertical'
-                                ) => setAnimationDirection(value)}
-                            >
-                                <SelectTrigger className="mt-2">
-                                    <SelectValue placeholder="Animations-Richtung" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="horizontal">
-                                        Horizontal
-                                    </SelectItem>
-                                    <SelectItem value="vertical">
-                                        Vertikal
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
+                        {animationsEnabled && (
+                            <>
+                                <div>
+                                    <label className="text-sm">
+                                        Geschwindigkeit
+                                    </label>
+                                    <div className="mt-2 flex items-center gap-4">
+                                        <Slider
+                                            value={[animationSpeed]}
+                                            onValueChange={([value]) =>
+                                                setAnimationSpeed(value)
+                                            }
+                                            max={500}
+                                            min={100}
+                                            step={50}
+                                            className="w-32"
+                                        />
+                                        <p className="text-muted-foreground w-12 text-xs">
+                                            {animationSpeed}ms
+                                        </p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="text-sm">Richtung</label>
+                                    <Select
+                                        value={animationDirection}
+                                        onValueChange={(
+                                            value: 'horizontal' | 'vertical'
+                                        ) => setAnimationDirection(value)}
+                                    >
+                                        <SelectTrigger className="mt-2 w-48">
+                                            <SelectValue placeholder="Animations-Richtung" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="horizontal">
+                                                Horizontal
+                                            </SelectItem>
+                                            <SelectItem value="vertical">
+                                                Vertikal
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
             )}
@@ -241,7 +260,7 @@ export default function LernModusClient({
                         Karte {aktuellerIndex + 1} von {flashcards.length}
                     </div>
                     <div className="text-lg font-semibold">
-                        Verbleibend: {flashcards.length - aktuellerIndex}
+                        Verbleibend: {flashcards.length - aktuellerIndex - 1}
                     </div>
                 </div>
                 <div className="bg-secondary h-3 w-full rounded-full">
@@ -260,7 +279,7 @@ export default function LernModusClient({
                         rückseite={flashcards[aktuellerIndex].rückseite}
                         onRating={handleBewertung}
                         className="w-full max-w-2xl"
-                        animationSpeed={animationSpeed}
+                        animationSpeed={animationsEnabled ? animationSpeed : 0}
                         animationDirection={animationDirection}
                     />
                 )}
