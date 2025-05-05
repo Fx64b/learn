@@ -41,7 +41,7 @@ export const authOptions: NextAuthOptions = {
                 </p>
               </div>
             `,
-                        text: `Melde dich bei der Schweizer Flashcard App an, indem du auf diesen Link klickst: ${url}`,
+                        text: `Melde dich bei der Flashcard App an, indem du auf diesen Link klickst: ${url}`,
                     })
 
                     if (result.error) {

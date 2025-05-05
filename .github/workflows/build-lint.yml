@@ -16,7 +16,7 @@ jobs:
             run:
                 working-directory: ./
         env:
-          NEXTAUTH_URL: ${{ 'http://localhost:3000' }}
+          NEXTAUTH_URL: ${{ vars.NEXTAUTH_URL || 'http://localhost:3000' }}
 
         steps:
             - name: Checkout code
