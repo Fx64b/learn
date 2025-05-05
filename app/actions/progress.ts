@@ -3,7 +3,8 @@
 import { db } from '@/db'
 import { cardReviews, flashcards } from '@/db/schema'
 import { authOptions } from '@/lib/auth'
-import {and, desc, eq, gte, isNull, lte, or, sql} from 'drizzle-orm'
+import { and, desc, eq, gte, isNull, lte, or, sql } from 'drizzle-orm'
+
 import { getServerSession } from 'next-auth'
 
 export async function getLearningProgress() {
@@ -18,9 +19,14 @@ export async function getLearningProgress() {
 
     const dailyProgress = await db
         .select({
-            date: sql<string>`DATE(${cardReviews.bewertetAm}, 'unixepoch', 'localtime')`.as('date'),
+            date: sql<string>`DATE(${cardReviews.bewertetAm}, 'unixepoch', 'localtime')`.as(
+                'date'
+            ),
             cardsReviewed: sql<number>`COUNT(*)`.as('cardsReviewed'),
-            correctPercentage: sql<number>`CAST(SUM(CASE WHEN ${cardReviews.bewertung} >= 3 THEN 1 ELSE 0 END) * 100.0 / COUNT(*) AS INTEGER)`.as('correctPercentage'),
+            correctPercentage:
+                sql<number>`CAST(SUM(CASE WHEN ${cardReviews.bewertung} >= 3 THEN 1 ELSE 0 END) * 100.0 / COUNT(*) AS INTEGER)`.as(
+                    'correctPercentage'
+                ),
         })
         .from(cardReviews)
         .where(
@@ -46,10 +52,7 @@ export async function getLearningProgress() {
         })
         .from(cardReviews)
         .where(
-            and(
-                eq(cardReviews.userId, userId),
-                gte(cardReviews.bewertung, 3)
-            )
+            and(eq(cardReviews.userId, userId), gte(cardReviews.bewertung, 3))
         )
 
     // Study streak calculation
@@ -81,7 +84,6 @@ export async function getLearningProgress() {
         .where(sql`t.rn = 1`)
         .groupBy(sql`difficultyCategory`)
         .orderBy(sql`difficultyCategory DESC`)
-
 
     const now = new Date()
     const needsReview = await db
@@ -118,22 +120,21 @@ export async function getLearningProgress() {
 async function calculateStreak(userId: string): Promise<number> {
     const reviewDates = await db
         .select({
-            date: sql<string>`DATE(${cardReviews.bewertetAm}, 'unixepoch', 'localtime')`.as('date'),
+            date: sql<string>`DATE(${cardReviews.bewertetAm}, 'unixepoch', 'localtime')`.as(
+                'date'
+            ),
         })
         .from(cardReviews)
         .where(eq(cardReviews.userId, userId))
         .groupBy(sql`DATE(${cardReviews.bewertetAm}, 'unixepoch', 'localtime')`)
-        .orderBy(desc(sql`DATE(${cardReviews.bewertetAm}, 'unixepoch', 'localtime')`))
-
-    console.log('Review dates:', reviewDates)
+        .orderBy(
+            desc(sql`DATE(${cardReviews.bewertetAm}, 'unixepoch', 'localtime')`)
+        )
 
     if (reviewDates.length === 0) return 0
 
     // Aktuelles Datum ohne Zeit
     const today = new Date()
-    const todayStr = today.toISOString().split('T')[0]
-
-    console.log('Today:', todayStr)
 
     let streak = 0
     const currentDate = new Date(today)
@@ -141,7 +142,6 @@ async function calculateStreak(userId: string): Promise<number> {
     // Beginne von heute und gehe rückwärts
     for (let i = 0; i < reviewDates.length; i++) {
         const dateStr = currentDate.toISOString().split('T')[0]
-        console.log(`Checking if ${reviewDates[i].date} === ${dateStr}`)
 
         if (reviewDates[i].date === dateStr) {
             streak++
@@ -152,6 +152,5 @@ async function calculateStreak(userId: string): Promise<number> {
         }
     }
 
-    console.log('Final streak:', streak)
     return streak
 }

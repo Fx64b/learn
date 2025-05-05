@@ -6,7 +6,9 @@ import { getServerSession } from 'next-auth'
 import Link from 'next/link'
 
 import { getAllDecks } from '@/app/actions/deck'
+import { getLearningProgress } from '@/app/actions/progress'
 
+import { ProgressDashboard } from '@/components/progress-dashboard'
 import { Button } from '@/components/ui/button'
 import {
     Card,
@@ -16,8 +18,6 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card'
-import {ProgressDashboard} from "@/components/progress-dashboard";
-import {getLearningProgress} from "@/app/actions/progress";
 
 export default async function Home() {
     const session = await getServerSession(authOptions)
@@ -60,8 +60,11 @@ export default async function Home() {
                     {progressData ? (
                         <ProgressDashboard data={progressData} />
                     ) : (
-                        <div className="text-center text-muted-foreground py-8">
-                            <p>Bitte melde dich an, um deine Lernstatistiken zu sehen.</p>
+                        <div className="text-muted-foreground py-8 text-center">
+                            <p>
+                                Bitte melde dich an, um deine Lernstatistiken zu
+                                sehen.
+                            </p>
                         </div>
                     )}
                 </div>

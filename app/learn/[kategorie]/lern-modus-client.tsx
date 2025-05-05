@@ -1,6 +1,7 @@
 'use client'
 
 import { type FlashcardType } from '@/types'
+import { Clock, RotateCw, Settings2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { useEffect, useState } from 'react'
@@ -11,6 +12,14 @@ import { reviewCard } from '@/app/actions/flashcard'
 
 import { Flashcard } from '@/components/flashcard'
 import { Button } from '@/components/ui/button'
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select'
+import { Slider } from '@/components/ui/slider'
 
 interface LernModusClientProps {
     deckId: string
@@ -21,12 +30,33 @@ interface LernModusClientProps {
 export default function LernModusClient({
     deckId, // eslint-disable-line @typescript-eslint/no-unused-vars
     deckTitel, // eslint-disable-line @typescript-eslint/no-unused-vars
-    flashcards,
+    flashcards: initialFlashcards,
 }: LernModusClientProps) {
+    const [flashcards, setFlashcards] = useState(initialFlashcards)
     const [aktuellerIndex, setAktuellerIndex] = useState(0)
     const [fortschritt, setFortschritt] = useState(0)
     const [istLernprozessAbgeschlossen, setIstLernprozessAbgeschlossen] =
         useState(false)
+
+    // New state for improvements
+    const [startTime, setStartTime] = useState(new Date())
+    const [studyTime, setStudyTime] = useState(0)
+    const [showSettings, setShowSettings] = useState(false)
+
+    // Animation settings
+    const [animationSpeed, setAnimationSpeed] = useState(200) // ms
+    const [animationDirection, setAnimationDirection] = useState<
+        'horizontal' | 'vertical'
+    >('horizontal')
+
+    // Timer effect
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setStudyTime(Date.now() - startTime.getTime())
+        }, 1000)
+
+        return () => clearInterval(timer)
+    }, [startTime])
 
     useEffect(() => {
         // Fortschritt aktualisieren
@@ -36,6 +66,25 @@ export default function LernModusClient({
             )
         }
     }, [aktuellerIndex, flashcards.length])
+
+    // Format study time
+    const formatTime = (ms: number) => {
+        const seconds = Math.floor(ms / 1000)
+        const minutes = Math.floor(seconds / 60)
+        const remainingSeconds = seconds % 60
+        return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
+    }
+
+    // Shuffle cards
+    const shuffleCards = () => {
+        const shuffled = [...flashcards].sort(() => Math.random() - 0.5)
+        setFlashcards(shuffled)
+        setAktuellerIndex(0)
+        setIstLernprozessAbgeschlossen(false)
+        setStartTime(new Date())
+        setStudyTime(0)
+        toast.success('Karten gemischt!')
+    }
 
     // Handler für die Bewertung einer Karte
     const handleBewertung = async (bewertung: number) => {
@@ -89,15 +138,23 @@ export default function LernModusClient({
                     Du hast alle {flashcards.length} Karten in dieser Kategorie
                     wiederholt.
                 </p>
+                <p className="text-muted-foreground mb-4 text-sm">
+                    Lernzeit: {formatTime(studyTime)}
+                </p>
                 <div className="flex gap-2">
                     <Button
                         variant="outline"
                         onClick={() => {
                             setAktuellerIndex(0)
                             setIstLernprozessAbgeschlossen(false)
+                            setStartTime(new Date())
+                            setStudyTime(0)
                         }}
                     >
                         Nochmal wiederholen
+                    </Button>
+                    <Button variant="outline" onClick={shuffleCards}>
+                        Gemischt wiederholen
                     </Button>
                     <Button asChild>
                         <Link href="/">Zurück zur Übersicht</Link>
@@ -109,17 +166,90 @@ export default function LernModusClient({
 
     return (
         <>
-            {/* Fortschrittsanzeige */}
-            <div className="text-muted-foreground mb-6 flex items-center gap-2 text-sm">
-                <div className="bg-secondary h-2 w-full rounded-full">
+            {/* Study session header with timer and settings */}
+            <div className="mb-6 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setShowSettings(!showSettings)}
+                    >
+                        <Settings2 className="h-5 w-5" />
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={shuffleCards}>
+                        <RotateCw className="h-5 w-5" />
+                    </Button>
+                </div>
+                <div className="text-muted-foreground flex items-center gap-2 text-sm">
+                    <Clock className="h-4 w-4" />
+                    {formatTime(studyTime)}
+                </div>
+            </div>
+
+            {/* Settings panel */}
+            {showSettings && (
+                <div className="bg-card mb-6 rounded-lg border p-4">
+                    <h3 className="mb-3 text-sm font-semibold">
+                        Animations-Einstellungen
+                    </h3>
+                    <div className="space-y-4">
+                        <div>
+                            <label className="text-sm">Geschwindigkeit</label>
+                            <Slider
+                                value={[animationSpeed]}
+                                onValueChange={([value]) =>
+                                    setAnimationSpeed(value)
+                                }
+                                max={1000}
+                                min={100}
+                                step={50}
+                                className="mt-2"
+                            />
+                            <p className="text-muted-foreground mt-1 text-xs">
+                                {animationSpeed}ms
+                            </p>
+                        </div>
+                        <div>
+                            <label className="text-sm">Richtung</label>
+                            <Select
+                                value={animationDirection}
+                                onValueChange={(
+                                    value: 'horizontal' | 'vertical'
+                                ) => setAnimationDirection(value)}
+                            >
+                                <SelectTrigger className="mt-2">
+                                    <SelectValue placeholder="Animations-Richtung" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="horizontal">
+                                        Horizontal
+                                    </SelectItem>
+                                    <SelectItem value="vertical">
+                                        Vertikal
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Enhanced progress display */}
+            <div className="mb-6">
+                <div className="mb-2 flex items-center justify-between">
+                    <div className="text-lg font-semibold">
+                        Karte {aktuellerIndex + 1} von {flashcards.length}
+                    </div>
+                    <div className="text-lg font-semibold">
+                        Verbleibend: {flashcards.length - aktuellerIndex}
+                    </div>
+                </div>
+                <div className="bg-secondary h-3 w-full rounded-full">
                     <div
-                        className="bg-primary h-2 rounded-full"
+                        className="bg-primary h-3 rounded-full transition-all duration-300"
                         style={{ width: `${fortschritt}%` }}
                     ></div>
                 </div>
-                <span className="whitespace-nowrap">
-                    {aktuellerIndex + 1} von {flashcards.length}
-                </span>
             </div>
 
             <div className="flex flex-1 flex-col items-center justify-center">
@@ -130,6 +260,8 @@ export default function LernModusClient({
                         rückseite={flashcards[aktuellerIndex].rückseite}
                         onRating={handleBewertung}
                         className="w-full max-w-2xl"
+                        animationSpeed={animationSpeed}
+                        animationDirection={animationDirection}
                     />
                 )}
 

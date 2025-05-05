@@ -2,7 +2,9 @@
 
 import { ProgressData } from '@/types'
 import { Calendar, Clock, TrendingUp } from 'lucide-react'
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+
 import { LearningProgressChart } from './learning-progress-chart'
 
 interface ProgressDashboardProps {
@@ -40,9 +42,10 @@ interface ProgressDashboardProps {
 }
 
 export function ProgressDashboard({ data }: ProgressDashboardProps) {
-    const successRate = data.totalReviews > 0
-        ? Math.round((data.totalCorrect / data.totalReviews) * 100)
-        : 0
+    const successRate =
+        data.totalReviews > 0
+            ? Math.round((data.totalCorrect / data.totalReviews) * 100)
+            : 0
 
     const difficultyLabels: Record<number, string> = {
         1: 'Wieder',
@@ -57,11 +60,15 @@ export function ProgressDashboard({ data }: ProgressDashboardProps) {
             <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
                 <Card>
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium">Gesamte Wiederholungen</CardTitle>
+                        <CardTitle className="text-sm font-medium">
+                            Gesamte Wiederholungen
+                        </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{data.totalReviews}</div>
-                        <p className="text-xs text-muted-foreground">
+                        <div className="text-2xl font-bold">
+                            {data.totalReviews}
+                        </div>
+                        <p className="text-muted-foreground text-xs">
                             {data.totalCorrect} richtig beantwortet
                         </p>
                     </CardContent>
@@ -69,11 +76,15 @@ export function ProgressDashboard({ data }: ProgressDashboardProps) {
 
                 <Card>
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium">Erfolgsquote</CardTitle>
+                        <CardTitle className="text-sm font-medium">
+                            Erfolgsquote
+                        </CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="flex items-center">
-                            <div className="text-2xl font-bold">{successRate}%</div>
+                            <div className="text-2xl font-bold">
+                                {successRate}%
+                            </div>
                             <TrendingUp className="ml-2 h-4 w-4 text-green-500" />
                         </div>
                     </CardContent>
@@ -81,14 +92,18 @@ export function ProgressDashboard({ data }: ProgressDashboardProps) {
 
                 <Card>
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium">Lern-Streak</CardTitle>
+                        <CardTitle className="text-sm font-medium">
+                            Lern-Streak
+                        </CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="flex items-center">
-                            <div className="text-2xl font-bold">{data.streak}</div>
+                            <div className="text-2xl font-bold">
+                                {data.streak}
+                            </div>
                             <Calendar className="ml-2 h-4 w-4 text-blue-500" />
                         </div>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-muted-foreground text-xs">
                             {data.streak === 1 ? 'Tag' : 'Tage'} in Folge
                         </p>
                     </CardContent>
@@ -96,14 +111,18 @@ export function ProgressDashboard({ data }: ProgressDashboardProps) {
 
                 <Card>
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium">Zu wiederholen</CardTitle>
+                        <CardTitle className="text-sm font-medium">
+                            Zu wiederholen
+                        </CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="flex items-center">
-                            <div className="text-2xl font-bold">{data.needsReview.length}</div>
+                            <div className="text-2xl font-bold">
+                                {data.needsReview.length}
+                            </div>
                             <Clock className="ml-2 h-4 w-4 text-orange-500" />
                         </div>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-muted-foreground text-xs">
                             Karten für heute
                         </p>
                     </CardContent>
@@ -121,27 +140,48 @@ export function ProgressDashboard({ data }: ProgressDashboardProps) {
                     <CardContent>
                         <div className="space-y-2">
                             {data.cardsByDifficulty.map((item) => (
-                                <div key={item.difficultyCategory} className="flex items-center justify-between">
+                                <div
+                                    key={item.difficultyCategory}
+                                    className="flex items-center justify-between"
+                                >
                                     <span className="text-sm font-medium">
-                                        {difficultyLabels[item.difficultyCategory] || `Level ${item.difficultyCategory}`}
+                                        {difficultyLabels[
+                                            item.difficultyCategory
+                                        ] || `Level ${item.difficultyCategory}`}
                                     </span>
                                     <div className="flex items-center gap-2">
-                                        <div className="w-32 h-2 bg-secondary rounded-full overflow-hidden">
+                                        <div className="bg-secondary h-2 w-32 overflow-hidden rounded-full">
                                             <div
                                                 className={`h-full ${
-                                                    item.difficultyCategory === 1 ? 'bg-red-500' :
-                                                        item.difficultyCategory === 2 ? 'bg-yellow-500' :
-                                                            item.difficultyCategory === 3 ? 'bg-blue-500' :
-                                                                'bg-green-500'
+                                                    item.difficultyCategory ===
+                                                    1
+                                                        ? 'bg-red-500'
+                                                        : item.difficultyCategory ===
+                                                            2
+                                                          ? 'bg-yellow-500'
+                                                          : item.difficultyCategory ===
+                                                              3
+                                                            ? 'bg-blue-500'
+                                                            : 'bg-green-500'
                                                 }`}
                                                 style={{
-                                                    width: `${data.cardsByDifficulty.length > 0
-                                                        ? (item.count / Math.max(...data.cardsByDifficulty.map(d => d.count))) * 100
-                                                        : 0}%`
+                                                    width: `${
+                                                        data.cardsByDifficulty
+                                                            .length > 0
+                                                            ? (item.count /
+                                                                  Math.max(
+                                                                      ...data.cardsByDifficulty.map(
+                                                                          (d) =>
+                                                                              d.count
+                                                                      )
+                                                                  )) *
+                                                              100
+                                                            : 0
+                                                    }%`,
                                                 }}
                                             />
                                         </div>
-                                        <span className="text-sm text-muted-foreground w-8 text-right">
+                                        <span className="text-muted-foreground w-8 text-right text-sm">
                                             {item.count}
                                         </span>
                                     </div>
@@ -158,8 +198,10 @@ export function ProgressDashboard({ data }: ProgressDashboardProps) {
                     <CardTitle>Lernzeiten-Analyse</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="text-sm text-muted-foreground">
-                        <p>Analyse der effektivsten Lernzeiten (in Entwicklung)</p>
+                    <div className="text-muted-foreground text-sm">
+                        <p>
+                            Analyse der effektivsten Lernzeiten (in Entwicklung)
+                        </p>
                     </div>
                 </CardContent>
             </Card>

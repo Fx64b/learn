@@ -12,6 +12,8 @@ interface FlashcardProps {
     rückseite: string
     onRating?: (rating: number) => void
     className?: string
+    animationSpeed?: number
+    animationDirection?: 'horizontal' | 'vertical'
 }
 
 export function Flashcard({
@@ -19,6 +21,8 @@ export function Flashcard({
     rückseite,
     onRating,
     className,
+    animationSpeed = 200,
+    animationDirection = 'horizontal',
 }: FlashcardProps) {
     const [isFlipped, setIsFlipped] = useState(false)
     const [isFlipping, setIsFlipping] = useState(false)
@@ -27,9 +31,9 @@ export function Flashcard({
         if (!isFlipping) {
             setIsFlipping(true)
             setIsFlipped(!isFlipped)
-            setTimeout(() => setIsFlipping(false), 200)
+            setTimeout(() => setIsFlipping(false), animationSpeed)
         }
-    }, [isFlipping, isFlipped])
+    }, [isFlipping, isFlipped, animationSpeed])
 
     // Enhanced keyboard handler
     useEffect(() => {
@@ -56,6 +60,24 @@ export function Flashcard({
         return () => window.removeEventListener('keydown', handleKeyDown)
     }, [isFlipped, onRating, flipCard])
 
+    const getAnimationVariants = () => {
+        if (animationDirection === 'vertical') {
+            return {
+                initial: { opacity: 0, y: -50 },
+                animate: { opacity: 1, y: 0 },
+                exit: { opacity: 0, y: 50 },
+            }
+        } else {
+            return {
+                initial: { opacity: 0, x: -50 },
+                animate: { opacity: 1, x: 0 },
+                exit: { opacity: 0, x: 50 },
+            }
+        }
+    }
+
+    const variants = getAnimationVariants()
+
     return (
         <div
             className={cn(
@@ -74,10 +96,10 @@ export function Flashcard({
                 {!isFlipped ? (
                     <motion.div
                         key="front"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.2 }}
+                        initial={variants.initial}
+                        animate={variants.animate}
+                        exit={variants.exit}
+                        transition={{ duration: animationSpeed / 1000 }}
                         className="absolute inset-0"
                     >
                         <Card className="h-full w-full shadow-md transition-shadow hover:shadow-lg">
@@ -96,10 +118,10 @@ export function Flashcard({
                 ) : (
                     <motion.div
                         key="back"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.2 }}
+                        initial={variants.initial}
+                        animate={variants.animate}
+                        exit={variants.exit}
+                        transition={{ duration: animationSpeed / 1000 }}
                         className="absolute inset-0"
                     >
                         <Card className="border-primary/30 h-full w-full border-2 shadow-md">

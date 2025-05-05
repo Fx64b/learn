@@ -4,7 +4,7 @@ import { ArrowLeft, Info } from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
-import { getDueCardsForDeck } from '@/app/actions/deck'
+import { getFlashcardsByDeckId } from '@/app/actions/flashcard'
 
 import { Button } from '@/components/ui/button'
 
@@ -22,8 +22,8 @@ export default async function LernSeite({
         notFound()
     }
 
-    // Get only due cards instead of all cards
-    const flashcards = await getDueCardsForDeck(kategorie)
+    // Get all cards instead of just due cards to fix the progress bar bug
+    const flashcards = await getFlashcardsByDeckId(kategorie)
 
     return (
         <div className="container mx-auto flex min-h-screen max-w-4xl flex-col px-4 py-6 sm:py-8">
