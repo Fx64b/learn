@@ -71,51 +71,23 @@ export async function getTimeOfDayAnalysis() {
 
         const hourlyData = await db
             .select({
-                hour: sql<number>`CAST(strftime('%H', datetime(${studySessions.startTime}, 'unixepoch')) AS INTEGER)`.as(
-                    'hour'
-                ),
+                startTime: sql<number>`${studySessions.startTime}`.as('startTime'),
                 sessions: sql<number>`COUNT(*)`.as('sessions'),
-                cardsTotal: sql<number>`SUM(${studySessions.cardsReviewed})`.as(
-                    'cardsTotal'
-                ),
-                avgCards:
-                    sql<number>`CAST(AVG(${studySessions.cardsReviewed}) AS REAL)`.as(
-                        'avgCards'
-                    ),
+                cardsTotal: sql<number>`SUM(${studySessions.cardsReviewed})`.as('cardsTotal'),
+                avgCards: sql<number>`CAST(AVG(${studySessions.cardsReviewed}) AS REAL)`.as('avgCards'),
             })
             .from(studySessions)
             .where(eq(studySessions.userId, session.user.id))
             .groupBy(
                 sql`strftime('%H', datetime(${studySessions.startTime}, 'unixepoch'))`
             )
-            .orderBy(sql`hour`)
-
-        // DEBUG: console.log('Hourly data:', hourlyData)
-
-        // Fülle fehlende Stunden mit 0 auf
-        const fullDayData = Array.from({ length: 24 }, (_, hour) => {
-            const found = hourlyData.find((h) => h.hour === hour)
-            return {
-                hour,
-                sessions: found?.sessions || 0,
-                cardsTotal: found?.cardsTotal || 0,
-                avgCards: found?.avgCards || 0,
-            }
-        })
-
-        const mostProductiveHour = fullDayData.reduce(
-            (max, current) => (current.avgCards > max.avgCards ? current : max),
-            { hour: 0, avgCards: 0 }
-        )
 
         return {
             success: true,
-            data: fullDayData,
-            mostProductiveHour:
-                mostProductiveHour.avgCards > 0 ? mostProductiveHour : null,
+            rawData: hourlyData,
         }
     } catch (error) {
         console.error('Error getting time of day analysis:', error)
-        return { success: false, data: [], mostProductiveHour: null }
+        return { success: false, data: [], rawData: [] } // Immer rawData zurückgeben, auch bei Fehler
     }
 }
