@@ -101,17 +101,44 @@ Open [http://localhost:3000](http://localhost:3000) to view the application.
 
 ## Available Scripts
 
-```json
-{
-  "dev": "next dev --turbopack",         // Start development server with Turbopack
-  "build": "next build",                 // Build for production
-  "start": "next start",                 // Start production server
-  "lint": "next lint",                   // Run ESLint
-  "format": "prettier --write .",        // Format code with Prettier
-  "db:generate": "drizzle-kit generate",  // Generate DB migrations
-  "db:migrate": "drizzle-kit migrate",    // Run DB migrations
-  "db:seed": "node seed-standalone.js"    // Seed the database
-}
+**Start development server with Turbopack**
+```bash
+pnpm dev
+```
+
+**Build for production**
+```bash
+pnpm build
+```
+
+**Start production server**
+```bash
+pnpm start
+```
+
+**Run ESLint**
+```bash
+pnpm lint
+```
+
+**Format code with Prettier**
+```bash
+pnpm format
+```
+
+**Generate DB migrations**
+```bash
+pnpm db:generate
+```
+
+**Run DB migrations**
+```bash
+pnpm db:migrate
+```
+
+**Seed the database**
+```bash
+pnpm db:seed
 ```
 
 ## Project Structure
