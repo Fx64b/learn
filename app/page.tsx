@@ -47,7 +47,7 @@ export default async function Home() {
             <div className="mb-10">
                 <h1 className="mb-2 text-3xl font-bold">Flashcard App</h1>
                 <p className="text-muted-foreground">
-                    Eine einfache Flascard-App mit spaced repetition.
+                    Eine einfache Flashcard-App mit spaced repetition.
                 </p>
             </div>
 
