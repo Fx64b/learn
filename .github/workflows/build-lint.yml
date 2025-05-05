@@ -57,6 +57,6 @@ jobs:
                 NEXTAUTH_URL: ${{ vars.NEXTAUTH_URL || 'http://localhost:3000' }}
                 NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
                 EMAIL_FROM: ${{ vars.EMAIL_FROM || 'noreply@example.com' }}
-                RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }
+                RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
               run: |
                   pnpm run build
