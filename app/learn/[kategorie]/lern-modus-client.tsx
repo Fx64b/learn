@@ -48,13 +48,6 @@ export default function LernModusClient({
         const result = await reviewCard(aktuelleKarte.id, bewertung)
 
         if (result.success) {
-            toast(`Karte mit ${bewertung} bewertet`, {
-                description:
-                    bewertung < 3
-                        ? 'Diese Karte wird bald wiederholt'
-                        : 'Gut gemacht!',
-            })
-
             // Zur nächsten Karte gehen
             if (aktuellerIndex < flashcards.length - 1) {
                 setAktuellerIndex(aktuellerIndex + 1)

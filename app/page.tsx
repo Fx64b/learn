@@ -149,7 +149,7 @@ export default async function Home() {
                             </CardContent>
                             <CardFooter className="flex gap-2">
                                 <Link
-                                    href={`/lernen/${deck.id}`}
+                                    href={`/learn/${deck.id}`}
                                     className="flex-1"
                                 >
                                     <Button className="w-full" size="sm">

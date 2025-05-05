@@ -2,9 +2,7 @@
 
 import { cn } from '@/lib/utils'
 import { AnimatePresence, motion } from 'framer-motion'
-
 import { useCallback, useEffect, useState } from 'react'
-
 import { Card, CardContent } from '@/components/ui/card'
 
 interface FlashcardProps {
@@ -15,11 +13,11 @@ interface FlashcardProps {
 }
 
 export function Flashcard({
-    vorderseite,
-    rückseite,
-    onRating,
-    className,
-}: FlashcardProps) {
+                              vorderseite,
+                              rückseite,
+                              onRating,
+                              className,
+                          }: FlashcardProps) {
     const [isFlipped, setIsFlipped] = useState(false)
     const [isFlipping, setIsFlipping] = useState(false)
 
@@ -31,7 +29,7 @@ export function Flashcard({
         }
     }, [isFlipping, isFlipped])
 
-    // Tastatur-Handler für Flip mit Leertaste
+    // Enhanced keyboard handler
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === ' ' || e.code === 'Space') {
@@ -41,6 +39,14 @@ export function Flashcard({
                 if (onRating) {
                     onRating(parseInt(e.key))
                 }
+            } else if (e.key === 'ArrowLeft' && isFlipped && onRating) {
+                onRating(1) // Again
+            } else if (e.key === 'ArrowDown' && isFlipped && onRating) {
+                onRating(2) // Hard
+            } else if (e.key === 'ArrowUp' && isFlipped && onRating) {
+                onRating(3) // Good
+            } else if (e.key === 'ArrowRight' && isFlipped && onRating) {
+                onRating(4) // Easy
             }
         }
 
@@ -115,7 +121,7 @@ export function Flashcard({
                                                         e.stopPropagation()
                                                         onRating(1)
                                                     }}
-                                                    className="rounded bg-red-500 px-2 py-1 text-sm hover:bg-red-500/30"
+                                                    className="rounded bg-red-500 px-2 py-1 text-sm text-white hover:bg-red-600 dark:text-black"
                                                 >
                                                     Wieder (1)
                                                 </button>
@@ -124,7 +130,7 @@ export function Flashcard({
                                                         e.stopPropagation()
                                                         onRating(2)
                                                     }}
-                                                    className="rounded bg-yellow-500 px-2 py-1 text-sm hover:bg-yellow-500/30"
+                                                    className="rounded bg-yellow-500 px-2 py-1 text-sm text-white hover:bg-yellow-600 dark:text-black"
                                                 >
                                                     Schwer (2)
                                                 </button>
@@ -133,7 +139,7 @@ export function Flashcard({
                                                         e.stopPropagation()
                                                         onRating(3)
                                                     }}
-                                                    className="rounded bg-blue-500 px-2 py-1 text-sm hover:bg-blue-500/30"
+                                                    className="rounded bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
                                                 >
                                                     Gut (3)
                                                 </button>
@@ -142,7 +148,7 @@ export function Flashcard({
                                                         e.stopPropagation()
                                                         onRating(4)
                                                     }}
-                                                    className="rounded bg-green-500 px-2 py-1 text-sm hover:bg-green-500/30"
+                                                    className="rounded bg-green-500 px-2 py-1 text-sm text-white hover:bg-green-600"
                                                 >
                                                     Einfach (4)
                                                 </button>

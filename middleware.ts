@@ -6,7 +6,7 @@ export async function middleware(req: NextRequest) {
     const pathname = req.nextUrl.pathname
 
     // Geschützte Routen
-    const protectedPaths = ['/lernen', '/profile', '/deck']
+    const protectedPaths = ['/learn', '/profile', '/deck']
     const isProtectedPath = protectedPaths.some((path) =>
         pathname.startsWith(path)
     )

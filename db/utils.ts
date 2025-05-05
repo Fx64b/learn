@@ -1,5 +1,5 @@
 import { calculateNextReview } from '@/lib/srs'
-import { and, eq, isNull, lte, or } from 'drizzle-orm'
+import {and, desc, eq, isNull, lte, or} from 'drizzle-orm'
 import { nanoid } from 'nanoid'
 
 import { db } from './index'
@@ -171,4 +171,47 @@ export async function updateFlashcard(data: {
 
 export async function deleteFlashcard(id: string) {
     await db.delete(flashcards).where(eq(flashcards.id, id))
+}
+
+export async function getAllFlashcards() {
+    return await db.select().from(flashcards)
+}
+
+export async function getDifficultCards(userId: string) {
+    // Get cards with low ease factor (below 2.5) or many recent failures
+    const cards = await db
+        .select({
+            flashcard: flashcards,
+            review: cardReviews,
+        })
+        .from(flashcards)
+        .leftJoin(
+            cardReviews,
+            and(
+                eq(flashcards.id, cardReviews.flashcardId),
+                eq(cardReviews.userId, userId)
+            )
+        )
+        .orderBy(desc(cardReviews.bewertetAm))
+
+    // Filter for cards that have been reviewed and are difficult
+    return cards
+        .filter(card => {
+            if (!card.review) return false
+            // Card is difficult if ease factor is below 2.5 (250)
+            return card.review.easeFaktor < 250
+        })
+        .map(card => card.flashcard)
+}
+
+// Add a function to reset learning progress
+export async function resetCardProgress(userId: string, flashcardId: string) {
+    await db
+        .delete(cardReviews)
+        .where(
+            and(
+                eq(cardReviews.userId, userId),
+                eq(cardReviews.flashcardId, flashcardId)
+            )
+        )
 }
