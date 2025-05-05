@@ -2,6 +2,8 @@
 
 A modern flashcard application for effective learning using the Spaced Repetition System (SRS). Built with Next.js 15, TypeScript, and Turso database.
 
+[![Build and Lint](https://github.com/Fx64b/learn/actions/workflows/build-lint.yml/badge.svg)](https://github.com/Fx64b/learn/actions/workflows/build-lint.yml)
+
 ## Features
 
 - 🗂️ Create and manage flashcard decks
