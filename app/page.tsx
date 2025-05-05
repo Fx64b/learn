@@ -71,9 +71,9 @@ export default async function Home() {
             </div>
 
             <div className="mb-6">
-                <div className="mb-4 flex items-center justify-between">
+                <div className="mb-4 flex flex-col gap-4 md:flex-row md:gap-0 md:items-center md:justify-between">
                     <h2 className="text-xl font-semibold">Lernkategorien</h2>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                         <Button variant="outline" size="sm" asChild>
                             <Link href="/deck/create">
                                 <Plus className="mr-2 h-4 w-4" />
