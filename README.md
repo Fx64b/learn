@@ -1,6 +1,3 @@
-I'll update the README to make it more accurate to the current state of the project and add a development note as requested.
-
-````markdown
 # Flashcard Learning App
 
 A modern flashcard application for effective learning using the Spaced Repetition System (SRS). Built with Next.js 15, TypeScript, and Turso database.
@@ -8,7 +5,7 @@ A modern flashcard application for effective learning using the Spaced Repetitio
 [![Build and Lint](https://github.com/Fx64b/learn/actions/workflows/build-lint.yml/badge.svg)](https://github.com/Fx64b/learn/actions/workflows/build-lint.yml)
 
 > [!IMPORTANT]  
-> This project is currently in **early development**. Features may change, and the application is not yet ready for production use.
+> This project is currently in **early development**. Features may change, and the application is not yet ready for personal production use. The app is only available in german for now.
 
 ## Features
 
@@ -50,7 +47,6 @@ A modern flashcard application for effective learning using the Spaced Repetitio
 git clone https://github.com/Fx64b/learn
 cd learn
 ```
-````
 
 ### 2. Install Dependencies
 
@@ -134,7 +130,7 @@ Open [http://localhost:3000](http://localhost:3000) to view the application.
 | `pnpm format`      | Format code with Prettier               |
 | `pnpm db:generate` | Generate DB migrations                  |
 | `pnpm db:migrate`  | Run DB migrations                       |
-| `pnpm db:seed`     | Seed the database                       |
+| `pnpm db:seed`     | Seed the database with example data                       |
 
 ## Project Structure
 
