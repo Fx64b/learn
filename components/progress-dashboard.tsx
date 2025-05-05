@@ -43,18 +43,14 @@ interface ProgressDashboardProps {
             } | null
         }>
         timeOfDay: {
-            data: Array<{
-                hour: number
-                sessions: number
-                cardsTotal: number
-                avgCards: number
-            }>
-            mostProductiveHour: {
-                hour: number
-                avgCards: number
-            } | null
-        }
-    }
+            rawData: Array<{
+                startTime: number;
+                sessions: number;
+                cardsTotal: number;
+                avgCards: number;
+            }>;
+        };
+    };
 }
 
 export function ProgressDashboard({ data }: ProgressDashboardProps) {
@@ -216,8 +212,7 @@ export function ProgressDashboard({ data }: ProgressDashboardProps) {
             </div>
 
             <StudyTimeAnalysis
-                data={data.timeOfDay.data}
-                mostProductiveHour={data.timeOfDay.mostProductiveHour}
+                rawData={data.timeOfDay.rawData}
             />
         </div>
     )

@@ -4,7 +4,7 @@ import { type FlashcardType } from '@/types'
 import { Clock, RotateCw, Settings2 } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { useCallback, useEffect, useState } from 'react'
+import {useCallback, useEffect, useRef, useState} from 'react'
 
 import Link from 'next/link'
 
@@ -46,6 +46,13 @@ export default function LernModusClient({
     const [showSettings, setShowSettings] = useState(false)
     const [isTimerRunning, setIsTimerRunning] = useState(true)
     const [hasUnsavedSession, setHasUnsavedSession] = useState(true)
+    const sessionDataRef = useRef({
+        startTime,
+        studyTime,
+        aktuellerIndex,
+        deckId,
+        hasUnsavedSession
+    });
 
     // Animation settings
     const [animationSpeed, setAnimationSpeed] = useState(200) // ms
@@ -53,6 +60,16 @@ export default function LernModusClient({
         'horizontal' | 'vertical'
     >('horizontal')
     const [animationsEnabled, setAnimationsEnabled] = useState(false)
+
+    useEffect(() => {
+        sessionDataRef.current = {
+            startTime,
+            studyTime,
+            aktuellerIndex,
+            deckId,
+            hasUnsavedSession
+        };
+    }, [startTime, studyTime, aktuellerIndex, deckId, hasUnsavedSession]);
 
     // Timer effect
     useEffect(() => {
@@ -107,18 +124,6 @@ export default function LernModusClient({
         [deckId, startTime, studyTime, aktuellerIndex]
     )
 
-    // Save session on page unload
-    useEffect(() => {
-        const handleUnload = () => {
-            if (hasUnsavedSession) {
-                saveCurrentSession(false)
-            }
-        }
-
-        window.addEventListener('beforeunload', handleUnload)
-        return () => window.removeEventListener('beforeunload', handleUnload)
-    }, [hasUnsavedSession, saveCurrentSession])
-
     // Format study time
     const formatTime = (ms: number) => {
         const seconds = Math.floor(ms / 1000)
@@ -147,6 +152,8 @@ export default function LernModusClient({
 
         const result = await reviewCard(aktuelleKarte.id, bewertung)
 
+        setHasUnsavedSession(true)
+
         if (result.success) {
             if (aktuellerIndex < flashcards.length - 1) {
                 setAktuellerIndex(aktuellerIndex + 1)
@@ -160,6 +167,40 @@ export default function LernModusClient({
             toast.error('Fehler beim Bewerten der Karte')
         }
     }
+
+    // Auto-save session every 20 seconds
+    useEffect(() => {
+        const autoSaveInterval = setInterval(() => {
+            const { hasUnsavedSession } = sessionDataRef.current;
+
+            if (hasUnsavedSession) {
+                const saveSession = async (isCompleted: boolean) => {
+                    const { startTime, studyTime, aktuellerIndex, deckId } = sessionDataRef.current;
+                    const endTime = new Date();
+                    const duration = studyTime || Date.now() - startTime.getTime();
+
+                    const result = await saveStudySession({
+                        deckId: deckId,
+                        startTime: startTime,
+                        endTime: endTime,
+                        duration: duration,
+                        cardsReviewed: aktuellerIndex,
+                        isCompleted: isCompleted,
+                    });
+
+                    if (result.success) {
+                        sessionDataRef.current.hasUnsavedSession = false;
+                        setHasUnsavedSession(false);
+                    }
+                };
+
+                console.debug("Auto-saving session...");
+                saveSession(false);
+            }
+        }, 20000);
+
+        return () => clearInterval(autoSaveInterval);
+    }, []);
 
     if (flashcards.length === 0) {
         return (

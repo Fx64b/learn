@@ -119,13 +119,11 @@ export async function getLearningProgress() {
         needsReview,
         timeOfDay: timeOfDayData.success
             ? {
-                  data: timeOfDayData.data,
-                  mostProductiveHour: timeOfDayData.mostProductiveHour,
-              }
+                rawData: timeOfDayData.rawData,
+            }
             : {
-                  data: [],
-                  mostProductiveHour: null,
-              },
+                rawData: [],
+            },
     }
 }
 

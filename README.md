@@ -1,5 +1,7 @@
 # Flashcard Learning App
 
+<img src="public/learn-logo.png" alt="Logo" style="max-width: 33%;" />
+
 A modern flashcard application for effective learning using the Spaced Repetition System (SRS). Built with Next.js 15, TypeScript, and Turso database.
 
 [![Build and Lint](https://github.com/Fx64b/learn/actions/workflows/build-lint.yml/badge.svg)](https://github.com/Fx64b/learn/actions/workflows/build-lint.yml)
@@ -130,7 +132,7 @@ Open [http://localhost:3000](http://localhost:3000) to view the application.
 | `pnpm format`      | Format code with Prettier               |
 | `pnpm db:generate` | Generate DB migrations                  |
 | `pnpm db:migrate`  | Run DB migrations                       |
-| `pnpm db:seed`     | Seed the database with example data                       |
+| `pnpm db:seed`     | Seed the database with example data     |
 
 ## Project Structure
 
