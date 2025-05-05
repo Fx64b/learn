@@ -49,7 +49,7 @@ export default function LernModusClient({
     const [animationDirection, setAnimationDirection] = useState<
         'horizontal' | 'vertical'
     >('horizontal')
-    const [animationsEnabled, setAnimationsEnabled] = useState(true)
+    const [animationsEnabled, setAnimationsEnabled] = useState(false)
 
     // Timer effect
     useEffect(() => {
