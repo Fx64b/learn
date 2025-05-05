@@ -1,6 +1,6 @@
 # Flashcard Learning App
 
-<img src="public/learn-logo.png" alt="Logo" style="max-width: 150px;" />
+<img src="public/learn-logo.png" alt="Logo" style="width: 150px;" />
 
 A modern flashcard application for effective learning using the Spaced Repetition System (SRS). Built with Next.js 15, TypeScript, and Turso database.
 
