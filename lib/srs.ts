@@ -36,4 +36,3 @@ export function calculateNextReview(
 
     return { nextInterval, newEaseFactor }
 }
-

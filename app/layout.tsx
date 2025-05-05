@@ -3,6 +3,8 @@ import { Toaster } from 'sonner'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 
+import { Analytics } from '@vercel/analytics/react'
+
 import { AuthProvider } from '@/components/auth-provider'
 import { Header } from '@/components/header'
 
@@ -30,6 +32,7 @@ export default function RootLayout({
                     <main>{children}</main>
                     <Toaster position="top-right" />
                 </AuthProvider>
+                <Analytics />
             </body>
         </html>
     )
