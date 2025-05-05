@@ -117,13 +117,9 @@ export async function getLearningProgress() {
         streak,
         cardsByDifficulty,
         needsReview,
-        timeOfDay: timeOfDayData.success
-            ? {
-                rawData: timeOfDayData.rawData,
-            }
-            : {
-                rawData: [],
-            },
+        timeOfDay: {
+            rawData: timeOfDayData.rawData || [],
+        },
     }
 }
 

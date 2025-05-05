@@ -71,7 +71,7 @@ export async function getTimeOfDayAnalysis() {
 
         const hourlyData = await db
             .select({
-                startTime: studySessions.startTime, // Rohe UNIX timestamp
+                startTime: sql<number>`${studySessions.startTime}`.as('startTime'),
                 sessions: sql<number>`COUNT(*)`.as('sessions'),
                 cardsTotal: sql<number>`SUM(${studySessions.cardsReviewed})`.as('cardsTotal'),
                 avgCards: sql<number>`CAST(AVG(${studySessions.cardsReviewed}) AS REAL)`.as('avgCards'),
@@ -88,6 +88,6 @@ export async function getTimeOfDayAnalysis() {
         }
     } catch (error) {
         console.error('Error getting time of day analysis:', error)
-        return { success: false, data: [], mostProductiveHour: null }
+        return { success: false, data: [], rawData: [] } // Immer rawData zurückgeben, auch bei Fehler
     }
 }
