@@ -19,9 +19,6 @@ export function StudyTimeAnalysis({
     data,
     mostProductiveHour,
 }: StudyTimeAnalysisProps) {
-    console.log('StudyTimeAnalysis - data:', data)
-    console.log('StudyTimeAnalysis - mostProductiveHour:', mostProductiveHour)
-    console.log('Data length:', data.length)
 
     return (
         <Card>

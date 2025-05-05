@@ -5,21 +5,7 @@ import { authOptions } from '@/lib/auth'
 
 import { getServerSession } from 'next-auth'
 import { revalidatePath } from 'next/cache'
-
-export async function getDueCardsForDeck(deckId: string) {
-    try {
-        const session = await getServerSession(authOptions)
-        if (!session?.user?.id) return []
-
-        const allDueCards = await dbUtils.getDueCards(session.user.id)
-        return allDueCards
-            .filter((card) => card.flashcard.deckId === deckId)
-            .map((card) => card.flashcard)
-    } catch (error) {
-        console.error('Fehler beim Laden der fälligen Karten:', error)
-        return []
-    }
-}
+import {DeckType} from "@/types";
 
 export async function createDeck(formData: FormData) {
     try {
@@ -36,7 +22,7 @@ export async function createDeck(formData: FormData) {
             titel,
             beschreibung,
             kategorie,
-            userId: session.user.id, // Use session user ID
+            userId: session.user.id,
         })
 
         revalidatePath('/')
@@ -47,9 +33,14 @@ export async function createDeck(formData: FormData) {
     }
 }
 
-export async function getAllDecks() {
+export async function getAllDecks(): Promise<DeckType[]> {
     try {
-        return await dbUtils.getAllDecks()
+        const session = await getServerSession(authOptions)
+        if (!session?.user?.id) {
+            return []
+        }
+
+        return await dbUtils.getAllDecks(session.user.id)
     } catch (error) {
         console.error('Fehler beim Laden der Decks:', error)
         return []

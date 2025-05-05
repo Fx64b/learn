@@ -1,6 +1,9 @@
 import { getDeckById } from '@/db/utils'
+import { authOptions } from '@/lib/auth'
 
+import { getServerSession } from 'next-auth'
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
 
 import { getFlashcardsByDeckId } from '@/app/actions/flashcard'
 
@@ -15,12 +18,19 @@ export default async function EditDeckPage({
     params: Promise<{ id: string }>
 }) {
     const { id } = await params
-    const deck = await getDeckById(id)
-    const flashcards = await getFlashcardsByDeckId(id)
+    const session = await getServerSession(authOptions)
+
+    if (!session?.user?.id) {
+        notFound()
+    }
+
+    const deck = await getDeckById(id, session.user.id)
 
     if (!deck) {
-        return <div>Deck nicht gefunden</div>
+        notFound()
     }
+
+    const flashcards = await getFlashcardsByDeckId(id)
 
     return (
         <div className="container mx-auto max-w-4xl px-4 py-8">

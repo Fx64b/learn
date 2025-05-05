@@ -4,7 +4,7 @@ import { type FlashcardType } from '@/types'
 import { Clock, RotateCw, Settings2 } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import Link from 'next/link'
 
@@ -86,6 +86,27 @@ export default function LernModusClient({
         }
     }, [istLernprozessAbgeschlossen])
 
+    const saveCurrentSession = useCallback(
+        async (isCompleted: boolean) => {
+            const endTime = new Date()
+            const duration = studyTime || Date.now() - startTime.getTime()
+
+            const result = await saveStudySession({
+                deckId: deckId,
+                startTime: startTime,
+                endTime: endTime,
+                duration: duration,
+                cardsReviewed: aktuellerIndex,
+                isCompleted: isCompleted,
+            })
+
+            if (result.success) {
+                setHasUnsavedSession(false)
+            }
+        },
+        [deckId, startTime, studyTime, aktuellerIndex]
+    )
+
     // Save session on page unload
     useEffect(() => {
         const handleUnload = () => {
@@ -96,25 +117,7 @@ export default function LernModusClient({
 
         window.addEventListener('beforeunload', handleUnload)
         return () => window.removeEventListener('beforeunload', handleUnload)
-    }, [hasUnsavedSession, aktuellerIndex, studyTime])
-
-    const saveCurrentSession = async (isCompleted: boolean) => {
-        const endTime = new Date()
-        const duration = studyTime || Date.now() - startTime.getTime()
-
-        const result = await saveStudySession({
-            deckId: deckId,
-            startTime: startTime,
-            endTime: endTime,
-            duration: duration,
-            cardsReviewed: aktuellerIndex,
-            isCompleted: isCompleted,
-        })
-
-        if (result.success) {
-            setHasUnsavedSession(false)
-        }
-    }
+    }, [hasUnsavedSession, saveCurrentSession])
 
     // Format study time
     const formatTime = (ms: number) => {

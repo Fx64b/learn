@@ -6,12 +6,22 @@ import { db } from './index'
 import { cardReviews, decks, flashcards } from './schema'
 
 // Deck-Funktionen
-export async function getAllDecks() {
-    return await db.select().from(decks)
+export async function getAllDecks(userId: string) {
+    return await db.select().from(decks).where(eq(decks.userId, userId))
 }
 
-export async function getDeckById(id: string) {
-    const results = await db.select().from(decks).where(eq(decks.id, id))
+export async function getDeckById(id: string, userId?: string) {
+    const conditions = [eq(decks.id, id)]
+
+    if (userId) {
+        conditions.push(eq(decks.userId, userId))
+    }
+
+    const results = await db
+        .select()
+        .from(decks)
+        .where(and(...conditions))
+
     return results[0]
 }
 
@@ -33,8 +43,14 @@ export async function createDeck(data: {
     return id
 }
 
-// Flashcard-Funktionen
-export async function getFlashcardsByDeckId(deckId: string) {
+export async function getFlashcardsByDeckId(deckId: string, userId?: string) {
+    if (userId) {
+        const deck = await getDeckById(deckId, userId)
+        if (!deck) {
+            throw new Error('Deck not found or unauthorized')
+        }
+    }
+
     return await db
         .select()
         .from(flashcards)

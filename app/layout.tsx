@@ -7,6 +7,7 @@ import { Analytics } from '@vercel/analytics/react'
 
 import { AuthProvider } from '@/components/auth-provider'
 import { Header } from '@/components/header'
+import { RateLimitStatus } from '@/components/rate-limit-status'
 
 import './globals.css'
 
@@ -29,6 +30,11 @@ export default function RootLayout({
             >
                 <AuthProvider>
                     <Header />
+                    {process.env.NODE_ENV === 'development' && (
+                        <div className="container mx-auto max-w-5xl px-4 py-2">
+                            <RateLimitStatus />
+                        </div>
+                    )}
                     <main>{children}</main>
                     <Toaster position="top-right" />
                 </AuthProvider>

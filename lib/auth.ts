@@ -1,4 +1,5 @@
 import { db } from '@/db'
+import { checkRateLimit } from '@/lib/rate-limit'
 import { DrizzleAdapter } from '@auth/drizzle-adapter'
 import { Resend } from 'resend'
 
@@ -24,6 +25,14 @@ export const authOptions: NextAuthOptions = {
                 url,
                 provider: { from },
             }) => {
+                const rateLimitResult = await checkRateLimit(`email:${email}`)
+
+                if (!rateLimitResult.success) {
+                    throw new Error(
+                        'Zu viele Anfragen. Bitte versuchen Sie es später erneut.'
+                    )
+                }
+
                 try {
                     const result = await resend.emails.send({
                         from,

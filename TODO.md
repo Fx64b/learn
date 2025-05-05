@@ -40,13 +40,6 @@ Looking at your flashcard learning app, I see several areas for implementation a
 
 ## UX/UI Enhancements:
 
-7. **Study Mode Improvements**
-
-    - Add flip animation settings (speed, direction)
-    - Show remaining cards count prominently
-    - Add timer/study session tracking
-    - Implement card shuffling option
-
 8. **Gamification Elements**
 
     - Add streaks for daily study

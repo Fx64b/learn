@@ -2,12 +2,30 @@
 
 import * as dbUtils from '@/db/utils'
 import { authOptions } from '@/lib/auth'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 import { getServerSession } from 'next-auth'
 import { revalidatePath } from 'next/cache'
 
 export async function createFlashcard(formData: FormData) {
     try {
+        const session = await getServerSession(authOptions)
+        if (!session?.user?.id) {
+            return { success: false, error: 'Not authenticated' }
+        }
+
+        // Rate limit by user
+        const rateLimitResult = await checkRateLimit(
+            `user:${session.user.id}:create-card`
+        )
+
+        if (!rateLimitResult.success) {
+            return {
+                success: false,
+                error: 'Zu viele Anfragen. Bitte warten Sie einen Moment.',
+            }
+        }
+
         const deckId = formData.get('deckId') as string
         const vorderseite = formData.get('vorderseite') as string
         const rückseite = formData.get('rückseite') as string
@@ -34,6 +52,23 @@ export async function createFlashcardsFromJson(data: {
     cardsJson: string
 }) {
     try {
+        const session = await getServerSession(authOptions)
+        if (!session?.user?.id) {
+            return { success: false, error: 'Not authenticated' }
+        }
+
+        // Rate limit bulk operations more strictly
+        const rateLimitResult = await checkRateLimit(
+            `user:${session.user.id}:bulk-create`
+        )
+
+        if (!rateLimitResult.success) {
+            return {
+                success: false,
+                error: 'Zu viele Bulk-Anfragen. Bitte warten Sie.',
+            }
+        }
+
         // Parse the JSON array
         const cards = JSON.parse(data.cardsJson)
 
@@ -78,7 +113,12 @@ export async function createFlashcardsFromJson(data: {
 
 export async function getFlashcardsByDeckId(deckId: string) {
     try {
-        return await dbUtils.getFlashcardsByDeckId(deckId)
+        const session = await getServerSession(authOptions)
+        if (!session?.user?.id) {
+            return []
+        }
+
+        return await dbUtils.getFlashcardsByDeckId(deckId, session.user.id)
     } catch (error) {
         console.error('Fehler beim Laden der Flashcards:', error)
         return []
@@ -113,9 +153,22 @@ export async function updateFlashcard(data: {
     istPrüfungsrelevant: boolean
 }) {
     try {
+        const session = await getServerSession(authOptions)
+        if (!session?.user?.id) {
+            return { success: false, error: 'Not authenticated' }
+        }
+
         const flashcard = await dbUtils.getFlashcardById(data.id)
         if (!flashcard) {
             return { success: false, error: 'Karte nicht gefunden' }
+        }
+
+        const deck = await dbUtils.getDeckById(
+            flashcard.deckId,
+            session.user.id
+        )
+        if (!deck) {
+            return { success: false, error: 'Unauthorized' }
         }
 
         await dbUtils.updateFlashcard({
