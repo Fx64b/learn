@@ -48,9 +48,14 @@ export default function CreateDeckPage() {
     return (
         <div className="container mx-auto max-w-2xl px-4 py-8">
             <div className="mb-8 flex items-center gap-4">
-                <Button variant="ghost" size="icon" asChild>
+                <Button
+                    className="h-10 w-10 md:h-5 md:w-5"
+                    variant="ghost"
+                    size="icon"
+                    asChild
+                >
                     <Link href="/">
-                        <ArrowLeft className="h-5 w-5" />
+                        <ArrowLeft />
                     </Link>
                 </Button>
                 <h1 className="text-2xl font-bold">Neues Deck erstellen</h1>
@@ -111,7 +116,7 @@ export default function CreateDeckPage() {
                             />
                         </div>
 
-                        <div className="flex justify-end gap-2 pt-4">
+                        <div className="flex items-center justify-between gap-2 pt-4 md:justify-end">
                             <Button variant="outline" asChild>
                                 <Link href="/">Abbrechen</Link>
                             </Button>

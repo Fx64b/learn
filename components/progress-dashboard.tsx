@@ -13,44 +13,44 @@ import { LearningProgressChart } from './learning-progress-chart'
 
 interface ProgressDashboardProps {
     data: {
-        dailyProgress: ProgressData[];
-        totalReviews: number;
-        totalCorrect: number;
-        streak: number;
+        dailyProgress: ProgressData[]
+        totalReviews: number
+        totalCorrect: number
+        streak: number
         cardsByDifficulty: Array<{
-            difficultyCategory: number;
-            count: number;
-        }>;
+            difficultyCategory: number
+            count: number
+        }>
         needsReview: Array<{
             flashcard: {
-                id: string;
-                vorderseite: string;
-                rückseite: string;
-                deckId: string;
-                istPrüfungsrelevant: boolean;
-                schwierigkeitsgrad: number;
-                erstelltAm: Date;
-            };
+                id: string
+                vorderseite: string
+                rückseite: string
+                deckId: string
+                istPrüfungsrelevant: boolean
+                schwierigkeitsgrad: number
+                erstelltAm: Date
+            }
             review: {
-                id: string;
-                flashcardId: string;
-                userId: string;
-                bewertetAm: Date;
-                bewertung: number;
-                easeFaktor: number;
-                intervall: number;
-                nächsteWiederholung: Date;
-            } | null;
-        }>;
+                id: string
+                flashcardId: string
+                userId: string
+                bewertetAm: Date
+                bewertung: number
+                easeFaktor: number
+                intervall: number
+                nächsteWiederholung: Date
+            } | null
+        }>
         timeOfDay: {
             rawData: Array<{
-                startTime: number;
-                sessions: number;
-                cardsTotal: number;
-                avgCards: number;
-            }>;
-        };
-    };
+                startTime: number
+                sessions: number
+                cardsTotal: number
+                avgCards: number
+            }>
+        }
+    }
 }
 
 export function ProgressDashboard({ data }: ProgressDashboardProps) {
@@ -211,9 +211,7 @@ export function ProgressDashboard({ data }: ProgressDashboardProps) {
                 </Card>
             </div>
 
-            <StudyTimeAnalysis
-                rawData={data.timeOfDay.rawData}
-            />
+            <StudyTimeAnalysis rawData={data.timeOfDay.rawData} />
         </div>
     )
 }

@@ -81,7 +81,7 @@ export function Flashcard({
     return (
         <div
             className={cn(
-                'relative h-64 w-full cursor-pointer touch-manipulation sm:h-72',
+                'relative h-80 w-full cursor-pointer touch-manipulation sm:h-96 md:h-[26rem]',
                 className
             )}
             onClick={flipCard}
@@ -103,13 +103,16 @@ export function Flashcard({
                         className="absolute inset-0"
                     >
                         <Card className="h-full w-full shadow-md transition-shadow hover:shadow-lg">
-                            <CardContent className="flex h-full items-center justify-center p-6">
+                            <CardContent className="flex h-full items-center justify-center p-4 sm:p-6">
                                 <div className="text-center">
-                                    <p className="text-lg sm:text-xl md:text-2xl">
+                                    <p className="text-base leading-relaxed break-words sm:text-lg md:text-xl lg:text-2xl">
                                         {vorderseite}
                                     </p>
                                     <p className="text-muted-foreground mt-4 text-xs">
-                                        Tippen zum Umdrehen (Leertaste)
+                                        Tippen zum Umdrehen{' '}
+                                        <kbd className="hidden md:inline">
+                                            (Leertaste)
+                                        </kbd>
                                     </p>
                                 </div>
                             </CardContent>
@@ -122,59 +125,84 @@ export function Flashcard({
                         animate={variants.animate}
                         exit={variants.exit}
                         transition={{ duration: animationSpeed / 1000 }}
-                        className="absolute inset-0"
+                        className="absolute inset-0 h-fit min-h-full"
                     >
                         <Card className="border-primary/30 h-full w-full border-2 shadow-md">
-                            <CardContent className="flex h-full items-center justify-center p-6">
-                                <div className="text-center">
-                                    <p className="text-muted-foreground mb-2 text-xs">
-                                        Antwort
-                                    </p>
-                                    <p className="text-lg font-medium sm:text-xl md:text-2xl">
-                                        {rückseite}
-                                    </p>
-
-                                    {onRating && (
-                                        <div className="border-border mt-4 border-t pt-2">
+                            <CardContent className="h-full overflow-hidden">
+                                <div className="flex h-full flex-col">
+                                    <div className="flex min-h-0 flex-1 items-center justify-center py-4 text-center">
+                                        <div>
                                             <p className="text-muted-foreground mb-2 text-xs">
-                                                Bewertung (1-4):
+                                                Antwort
                                             </p>
-                                            <div className="mt-1 grid grid-cols-4 gap-2">
+                                            <p className="text-base leading-relaxed font-medium break-words sm:text-lg md:text-xl lg:text-2xl">
+                                                {rückseite}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* Rating section - fixed at bottom */}
+                                    {onRating && (
+                                        <div className="border-border w-full border-t pt-2 pb-2">
+                                            <p className="text-muted-foreground mb-2 text-xs">
+                                                Bewertung:
+                                            </p>
+                                            <div className="z-99 grid grid-cols-4 gap-1 sm:gap-2">
                                                 <button
                                                     onClick={(e) => {
                                                         e.stopPropagation()
                                                         onRating(1)
                                                     }}
-                                                    className="rounded bg-red-500 px-2 py-1 text-sm text-white hover:bg-red-600 dark:text-black"
+                                                    className="flex min-h-[44px] items-center justify-center rounded bg-red-500 px-2 py-2 text-xs text-white hover:bg-red-600 sm:text-sm dark:text-black"
                                                 >
-                                                    Wieder (1)
+                                                    <span className="hidden md:inline">
+                                                        Wieder (1)
+                                                    </span>
+                                                    <span className="md:hidden">
+                                                        Wieder
+                                                    </span>
                                                 </button>
                                                 <button
                                                     onClick={(e) => {
                                                         e.stopPropagation()
                                                         onRating(2)
                                                     }}
-                                                    className="rounded bg-yellow-500 px-2 py-1 text-sm text-white hover:bg-yellow-600 dark:text-black"
+                                                    className="flex min-h-[44px] items-center justify-center rounded bg-yellow-500 px-2 py-2 text-xs text-white hover:bg-yellow-600 sm:text-sm dark:text-black"
                                                 >
-                                                    Schwer (2)
+                                                    <span className="hidden md:inline">
+                                                        Schwer (2)
+                                                    </span>
+                                                    <span className="md:hidden">
+                                                        Schwer
+                                                    </span>
                                                 </button>
                                                 <button
                                                     onClick={(e) => {
                                                         e.stopPropagation()
                                                         onRating(3)
                                                     }}
-                                                    className="rounded bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
+                                                    className="flex min-h-[44px] items-center justify-center rounded bg-blue-500 px-2 py-2 text-xs text-white hover:bg-blue-600 sm:text-sm"
                                                 >
-                                                    Gut (3)
+                                                    <span className="hidden md:inline">
+                                                        Gut (3)
+                                                    </span>
+                                                    <span className="md:hidden">
+                                                        Gut
+                                                    </span>
                                                 </button>
                                                 <button
                                                     onClick={(e) => {
                                                         e.stopPropagation()
                                                         onRating(4)
                                                     }}
-                                                    className="rounded bg-green-500 px-2 py-1 text-sm text-white hover:bg-green-600"
+                                                    className="flex min-h-[44px] items-center justify-center rounded bg-green-500 px-2 py-2 text-xs text-white hover:bg-green-600 sm:text-sm"
                                                 >
-                                                    Einfach (4)
+                                                    <span className="hidden md:inline">
+                                                        Einfach (4)
+                                                    </span>
+                                                    <span className="md:hidden">
+                                                        Einfach
+                                                    </span>
                                                 </button>
                                             </div>
                                         </div>
