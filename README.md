@@ -70,23 +70,27 @@ EMAIL_FROM="noreply@yourdomain.com"
 ### 4. Database Setup
 
 1. Create a Turso database:
+
 ```bash
 turso db create flashcard-app
 ```
 
 2. Get your database credentials:
+
 ```bash
 turso db url flashcard-app
 turso db token create flashcard-app --write
 ```
 
 3. Run migrations:
+
 ```bash
 pnpm db:generate
 pnpm db:migrate
 ```
 
 4. Seed the database with example data:
+
 ```bash
 pnpm db:seed
 ```
@@ -102,41 +106,49 @@ Open [http://localhost:3000](http://localhost:3000) to view the application.
 ## Available Scripts
 
 **Start development server with Turbopack**
+
 ```bash
 pnpm dev
 ```
 
 **Build for production**
+
 ```bash
 pnpm build
 ```
 
 **Start production server**
+
 ```bash
 pnpm start
 ```
 
 **Run ESLint**
+
 ```bash
 pnpm lint
 ```
 
 **Format code with Prettier**
+
 ```bash
 pnpm format
 ```
 
 **Generate DB migrations**
+
 ```bash
 pnpm db:generate
 ```
 
 **Run DB migrations**
+
 ```bash
 pnpm db:migrate
 ```
 
 **Seed the database**
+
 ```bash
 pnpm db:seed
 ```
@@ -172,6 +184,7 @@ The app uses NextAuth with email-based authentication via Resend:
 ## Database Schema
 
 Key tables:
+
 - `users` - User accounts
 - `accounts` - OAuth/email account details
 - `sessions` - User sessions

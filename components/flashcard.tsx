@@ -2,7 +2,9 @@
 
 import { cn } from '@/lib/utils'
 import { AnimatePresence, motion } from 'framer-motion'
+
 import { useCallback, useEffect, useState } from 'react'
+
 import { Card, CardContent } from '@/components/ui/card'
 
 interface FlashcardProps {
@@ -13,11 +15,11 @@ interface FlashcardProps {
 }
 
 export function Flashcard({
-                              vorderseite,
-                              rückseite,
-                              onRating,
-                              className,
-                          }: FlashcardProps) {
+    vorderseite,
+    rückseite,
+    onRating,
+    className,
+}: FlashcardProps) {
     const [isFlipped, setIsFlipped] = useState(false)
     const [isFlipping, setIsFlipping] = useState(false)
 

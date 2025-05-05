@@ -1,10 +1,13 @@
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import { getDifficultCards } from '@/db/utils'
-import LernModusClient from '@/app/learn/[kategorie]/lern-modus-client'
-import { Button } from '@/components/ui/button'
-import Link from 'next/link'
+import { authOptions } from '@/lib/auth'
 import { ArrowLeft } from 'lucide-react'
+
+import { getServerSession } from 'next-auth'
+import Link from 'next/link'
+
+import LernModusClient from '@/app/learn/[kategorie]/lern-modus-client'
+
+import { Button } from '@/components/ui/button'
 
 export default async function DifficultCardsPage() {
     const session = await getServerSession(authOptions)

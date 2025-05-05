@@ -13,7 +13,7 @@ import LernModusClient from './lern-modus-client'
 export default async function LernSeite({
     params,
 }: {
-    params: { kategorie: string }
+    params: Promise<{ kategorie: string }>
 }) {
     const { kategorie } = await params
 

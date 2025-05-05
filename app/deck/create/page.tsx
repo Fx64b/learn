@@ -1,15 +1,19 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { ArrowLeft } from 'lucide-react'
 import { toast } from 'sonner'
+
+import { useState } from 'react'
+
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+
 import { createDeck } from '@/app/actions/deck'
+
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { ArrowLeft } from 'lucide-react'
-import Link from 'next/link'
 
 export default function CreateDeckPage() {
     const router = useRouter()
@@ -64,7 +68,7 @@ export default function CreateDeckPage() {
                                 id="titel"
                                 value={formData.titel}
                                 onChange={(e) =>
-                                    setFormData(prev => ({
+                                    setFormData((prev) => ({
                                         ...prev,
                                         titel: e.target.value,
                                     }))
@@ -75,12 +79,14 @@ export default function CreateDeckPage() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="beschreibung">Beschreibung (optional)</Label>
+                            <Label htmlFor="beschreibung">
+                                Beschreibung (optional)
+                            </Label>
                             <Input
                                 id="beschreibung"
                                 value={formData.beschreibung}
                                 onChange={(e) =>
-                                    setFormData(prev => ({
+                                    setFormData((prev) => ({
                                         ...prev,
                                         beschreibung: e.target.value,
                                     }))
@@ -95,7 +101,7 @@ export default function CreateDeckPage() {
                                 id="kategorie"
                                 value={formData.kategorie}
                                 onChange={(e) =>
-                                    setFormData(prev => ({
+                                    setFormData((prev) => ({
                                         ...prev,
                                         kategorie: e.target.value,
                                     }))
@@ -110,7 +116,9 @@ export default function CreateDeckPage() {
                                 <Link href="/">Abbrechen</Link>
                             </Button>
                             <Button type="submit" disabled={isSubmitting}>
-                                {isSubmitting ? 'Wird erstellt...' : 'Deck erstellen'}
+                                {isSubmitting
+                                    ? 'Wird erstellt...'
+                                    : 'Deck erstellen'}
                             </Button>
                         </div>
                     </form>

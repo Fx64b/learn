@@ -12,7 +12,7 @@ import CardList from './card-list'
 export default async function EditDeckPage({
     params,
 }: {
-    params: { id: string }
+    params: Promise<{ id: string }>
 }) {
     const { id } = await params
     const deck = await getDeckById(id)

@@ -1,7 +1,8 @@
 'use client'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useMemo } from 'react'
+
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface ProgressData {
     date: string
@@ -28,29 +29,32 @@ export function LearningProgressChart({ data }: LearningProgressChartProps) {
                     {chartData.map((day, index) => (
                         <div key={index} className="text-center">
                             <div
-                                className="bg-primary/10 h-32 mb-2 relative rounded"
+                                className="bg-primary/10 relative mb-2 h-32 rounded"
                                 style={{
-                                    backgroundColor: `hsl(var(--primary) / ${day.correctPercentage / 100})`
+                                    backgroundColor: `hsl(var(--primary) / ${day.correctPercentage / 100})`,
                                 }}
                             >
                                 <div
                                     className="bg-primary absolute bottom-0 w-full rounded"
                                     style={{
                                         height: `${(day.cardsReviewed / 20) * 100}%`,
-                                        maxHeight: '100%'
+                                        maxHeight: '100%',
                                     }}
                                 />
                             </div>
                             <div className="text-sm font-medium">
-                                {new Date(day.date).toLocaleDateString('de-DE', { weekday: 'short' })}
+                                {new Date(day.date).toLocaleDateString(
+                                    'de-DE',
+                                    { weekday: 'short' }
+                                )}
                             </div>
-                            <div className="text-xs text-muted-foreground">
+                            <div className="text-muted-foreground text-xs">
                                 {day.cardsReviewed} Karten
                             </div>
                         </div>
                     ))}
                 </div>
-                <div className="mt-4 flex justify-between text-sm text-muted-foreground">
+                <div className="text-muted-foreground mt-4 flex justify-between text-sm">
                     <span>Weniger geübt</span>
                     <span>Mehr geübt</span>
                 </div>

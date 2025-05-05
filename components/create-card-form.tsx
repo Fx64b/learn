@@ -89,7 +89,7 @@ export function CreateCardForm({ deckId }: { deckId: string }) {
                             className="space-y-4"
                         >
                             <div>
-                                <label className="block text-sm font-medium mb-1">
+                                <label className="mb-1 block text-sm font-medium">
                                     Vorderseite
                                 </label>
                                 <Input
@@ -105,7 +105,7 @@ export function CreateCardForm({ deckId }: { deckId: string }) {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium mb-1">
+                                <label className="mb-1 block text-sm font-medium">
                                     Rückseite
                                 </label>
                                 <Textarea

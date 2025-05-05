@@ -1,5 +1,5 @@
 import { calculateNextReview } from '@/lib/srs'
-import {and, desc, eq, isNull, lte, or} from 'drizzle-orm'
+import { and, desc, eq, isNull, lte, or } from 'drizzle-orm'
 import { nanoid } from 'nanoid'
 
 import { db } from './index'
@@ -114,7 +114,7 @@ export async function reviewCard(data: {
                 eq(cardReviews.userId, data.userId)
             )
         )
-        .orderBy(cardReviews.bewertetAm, 'desc')
+        .orderBy(desc(cardReviews.bewertetAm))
         .limit(1)
 
     const previousReview = previousReviews[0]
@@ -196,12 +196,12 @@ export async function getDifficultCards(userId: string) {
 
     // Filter for cards that have been reviewed and are difficult
     return cards
-        .filter(card => {
+        .filter((card) => {
             if (!card.review) return false
             // Card is difficult if ease factor is below 2.5 (250)
             return card.review.easeFaktor < 250
         })
-        .map(card => card.flashcard)
+        .map((card) => card.flashcard)
 }
 
 // Add a function to reset learning progress

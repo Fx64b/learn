@@ -1,8 +1,12 @@
 import { getDueCards, getFlashcardsByDeckId } from '@/db/utils'
-import { authOptions } from './api/auth/[...nextauth]/route'
+import { authOptions } from '@/lib/auth'
+import { Plus } from 'lucide-react'
+
 import { getServerSession } from 'next-auth'
 import Link from 'next/link'
+
 import { getAllDecks } from '@/app/actions/deck'
+
 import { Button } from '@/components/ui/button'
 import {
     Card,
@@ -12,22 +16,21 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card'
-import { Plus } from "lucide-react"
 
 // Add this function to get learned cards
 async function getLearnedCards(userId: string) {
-    const { db } = await import('@/db');
-    const { cardReviews } = await import('@/db/schema');
-    const { eq, sql } = await import('drizzle-orm');
+    const { db } = await import('@/db')
+    const { cardReviews } = await import('@/db/schema')
+    const { eq, sql } = await import('drizzle-orm')
 
     const result = await db
         .select({
-            count: sql<number>`COUNT(DISTINCT ${cardReviews.flashcardId})`
+            count: sql<number>`COUNT(DISTINCT ${cardReviews.flashcardId})`,
         })
         .from(cardReviews)
-        .where(eq(cardReviews.userId, userId));
+        .where(eq(cardReviews.userId, userId))
 
-    return result[0]?.count || 0;
+    return result[0]?.count || 0
 }
 
 export default async function Home() {
@@ -55,10 +58,19 @@ export default async function Home() {
     )
 
     // Calculate overall statistics
-    const totalCardsCount = deckStats.reduce((acc, curr) => acc + curr.totalCards, 0)
-    const totalDueCards = deckStats.reduce((acc, curr) => acc + curr.dueCards, 0)
+    const totalCardsCount = deckStats.reduce(
+        (acc, curr) => acc + curr.totalCards,
+        0
+    )
+    const totalDueCards = deckStats.reduce(
+        (acc, curr) => acc + curr.dueCards,
+        0
+    )
     const learnedCards = session ? await getLearnedCards(session?.user.id) : 0
-    const progress = totalCardsCount > 0 ? Math.round((learnedCards / totalCardsCount) * 100) : 0
+    const progress =
+        totalCardsCount > 0
+            ? Math.round((learnedCards / totalCardsCount) * 100)
+            : 0
 
     return (
         <main className="container mx-auto max-w-5xl px-4 py-6 sm:py-10">
@@ -75,7 +87,9 @@ export default async function Home() {
                 <div className="bg-card rounded-lg border p-4">
                     <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-4">
                         <div className="bg-primary/10 rounded p-3 text-center">
-                            <p className="text-2xl font-bold">{totalCardsCount}</p>
+                            <p className="text-2xl font-bold">
+                                {totalCardsCount}
+                            </p>
                             <p className="text-muted-foreground text-xs">
                                 Karten insgesamt
                             </p>
@@ -87,7 +101,9 @@ export default async function Home() {
                             </p>
                         </div>
                         <div className="rounded bg-yellow-500/10 p-3 text-center">
-                            <p className="text-2xl font-bold">{totalDueCards}</p>
+                            <p className="text-2xl font-bold">
+                                {totalDueCards}
+                            </p>
                             <p className="text-muted-foreground text-xs">
                                 Für heute fällig
                             </p>
@@ -108,7 +124,7 @@ export default async function Home() {
                     <div className="flex gap-2">
                         <Button variant="outline" size="sm" asChild>
                             <Link href="/deck/create">
-                                <Plus className="h-4 w-4 mr-2" />
+                                <Plus className="mr-2 h-4 w-4" />
                                 Neues Deck
                             </Link>
                         </Button>
