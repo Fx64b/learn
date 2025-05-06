@@ -16,7 +16,8 @@ export default async function AllCardsPage() {
         return <div>Please login to view this page</div>
     }
 
-    const allCards = await getAllFlashcards()
+    const allCardsData = await getAllFlashcards(session.user.id)
+    const allCards = allCardsData.map(item => item.flashcards)
 
     return (
         <div className="container mx-auto flex min-h-screen max-w-4xl flex-col px-4 py-6 sm:py-8">
@@ -37,7 +38,7 @@ export default async function AllCardsPage() {
                 <LernModusClient
                     deckId="all"
                     deckTitel="Alle Karten"
-                    flashcards={allCards}
+                    flashcards={allCards || []}
                 />
             </main>
         </div>
