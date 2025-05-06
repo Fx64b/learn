@@ -1,3 +1,5 @@
+'use server'
+
 import { getDueCards, getFlashcardsByDeckId } from '@/db/utils'
 import { authOptions } from '@/lib/auth'
 import { Plus } from 'lucide-react'

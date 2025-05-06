@@ -5,7 +5,6 @@ import { nanoid } from 'nanoid'
 import { db } from './index'
 import { cardReviews, decks, flashcards } from './schema'
 
-// Deck-Funktionen
 export async function getAllDecks(userId: string) {
     return await db.select().from(decks).where(eq(decks.userId, userId))
 }
@@ -84,7 +83,6 @@ export async function createFlashcard(data: {
     return id
 }
 
-// Review-Funktionen
 export async function getDueCards(userId: string) {
     const now = new Date()
 
@@ -98,6 +96,7 @@ export async function getDueCards(userId: string) {
             review: cardReviews,
         })
         .from(flashcards)
+        .innerJoin(decks, eq(flashcards.deckId, decks.id))
         .leftJoin(
             cardReviews,
             and(
@@ -106,9 +105,12 @@ export async function getDueCards(userId: string) {
             )
         )
         .where(
-            or(
-                isNull(cardReviews.nächsteWiederholung),
-                lte(cardReviews.nächsteWiederholung, now)
+            and(
+                eq(decks.userId, userId),
+                or(
+                    isNull(cardReviews.nächsteWiederholung),
+                    lte(cardReviews.nächsteWiederholung, now)
+                )
             )
         )
 
@@ -145,11 +147,9 @@ export async function reviewCard(data: {
         prevEaseFaktor / 100 // Skalieren zu Dezimalzahl
     )
 
-    // Nächstes Wiederholungsdatum berechnen
     const nextReviewDate = new Date()
     nextReviewDate.setDate(nextReviewDate.getDate() + nextInterval)
 
-    // Neue Wiederholung speichern
     const id = nanoid()
     const now = new Date()
     await db.insert(cardReviews).values({
@@ -190,8 +190,12 @@ export async function deleteFlashcard(id: string) {
     await db.delete(flashcards).where(eq(flashcards.id, id))
 }
 
-export async function getAllFlashcards() {
-    return await db.select().from(flashcards)
+export async function getAllFlashcards(userId: string) {
+    return await db
+        .select()
+        .from(flashcards)
+        .innerJoin(decks, eq(flashcards.deckId, decks.id))
+        .where(eq(decks.userId, userId))
 }
 
 export async function getDifficultCards(userId: string) {
@@ -202,6 +206,7 @@ export async function getDifficultCards(userId: string) {
             review: cardReviews,
         })
         .from(flashcards)
+        .innerJoin(decks, eq(flashcards.deckId, decks.id))
         .leftJoin(
             cardReviews,
             and(
@@ -209,6 +214,7 @@ export async function getDifficultCards(userId: string) {
                 eq(cardReviews.userId, userId)
             )
         )
+        .where(eq(decks.userId, userId))
         .orderBy(desc(cardReviews.bewertetAm))
 
     // Filter for cards that have been reviewed and are difficult

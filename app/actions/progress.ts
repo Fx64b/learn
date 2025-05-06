@@ -1,7 +1,7 @@
 'use server'
 
 import { db } from '@/db'
-import { cardReviews, flashcards } from '@/db/schema'
+import { cardReviews, decks, flashcards } from '@/db/schema'
 import { authOptions } from '@/lib/auth'
 import { and, desc, eq, gte, isNull, lte, or, sql } from 'drizzle-orm'
 
@@ -14,6 +14,7 @@ export async function getLearningProgress() {
     if (!session?.user?.id) return null
 
     const userId = session.user.id
+    const now = new Date()
 
     // Get progress data for the last 30 days
     const thirtyDaysAgo = new Date()
@@ -87,13 +88,13 @@ export async function getLearningProgress() {
         .groupBy(sql`difficultyCategory`)
         .orderBy(sql`difficultyCategory DESC`)
 
-    const now = new Date()
     const needsReview = await db
         .select({
             flashcard: flashcards,
             review: cardReviews,
         })
         .from(flashcards)
+        .innerJoin(decks, eq(flashcards.deckId, decks.id))
         .leftJoin(
             cardReviews,
             and(
@@ -102,9 +103,12 @@ export async function getLearningProgress() {
             )
         )
         .where(
-            or(
-                isNull(cardReviews.nächsteWiederholung),
-                lte(cardReviews.nächsteWiederholung, now)
+            and(
+                eq(decks.userId, userId),
+                or(
+                    isNull(cardReviews.nächsteWiederholung),
+                    lte(cardReviews.nächsteWiederholung, now)
+                )
             )
         )
 
