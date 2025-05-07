@@ -6,19 +6,18 @@ import Link from 'next/link'
 
 import { Separator } from '@/components/ui/separator'
 
-function getVersion() {
-    try {
-        const packageJsonPath = join(process.cwd(), 'package.json')
-        const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'))
-        return packageJson.version
-    } catch (error) {
-        console.error('Error reading version:', error)
-        return null
-    }
+let cachedVersion: string | null = null;
+try {
+    const packageJsonPath = join(process.cwd(), 'package.json');
+    const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
+    cachedVersion = packageJson.version;
+} catch (error) {
+    console.error('Error reading version:', error);
+    cachedVersion = null;
 }
 
 export function Footer() {
-    const version = getVersion()
+    const version = cachedVersion;
     const currentYear = new Date().getFullYear()
 
     return (
