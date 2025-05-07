@@ -46,7 +46,7 @@ export function Footer() {
                                 href={"https://github.com/Fx64b/learn/releases/tag/v"+version}
                                 className="hover:text-foreground hover:underline"
                             >
-                                {version}
+                                v{version}
                             </Link>
                             <Separator orientation="vertical" className="h-4" />
                         </>
