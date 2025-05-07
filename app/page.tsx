@@ -1,4 +1,3 @@
-// app/page.tsx (modified version)
 'use server'
 
 import { getDueCards, getFlashcardsByDeckId } from '@/db/utils'
@@ -21,28 +20,6 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card'
-
-// app/page.tsx (modified version)
-
-// app/page.tsx (modified version)
-
-// app/page.tsx (modified version)
-
-// app/page.tsx (modified version)
-
-// app/page.tsx (modified version)
-
-// app/page.tsx (modified version)
-
-// app/page.tsx (modified version)
-
-// app/page.tsx (modified version)
-
-// app/page.tsx (modified version)
-
-// app/page.tsx (modified version)
-
-// app/page.tsx (modified version)
 
 export default async function Home() {
     const session = await getServerSession(authOptions)
