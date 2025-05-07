@@ -13,7 +13,7 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import { updateUserPreferences } from '@/app/actions/preferences'
 
@@ -43,69 +43,61 @@ interface ProfileSettingsProps {
 
 export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const [hasChanges, setHasChanges] = useState(false)
     const userPreferences = useUserPreferences()
 
-    // Initialize from server data
-    useEffect(() => {
-        // Add a check to prevent unnecessary updates
-        if (
-            initialPreferences.animationsEnabled !==
-                userPreferences.animationsEnabled ||
-            initialPreferences.animationSpeed !==
-                userPreferences.animationSpeed ||
-            initialPreferences.animationDirection !==
-                userPreferences.animationDirection ||
-            initialPreferences.theme !== userPreferences.theme
-        ) {
-            userPreferences.setAnimationsEnabled(
-                initialPreferences.animationsEnabled
-            )
-            userPreferences.setAnimationSpeed(initialPreferences.animationSpeed)
-            userPreferences.setAnimationDirection(
-                initialPreferences.animationDirection
-            )
-            userPreferences.setTheme(initialPreferences.theme)
-            setHasChanges(false)
-        }
-    }, [initialPreferences, userPreferences])
+    // Use local state for all form values
+    const [localPrefs, setLocalPrefs] = useState({
+        animationsEnabled: initialPreferences.animationsEnabled,
+        animationSpeed: initialPreferences.animationSpeed,
+        animationDirection: initialPreferences.animationDirection,
+        theme: initialPreferences.theme,
+    })
 
-    // Track changes
-    useEffect(() => {
-        if (
-            initialPreferences.animationsEnabled !==
-                userPreferences.animationsEnabled ||
-            initialPreferences.animationSpeed !==
-                userPreferences.animationSpeed ||
-            initialPreferences.animationDirection !==
-                userPreferences.animationDirection ||
-            initialPreferences.theme !== userPreferences.theme
-        ) {
-            setHasChanges(true)
-        } else {
-            setHasChanges(false)
-        }
-    }, [
-        userPreferences.animationsEnabled,
-        userPreferences.animationSpeed,
-        userPreferences.animationDirection,
-        userPreferences.theme,
-        initialPreferences,
-    ])
+    // Detect changes between initial preferences and current local values
+    const hasChanges =
+        localPrefs.animationsEnabled !== initialPreferences.animationsEnabled ||
+        localPrefs.animationSpeed !== initialPreferences.animationSpeed ||
+        localPrefs.animationDirection !==
+            initialPreferences.animationDirection ||
+        localPrefs.theme !== initialPreferences.theme
+
+    // Update local state handlers
+    const updateAnimationsEnabled = (value: boolean) => {
+        setLocalPrefs((prev) => ({ ...prev, animationsEnabled: value }))
+    }
+
+    const updateAnimationSpeed = (value: number) => {
+        setLocalPrefs((prev) => ({ ...prev, animationSpeed: value }))
+    }
+
+    const updateAnimationDirection = (value: 'horizontal' | 'vertical') => {
+        setLocalPrefs((prev) => ({ ...prev, animationDirection: value }))
+    }
+
+    const updateTheme = (value: 'light' | 'dark' | 'system') => {
+        setLocalPrefs((prev) => ({ ...prev, theme: value }))
+        // We update the theme immediately for better UX
+        userPreferences.setTheme(value)
+    }
 
     const handleSubmit = async () => {
         setIsSubmitting(true)
 
+        // Update the Zustand store with all our local values
+        userPreferences.setAnimationsEnabled(localPrefs.animationsEnabled)
+        userPreferences.setAnimationSpeed(localPrefs.animationSpeed)
+        userPreferences.setAnimationDirection(localPrefs.animationDirection)
+        userPreferences.setTheme(localPrefs.theme)
+
         const result = await updateUserPreferences({
-            animationsEnabled: userPreferences.animationsEnabled,
-            animationSpeed: userPreferences.animationSpeed,
-            animationDirection: userPreferences.animationDirection,
-            theme: userPreferences.theme,
+            animationsEnabled: localPrefs.animationsEnabled,
+            animationSpeed: localPrefs.animationSpeed,
+            animationDirection: localPrefs.animationDirection,
+            theme: localPrefs.theme,
         })
 
         if (result.success) {
             toast.success('Einstellungen gespeichert')
-            setHasChanges(false)
         } else {
             toast.error('Fehler beim Speichern der Einstellungen')
         }
@@ -137,7 +129,7 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
     return (
         <Card className="shadow-sm">
             <CardContent className="p-6">
-                <div className="flex w-full gap-4 space-y-8">
+                <div className="grid w-full grid-cols-1 gap-8 md:grid-cols-2">
                     <div className="w-full space-y-4">
                         <div className="flex items-center gap-2">
                             <Sun className="h-5 w-5 text-amber-500" />
@@ -153,12 +145,8 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
                                     Theme
                                 </Label>
                                 <Select
-                                    value={userPreferences.theme}
-                                    onValueChange={(
-                                        value: 'light' | 'dark' | 'system'
-                                    ) => {
-                                        userPreferences.setTheme(value)
-                                    }}
+                                    value={localPrefs.theme}
+                                    onValueChange={updateTheme}
                                 >
                                     <SelectTrigger
                                         id="theme"
@@ -166,25 +154,20 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
                                     >
                                         <SelectValue placeholder="Wähle ein Theme">
                                             <div className="flex items-center">
-                                                {getThemeIcon(
-                                                    userPreferences.theme
-                                                )}
+                                                {getThemeIcon(localPrefs.theme)}
                                                 <span>
-                                                    {userPreferences.theme ===
+                                                    {localPrefs.theme ===
                                                         'light' && 'Hell'}
-                                                    {userPreferences.theme ===
+                                                    {localPrefs.theme ===
                                                         'dark' && 'Dunkel'}
-                                                    {userPreferences.theme ===
+                                                    {localPrefs.theme ===
                                                         'system' && 'System'}
                                                 </span>
                                             </div>
                                         </SelectValue>
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem
-                                            value="light"
-                                            className="flex items-center"
-                                        >
+                                        <SelectItem value="light">
                                             <div className="flex items-center">
                                                 <Sun className="mr-2 h-4 w-4" />
                                                 <span>Hell</span>
@@ -236,14 +219,12 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
                                 </div>
                                 <Switch
                                     id="animations-enabled"
-                                    checked={userPreferences.animationsEnabled}
-                                    onCheckedChange={
-                                        userPreferences.setAnimationsEnabled
-                                    }
+                                    checked={localPrefs.animationsEnabled}
+                                    onCheckedChange={updateAnimationsEnabled}
                                 />
                             </div>
 
-                            {userPreferences.animationsEnabled && (
+                            {localPrefs.animationsEnabled && (
                                 <div className="bg-muted/50 mt-2 space-y-6 rounded-lg p-4">
                                     <div className="space-y-2">
                                         <div className="flex items-center gap-2">
@@ -259,10 +240,10 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
                                             <Slider
                                                 id="animation-speed"
                                                 value={[
-                                                    userPreferences.animationSpeed,
+                                                    localPrefs.animationSpeed,
                                                 ]}
                                                 onValueChange={(values) =>
-                                                    userPreferences.setAnimationSpeed(
+                                                    updateAnimationSpeed(
                                                         values[0]
                                                     )
                                                 }
@@ -272,7 +253,7 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
                                                 className="flex-1"
                                             />
                                             <span className="text-muted-foreground w-16 text-right font-mono text-sm">
-                                                {userPreferences.animationSpeed}
+                                                {localPrefs.animationSpeed}
                                                 ms
                                             </span>
                                         </div>
@@ -285,7 +266,7 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
                                     <div className="space-y-2">
                                         <div className="flex items-center gap-2">
                                             {getDirectionIcon(
-                                                userPreferences.animationDirection
+                                                localPrefs.animationDirection
                                             )}
                                             <Label
                                                 htmlFor="animation-direction"
@@ -296,14 +277,10 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
                                         </div>
                                         <Select
                                             value={
-                                                userPreferences.animationDirection
+                                                localPrefs.animationDirection
                                             }
-                                            onValueChange={(
-                                                value: 'horizontal' | 'vertical'
-                                            ) =>
-                                                userPreferences.setAnimationDirection(
-                                                    value
-                                                )
+                                            onValueChange={
+                                                updateAnimationDirection
                                             }
                                         >
                                             <SelectTrigger
@@ -313,13 +290,13 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
                                                 <SelectValue placeholder="Richtung">
                                                     <div className="flex items-center">
                                                         {getDirectionIcon(
-                                                            userPreferences.animationDirection
+                                                            localPrefs.animationDirection
                                                         )}
                                                         <span>
-                                                            {userPreferences.animationDirection ===
+                                                            {localPrefs.animationDirection ===
                                                                 'horizontal' &&
                                                                 'Horizontal'}
-                                                            {userPreferences.animationDirection ===
+                                                            {localPrefs.animationDirection ===
                                                                 'vertical' &&
                                                                 'Vertikal'}
                                                         </span>
@@ -351,7 +328,7 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
                         </div>
                     </div>
                 </div>
-                <div className="flex w-full justify-end pt-2">
+                <div className="mt-4 flex w-full justify-end border-t pt-4">
                     <Button
                         onClick={handleSubmit}
                         disabled={isSubmitting || !hasChanges}

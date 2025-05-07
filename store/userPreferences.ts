@@ -1,5 +1,12 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { createJSONStorage, persist } from 'zustand/middleware'
+
+const initialState = {
+    animationsEnabled: false,
+    animationSpeed: 200,
+    animationDirection: 'horizontal' as const,
+    theme: 'dark' as const,
+}
 
 interface UserPreferencesState {
     animationsEnabled: boolean
@@ -15,19 +22,24 @@ interface UserPreferencesState {
 export const useUserPreferences = create<UserPreferencesState>()(
     persist(
         (set) => ({
-            animationsEnabled: false,
-            animationSpeed: 200,
-            animationDirection: 'horizontal',
-            theme: 'dark',
-            setAnimationsEnabled: (enabled) =>
-                set({ animationsEnabled: enabled }),
-            setAnimationSpeed: (speed) => set({ animationSpeed: speed }),
+            ...initialState,
+            setAnimationsEnabled: (enabled) => {
+                console.log('Store: Setting animationsEnabled to:', enabled)
+                set((state) => ({
+                    ...state,
+                    animationsEnabled: enabled,
+                }))
+            },
+            setAnimationSpeed: (speed) =>
+                set((state) => ({ ...state, animationSpeed: speed })),
             setAnimationDirection: (direction) =>
-                set({ animationDirection: direction }),
-            setTheme: (theme) => set({ theme }),
+                set((state) => ({ ...state, animationDirection: direction })),
+            setTheme: (theme) => set((state) => ({ ...state, theme })),
         }),
         {
             name: 'user-preferences',
+            version: 1,
+            storage: createJSONStorage(() => localStorage),
         }
     )
 )

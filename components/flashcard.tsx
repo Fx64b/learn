@@ -64,6 +64,15 @@ export function Flashcard({
     }, [isFlipped, onRating, flipCard])
 
     const getAnimationVariants = () => {
+        // If animations are disabled, return empty variants
+        if (!animationsEnabled) {
+            return {
+                initial: {},
+                animate: {},
+                exit: {},
+            }
+        }
+
         if (animationDirection === 'vertical') {
             return {
                 initial: { opacity: 0, y: -50 },
@@ -95,14 +104,21 @@ export function Flashcard({
             }
             aria-pressed={isFlipped}
         >
-            <AnimatePresence mode="wait" initial={false}>
+            <AnimatePresence
+                mode={animationsEnabled ? 'wait' : 'sync'}
+                initial={false}
+            >
                 {!isFlipped ? (
                     <motion.div
                         key="front"
                         initial={variants.initial}
                         animate={variants.animate}
                         exit={variants.exit}
-                        transition={{ duration: animationSpeed / 1000 }}
+                        transition={{
+                            duration: animationsEnabled
+                                ? animationSpeed / 1000
+                                : 0,
+                        }}
                         className="absolute inset-0"
                     >
                         <Card className="h-full w-full shadow-md transition-shadow hover:shadow-lg">
@@ -127,7 +143,11 @@ export function Flashcard({
                         initial={variants.initial}
                         animate={variants.animate}
                         exit={variants.exit}
-                        transition={{ duration: animationSpeed / 1000 }}
+                        transition={{
+                            duration: animationsEnabled
+                                ? animationSpeed / 1000
+                                : 0,
+                        }}
                         className="absolute inset-0 h-fit min-h-full"
                     >
                         <Card className="border-primary/30 h-full w-full border-2 shadow-md">

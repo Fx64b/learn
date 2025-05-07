@@ -52,13 +52,12 @@ export default async function ProfilePage() {
                     Mein Profil
                 </h1>
                 <p className="text-muted-foreground">
-                    Hier kannst du deine Einstellungen anpassen und deinen
-                    Lernfortschritt einsehen.
+                    <b>Email:</b> {session.user.email}
                 </p>
             </div>
 
             <Tabs defaultValue="settings" className="space-y-6">
-                <TabsList className="grid w-full max-w-md grid-cols-2">
+                <TabsList className="grid h-fit w-full max-w-md grid-cols-2">
                     <TabsTrigger
                         value="settings"
                         className="flex items-center gap-2"

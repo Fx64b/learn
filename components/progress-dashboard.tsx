@@ -99,6 +99,9 @@ export function ProgressDashboard({ data }: ProgressDashboardProps) {
                             </div>
                             <TrendingUp className="ml-2 h-4 w-4 text-green-500" />
                         </div>
+                        <p className="text-muted-foreground text-xs">
+                            Prozentual richtig
+                        </p>
                     </CardContent>
                 </Card>
 
