@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react'
 
+import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface StudyTimeAnalysisProps {
@@ -73,7 +74,9 @@ export function StudyTimeAnalysis({ rawData }: StudyTimeAnalysisProps) {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Lernzeiten-Analyse</CardTitle>
+                <CardTitle className="flex justify-between">
+                    Lernzeiten-Analyse <Badge variant="outline">Beta</Badge>
+                </CardTitle>
             </CardHeader>
             <CardContent>
                 {data.length === 0 ||

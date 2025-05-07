@@ -69,3 +69,21 @@ export const studySessions = sqliteTable('study_sessions', {
         .default(sql`CURRENT_TIMESTAMP`)
         .notNull(),
 })
+
+export const userPreferences = sqliteTable('user_preferences', {
+    userId: text('user_id')
+        .notNull()
+        .references(() => users.id)
+        .primaryKey(),
+    animationsEnabled: integer('animations_enabled', { mode: 'boolean' })
+        .notNull()
+        .default(false),
+    animationSpeed: integer('animation_speed').notNull().default(200),
+    animationDirection: text('animation_direction')
+        .notNull()
+        .default('horizontal'),
+    theme: text('theme').notNull().default('dark'),
+    updatedAt: integer('updated_at', { mode: 'timestamp' })
+        .default(sql`CURRENT_TIMESTAMP`)
+        .notNull(),
+})

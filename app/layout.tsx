@@ -8,14 +8,15 @@ import { Analytics } from '@vercel/analytics/react'
 import { AuthProvider } from '@/components/auth-provider'
 import { Header } from '@/components/header'
 import { RateLimitStatus } from '@/components/rate-limit-status'
+import { ThemeProvider } from '@/components/theme-provider'
 
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-    title: 'Allgemeinbildung Lernkarten',
-    description: 'Lernkarten-App für die  Allgemeinbildungsprüfung',
+    title: 'Flashcard App',
+    description: 'A simple flashcard app with spaced repetition.',
 }
 
 export default function RootLayout({
@@ -24,19 +25,21 @@ export default function RootLayout({
     children: React.ReactNode
 }) {
     return (
-        <html lang="de" className="dark">
+        <html lang="de" suppressHydrationWarning>
             <body
                 className={`${inter.className} bg-background text-foreground min-h-screen antialiased`}
             >
                 <AuthProvider>
-                    <Header />
-                    {process.env.NODE_ENV === 'development' && (
-                        <div className="container mx-auto max-w-5xl px-4 py-2">
-                            <RateLimitStatus />
-                        </div>
-                    )}
-                    <main>{children}</main>
-                    <Toaster position="top-right" />
+                    <ThemeProvider>
+                        <Header />
+                        {process.env.NODE_ENV === 'development' && (
+                            <div className="container mx-auto max-w-5xl px-4 py-2">
+                                <RateLimitStatus />
+                            </div>
+                        )}
+                        <main>{children}</main>
+                        <Toaster position="top-right" />
+                    </ThemeProvider>
                 </AuthProvider>
                 <Analytics />
             </body>

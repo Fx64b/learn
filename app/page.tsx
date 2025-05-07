@@ -1,3 +1,4 @@
+// app/page.tsx (modified version)
 'use server'
 
 import { getDueCards, getFlashcardsByDeckId } from '@/db/utils'
@@ -10,7 +11,7 @@ import Link from 'next/link'
 import { getAllDecks } from '@/app/actions/deck'
 import { getLearningProgress } from '@/app/actions/progress'
 
-import { ProgressDashboard } from '@/components/progress-dashboard'
+import { SimpleProgressDashboard } from '@/components/simple-progress-dashboard'
 import { Button } from '@/components/ui/button'
 import {
     Card,
@@ -20,6 +21,16 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card'
+
+// app/page.tsx (modified version)
+
+// app/page.tsx (modified version)
+
+// app/page.tsx (modified version)
+
+// app/page.tsx (modified version)
+
+// app/page.tsx (modified version)
 
 export default async function Home() {
     const session = await getServerSession(authOptions)
@@ -54,10 +65,17 @@ export default async function Home() {
             </div>
 
             <div className="mb-6">
-                <h2 className="mb-4 text-xl font-semibold">Lernstatistik</h2>
+                <div className="mb-4 flex items-center justify-between">
+                    <h2 className="text-xl font-semibold">Lernstatistik</h2>
+                    <Link href="/profile">
+                        <Button variant="ghost" size="sm">
+                            Mein Profil
+                        </Button>
+                    </Link>
+                </div>
                 <div className="bg-card rounded-lg border p-4">
                     {progressData ? (
-                        <ProgressDashboard data={progressData} />
+                        <SimpleProgressDashboard data={progressData} />
                     ) : (
                         <div className="text-muted-foreground py-8 text-center">
                             <p>

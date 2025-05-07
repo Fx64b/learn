@@ -1,6 +1,7 @@
 'use client'
 
 import { cn } from '@/lib/utils'
+import { useUserPreferences } from '@/store/userPreferences'
 import { AnimatePresence, motion } from 'framer-motion'
 
 import { useCallback, useEffect, useState } from 'react'
@@ -12,8 +13,6 @@ interface FlashcardProps {
     rückseite: string
     onRating?: (rating: number) => void
     className?: string
-    animationSpeed?: number
-    animationDirection?: 'horizontal' | 'vertical'
 }
 
 export function Flashcard({
@@ -21,19 +20,23 @@ export function Flashcard({
     rückseite,
     onRating,
     className,
-    animationSpeed = 200,
-    animationDirection = 'horizontal',
 }: FlashcardProps) {
     const [isFlipped, setIsFlipped] = useState(false)
     const [isFlipping, setIsFlipping] = useState(false)
+
+    const { animationsEnabled, animationSpeed, animationDirection } =
+        useUserPreferences()
 
     const flipCard = useCallback(() => {
         if (!isFlipping) {
             setIsFlipping(true)
             setIsFlipped(!isFlipped)
-            setTimeout(() => setIsFlipping(false), animationSpeed)
+            setTimeout(
+                () => setIsFlipping(false),
+                animationsEnabled ? animationSpeed : 0
+            )
         }
-    }, [isFlipping, isFlipped, animationSpeed])
+    }, [isFlipping, isFlipped, animationSpeed, animationsEnabled])
 
     // Enhanced keyboard handler
     useEffect(() => {
