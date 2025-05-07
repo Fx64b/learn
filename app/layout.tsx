@@ -11,6 +11,7 @@ import { RateLimitStatus } from '@/components/rate-limit-status'
 import { ThemeProvider } from '@/components/theme-provider'
 
 import './globals.css'
+import {Footer} from "@/components/Footer";
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -27,7 +28,7 @@ export default function RootLayout({
     return (
         <html lang="de" suppressHydrationWarning>
             <body
-                className={`${inter.className} bg-background text-foreground min-h-screen antialiased`}
+                className={`${inter.className} bg-background text-foreground antialiased`}
             >
                 <AuthProvider>
                     <ThemeProvider>
@@ -37,7 +38,8 @@ export default function RootLayout({
                                 <RateLimitStatus />
                             </div>
                         )}
-                        <main>{children}</main>
+                        <main className="min-h-screen">{children}</main>
+                        <Footer />
                         <Toaster position="top-right" />
                     </ThemeProvider>
                 </AuthProvider>
