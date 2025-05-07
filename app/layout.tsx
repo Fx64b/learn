@@ -11,6 +11,7 @@ import { RateLimitStatus } from '@/components/rate-limit-status'
 import { ThemeProvider } from '@/components/theme-provider'
 
 import './globals.css'
+import {Footer} from "@/components/Footer";
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -38,6 +39,7 @@ export default function RootLayout({
                             </div>
                         )}
                         <main>{children}</main>
+                        <Footer />
                         <Toaster position="top-right" />
                     </ThemeProvider>
                 </AuthProvider>
