@@ -11,7 +11,7 @@ import { RateLimitStatus } from '@/components/rate-limit-status'
 import { ThemeProvider } from '@/components/theme-provider'
 
 import './globals.css'
-import {Footer} from "@/components/Footer";
+import {Footer} from "@/components/footer";
 
 const inter = Inter({ subsets: ['latin'] })
 
