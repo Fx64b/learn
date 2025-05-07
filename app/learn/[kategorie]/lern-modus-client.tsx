@@ -1,7 +1,7 @@
 'use client'
 
 import { type FlashcardType } from '@/types'
-import { Clock, RotateCw, Settings2 } from 'lucide-react'
+import { Clock, RotateCw } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -13,15 +13,6 @@ import { saveStudySession } from '@/app/actions/study-session'
 
 import { Flashcard } from '@/components/flashcard'
 import { Button } from '@/components/ui/button'
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select'
-import { Slider } from '@/components/ui/slider'
-import { Switch } from '@/components/ui/switch'
 
 interface LernModusClientProps {
     deckId: string
@@ -43,7 +34,6 @@ export default function LernModusClient({
     // Session tracking
     const [startTime, setStartTime] = useState(new Date())
     const [studyTime, setStudyTime] = useState(0)
-    const [showSettings, setShowSettings] = useState(false)
     const [isTimerRunning, setIsTimerRunning] = useState(true)
     const [hasUnsavedSession, setHasUnsavedSession] = useState(true)
     const sessionDataRef = useRef({
@@ -53,13 +43,6 @@ export default function LernModusClient({
         deckId,
         hasUnsavedSession,
     })
-
-    // Animation settings
-    const [animationSpeed, setAnimationSpeed] = useState(200) // ms
-    const [animationDirection, setAnimationDirection] = useState<
-        'horizontal' | 'vertical'
-    >('horizontal')
-    const [animationsEnabled, setAnimationsEnabled] = useState(false)
 
     useEffect(() => {
         sessionDataRef.current = {
@@ -258,17 +241,8 @@ export default function LernModusClient({
 
     return (
         <>
-            {/* Study session header with timer and settings */}
             <div className="mb-6 flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                    <Button
-                        className="hidden md:inline-flex"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setShowSettings(!showSettings)}
-                    >
-                        <Settings2 className="h-5 w-5" />
-                    </Button>
                     <Button
                         className="h-10 w-10 md:h-5 md:w-5"
                         variant="ghost"
@@ -284,72 +258,6 @@ export default function LernModusClient({
                 </div>
             </div>
 
-            {/* Settings panel */}
-            {showSettings && (
-                <div className="bg-card mb-6 rounded-lg border p-4">
-                    <h3 className="mb-3 text-sm font-semibold">
-                        Animations-Einstellungen
-                    </h3>
-                    <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                            <label className="text-sm">
-                                Animationen aktivieren
-                            </label>
-                            <Switch
-                                checked={animationsEnabled}
-                                onCheckedChange={setAnimationsEnabled}
-                            />
-                        </div>
-                        {animationsEnabled && (
-                            <>
-                                <div>
-                                    <label className="text-sm">
-                                        Geschwindigkeit
-                                    </label>
-                                    <div className="mt-2 flex items-center gap-4">
-                                        <Slider
-                                            value={[animationSpeed]}
-                                            onValueChange={([value]) =>
-                                                setAnimationSpeed(value)
-                                            }
-                                            max={500}
-                                            min={100}
-                                            step={50}
-                                            className="w-32"
-                                        />
-                                        <p className="text-muted-foreground w-12 text-xs">
-                                            {animationSpeed}ms
-                                        </p>
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="text-sm">Richtung</label>
-                                    <Select
-                                        value={animationDirection}
-                                        onValueChange={(
-                                            value: 'horizontal' | 'vertical'
-                                        ) => setAnimationDirection(value)}
-                                    >
-                                        <SelectTrigger className="mt-2 w-48">
-                                            <SelectValue placeholder="Animations-Richtung" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="horizontal">
-                                                Horizontal
-                                            </SelectItem>
-                                            <SelectItem value="vertical">
-                                                Vertikal
-                                            </SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </>
-                        )}
-                    </div>
-                </div>
-            )}
-
-            {/* Enhanced progress display */}
             <div className="mb-6">
                 <div className="mb-2 flex items-center justify-between">
                     <div className="text-lg font-semibold">
@@ -375,8 +283,6 @@ export default function LernModusClient({
                         rückseite={flashcards[aktuellerIndex].rückseite}
                         onRating={handleBewertung}
                         className="w-full max-w-2xl"
-                        animationSpeed={animationsEnabled ? animationSpeed : 0}
-                        animationDirection={animationDirection}
                     />
                 )}
 

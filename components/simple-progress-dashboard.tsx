@@ -5,13 +5,10 @@ import { Calendar, Clock, TrendingUp } from 'lucide-react'
 
 import Link from 'next/link'
 
-import { StudyTimeAnalysis } from '@/components/study-time-analysis'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-import { LearningProgressChart } from './learning-progress-chart'
-
-interface ProgressDashboardProps {
+interface SimpleProgressDashboardProps {
     data: {
         dailyProgress: ProgressData[]
         totalReviews: number
@@ -42,18 +39,19 @@ interface ProgressDashboardProps {
                 nächsteWiederholung: Date
             } | null
         }>
-        timeOfDay: {
-            rawData: Array<{
-                startTime: number
-                sessions: number
-                cardsTotal: number
-                avgCards: number
-            }>
-        }
     }
 }
 
-export function ProgressDashboard({ data }: ProgressDashboardProps) {
+export function SimpleProgressDashboard({
+    data,
+}: SimpleProgressDashboardProps) {
+    const last7DaysData = data.dailyProgress.slice(-7)
+
+    const cardsLearned7Days = last7DaysData.reduce(
+        (total, day) => total + day.cardsReviewed,
+        0
+    )
+
     const successRate =
         data.totalReviews > 0
             ? Math.round((data.totalCorrect / data.totalReviews) * 100)
@@ -68,20 +66,19 @@ export function ProgressDashboard({ data }: ProgressDashboardProps) {
 
     return (
         <div className="space-y-6">
-            {/* Overview Stats */}
             <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
                 <Card>
                     <CardHeader className="pb-2">
                         <CardTitle className="text-sm font-medium">
-                            Gesamte Wiederholungen
+                            Letzte 7 Tage
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">
-                            {data.totalReviews}
+                            {cardsLearned7Days}
                         </div>
                         <p className="text-muted-foreground text-xs">
-                            {data.totalCorrect} richtig beantwortet
+                            Karten wiederholt
                         </p>
                     </CardContent>
                 </Card>
@@ -151,11 +148,48 @@ export function ProgressDashboard({ data }: ProgressDashboardProps) {
                 </Card>
             </div>
 
-            {/* Learning Progress Chart */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <LearningProgressChart data={data.dailyProgress} />
+            <div className="flex w-full gap-4">
+                <Card className="w-full">
+                    <CardHeader>
+                        <CardTitle>Aktivität letzte 7 Tage</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid grid-cols-7 gap-2">
+                            {last7DaysData.map((day, index) => (
+                                <div key={index} className="text-center">
+                                    <div
+                                        className="bg-primary/10 relative mb-2 h-24 rounded"
+                                        style={{
+                                            backgroundColor: `hsl(var(--primary) / ${day.correctPercentage / 100})`,
+                                        }}
+                                    >
+                                        <div
+                                            className="bg-primary absolute bottom-0 w-full rounded"
+                                            style={{
+                                                height: `${(day.cardsReviewed / Math.max(...last7DaysData.map((d) => d.cardsReviewed || 1))) * 100}%`,
+                                                minHeight:
+                                                    day.cardsReviewed > 0
+                                                        ? '2px'
+                                                        : '0px',
+                                            }}
+                                        />
+                                    </div>
+                                    <div className="text-sm font-medium">
+                                        {new Date(day.date).toLocaleDateString(
+                                            'de-DE',
+                                            { weekday: 'short' }
+                                        )}
+                                    </div>
+                                    <div className="text-muted-foreground text-xs">
+                                        {day.cardsReviewed} Karten
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>
 
-                <Card>
+                <Card className="w-full">
                     <CardHeader>
                         <CardTitle>Karten nach Schwierigkeit</CardTitle>
                     </CardHeader>
@@ -213,8 +247,6 @@ export function ProgressDashboard({ data }: ProgressDashboardProps) {
                     </CardContent>
                 </Card>
             </div>
-
-            <StudyTimeAnalysis rawData={data.timeOfDay.rawData} />
         </div>
     )
 }
