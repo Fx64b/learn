@@ -1,4 +1,5 @@
 import { authOptions } from '@/lib/auth'
+import { BarChart2, UserCircle } from 'lucide-react'
 
 import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
@@ -8,6 +9,7 @@ import { getLearningProgress } from '@/app/actions/progress'
 
 import { ProfileSettings } from '@/components/profile-settings'
 import { ProgressDashboard } from '@/components/progress-dashboard'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 function ensureValidDirection(direction: unknown): 'horizontal' | 'vertical' {
     if (direction === 'horizontal' || direction === 'vertical') {
@@ -44,32 +46,60 @@ export default async function ProfilePage() {
     }
 
     return (
-        <div className="container mx-auto max-w-5xl px-4 py-6 sm:py-10">
-            <div className="mb-8">
-                <h1 className="mb-2 text-3xl font-bold">Mein Profil</h1>
+        <div className="container mx-auto max-w-5xl px-4 py-8 sm:py-12">
+            <div className="mb-8 space-y-2">
+                <h1 className="text-3xl font-bold tracking-tight">
+                    Mein Profil
+                </h1>
                 <p className="text-muted-foreground">
                     Hier kannst du deine Einstellungen anpassen und deinen
                     Lernfortschritt einsehen.
                 </p>
             </div>
 
-            <div className="mb-8">
-                <h2 className="mb-4 text-xl font-semibold">Einstellungen</h2>
-                <ProfileSettings initialPreferences={preferences} />
-            </div>
+            <Tabs defaultValue="settings" className="space-y-6">
+                <TabsList className="grid w-full max-w-md grid-cols-2">
+                    <TabsTrigger
+                        value="settings"
+                        className="flex items-center gap-2"
+                    >
+                        <UserCircle className="h-4 w-4" />
+                        <span>Einstellungen</span>
+                    </TabsTrigger>
+                    <TabsTrigger
+                        value="progress"
+                        className="flex items-center gap-2"
+                    >
+                        <BarChart2 className="h-4 w-4" />
+                        <span>Lernstatistik</span>
+                    </TabsTrigger>
+                </TabsList>
 
-            <div className="mb-6">
-                <h2 className="mb-4 text-xl font-semibold">Lernstatistik</h2>
-                <div className="bg-card rounded-lg border p-4">
-                    {progressData ? (
-                        <ProgressDashboard data={progressData} />
-                    ) : (
-                        <div className="text-muted-foreground py-8 text-center">
-                            <p>Noch keine Lerndaten verfügbar.</p>
-                        </div>
-                    )}
-                </div>
-            </div>
+                <TabsContent value="settings" className="space-y-4">
+                    <ProfileSettings initialPreferences={preferences} />
+                </TabsContent>
+
+                <TabsContent value="progress" className="space-y-4">
+                    <div className="bg-card rounded-lg border p-6 shadow-sm">
+                        {progressData ? (
+                            <ProgressDashboard data={progressData} />
+                        ) : (
+                            <div className="flex flex-col items-center justify-center py-12 text-center">
+                                <div className="bg-muted mb-4 rounded-full p-3">
+                                    <BarChart2 className="text-muted-foreground h-6 w-6" />
+                                </div>
+                                <p className="text-muted-foreground">
+                                    Noch keine Lerndaten verfügbar.
+                                </p>
+                                <p className="text-muted-foreground mt-2 text-sm">
+                                    Beginne mit dem Lernen, um hier deinen
+                                    Fortschritt zu sehen.
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </TabsContent>
+            </Tabs>
         </div>
     )
 }
