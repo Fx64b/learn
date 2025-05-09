@@ -189,12 +189,12 @@ export default function LernModusClient({
 
     if (flashcards.length === 0) {
         return (
-            <div className="flex flex-1 flex-col items-center justify-center gap-4 py-8">
+            <div className="flex flex-1 flex-col items-center justify-start gap-4 py-8">
                 <h2 className="mb-2 text-xl font-semibold">
-                    Keine Karten verfügbar
+                   Sieht so aus, als hättest du schon alles gelernt!
                 </h2>
                 <p className="text-muted-foreground mb-4 text-center">
-                    Für diese Kategorie wurden noch keine Karten hinzugefügt.
+                    Für diese Kategorie sind keine Karten verfügbar.
                 </p>
                 <Button asChild>
                     <Link href="/">Zurück zur Übersicht</Link>
@@ -205,7 +205,7 @@ export default function LernModusClient({
 
     if (istLernprozessAbgeschlossen) {
         return (
-            <div className="flex flex-1 flex-col items-center justify-center gap-4 py-8">
+            <div className="flex flex-1 flex-col items-center justify-start gap-4 py-8">
                 <h2 className="mb-2 text-xl font-semibold">
                     Lerneinheit abgeschlossen!
                 </h2>
@@ -216,7 +216,7 @@ export default function LernModusClient({
                 <p className="text-muted-foreground mb-4 text-sm">
                     Lernzeit: {formatTime(studyTime)}
                 </p>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap justify-center gap-4 md:gap-2">
                     <Button
                         variant="outline"
                         onClick={() => {
@@ -231,7 +231,7 @@ export default function LernModusClient({
                     <Button variant="outline" onClick={shuffleCards}>
                         Gemischt wiederholen
                     </Button>
-                    <Button asChild>
+                    <Button>
                         <Link href="/">Zurück zur Übersicht</Link>
                     </Button>
                 </div>
