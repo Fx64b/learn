@@ -35,11 +35,7 @@ export default async function AllCardsPage() {
             </header>
 
             <main className="flex flex-1 flex-col">
-                <LernModusClient
-                    deckId="all"
-                    deckTitel="Alle Karten"
-                    flashcards={allCards || []}
-                />
+                <LernModusClient deckId="all" flashcards={allCards || []} />
             </main>
         </div>
     )

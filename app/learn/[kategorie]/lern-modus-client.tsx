@@ -16,15 +16,13 @@ import { Button } from '@/components/ui/button'
 
 interface LernModusClientProps {
     deckId: string
-    deckTitel: string
     flashcards: FlashcardType[]
 }
 
 export default function LernModusClient({
-    deckId,
-    deckTitel, // eslint-disable-line @typescript-eslint/no-unused-vars
-    flashcards: initialFlashcards,
-}: LernModusClientProps) {
+                                            deckId,
+                                            flashcards: initialFlashcards,
+                                        }: LernModusClientProps) {
     const [flashcards, setFlashcards] = useState(initialFlashcards)
     const [aktuellerIndex, setAktuellerIndex] = useState(0)
     const [fortschritt, setFortschritt] = useState(0)
@@ -36,13 +34,18 @@ export default function LernModusClient({
     const [studyTime, setStudyTime] = useState(0)
     const [isTimerRunning, setIsTimerRunning] = useState(true)
     const [hasUnsavedSession, setHasUnsavedSession] = useState(true)
+    const [isSaving, setIsSaving] = useState(false)
+    const [currentSessionId, setCurrentSessionId] = useState<string | null>(null)
+
     const sessionDataRef = useRef({
         startTime,
         studyTime,
         aktuellerIndex,
         deckId,
         hasUnsavedSession,
+        currentSessionId,
     })
+    const autoSaveIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
     useEffect(() => {
         sessionDataRef.current = {
@@ -51,12 +54,75 @@ export default function LernModusClient({
             aktuellerIndex,
             deckId,
             hasUnsavedSession,
+            currentSessionId,
         }
-    }, [startTime, studyTime, aktuellerIndex, deckId, hasUnsavedSession])
+    }, [startTime, studyTime, aktuellerIndex, deckId, hasUnsavedSession, currentSessionId])
 
-    // Timer effect
+    const saveCurrentSession = useCallback(async (isCompleted: boolean) => {
+        if (isSaving) return // Prevent concurrent saves
+
+        setIsSaving(true)
+        try {
+            const endTime = new Date()
+            const duration = studyTime || Date.now() - startTime.getTime()
+
+            const sessionData: {
+                id?: string
+                deckId: string
+                startTime: Date
+                endTime: Date
+                duration: number
+                cardsReviewed: number
+                isCompleted: boolean
+            } = {
+                deckId: deckId,
+                startTime: startTime,
+                endTime: endTime,
+                duration: duration,
+                cardsReviewed: aktuellerIndex,
+                isCompleted: isCompleted,
+            }
+
+            if (currentSessionId) {
+                sessionData.id = currentSessionId
+            }
+
+            const result = await saveStudySession(sessionData)
+
+            if (result.success) {
+                setHasUnsavedSession(false)
+                if (result.id && !currentSessionId) {
+                    console.log('Setting new session ID:', result.id)
+                    setCurrentSessionId(result.id)
+                }
+            } else {
+                console.error('Failed to save session:', result.error)
+            }
+        } catch (error) {
+            console.error('Error saving session:', error)
+        } finally {
+            setIsSaving(false)
+        }
+    }, [deckId, startTime, studyTime, aktuellerIndex, currentSessionId, isSaving])
+
     useEffect(() => {
         let timer: NodeJS.Timeout | null = null
+
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                // User left the page - pause timer
+                if (timer) clearInterval(timer)
+                setIsTimerRunning(false)
+                if (hasUnsavedSession && !isSaving) {
+                    saveCurrentSession(false)
+                }
+            } else {
+                // User is back - resume timer if not completed
+                if (!istLernprozessAbgeschlossen) {
+                    setIsTimerRunning(true)
+                }
+            }
+        }
 
         if (isTimerRunning) {
             timer = setInterval(() => {
@@ -64,50 +130,51 @@ export default function LernModusClient({
             }, 1000)
         }
 
+        document.addEventListener('visibilitychange', handleVisibilityChange)
+
         return () => {
             if (timer) clearInterval(timer)
+            document.removeEventListener('visibilitychange', handleVisibilityChange)
         }
-    }, [startTime, isTimerRunning])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [startTime, isTimerRunning, istLernprozessAbgeschlossen, hasUnsavedSession, isSaving])
 
-    // Update progress
     useEffect(() => {
         if (flashcards.length > 0) {
-            setFortschritt(
-                Math.round((aktuellerIndex / flashcards.length) * 100)
-            )
+            setFortschritt(Math.round((aktuellerIndex / flashcards.length) * 100))
         }
     }, [aktuellerIndex, flashcards.length])
 
-    // Save session on completion
     useEffect(() => {
         if (istLernprozessAbgeschlossen) {
             setIsTimerRunning(false)
             saveCurrentSession(true)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [istLernprozessAbgeschlossen])
 
-    const saveCurrentSession = useCallback(
-        async (isCompleted: boolean) => {
-            const endTime = new Date()
-            const duration = studyTime || Date.now() - startTime.getTime()
+    useEffect(() => {
+        if (autoSaveIntervalRef.current) {
+            clearInterval(autoSaveIntervalRef.current)
+        }
 
-            const result = await saveStudySession({
-                deckId: deckId,
-                startTime: startTime,
-                endTime: endTime,
-                duration: duration,
-                cardsReviewed: aktuellerIndex,
-                isCompleted: isCompleted,
-            })
-
-            if (result.success) {
-                setHasUnsavedSession(false)
+        // Create new auto-save
+        autoSaveIntervalRef.current = setInterval(() => {
+            if (hasUnsavedSession && !isSaving && !istLernprozessAbgeschlossen) {
+                console.log('Auto-save triggered')
+                saveCurrentSession(false)
             }
-        },
-        [deckId, startTime, studyTime, aktuellerIndex]
-    )
+        }, 20000) // Auto-save every 20 seconds
 
-    // Format study time
+        // Cleanup on unmount
+        return () => {
+            if (autoSaveIntervalRef.current) {
+                clearInterval(autoSaveIntervalRef.current)
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [hasUnsavedSession, isSaving, istLernprozessAbgeschlossen])
+
     const formatTime = (ms: number) => {
         const seconds = Math.floor(ms / 1000)
         const minutes = Math.floor(seconds / 60)
@@ -115,17 +182,23 @@ export default function LernModusClient({
         return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
     }
 
-    // Shuffle cards
-    const shuffleCards = () => {
+    const shuffleCards = useCallback(() => {
         const shuffled = [...flashcards].sort(() => Math.random() - 0.5)
-        setFlashcards(shuffled)
-        setAktuellerIndex(0)
+
         setIstLernprozessAbgeschlossen(false)
-        setStartTime(new Date())
+
+        const newStartTime = new Date()
+        setStartTime(newStartTime)
         setStudyTime(0)
+        setCurrentSessionId(null)
+
+        setAktuellerIndex(0)
+
+        setFlashcards(shuffled)
+
         setHasUnsavedSession(true)
         toast.success('Karten gemischt!')
-    }
+    }, [flashcards])
 
     const handleBewertung = async (bewertung: number) => {
         if (flashcards.length === 0 || aktuellerIndex >= flashcards.length)
@@ -151,47 +224,22 @@ export default function LernModusClient({
         }
     }
 
-    // Auto-save session every 20 seconds
+    // Save session before component unmounts
     useEffect(() => {
-        const autoSaveInterval = setInterval(() => {
-            const { hasUnsavedSession } = sessionDataRef.current
-
-            if (hasUnsavedSession) {
-                const saveSession = async (isCompleted: boolean) => {
-                    const { startTime, studyTime, aktuellerIndex, deckId } =
-                        sessionDataRef.current
-                    const endTime = new Date()
-                    const duration =
-                        studyTime || Date.now() - startTime.getTime()
-
-                    const result = await saveStudySession({
-                        deckId: deckId,
-                        startTime: startTime,
-                        endTime: endTime,
-                        duration: duration,
-                        cardsReviewed: aktuellerIndex,
-                        isCompleted: isCompleted,
-                    })
-
-                    if (result.success) {
-                        sessionDataRef.current.hasUnsavedSession = false
-                        setHasUnsavedSession(false)
-                    }
-                }
-
-                console.debug('Auto-saving session...')
-                saveSession(false)
+        return () => {
+            if (hasUnsavedSession && !isSaving) {
+                console.log('Saving session on unmount')
+                saveCurrentSession(false)
             }
-        }, 20000)
-
-        return () => clearInterval(autoSaveInterval)
-    }, [])
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [hasUnsavedSession, isSaving])
 
     if (flashcards.length === 0) {
         return (
             <div className="flex flex-1 flex-col items-center justify-start gap-4 py-8">
                 <h2 className="mb-2 text-xl font-semibold">
-                   Sieht so aus, als hättest du schon alles gelernt!
+                    Sieht so aus, als hättest du schon alles gelernt!
                 </h2>
                 <p className="text-muted-foreground mb-4 text-center">
                     Für diese Kategorie sind keine Karten verfügbar.
@@ -224,6 +272,7 @@ export default function LernModusClient({
                             setIstLernprozessAbgeschlossen(false)
                             setStartTime(new Date())
                             setStudyTime(0)
+                            setHasUnsavedSession(true)
                         }}
                     >
                         Nochmal wiederholen

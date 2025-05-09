@@ -36,7 +36,6 @@ export default async function DifficultCardsPage() {
             <main className="flex flex-1 flex-col">
                 <LernModusClient
                     deckId="difficult"
-                    deckTitel="Schwierige Karten"
                     flashcards={difficultCards}
                 />
             </main>

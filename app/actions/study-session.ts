@@ -3,62 +3,64 @@
 import { db } from '@/db'
 import { studySessions } from '@/db/schema'
 import { authOptions } from '@/lib/auth'
-import { desc, eq, sql } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import { nanoid } from 'nanoid'
 
 import { getServerSession } from 'next-auth'
 
 export async function saveStudySession(data: {
-    deckId: string
-    startTime: Date
-    endTime: Date
-    duration: number
-    cardsReviewed: number
-    isCompleted: boolean
+    id?: string;
+    deckId: string;
+    startTime: Date;
+    endTime: Date;
+    duration: number;
+    cardsReviewed: number;
+    isCompleted: boolean;
 }) {
+    // TOD: this is not working 100% yet.
     try {
         const session = await getServerSession(authOptions)
         if (!session?.user?.id) {
             return { success: false, error: 'Not authenticated' }
         }
 
-        const id = nanoid()
-        await db.insert(studySessions).values({
-            id,
-            userId: session.user.id,
-            deckId: data.deckId,
-            startTime: data.startTime,
-            endTime: data.endTime,
-            duration: data.duration,
-            cardsReviewed: data.cardsReviewed,
-            isCompleted: data.isCompleted,
-            erstelltAm: new Date(),
-        })
+        const id = data.id || nanoid()
+
+        // Early return to prevent unnecessary DB operations
+        if (!data.id && data.cardsReviewed === 0) {
+            return { success: true}
+
+        }
+
+        if (data.id) {
+            await db.update(studySessions)
+                .set({
+                    endTime: data.endTime,
+                    duration: data.duration,
+                    cardsReviewed: data.cardsReviewed,
+                    isCompleted: data.isCompleted,
+                })
+                .where(eq(studySessions.id, data.id))
+
+        } else {
+            await db.insert(studySessions).values({
+                id,
+                userId: session.user.id,
+                deckId: data.deckId,
+                startTime: data.startTime,
+                endTime: data.endTime,
+                duration: data.duration,
+                cardsReviewed: data.cardsReviewed,
+                isCompleted: data.isCompleted,
+                erstelltAm: new Date(),
+            })
+
+        }
 
         return { success: true, id }
     } catch (error) {
         console.error('Error saving study session:', error)
         return { success: false, error: 'Failed to save study session' }
-    }
-}
-
-export async function getStudySessions() {
-    try {
-        const session = await getServerSession(authOptions)
-        if (!session?.user?.id) {
-            return { success: false, data: [] }
-        }
-
-        const sessions = await db
-            .select()
-            .from(studySessions)
-            .where(eq(studySessions.userId, session.user.id))
-            .orderBy(desc(studySessions.startTime))
-
-        return { success: true, data: sessions }
-    } catch (error) {
-        console.error('Error fetching study sessions:', error)
-        return { success: false, data: [] }
     }
 }
 

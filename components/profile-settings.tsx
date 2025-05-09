@@ -217,11 +217,11 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
                                         Animationen.
                                     </p>
                                 </div>
-                                    <Switch
-                                        id="animations-enabled"
-                                        checked={localPrefs.animationsEnabled}
-                                        onCheckedChange={updateAnimationsEnabled}
-                                    />
+                                <Switch
+                                    id="animations-enabled"
+                                    checked={localPrefs.animationsEnabled}
+                                    onCheckedChange={updateAnimationsEnabled}
+                                />
                             </div>
 
                             {localPrefs.animationsEnabled && (

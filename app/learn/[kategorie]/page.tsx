@@ -55,11 +55,7 @@ export default async function LernSeite({
             </header>
 
             <main className="flex flex-1 flex-col">
-                <LernModusClient
-                    deckId={deck.id}
-                    deckTitel={deck.titel}
-                    flashcards={flashcards}
-                />
+                <LernModusClient deckId={deck.id} flashcards={flashcards} />
             </main>
         </div>
     )
