@@ -20,9 +20,9 @@ interface LernModusClientProps {
 }
 
 export default function LernModusClient({
-                                            deckId,
-                                            flashcards: initialFlashcards,
-                                        }: LernModusClientProps) {
+    deckId,
+    flashcards: initialFlashcards,
+}: LernModusClientProps) {
     const [flashcards, setFlashcards] = useState(initialFlashcards)
     const [aktuellerIndex, setAktuellerIndex] = useState(0)
     const [fortschritt, setFortschritt] = useState(0)
@@ -35,7 +35,9 @@ export default function LernModusClient({
     const [isTimerRunning, setIsTimerRunning] = useState(true)
     const [hasUnsavedSession, setHasUnsavedSession] = useState(true)
     const [isSaving, setIsSaving] = useState(false)
-    const [currentSessionId, setCurrentSessionId] = useState<string | null>(null)
+    const [currentSessionId, setCurrentSessionId] = useState<string | null>(
+        null
+    )
 
     const sessionDataRef = useRef({
         startTime,
@@ -56,54 +58,71 @@ export default function LernModusClient({
             hasUnsavedSession,
             currentSessionId,
         }
-    }, [startTime, studyTime, aktuellerIndex, deckId, hasUnsavedSession, currentSessionId])
+    }, [
+        startTime,
+        studyTime,
+        aktuellerIndex,
+        deckId,
+        hasUnsavedSession,
+        currentSessionId,
+    ])
 
-    const saveCurrentSession = useCallback(async (isCompleted: boolean) => {
-        if (isSaving) return // Prevent concurrent saves
+    const saveCurrentSession = useCallback(
+        async (isCompleted: boolean) => {
+            if (isSaving) return // Prevent concurrent saves
 
-        setIsSaving(true)
-        try {
-            const endTime = new Date()
-            const duration = studyTime || Date.now() - startTime.getTime()
+            setIsSaving(true)
+            try {
+                const endTime = new Date()
+                const duration = studyTime || Date.now() - startTime.getTime()
 
-            const sessionData: {
-                id?: string
-                deckId: string
-                startTime: Date
-                endTime: Date
-                duration: number
-                cardsReviewed: number
-                isCompleted: boolean
-            } = {
-                deckId: deckId,
-                startTime: startTime,
-                endTime: endTime,
-                duration: duration,
-                cardsReviewed: aktuellerIndex,
-                isCompleted: isCompleted,
-            }
-
-            if (currentSessionId) {
-                sessionData.id = currentSessionId
-            }
-
-            const result = await saveStudySession(sessionData)
-
-            if (result.success) {
-                setHasUnsavedSession(false)
-                if (result.id && !currentSessionId) {
-                    console.log('Setting new session ID:', result.id)
-                    setCurrentSessionId(result.id)
+                const sessionData: {
+                    id?: string
+                    deckId: string
+                    startTime: Date
+                    endTime: Date
+                    duration: number
+                    cardsReviewed: number
+                    isCompleted: boolean
+                } = {
+                    deckId: deckId,
+                    startTime: startTime,
+                    endTime: endTime,
+                    duration: duration,
+                    cardsReviewed: aktuellerIndex,
+                    isCompleted: isCompleted,
                 }
-            } else {
-                console.error('Failed to save session:', result.error)
+
+                if (currentSessionId) {
+                    sessionData.id = currentSessionId
+                }
+
+                const result = await saveStudySession(sessionData)
+
+                if (result.success) {
+                    setHasUnsavedSession(false)
+                    if (result.id && !currentSessionId) {
+                        console.log('Setting new session ID:', result.id)
+                        setCurrentSessionId(result.id)
+                    }
+                } else {
+                    console.error('Failed to save session:', result.error)
+                }
+            } catch (error) {
+                console.error('Error saving session:', error)
+            } finally {
+                setIsSaving(false)
             }
-        } catch (error) {
-            console.error('Error saving session:', error)
-        } finally {
-            setIsSaving(false)
-        }
-    }, [deckId, startTime, studyTime, aktuellerIndex, currentSessionId, isSaving])
+        },
+        [
+            deckId,
+            startTime,
+            studyTime,
+            aktuellerIndex,
+            currentSessionId,
+            isSaving,
+        ]
+    )
 
     useEffect(() => {
         let timer: NodeJS.Timeout | null = null
@@ -134,14 +153,25 @@ export default function LernModusClient({
 
         return () => {
             if (timer) clearInterval(timer)
-            document.removeEventListener('visibilitychange', handleVisibilityChange)
+            document.removeEventListener(
+                'visibilitychange',
+                handleVisibilityChange
+            )
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [startTime, isTimerRunning, istLernprozessAbgeschlossen, hasUnsavedSession, isSaving])
+    }, [
+        startTime,
+        isTimerRunning,
+        istLernprozessAbgeschlossen,
+        hasUnsavedSession,
+        isSaving,
+    ])
 
     useEffect(() => {
         if (flashcards.length > 0) {
-            setFortschritt(Math.round((aktuellerIndex / flashcards.length) * 100))
+            setFortschritt(
+                Math.round((aktuellerIndex / flashcards.length) * 100)
+            )
         }
     }, [aktuellerIndex, flashcards.length])
 
@@ -160,7 +190,11 @@ export default function LernModusClient({
 
         // Create new auto-save
         autoSaveIntervalRef.current = setInterval(() => {
-            if (hasUnsavedSession && !isSaving && !istLernprozessAbgeschlossen) {
+            if (
+                hasUnsavedSession &&
+                !isSaving &&
+                !istLernprozessAbgeschlossen
+            ) {
                 console.log('Auto-save triggered')
                 saveCurrentSession(false)
             }

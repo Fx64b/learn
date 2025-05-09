@@ -5,6 +5,7 @@ import { Calendar, Clock, TrendingUp } from 'lucide-react'
 
 import Link from 'next/link'
 
+import { LearningProgressChart } from '@/components/learning-progress-chart'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
@@ -149,45 +150,7 @@ export function SimpleProgressDashboard({
             </div>
 
             <div className="flex w-full flex-col gap-4 md:flex-row">
-                <Card className="w-full">
-                    <CardHeader>
-                        <CardTitle>Aktivität letzte 7 Tage</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid grid-cols-7 gap-2">
-                            {last7DaysData.map((day, index) => (
-                                <div key={index} className="text-center">
-                                    <div
-                                        className="bg-primary/10 relative mb-2 h-24 rounded"
-                                        style={{
-                                            backgroundColor: `hsl(var(--primary) / ${day.correctPercentage / 100})`,
-                                        }}
-                                    >
-                                        <div
-                                            className="bg-primary absolute bottom-0 w-full rounded"
-                                            style={{
-                                                height: `${(day.cardsReviewed / Math.max(...last7DaysData.map((d) => d.cardsReviewed || 1))) * 100}%`,
-                                                minHeight:
-                                                    day.cardsReviewed > 0
-                                                        ? '2px'
-                                                        : '0px',
-                                            }}
-                                        />
-                                    </div>
-                                    <div className="text-sm font-medium">
-                                        {new Date(day.date).toLocaleDateString(
-                                            'de-DE',
-                                            { weekday: 'short' }
-                                        )}
-                                    </div>
-                                    <div className="text-muted-foreground text-xs">
-                                        {day.cardsReviewed} Karten
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
+                <LearningProgressChart data={last7DaysData} />
 
                 <Card className="w-full">
                     <CardHeader>

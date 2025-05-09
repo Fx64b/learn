@@ -9,13 +9,13 @@ import { nanoid } from 'nanoid'
 import { getServerSession } from 'next-auth'
 
 export async function saveStudySession(data: {
-    id?: string;
-    deckId: string;
-    startTime: Date;
-    endTime: Date;
-    duration: number;
-    cardsReviewed: number;
-    isCompleted: boolean;
+    id?: string
+    deckId: string
+    startTime: Date
+    endTime: Date
+    duration: number
+    cardsReviewed: number
+    isCompleted: boolean
 }) {
     // TOD: this is not working 100% yet.
     try {
@@ -28,12 +28,12 @@ export async function saveStudySession(data: {
 
         // Early return to prevent unnecessary DB operations
         if (!data.id && data.cardsReviewed === 0) {
-            return { success: true}
-
+            return { success: true }
         }
 
         if (data.id) {
-            await db.update(studySessions)
+            await db
+                .update(studySessions)
                 .set({
                     endTime: data.endTime,
                     duration: data.duration,
@@ -41,7 +41,6 @@ export async function saveStudySession(data: {
                     isCompleted: data.isCompleted,
                 })
                 .where(eq(studySessions.id, data.id))
-
         } else {
             await db.insert(studySessions).values({
                 id,
@@ -54,7 +53,6 @@ export async function saveStudySession(data: {
                 isCompleted: data.isCompleted,
                 erstelltAm: new Date(),
             })
-
         }
 
         return { success: true, id }
