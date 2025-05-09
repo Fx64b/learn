@@ -162,7 +162,7 @@ export function LearningProgressChart({ data }: LearningProgressChartProps) {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 border-t pt-2 md:grid-cols-3 md:gap-4">
+                        <div className="grid grid-cols-2 border-t pt-2 gap-2 md:grid-cols-3 md:gap-4">
                             <div className="text-center">
                                 <div className="text-2xl font-bold">
                                     {stats.totalCards}
