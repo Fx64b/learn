@@ -133,7 +133,7 @@ export default function LernModusClient({
 
         const aktuelleKarte = flashcards[aktuellerIndex]
 
-        const result = await reviewCard(aktuelleKarte.id,  bewertung)
+        const result = await reviewCard(aktuelleKarte.id, bewertung)
 
         setHasUnsavedSession(true)
 
