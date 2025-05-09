@@ -1,17 +1,15 @@
 # [1.2.0](https://github.com/Fx64b/learn/compare/v1.1.0...v1.2.0) (2025-05-07)
 
-
 ### Bug Fixes
 
-* **layout:** ensure main content has minimum height for better layout consistency ([67cd637](https://github.com/Fx64b/learn/commit/67cd6376d56564c8522c06c4442a4211bb05e786))
-
+- **layout:** ensure main content has minimum height for better layout consistency ([67cd637](https://github.com/Fx64b/learn/commit/67cd6376d56564c8522c06c4442a4211bb05e786))
 
 ### Features
 
-* enhance profile settings with tabs for user preferences and progress statistics ([5aeea18](https://github.com/Fx64b/learn/commit/5aeea18901a0934d1194ec690bf892cea9da0d06))
-* **footer:** add footer component with version and license links ([5499571](https://github.com/Fx64b/learn/commit/54995715fae1771060ca9f82f602d4c2b604e8e9))
-* implement user preferences management and theme provider (WIP) ([a63257a](https://github.com/Fx64b/learn/commit/a63257a182c420f415fc45c36454bda5a64e2585))
-* **profile:** improve user preferences management with local state and animation settings ([9080c8a](https://github.com/Fx64b/learn/commit/9080c8adbc8838a82bebe1bf898b60fdf521958e))
+- enhance profile settings with tabs for user preferences and progress statistics ([5aeea18](https://github.com/Fx64b/learn/commit/5aeea18901a0934d1194ec690bf892cea9da0d06))
+- **footer:** add footer component with version and license links ([5499571](https://github.com/Fx64b/learn/commit/54995715fae1771060ca9f82f602d4c2b604e8e9))
+- implement user preferences management and theme provider (WIP) ([a63257a](https://github.com/Fx64b/learn/commit/a63257a182c420f415fc45c36454bda5a64e2585))
+- **profile:** improve user preferences management with local state and animation settings ([9080c8a](https://github.com/Fx64b/learn/commit/9080c8adbc8838a82bebe1bf898b60fdf521958e))
 
 # [1.1.0](https://github.com/Fx64b/learn/compare/v1.0.0...v1.1.0) (2025-05-06)
 

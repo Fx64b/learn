@@ -54,7 +54,7 @@ export function RateLimitStatus() {
     }
 
     if (error) {
-        return null // Don't show rate limit status if not configured
+        return null
     }
 
     if (!status) return null

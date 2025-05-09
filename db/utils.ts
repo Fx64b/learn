@@ -1,5 +1,5 @@
 import { calculateNextReview } from '@/lib/srs'
-import { and, desc, eq, isNull, lte, or } from 'drizzle-orm'
+import { and, desc, eq, isNull, lte, or, sql } from 'drizzle-orm'
 import { nanoid } from 'nanoid'
 
 import { db } from './index'
@@ -86,21 +86,39 @@ export async function createFlashcard(data: {
 export async function getDueCards(userId: string) {
     const now = new Date()
 
-    // Hier holen wir uns:
-    // 1. Alle Karten, die für eine Wiederholung fällig sind
-    // 2. Alle Karten, die noch nie wiederholt wurden
+    const latestReviews = db
+        .select({
+            flashcardId: cardReviews.flashcardId,
+            reviewId: cardReviews.id,
+            latestReviewDate: sql<Date>`MAX(${cardReviews.bewertetAm})`.as(
+                'latestReviewDate'
+            ),
+        })
+        .from(cardReviews)
+        .where(eq(cardReviews.userId, userId))
+        .groupBy(cardReviews.flashcardId)
+        .as('latestReviews')
 
-    const dueCards = await db
+    const cardsWithReviews = await db
         .select({
             flashcard: flashcards,
             review: cardReviews,
+            deckTitel: decks.titel,
+            isNew: sql<boolean>`CASE WHEN ${cardReviews.id} IS NULL THEN TRUE ELSE FALSE END`.as(
+                'isNew'
+            ),
+            daysOverdue: sql<number>`CASE 
+                WHEN ${cardReviews.nächsteWiederholung} IS NULL THEN 0
+                ELSE CAST((julianday(datetime('now')) - julianday(datetime(${cardReviews.nächsteWiederholung} / 1000, 'unixepoch'))) AS INTEGER)
+                END`.as('daysOverdue'),
         })
         .from(flashcards)
         .innerJoin(decks, eq(flashcards.deckId, decks.id))
+        .leftJoin(latestReviews, eq(flashcards.id, latestReviews.flashcardId))
         .leftJoin(
             cardReviews,
             and(
-                eq(flashcards.id, cardReviews.flashcardId),
+                eq(cardReviews.id, latestReviews.reviewId),
                 eq(cardReviews.userId, userId)
             )
         )
@@ -108,21 +126,45 @@ export async function getDueCards(userId: string) {
             and(
                 eq(decks.userId, userId),
                 or(
-                    isNull(cardReviews.nächsteWiederholung),
+                    isNull(cardReviews.id),
                     lte(cardReviews.nächsteWiederholung, now)
                 )
             )
         )
+        // Order by priority: overdue first (most overdue at top), then new cards, then by deck title
+        .orderBy(
+            desc(sql`daysOverdue`),
+            desc(sql`isNew`),
+            decks.titel,
+            desc(flashcards.erstelltAm)
+        )
 
-    return dueCards
+    return cardsWithReviews.map((card) => ({
+        ...card,
+        metadata: {
+            isNew: card.isNew,
+            daysOverdue: card.daysOverdue,
+            priorityScore:
+                card.daysOverdue > 7
+                    ? 3 // Severely overdue
+                    : card.daysOverdue > 0
+                      ? 2 // Overdue
+                      : card.isNew
+                        ? 1
+                        : 0, // New cards have priority over just-due cards
+        },
+    }))
 }
 
 export async function reviewCard(data: {
     flashcardId: string
     userId: string
-    bewertung: number // 1-4
+    bewertung: number
 }) {
-    // Vorherige Wiederholung finden (falls vorhanden)
+    if (data.bewertung < 1 || data.bewertung > 4) {
+        throw new Error('Invalid rating: must be between 1 and 4')
+    }
+
     const previousReviews = await db
         .select()
         .from(cardReviews)
@@ -137,36 +179,79 @@ export async function reviewCard(data: {
 
     const previousReview = previousReviews[0]
 
-    // SRS-Berechnung
-    const prevInterval = previousReview?.intervall || 0
-    const prevEaseFaktor = previousReview?.easeFaktor || 250
+    // In case of data inconsistencies, apply fallback logic
+    let prevInterval = 0
+    let prevEaseFaktor = 2.5 // Default ease factor
 
+    if (previousReview) {
+        prevInterval = Math.max(0, previousReview.intervall || 0)
+
+        // Ensure ease factor is within reasonable bounds (1.3-4.0)
+        if (previousReview.easeFaktor) {
+            const storedEaseFactor = previousReview.easeFaktor / 100
+            prevEaseFaktor = Math.min(4.0, Math.max(1.3, storedEaseFactor))
+        }
+    }
+
+    // Calculate next interval using the SRS algorithm
     const { nextInterval, newEaseFactor } = calculateNextReview(
         data.bewertung as 1 | 2 | 3 | 4,
         prevInterval,
-        prevEaseFaktor / 100 // Skalieren zu Dezimalzahl
+        prevEaseFaktor
     )
 
     const nextReviewDate = new Date()
     nextReviewDate.setDate(nextReviewDate.getDate() + nextInterval)
 
-    const id = nanoid()
     const now = new Date()
-    await db.insert(cardReviews).values({
-        id,
-        flashcardId: data.flashcardId,
-        userId: data.userId,
+    let resultId
+
+    const reviewData = {
         bewertetAm: now,
         bewertung: data.bewertung,
         easeFaktor: Math.round(newEaseFactor * 100),
         intervall: nextInterval,
         nächsteWiederholung: nextReviewDate,
-    })
+    }
 
-    return {
-        id,
-        nextReviewDate,
-        nextInterval,
+    try {
+        await db.transaction(async (tx) => {
+            if (previousReview && previousReview.id) {
+                await tx
+                    .update(cardReviews)
+                    .set(reviewData)
+                    .where(eq(cardReviews.id, previousReview.id))
+
+                resultId = previousReview.id
+            } else {
+                const id = nanoid()
+                await tx.insert(cardReviews).values({
+                    id,
+                    flashcardId: data.flashcardId,
+                    userId: data.userId,
+                    ...reviewData,
+                })
+
+                resultId = id
+            }
+
+            await tx
+                .update(flashcards)
+                .set({
+                    schwierigkeitsgrad: Math.floor(5 - newEaseFactor),
+                })
+                .where(eq(flashcards.id, data.flashcardId))
+        })
+
+        return {
+            id: resultId,
+            nextReviewDate,
+            nextInterval,
+            easeFactor: newEaseFactor,
+        }
+    } catch (error) {
+        console.error('Error updating review:', error)
+        throw new Error('Failed to update card review')
     }
 }
 

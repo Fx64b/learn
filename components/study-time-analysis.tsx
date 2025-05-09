@@ -48,7 +48,7 @@ export function StudyTimeAnalysis({ rawData }: StudyTimeAnalysisProps) {
             hourlyMap.set(localHour, current)
         })
 
-        // Erstelle vollständiges 24-Stunden-Array
+        // Create complete 24-hour array
         return Array.from({ length: 24 }, (_, hour) => {
             const found = hourlyMap.get(hour)
             return {
@@ -71,6 +71,16 @@ export function StudyTimeAnalysis({ rawData }: StudyTimeAnalysisProps) {
         return maxHour.avgCards > 0 ? maxHour : null
     }, [data])
 
+    const maxCards = useMemo(() => {
+        if (data.length === 0) return 1
+        const max = Math.max(...data.map((d) => d.cardsTotal || 0))
+        return max > 0 ? max : 1
+    }, [data])
+
+    const activeHours = useMemo(() => {
+        return data.filter((h) => h.cardsTotal > 0).length
+    }, [data])
+
     return (
         <Card>
             <CardHeader>
@@ -86,58 +96,82 @@ export function StudyTimeAnalysis({ rawData }: StudyTimeAnalysisProps) {
                     </div>
                 ) : (
                     <div className="space-y-4">
-                        <div className="relative h-8">
-                            <div className="grid grid-cols-24 gap-0.5">
-                                {data.map((hour) => (
-                                    <div
-                                        key={hour.hour}
-                                        className="relative h-full"
-                                        title={`${hour.hour}:00 - ${hour.cardsTotal} Karten in ${hour.sessions} Sessions`}
-                                    >
+                        <div className="pb-8">
+                            <div className="grid h-40 grid-cols-24 gap-1">
+                                {data.map((hour) => {
+                                    const height =
+                                        hour.cardsTotal > 0
+                                            ? Math.max(
+                                                  5,
+                                                  (hour.cardsTotal / maxCards) *
+                                                      100
+                                              )
+                                            : 0
+
+                                    return (
                                         <div
-                                            className="bg-primary/20 hover:bg-primary/30 absolute bottom-0 w-full rounded-t-sm transition-colors"
-                                            style={{
-                                                height: `${
-                                                    hour.cardsTotal > 0
-                                                        ? (hour.cardsTotal /
-                                                              Math.max(
-                                                                  ...data.map(
-                                                                      (d) =>
-                                                                          d.cardsTotal ||
-                                                                          1
-                                                                  )
-                                                              )) *
-                                                          100
-                                                        : 0
-                                                }%`,
-                                                minHeight:
-                                                    hour.cardsTotal > 0
-                                                        ? '2px'
-                                                        : '0px',
-                                            }}
-                                        />
-                                        {hour.hour % 6 === 0 && (
-                                            <div className="text-muted-foreground absolute -bottom-6 text-xs">
-                                                {hour.hour}:00
+                                            key={hour.hour}
+                                            className="relative flex h-full flex-col justify-end"
+                                        >
+                                            <div
+                                                className={`bg-primary hover:bg-primary/80 tooltip-trigger group w-full rounded-t-sm transition-colors`}
+                                                style={{
+                                                    height: `${height}%`,
+                                                    minHeight:
+                                                        hour.cardsTotal > 0
+                                                            ? '5px'
+                                                            : '0',
+                                                }}
+                                            >
+                                                <div className="bg-popover text-popover-foreground pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 transform rounded px-2 py-1 text-xs whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100">
+                                                    {hour.hour}:00 -{' '}
+                                                    {hour.cardsTotal} Karten
+                                                </div>
                                             </div>
-                                        )}
-                                    </div>
-                                ))}
+
+                                            {(hour.hour % 6 === 0 ||
+                                                (activeHours < 8 &&
+                                                    hour.cardsTotal > 0)) && (
+                                                <div className="text-muted-foreground absolute -bottom-6 left-1/2 -translate-x-1/2 transform text-xs">
+                                                    {hour.hour}:00
+                                                </div>
+                                            )}
+                                        </div>
+                                    )
+                                })}
                             </div>
                         </div>
-                        {mostProductiveLocalHour && (
+
+                        <div className="flex flex-col gap-2">
+                            {mostProductiveLocalHour && (
+                                <div className="text-sm">
+                                    <p className="text-muted-foreground">
+                                        <span className="text-foreground font-medium">
+                                            Produktivste Zeit:
+                                        </span>{' '}
+                                        {mostProductiveLocalHour.hour}:00 Uhr
+                                        mit durchschnittlich{' '}
+                                        {mostProductiveLocalHour.avgCards.toFixed(
+                                            1
+                                        )}{' '}
+                                        Karten pro Session.
+                                    </p>
+                                </div>
+                            )}
+
                             <div className="text-sm">
                                 <p className="text-muted-foreground">
-                                    Deine produktivste Lernzeit ist um{' '}
-                                    {mostProductiveLocalHour.hour}:00 Uhr mit
-                                    durchschnittlich{' '}
-                                    {mostProductiveLocalHour.avgCards.toFixed(
-                                        1
+                                    <span className="text-foreground font-medium">
+                                        Gesamtkarten:
+                                    </span>{' '}
+                                    {data.reduce(
+                                        (sum, hour) => sum + hour.cardsTotal,
+                                        0
                                     )}{' '}
-                                    Karten pro Session.
+                                    Karten über alle Zeiten.
                                 </p>
                             </div>
-                        )}
+                        </div>
                     </div>
                 )}
             </CardContent>

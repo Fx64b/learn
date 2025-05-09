@@ -6,12 +6,12 @@ import { Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/react'
 
 import { AuthProvider } from '@/components/auth-provider'
+import { Footer } from '@/components/footer'
 import { Header } from '@/components/header'
 import { RateLimitStatus } from '@/components/rate-limit-status'
 import { ThemeProvider } from '@/components/theme-provider'
 
 import './globals.css'
-import {Footer} from "@/components/footer";
 
 const inter = Inter({ subsets: ['latin'] })
 

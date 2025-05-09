@@ -1,23 +1,23 @@
 import { readFileSync } from 'fs'
-import {Github, Heart} from 'lucide-react'
+import { Github, Heart } from 'lucide-react'
 import { join } from 'path'
 
 import Link from 'next/link'
 
 import { Separator } from '@/components/ui/separator'
 
-let cachedVersion: string | null = null;
+let cachedVersion: string | null = null
 try {
-    const packageJsonPath = join(process.cwd(), 'package.json');
-    const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
-    cachedVersion = packageJson.version;
+    const packageJsonPath = join(process.cwd(), 'package.json')
+    const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'))
+    cachedVersion = packageJson.version
 } catch (error) {
-    console.error('Error reading version:', error);
-    cachedVersion = null;
+    console.error('Error reading version:', error)
+    cachedVersion = null
 }
 
 export function Footer() {
-    const version = cachedVersion;
+    const version = cachedVersion
     const currentYear = new Date().getFullYear()
 
     return (
@@ -27,7 +27,8 @@ export function Footer() {
                     <span>© {currentYear}</span>
                     <span className="flex items-center">
                         Made with{' '}
-                        <Heart className="mx-1 h-3 w-3 fill-red-500 text-red-500" /> by
+                        <Heart className="mx-1 h-3 w-3 fill-red-500 text-red-500" />{' '}
+                        by
                         <Link
                             href="https://fx64b.dev"
                             target="_blank"
@@ -43,7 +44,10 @@ export function Footer() {
                     {version && (
                         <>
                             <Link
-                                href={"https://github.com/Fx64b/learn/releases/tag/v"+version}
+                                href={
+                                    'https://github.com/Fx64b/learn/releases/tag/v' +
+                                    version
+                                }
                                 className="hover:text-foreground hover:underline"
                             >
                                 v{version}

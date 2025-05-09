@@ -127,15 +127,6 @@
     }
 }
 
-/* Verbesserung der Klickflächen auf Mobilgeräten */
-@media (max-width: 640px) {
-    button,
-    [role='button'],
-    .tap-target {
-        min-height: 44px;
-    }
-}
-
 /* Verhindern der Textauswahl während Karteninteraktionen */
 .flashcard {
     user-select: none;

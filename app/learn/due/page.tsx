@@ -35,11 +35,7 @@ export default async function DueCardsPage() {
             </header>
 
             <main className="flex flex-1 flex-col">
-                <LernModusClient
-                    deckId="due"
-                    deckTitel="Fällige Karten"
-                    flashcards={flashcards}
-                />
+                <LernModusClient deckId="due" flashcards={flashcards} />
             </main>
         </div>
     )
