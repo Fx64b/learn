@@ -84,6 +84,8 @@ export function LearningProgressChart({ data }: LearningProgressChartProps) {
                                             { weekday: 'short' }
                                         )
                                     const dayNum = displayDate.getDate()
+                                    const month = String(displayDate.getMonth() + 1).padStart(2, '0');
+
 
                                     return (
                                         <div
@@ -153,7 +155,7 @@ export function LearningProgressChart({ data }: LearningProgressChartProps) {
                                                     {dayName}
                                                 </div>
                                                 <div className="text-muted-foreground text-xs">
-                                                    {dayNum}.
+                                                    {dayNum}.{month}
                                                 </div>
                                             </div>
                                         </div>
