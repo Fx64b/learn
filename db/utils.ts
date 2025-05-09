@@ -120,9 +120,12 @@ export async function getDueCards(userId: string) {
 export async function reviewCard(data: {
     flashcardId: string
     userId: string
-    bewertung: number // 1-4
+    bewertung: number
 }) {
-    // Vorherige Wiederholung finden (falls vorhanden)
+    if (data.bewertung < 1 || data.bewertung > 4) {
+        throw new Error('Invalid rating: must be between 1 and 4');
+    }
+
     const previousReviews = await db
         .select()
         .from(cardReviews)
@@ -137,36 +140,79 @@ export async function reviewCard(data: {
 
     const previousReview = previousReviews[0]
 
-    // SRS-Berechnung
-    const prevInterval = previousReview?.intervall || 0
-    const prevEaseFaktor = previousReview?.easeFaktor || 250
+    // In case of data inconsistencies, apply fallback logic
+    let prevInterval = 0;
+    let prevEaseFaktor = 2.5; // Default ease factor
 
+    if (previousReview) {
+        prevInterval = Math.max(0, previousReview.intervall || 0);
+
+        // Ensure ease factor is within reasonable bounds (1.3-4.0)
+        if (previousReview.easeFaktor) {
+            const storedEaseFactor = previousReview.easeFaktor / 100;
+            prevEaseFaktor = Math.min(4.0, Math.max(1.3, storedEaseFactor));
+        }
+    }
+
+    // Calculate next interval using the SRS algorithm
     const { nextInterval, newEaseFactor } = calculateNextReview(
         data.bewertung as 1 | 2 | 3 | 4,
         prevInterval,
-        prevEaseFaktor / 100 // Skalieren zu Dezimalzahl
+        prevEaseFaktor
     )
 
     const nextReviewDate = new Date()
     nextReviewDate.setDate(nextReviewDate.getDate() + nextInterval)
 
-    const id = nanoid()
     const now = new Date()
-    await db.insert(cardReviews).values({
-        id,
-        flashcardId: data.flashcardId,
-        userId: data.userId,
+    let resultId;
+
+    const reviewData = {
         bewertetAm: now,
         bewertung: data.bewertung,
         easeFaktor: Math.round(newEaseFactor * 100),
         intervall: nextInterval,
         nächsteWiederholung: nextReviewDate,
-    })
+    };
 
-    return {
-        id,
-        nextReviewDate,
-        nextInterval,
+    try {
+        await db.transaction(async (tx) => {
+            if (previousReview && previousReview.id) {
+                await tx
+                    .update(cardReviews)
+                    .set(reviewData)
+                    .where(eq(cardReviews.id, previousReview.id));
+
+                resultId = previousReview.id;
+            } else {
+                const id = nanoid();
+                await tx.insert(cardReviews).values({
+                    id,
+                    flashcardId: data.flashcardId,
+                    userId: data.userId,
+                    ...reviewData
+                });
+
+                resultId = id;
+            }
+
+            await tx
+                .update(flashcards)
+                .set({
+                    schwierigkeitsgrad: Math.floor(5 - newEaseFactor),
+                })
+                .where(eq(flashcards.id, data.flashcardId));
+        });
+
+        return {
+            id: resultId,
+            nextReviewDate,
+            nextInterval,
+            easeFactor: newEaseFactor,
+        };
+    } catch (error) {
+        console.error('Error updating review:', error);
+        throw new Error('Failed to update card review');
     }
 }
 
