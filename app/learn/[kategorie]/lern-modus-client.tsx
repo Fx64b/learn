@@ -1,7 +1,7 @@
 'use client'
 
 import { type FlashcardType } from '@/types'
-import { Clock, RotateCw } from 'lucide-react'
+import {Clock, Shuffle} from 'lucide-react'
 import { toast } from 'sonner'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -332,7 +332,7 @@ export default function LernModusClient({
                         size="icon"
                         onClick={shuffleCards}
                     >
-                        <RotateCw />
+                        <Shuffle />
                     </Button>
                 </div>
                 <div className="text-muted-foreground flex items-center gap-2 text-sm">
