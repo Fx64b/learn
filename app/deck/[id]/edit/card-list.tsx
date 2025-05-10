@@ -20,7 +20,7 @@ interface CardListProps {
 interface EditingState {
     id: string | null
     vorderseite: string
-:    rueckseite: string
+    rueckseite: string
 }
 
 export default function CardList({ flashcards }: CardListProps) {
