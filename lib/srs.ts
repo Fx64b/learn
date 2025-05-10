@@ -43,7 +43,6 @@ export function calculateNextReview(
         }
     }
 
-    // Rest des Codes bleibt gleich
     if (grade === 2) {
         // Hard
         nextInterval = Math.max(1, Math.ceil(previousInterval * 1.2))

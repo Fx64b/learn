@@ -19,7 +19,6 @@ export function LearningProgressChart({ data }: LearningProgressChartProps) {
         return data.slice(-7)
     }, [data])
 
-    // Calculate statistics
     const stats = useMemo(() => {
         if (chartData.length === 0)
             return { totalCards: 0, avgCards: 0, bestDay: null, avgAccuracy: 0 }
@@ -76,7 +75,6 @@ export function LearningProgressChart({ data }: LearningProgressChartProps) {
                                               )
                                             : 0
 
-                                    // Format date for display
                                     const displayDate = new Date(day.date)
                                     const dayName =
                                         displayDate.toLocaleDateString(
@@ -84,6 +82,9 @@ export function LearningProgressChart({ data }: LearningProgressChartProps) {
                                             { weekday: 'short' }
                                         )
                                     const dayNum = displayDate.getDate()
+                                    const month = String(
+                                        displayDate.getMonth() + 1
+                                    ).padStart(2, '0')
 
                                     return (
                                         <div
@@ -91,7 +92,6 @@ export function LearningProgressChart({ data }: LearningProgressChartProps) {
                                             className="flex flex-col items-center"
                                         >
                                             <div className="relative flex h-40 w-full flex-col justify-end">
-                                                {/* Background gradient for accuracy */}
                                                 <div
                                                     className="absolute inset-0 rounded opacity-20"
                                                     style={{
@@ -101,7 +101,6 @@ export function LearningProgressChart({ data }: LearningProgressChartProps) {
                                                     }}
                                                 />
 
-                                                {/* Bar */}
                                                 <div
                                                     className="bg-primary/80 hover:bg-primary group relative w-full rounded-t transition-colors"
                                                     style={{
@@ -113,7 +112,6 @@ export function LearningProgressChart({ data }: LearningProgressChartProps) {
                                                                 : '0',
                                                     }}
                                                 >
-                                                    {/* Tooltip */}
                                                     <div className="bg-popover text-popover-foreground pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 transform rounded p-2 text-xs opacity-0 shadow-md transition-opacity group-hover:opacity-100">
                                                         <div className="font-medium">
                                                             {displayDate.toLocaleDateString(
@@ -147,13 +145,12 @@ export function LearningProgressChart({ data }: LearningProgressChartProps) {
                                                 </div>
                                             </div>
 
-                                            {/* Day label */}
                                             <div className="mt-2 text-center">
                                                 <div className="text-sm font-medium">
                                                     {dayName}
                                                 </div>
                                                 <div className="text-muted-foreground text-xs">
-                                                    {dayNum}.
+                                                    {dayNum}.{month}
                                                 </div>
                                             </div>
                                         </div>
@@ -162,7 +159,7 @@ export function LearningProgressChart({ data }: LearningProgressChartProps) {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 border-t pt-2 gap-2 md:grid-cols-3 md:gap-4">
+                        <div className="grid grid-cols-2 gap-2 border-t pt-2 md:grid-cols-3 md:gap-4">
                             <div className="text-center">
                                 <div className="text-2xl font-bold">
                                     {stats.totalCards}

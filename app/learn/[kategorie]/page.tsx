@@ -22,7 +22,6 @@ export default async function LernSeite({
         notFound()
     }
 
-    // Get all cards instead of just due cards to fix the progress bar bug
     const flashcards = await getFlashcardsByDeckId(kategorie)
 
     return (

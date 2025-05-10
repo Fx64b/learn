@@ -193,7 +193,6 @@ export async function reviewCard(data: {
         }
     }
 
-    // Calculate next interval using the SRS algorithm
     const { nextInterval, newEaseFactor } = calculateNextReview(
         data.bewertung as 1 | 2 | 3 | 4,
         prevInterval,
@@ -284,7 +283,6 @@ export async function getAllFlashcards(userId: string) {
 }
 
 export async function getDifficultCards(userId: string) {
-    // Get cards with low ease factor (below 2.5) or many recent failures
     const cards = await db
         .select({
             flashcard: flashcards,
@@ -302,17 +300,14 @@ export async function getDifficultCards(userId: string) {
         .where(eq(decks.userId, userId))
         .orderBy(desc(cardReviews.bewertetAm))
 
-    // Filter for cards that have been reviewed and are difficult
     return cards
         .filter((card) => {
             if (!card.review) return false
-            // Card is difficult if ease factor is below 2.5 (250)
             return card.review.easeFaktor < 250
         })
         .map((card) => card.flashcard)
 }
 
-// Add a function to reset learning progress
 export async function resetCardProgress(userId: string, flashcardId: string) {
     await db
         .delete(cardReviews)

@@ -3,7 +3,6 @@ import { checkRateLimit } from '@/lib/rate-limit'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function rateLimitMiddleware(request: NextRequest) {
-    // Get IP address from headers only - remove request.ip completely
     const ip =
         request.headers.get('x-real-ip') ||
         request.headers.get('x-forwarded-for')?.split(',')[0] ||
@@ -12,7 +11,6 @@ export async function rateLimitMiddleware(request: NextRequest) {
 
     const path = request.nextUrl.pathname
 
-    // Only apply rate limiting to specific paths
     const rateLimitedPaths = ['/api', '/auth']
     const shouldRateLimit = rateLimitedPaths.some((p) => path.startsWith(p))
 

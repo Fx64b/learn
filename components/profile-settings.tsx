@@ -45,7 +45,6 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const userPreferences = useUserPreferences()
 
-    // Use local state for all form values
     const [localPrefs, setLocalPrefs] = useState({
         animationsEnabled: initialPreferences.animationsEnabled,
         animationSpeed: initialPreferences.animationSpeed,
@@ -53,7 +52,6 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
         theme: initialPreferences.theme,
     })
 
-    // Detect changes between initial preferences and current local values
     const hasChanges =
         localPrefs.animationsEnabled !== initialPreferences.animationsEnabled ||
         localPrefs.animationSpeed !== initialPreferences.animationSpeed ||
@@ -61,7 +59,6 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
             initialPreferences.animationDirection ||
         localPrefs.theme !== initialPreferences.theme
 
-    // Update local state handlers
     const updateAnimationsEnabled = (value: boolean) => {
         setLocalPrefs((prev) => ({ ...prev, animationsEnabled: value }))
     }
@@ -76,14 +73,12 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
 
     const updateTheme = (value: 'light' | 'dark' | 'system') => {
         setLocalPrefs((prev) => ({ ...prev, theme: value }))
-        // We update the theme immediately for better UX
         userPreferences.setTheme(value)
     }
 
     const handleSubmit = async () => {
         setIsSubmitting(true)
 
-        // Update the Zustand store with all our local values
         userPreferences.setAnimationsEnabled(localPrefs.animationsEnabled)
         userPreferences.setAnimationSpeed(localPrefs.animationSpeed)
         userPreferences.setAnimationDirection(localPrefs.animationDirection)

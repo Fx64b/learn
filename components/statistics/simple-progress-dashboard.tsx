@@ -5,7 +5,7 @@ import { Calendar, Clock, TrendingUp } from 'lucide-react'
 
 import Link from 'next/link'
 
-import { LearningProgressChart } from '@/components/learning-progress-chart'
+import { LearningProgressChart } from '@/components/statistics/charts/learning-progress-chart'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 

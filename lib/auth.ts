@@ -67,22 +67,17 @@ export const authOptions: NextAuthOptions = {
             },
         }),
     ],
-    // Den Drizzle-Adapter für Turso verwenden
     adapter: DrizzleAdapter(db),
-    // Sitzungseinstellungen
     session: {
         strategy: 'jwt',
     },
-    // Anpassbare Seiten
     pages: {
         signIn: '/login',
         verifyRequest: '/verify-request',
         error: '/auth/error',
     },
-    // Callbacks für Anpassungen
     callbacks: {
         async session({ session, token }) {
-            // User-ID in der Session verfügbar machen
             if (session.user) {
                 session.user.id = token.sub || 'this-should-not-happen'
             }

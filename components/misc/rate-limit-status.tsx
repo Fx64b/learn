@@ -20,7 +20,6 @@ export function RateLimitStatus() {
                 const response = await fetch('/api/health')
                 const data = await response.json()
 
-                // Check if the response contains rate limit data
                 if (data.rateLimit && data.rateLimit.limit !== undefined) {
                     setStatus({
                         limit: data.rateLimit.limit,

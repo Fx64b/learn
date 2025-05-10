@@ -51,7 +51,7 @@ export default function CardList({ flashcards }: CardListProps) {
             id: editing.id,
             vorderseite: editing.vorderseite,
             rückseite: editing.rückseite,
-            istPrüfungsrelevant: true, // Default to true
+            istPrüfungsrelevant: true, // Default to true, this is not implemented yet
         })
 
         if (result.success) {

@@ -16,7 +16,7 @@ interface UserPreferencesState {
     setAnimationsEnabled: (enabled: boolean) => void
     setAnimationSpeed: (speed: number) => void
     setAnimationDirection: (direction: 'horizontal' | 'vertical') => void
-    setTheme: (theme: 'light' | 'dark' | 'system') => void
+    setTheme: (theme: 'system' | 'light' | 'dark') => void
 }
 
 export const useUserPreferences = create<UserPreferencesState>()(
@@ -24,7 +24,6 @@ export const useUserPreferences = create<UserPreferencesState>()(
         (set) => ({
             ...initialState,
             setAnimationsEnabled: (enabled) => {
-                console.log('Store: Setting animationsEnabled to:', enabled)
                 set((state) => ({
                     ...state,
                     animationsEnabled: enabled,

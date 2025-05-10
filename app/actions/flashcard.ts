@@ -14,7 +14,6 @@ export async function createFlashcard(formData: FormData) {
             return { success: false, error: 'Not authenticated' }
         }
 
-        // Rate limit by user
         const rateLimitResult = await checkRateLimit(
             `user:${session.user.id}:create-card`
         )
@@ -57,7 +56,6 @@ export async function createFlashcardsFromJson(data: {
             return { success: false, error: 'Not authenticated' }
         }
 
-        // Rate limit bulk operations more strictly
         const rateLimitResult = await checkRateLimit(
             `user:${session.user.id}:bulk-create`
         )
@@ -69,7 +67,6 @@ export async function createFlashcardsFromJson(data: {
             }
         }
 
-        // Parse the JSON array
         const cards = JSON.parse(data.cardsJson)
 
         if (!Array.isArray(cards)) {
