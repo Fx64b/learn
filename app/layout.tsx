@@ -40,7 +40,6 @@ export default function RootLayout({
                         )}
                         <main className="min-h-screen">{children}</main>
                         <Footer />
-                        ds
                         <Toaster position="top-right" />
                     </ThemeProvider>
                 </AuthProvider>
