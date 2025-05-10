@@ -1,3 +1,14 @@
+## [1.3.1](https://github.com/Fx64b/learn/compare/v1.3.0...v1.3.1) (2025-05-10)
+
+
+### Bug Fixes
+
+* **layout:** update ThemeProvider import and remove RateLimitStatus from layout ([ff2e9b0](https://github.com/Fx64b/learn/commit/ff2e9b06a2ea00144a4c73534b163e6b3b0beba6))
+* **learning-progress-chart:** include month in date display for improved clarity ([3cc7ea3](https://github.com/Fx64b/learn/commit/3cc7ea3b7f5a4e210ab40fe695efccdc96d8614e))
+* **lern-modus:** replace RotateCw icon with Shuffle icon for better clarity ([5fd8bc0](https://github.com/Fx64b/learn/commit/5fd8bc0c489e8820b95f1733dd71795b7006322a))
+* **lern-modus:** shuffle flashcards by default to improve learning experience ([fce9e6f](https://github.com/Fx64b/learn/commit/fce9e6f3d83e2760fc8b9548d57d3bd3e2db3574))
+* **progress:** correctly calculate study streak including yesterday's review ([787e9d3](https://github.com/Fx64b/learn/commit/787e9d3aec8c5aadef7c6612d0c2657b3dfab2dd))
+
 # [1.3.0](https://github.com/Fx64b/learn/compare/v1.2.0...v1.3.0) (2025-05-09)
 
 ### Bug Fixes
