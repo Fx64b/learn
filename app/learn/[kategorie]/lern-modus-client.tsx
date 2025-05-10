@@ -23,7 +23,9 @@ export default function LernModusClient({
     deckId,
     flashcards: initialFlashcards,
 }: LernModusClientProps) {
-    const shuffledFlashcards = [...initialFlashcards].sort(() => Math.random() - 0.5)
+    const shuffledFlashcards = [...initialFlashcards].sort(
+        () => Math.random() - 0.5
+    )
 
     const [flashcards, setFlashcards] = useState(shuffledFlashcards)
     const [aktuellerIndex, setAktuellerIndex] = useState(0)
