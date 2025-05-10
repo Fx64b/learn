@@ -23,9 +23,9 @@ interface SimpleProgressDashboardProps {
             flashcard: {
                 id: string
                 vorderseite: string
-                rückseite: string
+                rueckseite: string
                 deckId: string
-                istPrüfungsrelevant: boolean
+                istPruefungsrelevant: boolean
                 schwierigkeitsgrad: number
                 erstelltAm: Date
             }
@@ -37,7 +37,7 @@ interface SimpleProgressDashboardProps {
                 bewertung: number
                 easeFaktor: number
                 intervall: number
-                nächsteWiederholung: Date
+                naechsteWiederholung: Date
             } | null
         }>
     }

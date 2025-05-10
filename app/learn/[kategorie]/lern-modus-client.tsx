@@ -365,7 +365,7 @@ export default function LernModusClient({
                     <Flashcard
                         key={flashcards[aktuellerIndex].id}
                         vorderseite={flashcards[aktuellerIndex].vorderseite}
-                        rückseite={flashcards[aktuellerIndex].rückseite}
+                        rueckseite={flashcards[aktuellerIndex].rueckseite}
                         onRating={handleBewertung}
                         className="w-full max-w-2xl"
                     />

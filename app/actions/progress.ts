@@ -102,8 +102,8 @@ export async function getLearningProgress() {
             and(
                 eq(decks.userId, userId),
                 or(
-                    isNull(cardReviews.nächsteWiederholung),
-                    lte(cardReviews.nächsteWiederholung, now)
+                    isNull(cardReviews.naechsteWiederholung),
+                    lte(cardReviews.naechsteWiederholung, now)
                 )
             )
         )

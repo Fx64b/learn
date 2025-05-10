@@ -18,7 +18,7 @@ import { Textarea } from '@/components/ui/textarea'
 export function CreateCardForm({ deckId }: { deckId: string }) {
     const [singleCard, setSingleCard] = useState({
         vorderseite: '',
-        rückseite: '',
+        rueckseite: '',
     })
     const [jsonCards, setJsonCards] = useState('')
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -30,14 +30,14 @@ export function CreateCardForm({ deckId }: { deckId: string }) {
         const formData = new FormData()
         formData.append('deckId', deckId)
         formData.append('vorderseite', singleCard.vorderseite)
-        formData.append('rückseite', singleCard.rückseite)
-        formData.append('istPrüfungsrelevant', 'true')
+        formData.append('rueckseite', singleCard.rueckseite)
+        formData.append('istPruefungsrelevant', 'true')
 
         const result = await createFlashcard(formData)
 
         if (result.success) {
             toast.success('Karte erstellt')
-            setSingleCard({ vorderseite: '', rückseite: '' })
+            setSingleCard({ vorderseite: '', rueckseite: '' })
         } else {
             toast.error('Fehler beim Erstellen der Karte')
         }
@@ -106,14 +106,14 @@ export function CreateCardForm({ deckId }: { deckId: string }) {
                             </div>
                             <div>
                                 <label className="mb-1 block text-sm font-medium">
-                                    Rückseite
+                                    Rueckseite
                                 </label>
                                 <Textarea
-                                    value={singleCard.rückseite}
+                                    value={singleCard.rueckseite}
                                     onChange={(e) =>
                                         setSingleCard((prev) => ({
                                             ...prev,
-                                            rückseite: e.target.value,
+                                            rueckseite: e.target.value,
                                         }))
                                     }
                                     placeholder="Antwort oder Definition"
@@ -151,12 +151,12 @@ export function CreateCardForm({ deckId }: { deckId: string }) {
                                     placeholder={`[
   {
     "vorderseite": "Was ist ...?",
-    "rückseite": "Die Antwort ist ...",
-    "istPrüfungsrelevant": true
+    "rueckseite": "Die Antwort ist ...",
+    "istPruefungsrelevant": true
   },
   {
     "vorderseite": "Nenne drei ...",
-    "rückseite": "1. ... 2. ... 3. ..."
+    "rueckseite": "1. ... 2. ... 3. ..."
   }
 ]`}
                                     required
