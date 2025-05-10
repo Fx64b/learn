@@ -140,16 +140,30 @@ async function calculateStreak(userId: string): Promise<number> {
     if (reviewDates.length === 0) return 0
 
     const today = new Date()
+    const todayStr = today.toISOString().split('T')[0]
 
     let streak = 0
-    const currentDate = new Date(today)
+    let currentDate = new Date(today)
+    let currentDateStr = currentDate.toISOString().split('T')[0]
+
+    const studiedToday = reviewDates.some(date => date.date === todayStr)
+
+    if (!studiedToday) {
+        const yesterday = new Date(today)
+        yesterday.setDate(yesterday.getDate() - 1)
+        const yesterdayStr = yesterday.toISOString().split('T')[0]
+
+        if (reviewDates.length > 0 && reviewDates[0].date === yesterdayStr) {
+            currentDate = yesterday
+            currentDateStr = yesterdayStr
+        }
+    }
 
     for (let i = 0; i < reviewDates.length; i++) {
-        const dateStr = currentDate.toISOString().split('T')[0]
-
-        if (reviewDates[i].date === dateStr) {
+        if (reviewDates[i].date === currentDateStr) {
             streak++
             currentDate.setDate(currentDate.getDate() - 1)
+            currentDateStr = currentDate.toISOString().split('T')[0]
         } else {
             break
         }
