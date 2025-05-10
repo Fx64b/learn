@@ -1,7 +1,7 @@
 'use client'
 
 import { type FlashcardType } from '@/types'
-import {Clock, Shuffle} from 'lucide-react'
+import { Clock, Shuffle } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -23,7 +23,9 @@ export default function LernModusClient({
     deckId,
     flashcards: initialFlashcards,
 }: LernModusClientProps) {
-    const [flashcards, setFlashcards] = useState(initialFlashcards)
+    const shuffledFlashcards = [...initialFlashcards].sort(() => Math.random() - 0.5)
+
+    const [flashcards, setFlashcards] = useState(shuffledFlashcards)
     const [aktuellerIndex, setAktuellerIndex] = useState(0)
     const [fortschritt, setFortschritt] = useState(0)
     const [istLernprozessAbgeschlossen, setIstLernprozessAbgeschlossen] =
@@ -188,7 +190,6 @@ export default function LernModusClient({
             clearInterval(autoSaveIntervalRef.current)
         }
 
-        // Create new auto-save
         autoSaveIntervalRef.current = setInterval(() => {
             if (
                 hasUnsavedSession &&
@@ -200,7 +201,6 @@ export default function LernModusClient({
             }
         }, 20000) // Auto-save every 20 seconds
 
-        // Cleanup on unmount
         return () => {
             if (autoSaveIntervalRef.current) {
                 clearInterval(autoSaveIntervalRef.current)
