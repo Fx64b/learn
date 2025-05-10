@@ -67,16 +67,16 @@ export async function getFlashcardById(id: string) {
 export async function createFlashcard(data: {
     deckId: string
     vorderseite: string
-    rückseite: string
-    istPrüfungsrelevant?: boolean
+    rueckseite: string
+    istPruefungsrelevant?: boolean
 }) {
     const id = nanoid()
     await db.insert(flashcards).values({
         id,
         deckId: data.deckId,
         vorderseite: data.vorderseite,
-        rückseite: data.rückseite,
-        istPrüfungsrelevant: data.istPrüfungsrelevant || false,
+        rueckseite: data.rueckseite,
+        istPruefungsrelevant: data.istPruefungsrelevant || false,
         schwierigkeitsgrad: 0,
         erstelltAm: new Date(),
     })
@@ -108,8 +108,8 @@ export async function getDueCards(userId: string) {
                 'isNew'
             ),
             daysOverdue: sql<number>`CASE 
-                WHEN ${cardReviews.nächsteWiederholung} IS NULL THEN 0
-                ELSE CAST((julianday(datetime('now')) - julianday(datetime(${cardReviews.nächsteWiederholung} / 1000, 'unixepoch'))) AS INTEGER)
+                WHEN ${cardReviews.naechsteWiederholung} IS NULL THEN 0
+                ELSE CAST((julianday(datetime('now')) - julianday(datetime(${cardReviews.naechsteWiederholung} / 1000, 'unixepoch'))) AS INTEGER)
                 END`.as('daysOverdue'),
         })
         .from(flashcards)
@@ -127,7 +127,7 @@ export async function getDueCards(userId: string) {
                 eq(decks.userId, userId),
                 or(
                     isNull(cardReviews.id),
-                    lte(cardReviews.nächsteWiederholung, now)
+                    lte(cardReviews.naechsteWiederholung, now)
                 )
             )
         )
@@ -210,7 +210,7 @@ export async function reviewCard(data: {
         bewertung: data.bewertung,
         easeFaktor: Math.round(newEaseFactor * 100),
         intervall: nextInterval,
-        nächsteWiederholung: nextReviewDate,
+        naechsteWiederholung: nextReviewDate,
     }
 
     try {
@@ -257,15 +257,15 @@ export async function reviewCard(data: {
 export async function updateFlashcard(data: {
     id: string
     vorderseite: string
-    rückseite: string
-    istPrüfungsrelevant: boolean
+    rueckseite: string
+    istPruefungsrelevant: boolean
 }) {
     await db
         .update(flashcards)
         .set({
             vorderseite: data.vorderseite,
-            rückseite: data.rückseite,
-            istPrüfungsrelevant: data.istPrüfungsrelevant,
+            rueckseite: data.rueckseite,
+            istPruefungsrelevant: data.istPruefungsrelevant,
         })
         .where(eq(flashcards.id, data.id))
 }

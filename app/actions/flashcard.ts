@@ -27,15 +27,15 @@ export async function createFlashcard(formData: FormData) {
 
         const deckId = formData.get('deckId') as string
         const vorderseite = formData.get('vorderseite') as string
-        const rückseite = formData.get('rückseite') as string
-        const istPrüfungsrelevant =
-            formData.get('istPrüfungsrelevant') === 'true'
+        const rueckseite = formData.get('rueckseite') as string
+        const istPruefungsrelevant =
+            formData.get('istPruefungsrelevant') === 'true'
 
         const id = await dbUtils.createFlashcard({
             deckId,
             vorderseite,
-            rückseite,
-            istPrüfungsrelevant,
+            rueckseite,
+            istPruefungsrelevant,
         })
 
         revalidatePath(`/lernen/${deckId}`)
@@ -76,7 +76,7 @@ export async function createFlashcardsFromJson(data: {
         const results = []
 
         for (const card of cards) {
-            if (!card.vorderseite || !card.rückseite) {
+            if (!card.vorderseite || !card.rueckseite) {
                 results.push({
                     success: false,
                     error: 'Karte mit fehlenden Feldern übersprungen',
@@ -88,8 +88,8 @@ export async function createFlashcardsFromJson(data: {
             const id = await dbUtils.createFlashcard({
                 deckId: data.deckId,
                 vorderseite: card.vorderseite,
-                rückseite: card.rückseite,
-                istPrüfungsrelevant: card.istPrüfungsrelevant ?? true,
+                rueckseite: card.rueckseite,
+                istPruefungsrelevant: card.istPruefungsrelevant ?? true,
             })
 
             results.push({ success: true, id })
@@ -146,8 +146,8 @@ export async function reviewCard(flashcardId: string, bewertung: number) {
 export async function updateFlashcard(data: {
     id: string
     vorderseite: string
-    rückseite: string
-    istPrüfungsrelevant: boolean
+    rueckseite: string
+    istPruefungsrelevant: boolean
 }) {
     try {
         const session = await getServerSession(authOptions)
@@ -171,8 +171,8 @@ export async function updateFlashcard(data: {
         await dbUtils.updateFlashcard({
             id: data.id,
             vorderseite: data.vorderseite,
-            rückseite: data.rückseite,
-            istPrüfungsrelevant: data.istPrüfungsrelevant,
+            rueckseite: data.rueckseite,
+            istPruefungsrelevant: data.istPruefungsrelevant,
         })
 
         revalidatePath(`/deck/${flashcard.deckId}/edit`)

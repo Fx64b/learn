@@ -95,6 +95,6 @@ export async function getTimeOfDayAnalysis() {
         }
     } catch (error) {
         console.error('Error getting time of day analysis:', error)
-        return { success: false, data: [], rawData: [] } // Immer rawData zurückgeben, auch bei Fehler
+        return { success: false, data: [], rawData: [] } // Immer rawData zurueckgeben, auch bei Fehler
     }
 }

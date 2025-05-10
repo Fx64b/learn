@@ -102,8 +102,8 @@ export async function getLearningProgress() {
             and(
                 eq(decks.userId, userId),
                 or(
-                    isNull(cardReviews.nächsteWiederholung),
-                    lte(cardReviews.nächsteWiederholung, now)
+                    isNull(cardReviews.naechsteWiederholung),
+                    lte(cardReviews.naechsteWiederholung, now)
                 )
             )
         )
@@ -146,7 +146,7 @@ async function calculateStreak(userId: string): Promise<number> {
     let currentDate = new Date(today)
     let currentDateStr = currentDate.toISOString().split('T')[0]
 
-    const studiedToday = reviewDates.some(date => date.date === todayStr)
+    const studiedToday = reviewDates.some((date) => date.date === todayStr)
 
     if (!studiedToday) {
         const yesterday = new Date(today)

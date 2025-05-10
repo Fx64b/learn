@@ -10,14 +10,14 @@ import { Card, CardContent } from '@/components/ui/card'
 
 interface FlashcardProps {
     vorderseite: string
-    rückseite: string
+    rueckseite: string
     onRating?: (rating: number) => void
     className?: string
 }
 
 export function Flashcard({
     vorderseite,
-    rückseite,
+    rueckseite,
     onRating,
     className,
 }: FlashcardProps) {
@@ -157,7 +157,7 @@ export function Flashcard({
                                                 Antwort
                                             </p>
                                             <p className="text-base leading-relaxed font-medium break-words whitespace-pre-line sm:text-lg md:text-xl lg:text-2xl">
-                                                {rückseite}
+                                                {rueckseite}
                                             </p>
                                         </div>
                                     </div>

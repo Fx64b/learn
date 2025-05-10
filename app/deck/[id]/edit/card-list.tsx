@@ -20,14 +20,14 @@ interface CardListProps {
 interface EditingState {
     id: string | null
     vorderseite: string
-    rückseite: string
+    rueckseite: string
 }
 
 export default function CardList({ flashcards }: CardListProps) {
     const [editing, setEditing] = useState<EditingState>({
         id: null,
         vorderseite: '',
-        rückseite: '',
+        rueckseite: '',
     })
     const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -35,12 +35,12 @@ export default function CardList({ flashcards }: CardListProps) {
         setEditing({
             id: card.id,
             vorderseite: card.vorderseite,
-            rückseite: card.rückseite,
+            rueckseite: card.rueckseite,
         })
     }
 
     const cancelEditing = () => {
-        setEditing({ id: null, vorderseite: '', rückseite: '' })
+        setEditing({ id: null, vorderseite: '', rueckseite: '' })
     }
 
     const saveEdit = async () => {
@@ -50,8 +50,8 @@ export default function CardList({ flashcards }: CardListProps) {
         const result = await updateFlashcard({
             id: editing.id,
             vorderseite: editing.vorderseite,
-            rückseite: editing.rückseite,
-            istPrüfungsrelevant: true, // Default to true, this is not implemented yet
+            rueckseite: editing.rueckseite,
+            istPruefungsrelevant: true, // Default to true, this is not implemented yet
         })
 
         if (result.success) {
@@ -100,11 +100,11 @@ export default function CardList({ flashcards }: CardListProps) {
                                         Rückseite
                                     </label>
                                     <Textarea
-                                        value={editing.rückseite}
+                                        value={editing.rueckseite}
                                         onChange={(e) =>
                                             setEditing((prev) => ({
                                                 ...prev,
-                                                rückseite: e.target.value,
+                                                rueckseite: e.target.value,
                                             }))
                                         }
                                         placeholder="Antwort oder Definition"
@@ -136,7 +136,7 @@ export default function CardList({ flashcards }: CardListProps) {
                                         {card.vorderseite}
                                     </p>
                                     <p className="text-muted-foreground text-sm">
-                                        {card.rückseite}
+                                        {card.rueckseite}
                                     </p>
                                 </div>
                                 <div className="flex gap-1">

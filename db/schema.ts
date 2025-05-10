@@ -23,8 +23,8 @@ export const flashcards = sqliteTable('flashcards', {
         .notNull()
         .references(() => decks.id),
     vorderseite: text('vorderseite').notNull(),
-    rückseite: text('rückseite').notNull(),
-    istPrüfungsrelevant: integer('ist_prüfungsrelevant', { mode: 'boolean' })
+    rueckseite: text('rueckseite').notNull(),
+    istPruefungsrelevant: integer('ist_pruefungsrelevant', { mode: 'boolean' })
         .notNull()
         .default(false),
     schwierigkeitsgrad: integer('schwierigkeitsgrad').notNull().default(0),
@@ -47,7 +47,7 @@ export const cardReviews = sqliteTable('card_reviews', {
     bewertung: integer('bewertung').notNull(), // 1-4 (wieder, schwer, gut, einfach)
     easeFaktor: integer('ease_faktor').notNull().default(250), // Skaliert x100 (2.5 = 250)
     intervall: integer('intervall').notNull().default(0), // In Tagen
-    nächsteWiederholung: integer('nächste_wiederholung', {
+    naechsteWiederholung: integer('naechste_wiederholung', {
         mode: 'timestamp',
     }).notNull(),
 })
