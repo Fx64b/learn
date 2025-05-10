@@ -146,7 +146,7 @@ async function calculateStreak(userId: string): Promise<number> {
     let currentDate = new Date(today)
     let currentDateStr = currentDate.toISOString().split('T')[0]
 
-    const studiedToday = reviewDates.some(date => date.date === todayStr)
+    const studiedToday = reviewDates.some((date) => date.date === todayStr)
 
     if (!studiedToday) {
         const yesterday = new Date(today)
