@@ -8,8 +8,7 @@ import { Analytics } from '@vercel/analytics/react'
 import { Footer } from '@/components/footer'
 import { Header } from '@/components/header'
 import { AuthProvider } from '@/components/misc/auth-provider'
-import { RateLimitStatus } from '@/components/misc/rate-limit-status'
-import { ThemeProvider } from '@/components/theme-provider'
+import { ThemeProvider } from '@/components/misc/theme-provider'
 
 import './globals.css'
 
@@ -33,11 +32,6 @@ export default function RootLayout({
                 <AuthProvider>
                     <ThemeProvider>
                         <Header />
-                        {process.env.NODE_ENV === 'development' && (
-                            <div className="container mx-auto max-w-5xl px-4 py-2">
-                                <RateLimitStatus />
-                            </div>
-                        )}
                         <main className="min-h-screen">{children}</main>
                         <Footer />
                         <Toaster position="top-right" />
