@@ -10,7 +10,6 @@ type RateLimitResult = {
 
 const redis = process.env.REDIS_URL ? Redis.fromEnv() : null
 
-// Different rate limits for different operations
 export const limits = redis
     ? {
           email: new Ratelimit({

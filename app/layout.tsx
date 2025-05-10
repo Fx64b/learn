@@ -5,10 +5,10 @@ import { Inter } from 'next/font/google'
 
 import { Analytics } from '@vercel/analytics/react'
 
-import { AuthProvider } from '@/components/auth-provider'
 import { Footer } from '@/components/footer'
 import { Header } from '@/components/header'
-import { RateLimitStatus } from '@/components/rate-limit-status'
+import { AuthProvider } from '@/components/misc/auth-provider'
+import { RateLimitStatus } from '@/components/misc/rate-limit-status'
 import { ThemeProvider } from '@/components/theme-provider'
 
 import './globals.css'
@@ -40,6 +40,7 @@ export default function RootLayout({
                         )}
                         <main className="min-h-screen">{children}</main>
                         <Footer />
+                        ds
                         <Toaster position="top-right" />
                     </ThemeProvider>
                 </AuthProvider>

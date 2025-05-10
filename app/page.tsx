@@ -10,7 +10,7 @@ import Link from 'next/link'
 import { getAllDecks } from '@/app/actions/deck'
 import { getLearningProgress } from '@/app/actions/progress'
 
-import { SimpleProgressDashboard } from '@/components/simple-progress-dashboard'
+import { SimpleProgressDashboard } from '@/components/statistics/simple-progress-dashboard'
 import { Button } from '@/components/ui/button'
 import {
     Card,

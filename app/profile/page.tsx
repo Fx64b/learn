@@ -8,7 +8,7 @@ import { getUserPreferences } from '@/app/actions/preferences'
 import { getLearningProgress } from '@/app/actions/progress'
 
 import { ProfileSettings } from '@/components/profile-settings'
-import { ProgressDashboard } from '@/components/progress-dashboard'
+import { ProgressDashboard } from '@/components/statistics/progress-dashboard'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 function ensureValidDirection(direction: unknown): 'horizontal' | 'vertical' {

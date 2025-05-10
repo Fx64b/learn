@@ -1,22 +1,20 @@
 # [1.3.0](https://github.com/Fx64b/learn/compare/v1.2.0...v1.3.0) (2025-05-09)
 
-
 ### Bug Fixes
 
-* **dashboard:** update progress-dashboard layout to be more responsive ([683e839](https://github.com/Fx64b/learn/commit/683e8395e4fdcb96a4a00abb5bfb33dd04b25464))
-* **footer, layout:** clean up imports and improve code formatting for consistency ([bb5fab2](https://github.com/Fx64b/learn/commit/bb5fab248df4adec0f6c2b381aeeef6cb34b013d))
-* **footer:** minor bugfix and refactoring ([1630816](https://github.com/Fx64b/learn/commit/1630816bc390df3804019e648afdbf9903054db8))
-* **learning-progress-chart:** adjust grid gap for improved layout consistency ([9441565](https://github.com/Fx64b/learn/commit/9441565eeb4a3a4e34d0b091cd25a9f2ec938260))
-* **lern-modus:** remove unused deck title prop and streamline LernModusClient component ([06413ce](https://github.com/Fx64b/learn/commit/06413ce7f0dc39212024524b6d412ce67c7ad57c))
-* **lern-modus:** update empty state messages and improve layout for better user experience ([df04fef](https://github.com/Fx64b/learn/commit/df04fef1c6d04cf6d8a586e56b07c48d84fd31a8))
-* **review:** validate rating input and improve review card logic ([b6ec73b](https://github.com/Fx64b/learn/commit/b6ec73b77ed2f1b9ff1cca306a27757fbe37b4bc))
-* **styles:** remove mobile button height adjustment and update package dependencies ([f1ef9bf](https://github.com/Fx64b/learn/commit/f1ef9bf1c94d57c8c760b32e191c83354f3ad2f8))
-* **utils:** enhance getDueCards function to include review metadata and improve query logic ([8cca9a7](https://github.com/Fx64b/learn/commit/8cca9a731635e64d679d3f19a21ed071717d5e06))
-
+- **dashboard:** update progress-dashboard layout to be more responsive ([683e839](https://github.com/Fx64b/learn/commit/683e8395e4fdcb96a4a00abb5bfb33dd04b25464))
+- **footer, layout:** clean up imports and improve code formatting for consistency ([bb5fab2](https://github.com/Fx64b/learn/commit/bb5fab248df4adec0f6c2b381aeeef6cb34b013d))
+- **footer:** minor bugfix and refactoring ([1630816](https://github.com/Fx64b/learn/commit/1630816bc390df3804019e648afdbf9903054db8))
+- **learning-progress-chart:** adjust grid gap for improved layout consistency ([9441565](https://github.com/Fx64b/learn/commit/9441565eeb4a3a4e34d0b091cd25a9f2ec938260))
+- **lern-modus:** remove unused deck title prop and streamline LernModusClient component ([06413ce](https://github.com/Fx64b/learn/commit/06413ce7f0dc39212024524b6d412ce67c7ad57c))
+- **lern-modus:** update empty state messages and improve layout for better user experience ([df04fef](https://github.com/Fx64b/learn/commit/df04fef1c6d04cf6d8a586e56b07c48d84fd31a8))
+- **review:** validate rating input and improve review card logic ([b6ec73b](https://github.com/Fx64b/learn/commit/b6ec73b77ed2f1b9ff1cca306a27757fbe37b4bc))
+- **styles:** remove mobile button height adjustment and update package dependencies ([f1ef9bf](https://github.com/Fx64b/learn/commit/f1ef9bf1c94d57c8c760b32e191c83354f3ad2f8))
+- **utils:** enhance getDueCards function to include review metadata and improve query logic ([8cca9a7](https://github.com/Fx64b/learn/commit/8cca9a731635e64d679d3f19a21ed071717d5e06))
 
 ### Features
 
-* **progress-dashboard:** enhance learning progress visualization with detailed statistics and improved layout ([3d9b006](https://github.com/Fx64b/learn/commit/3d9b006206962001606c2672fbbcb156bdb170a9))
+- **progress-dashboard:** enhance learning progress visualization with detailed statistics and improved layout ([3d9b006](https://github.com/Fx64b/learn/commit/3d9b006206962001606c2672fbbcb156bdb170a9))
 
 # [1.2.0](https://github.com/Fx64b/learn/compare/v1.1.0...v1.2.0) (2025-05-07)
 

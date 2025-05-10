@@ -16,7 +16,6 @@ export async function getLearningProgress() {
     const userId = session.user.id
     const now = new Date()
 
-    // Get progress data for the last 30 days
     const thirtyDaysAgo = new Date()
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
@@ -41,7 +40,6 @@ export async function getLearningProgress() {
         .groupBy(sql`DATE(${cardReviews.bewertetAm}, 'unixepoch', 'localtime')`)
         .orderBy(sql`DATE(${cardReviews.bewertetAm}, 'unixepoch', 'localtime')`)
 
-    // Overall stats
     const totalReviews = await db
         .select({
             count: sql<number>`COUNT(*)`.as('count'),
@@ -58,10 +56,8 @@ export async function getLearningProgress() {
             and(eq(cardReviews.userId, userId), gte(cardReviews.bewertung, 3))
         )
 
-    // Study streak calculation
     const streak = await calculateStreak(userId)
 
-    // Cards by difficulty distribution
     const cardsByDifficulty = await db
         .select({
             difficultyCategory: sql<number>`

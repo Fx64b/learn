@@ -2,8 +2,8 @@
 
 import { ProgressData } from '@/types'
 
-import { SimpleProgressDashboard } from '@/components/simple-progress-dashboard'
-import { StudyTimeAnalysis } from '@/components/study-time-analysis'
+import { StudyTimeAnalysis } from '@/components/statistics/charts/study-time-analysis'
+import { SimpleProgressDashboard } from '@/components/statistics/simple-progress-dashboard'
 
 interface ProgressDashboardProps {
     data: {

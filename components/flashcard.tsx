@@ -38,7 +38,6 @@ export function Flashcard({
         }
     }, [isFlipping, isFlipped, animationSpeed, animationsEnabled])
 
-    // Enhanced keyboard handler
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === ' ' || e.code === 'Space') {
@@ -64,7 +63,6 @@ export function Flashcard({
     }, [isFlipped, onRating, flipCard])
 
     const getAnimationVariants = () => {
-        // If animations are disabled, return empty variants
         if (!animationsEnabled) {
             return {
                 initial: {},
@@ -124,7 +122,7 @@ export function Flashcard({
                         <Card className="h-full w-full shadow-md transition-shadow hover:shadow-lg">
                             <CardContent className="flex h-full items-center justify-center p-4 sm:p-6">
                                 <div className="text-center">
-                                    <p className="text-base leading-relaxed break-words sm:text-lg md:text-xl lg:text-2xl">
+                                    <p className="text-base leading-relaxed break-words whitespace-pre-line sm:text-lg md:text-xl lg:text-2xl">
                                         {vorderseite}
                                     </p>
                                     <p className="text-muted-foreground mt-4 text-xs">
@@ -158,13 +156,12 @@ export function Flashcard({
                                             <p className="text-muted-foreground mb-2 text-xs">
                                                 Antwort
                                             </p>
-                                            <p className="text-base leading-relaxed font-medium break-words sm:text-lg md:text-xl lg:text-2xl">
+                                            <p className="text-base leading-relaxed font-medium break-words whitespace-pre-line sm:text-lg md:text-xl lg:text-2xl">
                                                 {rückseite}
                                             </p>
                                         </div>
                                     </div>
 
-                                    {/* Rating section - fixed at bottom */}
                                     {onRating && (
                                         <div className="border-border w-full border-t pt-2 pb-2">
                                             <p className="text-muted-foreground mb-2 text-xs">
