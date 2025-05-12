@@ -291,7 +291,7 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                                     </AlertDialogTitle>
                                     <AlertDialogDescription>
                                         Der gesamte Lernfortschritt für{' '}
-                                        <strong>"{formData.titel}"</strong> wird
+                                        <strong>&quot;{formData.titel}&quot;</strong> wird
                                         gelöscht. Diese Aktion kann nicht
                                         rückgängig gemacht werden. Alle Karten
                                         werden als noch nie gelernt markiert.
