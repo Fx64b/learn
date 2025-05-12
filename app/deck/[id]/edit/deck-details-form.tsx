@@ -16,8 +16,6 @@ import { Calendar } from '@/components/ui/calendar'
 import {
     Card,
     CardContent,
-    CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle,
 } from '@/components/ui/card'
@@ -69,6 +67,7 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                 toast.error('Fehler beim Aktualisieren des Decks')
             }
         } catch (error) {
+            console.error('Fehler beim Aktualisieren des Decks:', error)
             toast.error('Ein unerwarteter Fehler ist aufgetreten')
         } finally {
             setIsSubmitting(false)
