@@ -53,6 +53,25 @@ export const cardReviews = sqliteTable('card_reviews', {
     }).notNull(),
 })
 
+export const reviewEvents = sqliteTable('review_events', {
+    id: text('id').primaryKey().notNull(),
+    flashcardId: text('flashcard_id')
+        .notNull()
+        .references(() => flashcards.id),
+    userId: text('user_id')
+        .notNull()
+        .references(() => users.id),
+    bewertetAm: integer('bewertet_am', { mode: 'timestamp' })
+        .default(sql`CURRENT_TIMESTAMP`)
+        .notNull(),
+    bewertung: integer('bewertung').notNull(),
+    easeFaktor: integer('ease_faktor').notNull(),
+    intervall: integer('intervall').notNull(),
+    createStamp: integer('create_stamp', { mode: 'timestamp' })
+        .default(sql`CURRENT_TIMESTAMP`)
+        .notNull(),
+})
+
 export const studySessions = sqliteTable('study_sessions', {
     id: text('id').primaryKey().notNull(),
     userId: text('user_id')
