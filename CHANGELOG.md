@@ -1,3 +1,13 @@
+# [1.5.0](https://github.com/Fx64b/learn/compare/v1.4.0...v1.5.0) (2025-05-12)
+
+
+### Features
+
+* **alert:** refactor alert component for improved readability and consistency ([b3ef5df](https://github.com/Fx64b/learn/commit/b3ef5dfee8196f9615da852c0b7af1d29b054081))
+* **deck:** add reset progress functionality with confirmation dialog ([1c96023](https://github.com/Fx64b/learn/commit/1c9602399573f8fe4a17936135690cf2f5732381))
+* **reviews, statistics:** add review events tracking and update progress calculations ([88f58bb](https://github.com/Fx64b/learn/commit/88f58bb0902e13b44028a6adc2c43f15ea1b680e))
+* update card layout and improve header theme handling ([f08d996](https://github.com/Fx64b/learn/commit/f08d996e41191aef3a1256705bcf3d6720ad5d40))
+
 # [1.4.0](https://github.com/Fx64b/learn/compare/v1.3.1...v1.4.0) (2025-05-12)
 
 
