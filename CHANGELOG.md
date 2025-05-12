@@ -1,3 +1,13 @@
+# [1.4.0](https://github.com/Fx64b/learn/compare/v1.3.1...v1.4.0) (2025-05-12)
+
+
+### Features
+
+* **deck:** add 'aktivBis' field for deck expiration date and update related components ([25b827a](https://github.com/Fx64b/learn/commit/25b827a48498dec0040a4bf675b1d6ac4d630773))
+* **deck:** adjust layout of deck card components for improved spacing ([5d93d80](https://github.com/Fx64b/learn/commit/5d93d8099a257d351c05fc4c08105fea3d7477c9))
+* **deck:** enhance progress logic to include 'aktivBis' field for deck expiration ([881532f](https://github.com/Fx64b/learn/commit/881532fb33f5b4a29d67144c2c1c78631ff29dfd))
+* **deck:** remove date disabling logic in deck details form ([1eca57f](https://github.com/Fx64b/learn/commit/1eca57f38c6ceb08a5a8274e61d35d6a23dc1b14))
+
 ## [1.3.1](https://github.com/Fx64b/learn/compare/v1.3.0...v1.3.1) (2025-05-10)
 
 
