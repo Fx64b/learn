@@ -1,7 +1,7 @@
 'use server'
 
 import { db } from '@/db'
-import {cardReviews, decks, flashcards, reviewEvents} from '@/db/schema'
+import { cardReviews, decks, flashcards, reviewEvents } from '@/db/schema'
 import { authOptions } from '@/lib/auth'
 import { and, desc, eq, gte, isNull, lte, or, sql } from 'drizzle-orm'
 
@@ -37,8 +37,12 @@ export async function getLearningProgress() {
                 gte(reviewEvents.bewertetAm, thirtyDaysAgo)
             )
         )
-        .groupBy(sql`DATE(${reviewEvents.bewertetAm}, 'unixepoch', 'localtime')`)
-        .orderBy(sql`DATE(${reviewEvents.bewertetAm}, 'unixepoch', 'localtime')`)
+        .groupBy(
+            sql`DATE(${reviewEvents.bewertetAm}, 'unixepoch', 'localtime')`
+        )
+        .orderBy(
+            sql`DATE(${reviewEvents.bewertetAm}, 'unixepoch', 'localtime')`
+        )
 
     const totalReviews = await db
         .select({
@@ -46,7 +50,6 @@ export async function getLearningProgress() {
         })
         .from(reviewEvents)
         .where(eq(reviewEvents.userId, userId))
-
 
     const totalCorrect = await db
         .select({
@@ -134,9 +137,13 @@ async function calculateStreak(userId: string): Promise<number> {
         })
         .from(reviewEvents)
         .where(eq(reviewEvents.userId, userId))
-        .groupBy(sql`DATE(${reviewEvents.bewertetAm}, 'unixepoch', 'localtime')`)
+        .groupBy(
+            sql`DATE(${reviewEvents.bewertetAm}, 'unixepoch', 'localtime')`
+        )
         .orderBy(
-            desc(sql`DATE(${reviewEvents.bewertetAm}, 'unixepoch', 'localtime')`)
+            desc(
+                sql`DATE(${reviewEvents.bewertetAm}, 'unixepoch', 'localtime')`
+            )
         )
 
     if (reviewDates.length === 0) return 0

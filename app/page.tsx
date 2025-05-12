@@ -2,7 +2,7 @@
 
 import { getDueCards, getFlashcardsByDeckId } from '@/db/utils'
 import { authOptions } from '@/lib/auth'
-import { Plus } from 'lucide-react'
+import {AlertTriangle, Plus} from 'lucide-react'
 
 import { getServerSession } from 'next-auth'
 import Link from 'next/link'
@@ -14,6 +14,8 @@ import { DeckCard } from '@/components/deck-card'
 import { SimpleProgressDashboard } from '@/components/statistics/simple-progress-dashboard'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
+import type React from "react";
 
 export default async function Home() {
     const session = await getServerSession(authOptions)
@@ -53,6 +55,13 @@ export default async function Home() {
                 <p className="text-muted-foreground">
                     Eine einfache Flashcard-App mit spaced repetition.
                 </p>
+                <Alert className="my-4 w-full md:w-2/3">
+                    <AlertTriangle className="h-5! w-5! text-amber-500!" />
+                    <AlertTitle>Achtung!</AlertTitle>
+                    <AlertDescription>
+                        Diese App ist noch in der Entwicklungsphase. Es kann gut sein, dass Daten verloren gehen oder nicht korrekt angezeigt werden. Bitte benutze die App nur zu Testzwecken und nicht für wichtige Daten.
+                    </AlertDescription>
+                </Alert>
             </div>
 
             <div className="mb-6">

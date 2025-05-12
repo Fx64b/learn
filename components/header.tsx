@@ -8,13 +8,11 @@ import Link from 'next/link'
 import { UserNav } from './user-nav'
 
 export function Header() {
-    const userPreferences = useUserPreferences();
+    const userPreferences = useUserPreferences()
     let theme = userPreferences.theme
 
     if (theme === 'system') {
-        theme = window.matchMedia(
-            '(prefers-color-scheme: dark)'
-        ).matches
+        theme = window.matchMedia('(prefers-color-scheme: dark)').matches
             ? 'dark'
             : 'light'
     }

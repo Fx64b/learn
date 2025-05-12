@@ -3,7 +3,7 @@ import { and, desc, eq, gte, isNull, lte, or, sql } from 'drizzle-orm'
 import { nanoid } from 'nanoid'
 
 import { db } from './index'
-import {cardReviews, decks, flashcards, reviewEvents} from './schema'
+import { cardReviews, decks, flashcards, reviewEvents } from './schema'
 
 export async function getAllDecks(userId: string) {
     return await db.select().from(decks).where(eq(decks.userId, userId))
@@ -357,13 +357,14 @@ export async function getDifficultCards(userId: string) {
         .map((card) => card.flashcard)
 }
 
-export async function resetCardProgress(userId: string, flashcardId: string) {
-    await db
-        .delete(cardReviews)
-        .where(
-            and(
-                eq(cardReviews.userId, userId),
-                eq(cardReviews.flashcardId, flashcardId)
-            )
+export async function resetDeckProgress(userId: string, deckId: string) {
+    await db.delete(cardReviews).where(
+        and(
+            eq(cardReviews.userId, userId),
+            sql`${cardReviews.flashcardId} IN (
+                    SELECT ${flashcards.id} FROM ${flashcards} 
+                    WHERE ${flashcards.deckId} = ${deckId}
+                )`
         )
+    )
 }

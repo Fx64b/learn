@@ -87,3 +87,29 @@ export async function updateDeck(formData: FormData) {
         return { success: false, error: 'Fehler beim Aktualisieren des Decks' }
     }
 }
+
+export async function resetDeckProgress(deckId: string) {
+    try {
+        const session = await getServerSession(authOptions)
+        if (!session?.user?.id) {
+            return { success: false, error: 'Not authenticated' }
+        }
+
+        const existingDeck = await dbUtils.getDeckById(deckId, session.user.id)
+        if (!existingDeck) {
+            return { success: false, error: 'Deck not found or not authorized' }
+        }
+
+        await dbUtils.resetDeckProgress(session?.user?.id, deckId)
+
+        revalidatePath('/')
+        revalidatePath(`/deck/${deckId}/edit`)
+        return { success: true }
+    } catch (error) {
+        console.error('Fehler beim Zurücksetzen des Deck-Fortschritts:', error)
+        return {
+            success: false,
+            error: 'Fehler beim Zurücksetzen des Deck-Fortschritts',
+        }
+    }
+}
