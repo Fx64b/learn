@@ -198,9 +198,6 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                                                 }))
                                             }
                                             initialFocus
-                                            disabled={(date) =>
-                                                date < new Date()
-                                            }
                                         />
                                     </PopoverContent>
                                 </Popover>
