@@ -1,5 +1,5 @@
 import { calculateNextReview } from '@/lib/srs'
-import { and, desc, eq, isNull, lte, or, sql } from 'drizzle-orm'
+import { and, desc, eq, gte, isNull, lte, or, sql } from 'drizzle-orm'
 import { nanoid } from 'nanoid'
 
 import { db } from './index'
@@ -28,6 +28,7 @@ export async function createDeck(data: {
     titel: string
     beschreibung?: string
     kategorie: string
+    aktivBis?: Date | null
     userId: string
 }) {
     const id = nanoid()
@@ -36,10 +37,29 @@ export async function createDeck(data: {
         titel: data.titel,
         beschreibung: data.beschreibung,
         kategorie: data.kategorie,
+        aktivBis: data.aktivBis,
         userId: data.userId,
         erstelltAm: new Date(),
     })
     return id
+}
+
+export async function updateDeck(data: {
+    id: string
+    titel: string
+    beschreibung?: string
+    kategorie: string
+    aktivBis?: Date | null
+}) {
+    await db
+        .update(decks)
+        .set({
+            titel: data.titel,
+            beschreibung: data.beschreibung,
+            kategorie: data.kategorie,
+            aktivBis: data.aktivBis,
+        })
+        .where(eq(decks.id, data.id))
 }
 
 export async function getFlashcardsByDeckId(deckId: string, userId?: string) {
@@ -128,7 +148,8 @@ export async function getDueCards(userId: string) {
                 or(
                     isNull(cardReviews.id),
                     lte(cardReviews.naechsteWiederholung, now)
-                )
+                ),
+                or(isNull(decks.aktivBis), gte(decks.aktivBis, now))
             )
         )
         // Order by priority: overdue first (most overdue at top), then new cards, then by deck title
@@ -275,14 +296,23 @@ export async function deleteFlashcard(id: string) {
 }
 
 export async function getAllFlashcards(userId: string) {
+    const now = new Date()
+
     return await db
         .select()
         .from(flashcards)
         .innerJoin(decks, eq(flashcards.deckId, decks.id))
-        .where(eq(decks.userId, userId))
+        .where(
+            and(
+                eq(decks.userId, userId),
+                or(isNull(decks.aktivBis), gte(decks.aktivBis, now))
+            )
+        )
 }
 
 export async function getDifficultCards(userId: string) {
+    const now = new Date()
+
     const cards = await db
         .select({
             flashcard: flashcards,
@@ -297,7 +327,12 @@ export async function getDifficultCards(userId: string) {
                 eq(cardReviews.userId, userId)
             )
         )
-        .where(eq(decks.userId, userId))
+        .where(
+            and(
+                eq(decks.userId, userId),
+                or(isNull(decks.aktivBis), gte(decks.aktivBis, now))
+            )
+        )
         .orderBy(desc(cardReviews.bewertetAm))
 
     return cards

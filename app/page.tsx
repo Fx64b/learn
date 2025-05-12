@@ -10,16 +10,10 @@ import Link from 'next/link'
 import { getAllDecks } from '@/app/actions/deck'
 import { getLearningProgress } from '@/app/actions/progress'
 
+import { DeckCard } from '@/components/deck-card'
 import { SimpleProgressDashboard } from '@/components/statistics/simple-progress-dashboard'
 import { Button } from '@/components/ui/button'
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
 
 export default async function Home() {
     const session = await getServerSession(authOptions)
@@ -42,6 +36,14 @@ export default async function Home() {
                 dueCards: deckDueCards.length,
             }
         })
+    )
+
+    const currentDate = new Date()
+    const currentDecks = deckStats.filter(
+        ({ deck }) => !deck.aktivBis || new Date(deck.aktivBis) >= currentDate
+    )
+    const pastDecks = deckStats.filter(
+        ({ deck }) => deck.aktivBis && new Date(deck.aktivBis) < currentDate
     )
 
     return (
@@ -100,46 +102,45 @@ export default async function Home() {
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                    {deckStats.map(({ deck, totalCards, dueCards }) => (
-                        <Card
+                    {currentDecks.map(({ deck, totalCards, dueCards }) => (
+                        <DeckCard
                             key={deck.id}
-                            className="transition-shadow hover:shadow-md"
-                        >
-                            <CardHeader className="pb-2">
-                                <CardTitle>{deck.titel}</CardTitle>
-                                <CardDescription>
-                                    {deck.beschreibung}
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className="pb-2">
-                                <div className="space-y-1">
-                                    <p className="text-sm">
-                                        <b>{totalCards}</b> Karten insgesamt
-                                    </p>
-                                    <p className="text-sm">
-                                        <b>{dueCards}</b> Karten zu wiederholen
-                                    </p>
-                                </div>
-                            </CardContent>
-                            <CardFooter className="flex gap-8 md:gap-2">
-                                <Link
-                                    href={`/learn/${deck.id}`}
-                                    className="flex-1"
-                                >
-                                    <Button className="w-full" size="sm">
-                                        Lernen
-                                    </Button>
-                                </Link>
-                                <Button variant="outline" size="sm" asChild>
-                                    <Link href={`/deck/${deck.id}/edit`}>
-                                        Bearbeiten
-                                    </Link>
-                                </Button>
-                            </CardFooter>
-                        </Card>
+                            deck={deck}
+                            totalCards={totalCards}
+                            dueCards={dueCards}
+                        />
                     ))}
                 </div>
             </div>
+
+            {pastDecks.length > 0 && (
+                <div className="mb-6">
+                    <div className="mt-8 mb-8">
+                        <Separator />
+                    </div>
+
+                    <div className="mb-4">
+                        <h2 className="text-xl font-semibold">
+                            Abgeschlossene Lernziele
+                        </h2>
+                        <p className="text-muted-foreground text-sm">
+                            Diese Decks haben ihr Lernzieldatum bereits erreicht
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                        {pastDecks.map(({ deck, totalCards, dueCards }) => (
+                            <DeckCard
+                                key={deck.id}
+                                deck={deck}
+                                totalCards={totalCards}
+                                dueCards={dueCards}
+                                isPastDue={true}
+                            />
+                        ))}
+                    </div>
+                </div>
+            )}
         </main>
     )
 }

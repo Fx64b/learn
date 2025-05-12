@@ -9,8 +9,10 @@ import { getFlashcardsByDeckId } from '@/app/actions/flashcard'
 
 import { CreateCardForm } from '@/components/create-card-form'
 import { Button } from '@/components/ui/button'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 import CardList from './card-list'
+import DeckDetailsForm from './deck-details-form'
 
 export default async function EditDeckPage({
     params,
@@ -41,21 +43,34 @@ export default async function EditDeckPage({
                 </Button>
             </div>
 
-            <div className="grid gap-8 md:grid-cols-2">
-                <div>
-                    <h2 className="mb-4 text-lg font-semibold">
-                        Karten erstellen
-                    </h2>
-                    <CreateCardForm deckId={deck.id} />
-                </div>
+            <Tabs defaultValue="cards" className="mb-8">
+                <TabsList className="mb-4">
+                    <TabsTrigger value="details">Deck-Details</TabsTrigger>
+                    <TabsTrigger value="cards">Karten bearbeiten</TabsTrigger>
+                </TabsList>
 
-                <div>
-                    <h2 className="mb-4 text-lg font-semibold">
-                        Alle Karten ({flashcards.length})
-                    </h2>
-                    <CardList flashcards={flashcards} />
-                </div>
-            </div>
+                <TabsContent value="details">
+                    <DeckDetailsForm deck={deck} />
+                </TabsContent>
+
+                <TabsContent value="cards">
+                    <div className="grid gap-8 md:grid-cols-2">
+                        <div>
+                            <h2 className="mb-4 text-lg font-semibold">
+                                Karten erstellen
+                            </h2>
+                            <CreateCardForm deckId={deck.id} />
+                        </div>
+
+                        <div>
+                            <h2 className="mb-4 text-lg font-semibold">
+                                Alle Karten ({flashcards.length})
+                            </h2>
+                            <CardList flashcards={flashcards} />
+                        </div>
+                    </div>
+                </TabsContent>
+            </Tabs>
         </div>
     )
 }

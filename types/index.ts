@@ -15,16 +15,12 @@ export interface ProgressData {
     correctPercentage: number
 }
 
-export interface CardsByDifficulty {
-    difficultyCategory: number
-    count: number
-}
-
 export interface DeckType {
     id: string
     userId: string
     titel: string
     beschreibung: string | null
     kategorie: string
+    aktivBis: Date | null
     erstelltAm: Date
 }

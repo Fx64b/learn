@@ -104,7 +104,8 @@ export async function getLearningProgress() {
                 or(
                     isNull(cardReviews.naechsteWiederholung),
                     lte(cardReviews.naechsteWiederholung, now)
-                )
+                ),
+                or(isNull(decks.aktivBis), gte(decks.aktivBis, now))
             )
         )
 
