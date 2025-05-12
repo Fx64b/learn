@@ -3,7 +3,7 @@ import { and, desc, eq, gte, isNull, lte, or, sql } from 'drizzle-orm'
 import { nanoid } from 'nanoid'
 
 import { db } from './index'
-import { cardReviews, decks, flashcards } from './schema'
+import { cardReviews, decks, flashcards, reviewEvents } from './schema'
 
 export async function getAllDecks(userId: string) {
     return await db.select().from(decks).where(eq(decks.userId, userId))
@@ -236,6 +236,7 @@ export async function reviewCard(data: {
 
     try {
         await db.transaction(async (tx) => {
+            // Update the card's current review state
             if (previousReview && previousReview.id) {
                 await tx
                     .update(cardReviews)
@@ -254,6 +255,19 @@ export async function reviewCard(data: {
 
                 resultId = id
             }
+
+            // Always create a new review event for statistical purposes
+            // This is not an optimal approach, but it ensures we have a record of every review
+            const eventId = nanoid()
+            await tx.insert(reviewEvents).values({
+                id: eventId,
+                flashcardId: data.flashcardId,
+                userId: data.userId,
+                bewertetAm: now,
+                bewertung: data.bewertung,
+                easeFaktor: Math.round(newEaseFactor * 100),
+                intervall: nextInterval,
+            })
 
             await tx
                 .update(flashcards)
@@ -343,13 +357,14 @@ export async function getDifficultCards(userId: string) {
         .map((card) => card.flashcard)
 }
 
-export async function resetCardProgress(userId: string, flashcardId: string) {
-    await db
-        .delete(cardReviews)
-        .where(
-            and(
-                eq(cardReviews.userId, userId),
-                eq(cardReviews.flashcardId, flashcardId)
-            )
+export async function resetDeckProgress(userId: string, deckId: string) {
+    await db.delete(cardReviews).where(
+        and(
+            eq(cardReviews.userId, userId),
+            sql`${cardReviews.flashcardId} IN (
+                    SELECT ${flashcards.id} FROM ${flashcards} 
+                    WHERE ${flashcards.deckId} = ${deckId}
+                )`
         )
+    )
 }

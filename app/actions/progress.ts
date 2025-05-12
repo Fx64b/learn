@@ -1,7 +1,7 @@
 'use server'
 
 import { db } from '@/db'
-import { cardReviews, decks, flashcards } from '@/db/schema'
+import { cardReviews, decks, flashcards, reviewEvents } from '@/db/schema'
 import { authOptions } from '@/lib/auth'
 import { and, desc, eq, gte, isNull, lte, or, sql } from 'drizzle-orm'
 
@@ -21,39 +21,43 @@ export async function getLearningProgress() {
 
     const dailyProgress = await db
         .select({
-            date: sql<string>`DATE(${cardReviews.bewertetAm}, 'unixepoch', 'localtime')`.as(
+            date: sql<string>`DATE(${reviewEvents.bewertetAm}, 'unixepoch', 'localtime')`.as(
                 'date'
             ),
             cardsReviewed: sql<number>`COUNT(*)`.as('cardsReviewed'),
             correctPercentage:
-                sql<number>`CAST(SUM(CASE WHEN ${cardReviews.bewertung} >= 3 THEN 1 ELSE 0 END) * 100.0 / COUNT(*) AS INTEGER)`.as(
+                sql<number>`CAST(SUM(CASE WHEN ${reviewEvents.bewertung} >= 3 THEN 1 ELSE 0 END) * 100.0 / COUNT(*) AS INTEGER)`.as(
                     'correctPercentage'
                 ),
         })
-        .from(cardReviews)
+        .from(reviewEvents)
         .where(
             and(
-                eq(cardReviews.userId, userId),
-                gte(cardReviews.bewertetAm, thirtyDaysAgo)
+                eq(reviewEvents.userId, userId),
+                gte(reviewEvents.bewertetAm, thirtyDaysAgo)
             )
         )
-        .groupBy(sql`DATE(${cardReviews.bewertetAm}, 'unixepoch', 'localtime')`)
-        .orderBy(sql`DATE(${cardReviews.bewertetAm}, 'unixepoch', 'localtime')`)
+        .groupBy(
+            sql`DATE(${reviewEvents.bewertetAm}, 'unixepoch', 'localtime')`
+        )
+        .orderBy(
+            sql`DATE(${reviewEvents.bewertetAm}, 'unixepoch', 'localtime')`
+        )
 
     const totalReviews = await db
         .select({
             count: sql<number>`COUNT(*)`.as('count'),
         })
-        .from(cardReviews)
-        .where(eq(cardReviews.userId, userId))
+        .from(reviewEvents)
+        .where(eq(reviewEvents.userId, userId))
 
     const totalCorrect = await db
         .select({
             count: sql<number>`COUNT(*)`.as('count'),
         })
-        .from(cardReviews)
+        .from(reviewEvents)
         .where(
-            and(eq(cardReviews.userId, userId), gte(cardReviews.bewertung, 3))
+            and(eq(reviewEvents.userId, userId), gte(reviewEvents.bewertung, 3))
         )
 
     const streak = await calculateStreak(userId)
@@ -127,15 +131,19 @@ export async function getLearningProgress() {
 async function calculateStreak(userId: string): Promise<number> {
     const reviewDates = await db
         .select({
-            date: sql<string>`DATE(${cardReviews.bewertetAm}, 'unixepoch', 'localtime')`.as(
+            date: sql<string>`DATE(${reviewEvents.bewertetAm}, 'unixepoch', 'localtime')`.as(
                 'date'
             ),
         })
-        .from(cardReviews)
-        .where(eq(cardReviews.userId, userId))
-        .groupBy(sql`DATE(${cardReviews.bewertetAm}, 'unixepoch', 'localtime')`)
+        .from(reviewEvents)
+        .where(eq(reviewEvents.userId, userId))
+        .groupBy(
+            sql`DATE(${reviewEvents.bewertetAm}, 'unixepoch', 'localtime')`
+        )
         .orderBy(
-            desc(sql`DATE(${cardReviews.bewertetAm}, 'unixepoch', 'localtime')`)
+            desc(
+                sql`DATE(${reviewEvents.bewertetAm}, 'unixepoch', 'localtime')`
+            )
         )
 
     if (reviewDates.length === 0) return 0

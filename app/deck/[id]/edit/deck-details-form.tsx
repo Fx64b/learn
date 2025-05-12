@@ -3,22 +3,35 @@
 import { cn } from '@/lib/utils'
 import type { DeckType } from '@/types'
 import { format } from 'date-fns'
-import { CalendarIcon, Loader2, Save, X } from 'lucide-react'
+import {
+    AlertTriangle,
+    CalendarIcon,
+    Loader2,
+    RotateCcw,
+    Save,
+    X,
+} from 'lucide-react'
 import { toast } from 'sonner'
 
 import type React from 'react'
 import { useState } from 'react'
 
-import { updateDeck } from '@/app/actions/deck'
+import { resetDeckProgress, updateDeck } from '@/app/actions/deck'
 
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
@@ -34,6 +47,7 @@ interface DeckDetailsFormProps {
 
 export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [isResetting, setIsResetting] = useState(false)
     const [formData, setFormData] = useState({
         id: deck.id,
         titel: deck.titel,
@@ -74,9 +88,30 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
         }
     }
 
+    const handleResetProgress = async () => {
+        setIsResetting(true)
+        try {
+            const result = await resetDeckProgress(deck.id)
+
+            if (result.success) {
+                toast.success('Lernfortschritt erfolgreich zurückgesetzt!')
+            } else {
+                toast.error('Fehler beim Zurücksetzen des Lernfortschritts')
+            }
+        } catch (error) {
+            console.error(
+                'Fehler beim Zurücksetzen des Lernfortschritts:',
+                error
+            )
+            toast.error('Ein unerwarteter Fehler ist aufgetreten')
+        } finally {
+            setIsResetting(false)
+        }
+    }
+
     return (
         <Card className="w-full max-w-3xl shadow-md">
-            <CardHeader className="bg-muted/30 border-b">
+            <CardHeader>
                 <CardTitle className="text-xl md:text-2xl">
                     Deck-Details bearbeiten
                 </CardTitle>
@@ -224,7 +259,58 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                             </p>
                         </div>
                     </div>
-                    <div className="bg-muted/20 flex flex-col justify-end gap-3 border-t p-6 sm:flex-row">
+                    <div className="flex flex-col justify-between gap-3 p-6 sm:flex-row">
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    className="w-full sm:w-auto"
+                                    disabled={isResetting}
+                                >
+                                    {isResetting ? (
+                                        <>
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            <span>Wird zurückgesetzt...</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <RotateCcw className="mr-2 h-4 w-4" />
+                                            <span>
+                                                Lernfortschritt zurücksetzen
+                                            </span>
+                                        </>
+                                    )}
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle className="flex items-center gap-2">
+                                        <AlertTriangle className="h-5 w-5 text-amber-500" />
+                                        Lernfortschritt zurücksetzen?
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        Der gesamte Lernfortschritt für{' '}
+                                        <strong>&quot;{formData.titel}&quot;</strong> wird
+                                        gelöscht. Diese Aktion kann nicht
+                                        rückgängig gemacht werden. Alle Karten
+                                        werden als noch nie gelernt markiert.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>
+                                        Abbrechen
+                                    </AlertDialogCancel>
+                                    <AlertDialogAction
+                                        onClick={handleResetProgress}
+                                        className="bg-red-500 hover:bg-red-600"
+                                    >
+                                        Zurücksetzen
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+
                         <Button
                             type="submit"
                             disabled={isSubmitting}

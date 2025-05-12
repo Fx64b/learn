@@ -74,7 +74,7 @@ export function DeckCard({
                     )}
                 </CardDescription>
             </CardHeader>
-            <CardContent className="pb-2 mt-auto">
+            <CardContent className="mt-auto pb-2">
                 <div className="space-y-1">
                     <p className="text-sm">
                         <b>{totalCards}</b> Karten insgesamt
@@ -86,7 +86,7 @@ export function DeckCard({
                     )}
                 </div>
             </CardContent>
-            <CardFooter className="flex mt-auto gap-8 md:gap-2">
+            <CardFooter className="mt-auto flex gap-8 md:gap-2">
                 <Link href={`/learn/${deck.id}`} className="flex-1">
                     <Button className="w-full" size="sm">
                         Lernen
