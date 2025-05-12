@@ -12,6 +12,7 @@ export const decks = sqliteTable('decks', {
     titel: text('titel').notNull(),
     beschreibung: text('beschreibung'),
     kategorie: text('kategorie').notNull(),
+    aktivBis: integer('aktiv_bis', { mode: 'timestamp' }),
     erstelltAm: integer('erstellt_am', { mode: 'timestamp' })
         .default(sql`CURRENT_TIMESTAMP`)
         .notNull(),

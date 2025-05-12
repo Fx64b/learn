@@ -17,11 +17,15 @@ export async function createDeck(formData: FormData) {
         const titel = formData.get('titel') as string
         const beschreibung = formData.get('beschreibung') as string
         const kategorie = formData.get('kategorie') as string
+        const aktivBisStr = formData.get('aktivBis') as string | null
+
+        const aktivBis = aktivBisStr ? new Date(aktivBisStr) : null
 
         const id = await dbUtils.createDeck({
             titel,
             beschreibung,
             kategorie,
+            aktivBis, // Add the new field
             userId: session.user.id,
         })
 
@@ -44,5 +48,42 @@ export async function getAllDecks(): Promise<DeckType[]> {
     } catch (error) {
         console.error('Fehler beim Laden der Decks:', error)
         return []
+    }
+}
+
+export async function updateDeck(formData: FormData) {
+    try {
+        const session = await getServerSession(authOptions)
+        if (!session?.user?.id) {
+            return { success: false, error: 'Not authenticated' }
+        }
+
+        const id = formData.get('id') as string
+        const titel = formData.get('titel') as string
+        const beschreibung = formData.get('beschreibung') as string
+        const kategorie = formData.get('kategorie') as string
+        const aktivBisStr = formData.get('aktivBis') as string | null
+
+        const aktivBis = aktivBisStr ? new Date(aktivBisStr) : null
+
+        const existingDeck = await dbUtils.getDeckById(id, session.user.id)
+        if (!existingDeck) {
+            return { success: false, error: 'Deck not found or not authorized' }
+        }
+
+        await dbUtils.updateDeck({
+            id,
+            titel,
+            beschreibung,
+            kategorie,
+            aktivBis,
+        })
+
+        revalidatePath('/')
+        revalidatePath(`/deck/${id}/edit`)
+        return { success: true }
+    } catch (error) {
+        console.error('Fehler beim Aktualisieren des Decks:', error)
+        return { success: false, error: 'Fehler beim Aktualisieren des Decks' }
     }
 }

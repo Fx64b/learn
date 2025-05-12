@@ -4,27 +4,11 @@ Todos and improvements according to ai.
 
 ## Critical Missing Features:
 
-1. **Profile/Settings Page**
-
-    - User navigation dropdown links to `/profile` but the page doesn't exist
-    - Add user settings (name, email, preferences)
-    - Account management options
-
-2. **Export Functionality**
-    - Currently only import from JSON exists
-    - Add deck/card export to JSON, CSV, or PDF
-    - Include backup/restore features
+1**Export Functionality** - Currently only import from JSON exists - Add deck/card export to JSON, CSV, or PDF - Include backup/restore features
 
 ## Mobile Experience Improvements:
 
-1. **Touch Optimization**
-
-    - Improve swipe gestures for flashcards
-    - Add larger touch targets for mobile buttons
-    - Optimize loading states for mobile devices
-    - Add pull-to-refresh on deck lists
-
-2. **Keyboard Shortcuts Info**
+1**Keyboard Shortcuts Info**
 
     - Current keyboard shortcuts aren't discoverable
     - Add a help modal with key commands

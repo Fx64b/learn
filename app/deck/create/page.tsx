@@ -1,6 +1,7 @@
 'use client'
 
-import { ArrowLeft } from 'lucide-react'
+import { format } from 'date-fns'
+import { ArrowLeft, CalendarIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { useState } from 'react'
@@ -11,9 +12,15 @@ import { useRouter } from 'next/navigation'
 import { createDeck } from '@/app/actions/deck'
 
 import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from '@/components/ui/popover'
 
 export default function CreateDeckPage() {
     const router = useRouter()
@@ -22,6 +29,7 @@ export default function CreateDeckPage() {
         titel: '',
         beschreibung: '',
         kategorie: '',
+        aktivBis: null as Date | null,
     })
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -32,6 +40,10 @@ export default function CreateDeckPage() {
         formDataToSend.append('titel', formData.titel)
         formDataToSend.append('beschreibung', formData.beschreibung)
         formDataToSend.append('kategorie', formData.kategorie)
+
+        if (formData.aktivBis) {
+            formDataToSend.append('aktivBis', formData.aktivBis.toISOString())
+        }
 
         const result = await createDeck(formDataToSend)
 
@@ -114,6 +126,67 @@ export default function CreateDeckPage() {
                                 placeholder="z.B. Mathematik, Sprachen, etc."
                                 required
                             />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="aktivBis">
+                                Lernfrist (optional)
+                            </Label>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        variant="outline"
+                                        className="w-full justify-start text-left font-normal"
+                                        id="aktivBis"
+                                    >
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        {formData.aktivBis ? (
+                                            format(
+                                                formData.aktivBis,
+                                                'dd.MM.yyyy'
+                                            )
+                                        ) : (
+                                            <span className="text-muted-foreground">
+                                                Kein Datum ausgewählt
+                                            </span>
+                                        )}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0">
+                                    <Calendar
+                                        mode="single"
+                                        selected={
+                                            formData.aktivBis || undefined
+                                        }
+                                        onSelect={(date) =>
+                                            setFormData((prev) => ({
+                                                ...prev,
+                                                aktivBis: date || null,
+                                            }))
+                                        }
+                                        initialFocus
+                                    />
+                                </PopoverContent>
+                            </Popover>
+                            {formData.aktivBis && (
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            aktivBis: null,
+                                        }))
+                                    }
+                                    className="mt-2"
+                                >
+                                    Datum entfernen
+                                </Button>
+                            )}
+                            <p className="text-muted-foreground text-xs">
+                                Datum, bis zu dem die Karten gelernt werden
+                                sollen (z.B. Prüfungsdatum)
+                            </p>
                         </div>
 
                         <div className="flex items-center justify-between gap-2 pt-4 md:justify-end">
