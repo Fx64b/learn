@@ -14,8 +14,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import CardList from './card-list'
 import DeckDetailsForm from './deck-details-form'
 
-// We'll create this component
-
 export default async function EditDeckPage({
     params,
 }: {

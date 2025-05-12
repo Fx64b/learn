@@ -1,6 +1,6 @@
 import { DeckType } from '@/types'
 import { format } from 'date-fns'
-import {AlertTriangle, PencilIcon} from 'lucide-react'
+import { AlertTriangle, PencilIcon } from 'lucide-react'
 
 import Link from 'next/link'
 
@@ -93,7 +93,9 @@ export function DeckCard({
                     </Button>
                 </Link>
                 <Button variant="outline" size="sm">
-                    <Link href={`/deck/${deck.id}/edit`}><PencilIcon /></Link>
+                    <Link href={`/deck/${deck.id}/edit`}>
+                        <PencilIcon />
+                    </Link>
                 </Button>
             </CardFooter>
         </Card>
