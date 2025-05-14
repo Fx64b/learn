@@ -373,7 +373,7 @@ export default function LernModusClient({
                     />
                 )}
 
-                <div className="text-muted-foreground mt-4 text-center text-sm opacity-0 md:opacity-100">
+                <div className="text-muted-foreground mt-4 hidden text-center text-sm md:block">
                     <p>
                         Drücke die{' '}
                         <kbd className="bg-muted border-border rounded-md border px-2 py-1.5 text-xs font-semibold">

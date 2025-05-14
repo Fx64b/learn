@@ -175,10 +175,10 @@ export function Flashcard({
                                                     }}
                                                     className="flex min-h-[44px] items-center justify-center rounded bg-red-500 px-2 py-2 text-xs text-white hover:bg-red-600 sm:text-sm dark:text-black"
                                                 >
-                                                    <span className="hidden md:inline">
+                                                    <span className="hidden select-none md:inline">
                                                         Wieder (1)
                                                     </span>
-                                                    <span className="md:hidden">
+                                                    <span className="select-none md:hidden">
                                                         Wieder
                                                     </span>
                                                 </button>
@@ -189,10 +189,10 @@ export function Flashcard({
                                                     }}
                                                     className="flex min-h-[44px] items-center justify-center rounded bg-yellow-500 px-2 py-2 text-xs text-white hover:bg-yellow-600 sm:text-sm dark:text-black"
                                                 >
-                                                    <span className="hidden md:inline">
+                                                    <span className="hidden select-none md:inline">
                                                         Schwer (2)
                                                     </span>
-                                                    <span className="md:hidden">
+                                                    <span className="select-none md:hidden">
                                                         Schwer
                                                     </span>
                                                 </button>
@@ -203,10 +203,10 @@ export function Flashcard({
                                                     }}
                                                     className="flex min-h-[44px] items-center justify-center rounded bg-blue-500 px-2 py-2 text-xs text-white hover:bg-blue-600 sm:text-sm"
                                                 >
-                                                    <span className="hidden md:inline">
+                                                    <span className="hidden select-none md:inline">
                                                         Gut (3)
                                                     </span>
-                                                    <span className="md:hidden">
+                                                    <span className="select-none md:hidden">
                                                         Gut
                                                     </span>
                                                 </button>
@@ -217,10 +217,10 @@ export function Flashcard({
                                                     }}
                                                     className="flex min-h-[44px] items-center justify-center rounded bg-green-500 px-2 py-2 text-xs text-white hover:bg-green-600 sm:text-sm"
                                                 >
-                                                    <span className="hidden md:inline">
+                                                    <span className="hidden select-none md:inline">
                                                         Einfach (4)
                                                     </span>
-                                                    <span className="md:hidden">
+                                                    <span className="select-none md:hidden">
                                                         Einfach
                                                     </span>
                                                 </button>
