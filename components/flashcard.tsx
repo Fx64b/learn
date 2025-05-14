@@ -121,7 +121,7 @@ export function Flashcard({
                     >
                         <Card className="h-full w-full shadow-md transition-shadow hover:shadow-lg">
                             <CardContent className="flex h-full items-center justify-center p-4 sm:p-6">
-                                <div className="text-center">
+                                <div className="max-h-full w-full overflow-auto text-center">
                                     <p className="text-base leading-relaxed break-words whitespace-pre-line sm:text-lg md:text-xl lg:text-2xl">
                                         {vorderseite}
                                     </p>
@@ -151,8 +151,8 @@ export function Flashcard({
                         <Card className="border-primary/30 h-full w-full border-2 shadow-md">
                             <CardContent className="h-full overflow-hidden">
                                 <div className="flex h-full flex-col">
-                                    <div className="flex min-h-0 flex-1 items-center justify-center py-4 text-center">
-                                        <div>
+                                    <div className="flex min-h-0 flex-1 items-center justify-center overflow-auto py-4 text-center">
+                                        <div className="w-full">
                                             <p className="text-muted-foreground mb-2 text-xs">
                                                 Antwort
                                             </p>

@@ -3,7 +3,13 @@ import { and, desc, eq, gte, isNull, lte, or, sql } from 'drizzle-orm'
 import { nanoid } from 'nanoid'
 
 import { db } from './index'
-import { cardReviews, decks, flashcards, reviewEvents } from './schema'
+import {
+    cardReviews,
+    decks,
+    flashcards,
+    reviewEvents,
+    studySessions,
+} from './schema'
 
 export async function getAllDecks(userId: string) {
     return await db.select().from(decks).where(eq(decks.userId, userId))
@@ -367,4 +373,57 @@ export async function resetDeckProgress(userId: string, deckId: string) {
                 )`
         )
     )
+}
+
+export async function deleteDeck(userId: string, deckId: string) {
+    try {
+        await db.transaction(async (tx) => {
+            const deckFlashcards = await tx
+                .select({ id: flashcards.id })
+                .from(flashcards)
+                .where(eq(flashcards.deckId, deckId))
+
+            const flashcardIds = deckFlashcards.map((card) => card.id)
+
+            if (flashcardIds.length > 0) {
+                await tx
+                    .delete(cardReviews)
+                    .where(
+                        and(
+                            eq(cardReviews.userId, userId),
+                            sql`${cardReviews.flashcardId} IN (${sql.join(flashcardIds)})`
+                        )
+                    )
+
+                await tx
+                    .delete(reviewEvents)
+                    .where(
+                        and(
+                            eq(reviewEvents.userId, userId),
+                            sql`${reviewEvents.flashcardId} IN (${sql.join(flashcardIds)})`
+                        )
+                    )
+            }
+
+            await tx
+                .delete(studySessions)
+                .where(
+                    and(
+                        eq(studySessions.deckId, deckId),
+                        eq(studySessions.userId, userId)
+                    )
+                )
+
+            await tx.delete(flashcards).where(eq(flashcards.deckId, deckId))
+
+            await tx
+                .delete(decks)
+                .where(and(eq(decks.id, deckId), eq(decks.userId, userId)))
+        })
+
+        return { success: true }
+    } catch (error) {
+        console.error('Error deleting deck and related data:', error)
+        throw new Error('Failed to delete deck and related content')
+    }
 }
