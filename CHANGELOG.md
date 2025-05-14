@@ -1,3 +1,16 @@
+# [1.6.0](https://github.com/Fx64b/learn/compare/v1.5.0...v1.6.0) (2025-05-14)
+
+
+### Bug Fixes
+
+* **deck:** eslint errors because of " instead of &quot; ([4566b78](https://github.com/Fx64b/learn/commit/4566b78cfa37e612035a00864202bdadbf6d3825))
+
+
+### Features
+
+* **deck:** add deck export functionality with clipboard support ([8ab6129](https://github.com/Fx64b/learn/commit/8ab61297fe71c6d40a8490928e309f6dc7d0ef47))
+* **deck:** implement deck deletion functionality with confirmation dialog ([d4822a3](https://github.com/Fx64b/learn/commit/d4822a396b17dc6379f7c626eed0efdbf9ef26a9))
+
 # [1.5.0](https://github.com/Fx64b/learn/compare/v1.4.0...v1.5.0) (2025-05-12)
 
 
