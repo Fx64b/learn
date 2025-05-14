@@ -1,3 +1,10 @@
+## [1.6.1](https://github.com/Fx64b/learn/compare/v1.6.0...v1.6.1) (2025-05-14)
+
+
+### Bug Fixes
+
+* **lern-modus:** improve UX by updating current index without waiting for API response ([ed60042](https://github.com/Fx64b/learn/commit/ed600422e1403005d7a16208c73ffae6226e81c1))
+
 # [1.6.0](https://github.com/Fx64b/learn/compare/v1.5.0...v1.6.0) (2025-05-14)
 
 
