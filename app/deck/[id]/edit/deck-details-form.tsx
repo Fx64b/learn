@@ -62,7 +62,10 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [isResetting, setIsResetting] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
-    const [exportData, setExportData] = useState<any[] | null>(null)
+    const [exportData, setExportData] = useState<{
+        vorderseite: string,
+        rueckseite: string,
+    }[] | null>(null)
     const [isExportDialogOpen, setIsExportDialogOpen] = useState(false)
     const [isCopied, setIsCopied] = useState(false)
     const [isLoadingExport, setIsLoadingExport] = useState(false)
@@ -506,7 +509,7 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                     <DialogContent>
                         <DialogHeader>
                             <DialogTitle>
-                                Deck "{deck.titel}" exportieren
+                                Deck &quot;{deck.titel}&quot; exportieren
                             </DialogTitle>
                             <DialogDescription>
                                 JSON-Format zum Importieren in andere Decks oder
@@ -515,7 +518,7 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                         </DialogHeader>
 
                         {/*Dirty fix because for some fucking reason the dialog has weird overwrites*/}
-                        <div className="py-4 w-[300px] md:max-w-md">
+                        <div className="w-[300px] py-4 md:max-w-md">
                             <div className="bg-muted max-h-[50vh] overflow-auto rounded p-2 sm:max-h-96 sm:p-4">
                                 <div className="overflow-x-auto">
                                     <pre
