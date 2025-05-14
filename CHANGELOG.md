@@ -1,3 +1,10 @@
+## [1.6.2](https://github.com/Fx64b/learn/compare/v1.6.1...v1.6.2) (2025-05-14)
+
+
+### Bug Fixes
+
+* **deck-details:** improve type definitions and enhance button accessibility ([168b446](https://github.com/Fx64b/learn/commit/168b446f1580163fedbcf07e9c2db02e4b97b4d8))
+
 ## [1.6.1](https://github.com/Fx64b/learn/compare/v1.6.0...v1.6.1) (2025-05-14)
 
 
