@@ -113,3 +113,25 @@ export async function resetDeckProgress(deckId: string) {
         }
     }
 }
+
+export async function deleteDeck(deckId: string) {
+    try {
+        const session = await getServerSession(authOptions)
+        if (!session?.user?.id) {
+            return { success: false, error: 'Not authenticated' }
+        }
+
+        const existingDeck = await dbUtils.getDeckById(deckId, session.user.id)
+        if (!existingDeck) {
+            return { success: false, error: 'Deck not found or not authorized' }
+        }
+
+        await dbUtils.deleteDeck(session.user.id, deckId)
+
+        revalidatePath('/')
+        return { success: true }
+    } catch (error) {
+        console.error('Fehler beim Löschen des Decks:', error)
+        return { success: false, error: 'Fehler beim Löschen des Decks' }
+    }
+}
