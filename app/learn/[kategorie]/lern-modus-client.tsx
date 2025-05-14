@@ -242,13 +242,15 @@ export default function LernModusClient({
 
         const aktuelleKarte = flashcards[aktuellerIndex]
 
+        // Don't wait for api response, to improve UX on slow connections
+        setAktuellerIndex(aktuellerIndex + 1)
+
         const result = await reviewCard(aktuelleKarte.id, bewertung)
 
         setHasUnsavedSession(true)
 
         if (result.success) {
             if (aktuellerIndex < flashcards.length - 1) {
-                setAktuellerIndex(aktuellerIndex + 1)
             } else {
                 setIstLernprozessAbgeschlossen(true)
                 toast.success('Alle Karten wiederholt!', {
