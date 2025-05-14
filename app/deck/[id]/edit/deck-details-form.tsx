@@ -6,6 +6,9 @@ import { format } from 'date-fns'
 import {
     AlertTriangle,
     CalendarIcon,
+    Check,
+    Copy,
+    Download,
     Loader2,
     RotateCcw,
     Save,
@@ -18,6 +21,7 @@ import type React from 'react'
 import { useState } from 'react'
 
 import { deleteDeck, resetDeckProgress, updateDeck } from '@/app/actions/deck'
+import { getExportableFlashcards } from '@/app/actions/export'
 
 import {
     AlertDialog,
@@ -33,6 +37,14 @@ import {
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
@@ -50,6 +62,10 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [isResetting, setIsResetting] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
+    const [exportData, setExportData] = useState<any[] | null>(null)
+    const [isExportDialogOpen, setIsExportDialogOpen] = useState(false)
+    const [isCopied, setIsCopied] = useState(false)
+    const [isLoadingExport, setIsLoadingExport] = useState(false)
     const [formData, setFormData] = useState({
         id: deck.id,
         titel: deck.titel,
@@ -127,6 +143,36 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
             toast.error('Ein unerwarteter Fehler ist aufgetreten')
         } finally {
             setIsDeleting(false)
+        }
+    }
+
+    const handleExport = async () => {
+        setIsLoadingExport(true)
+        try {
+            const data = await getExportableFlashcards(deck.id)
+            setExportData(data)
+            setIsExportDialogOpen(true)
+        } catch (error) {
+            console.error('Error fetching export data:', error)
+            toast.error('Fehler beim Exportieren des Decks')
+        } finally {
+            setIsLoadingExport(false)
+        }
+    }
+
+    const copyToClipboard = async () => {
+        if (!exportData) return
+
+        try {
+            await navigator.clipboard.writeText(
+                JSON.stringify(exportData, null, 2)
+            )
+            setIsCopied(true)
+            toast.success('JSON in die Zwischenablage kopiert')
+            setTimeout(() => setIsCopied(false), 2000)
+        } catch (err) {
+            toast.error('Fehler beim Kopieren')
+            console.error('Failed to copy: ', err)
         }
     }
 
@@ -283,7 +329,26 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                                 </p>
                             </div>
                         </div>
-                        <div className="flex justify-end pt-4">
+                        <div className="flex flex-col justify-end gap-2 pt-4 md:flex-row">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={handleExport}
+                                disabled={isLoadingExport}
+                                className="gap-2"
+                            >
+                                {isLoadingExport ? (
+                                    <>
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                        <span>Lädt...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Download className="h-4 w-4" />
+                                        <span>Exportieren</span>
+                                    </>
+                                )}
+                            </Button>
                             <Button
                                 type="submit"
                                 disabled={isSubmitting}
@@ -313,7 +378,7 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                 </CardHeader>
                 <CardContent className="p-6">
                     <div className="flex flex-col space-y-4">
-                        <div>
+                        <div className="flex flex-col items-center md:items-start">
                             <p className="text-muted-foreground mb-4 text-sm">
                                 Die folgenden Aktionen können nicht rückgängig
                                 gemacht werden. Bitte mit Vorsicht verwenden.
@@ -433,6 +498,58 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                     </div>
                 </CardContent>
             </Card>
+            {exportData && (
+                <Dialog
+                    open={isExportDialogOpen}
+                    onOpenChange={setIsExportDialogOpen}
+                >
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>
+                                Deck "{deck.titel}" exportieren
+                            </DialogTitle>
+                            <DialogDescription>
+                                JSON-Format zum Importieren in andere Decks oder
+                                zum Backup
+                            </DialogDescription>
+                        </DialogHeader>
+
+                        {/*Dirty fix because for some fucking reason the dialog has weird overwrites*/}
+                        <div className="py-4 w-[300px] md:max-w-md">
+                            <div className="bg-muted max-h-[50vh] overflow-auto rounded p-2 sm:max-h-96 sm:p-4">
+                                <div className="overflow-x-auto">
+                                    <pre
+                                        className="text-xs sm:text-sm"
+                                        style={{ tabSize: 2 }}
+                                    >
+                                        {JSON.stringify(exportData, null, 2)}
+                                    </pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <DialogFooter>
+                            <Button
+                                variant="outline"
+                                onClick={copyToClipboard}
+                                className="gap-2"
+                            >
+                                {isCopied ? (
+                                    <>
+                                        <Check className="h-4 w-4" />
+                                        Kopiert
+                                    </>
+                                ) : (
+                                    <>
+                                        <Copy className="h-4 w-4" />
+                                        In Zwischenablage kopieren
+                                    </>
+                                )}
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+            )}
         </div>
     )
 }
