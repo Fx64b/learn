@@ -81,7 +81,7 @@ export default function TodoPage() {
                             This feature is currently under development
                         </p>
                         <p className="mx-auto max-w-2xl">
-                            You've discovered a page that's still being crafted.
+                            You&apos;ve discovered a page that&apos;s still being crafted.
                             Our development team is working hard to bring you
                             something amazing. Check back soon!
                         </p>
@@ -95,7 +95,7 @@ export default function TodoPage() {
                                 Development Progress
                             </CardTitle>
                             <CardDescription className="text-sm sm:text-base">
-                                Here's what our team is currently working on
+                                Here&apos;s what our team is currently working on
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="px-4 sm:px-6">
@@ -134,7 +134,7 @@ export default function TodoPage() {
                     {/* Footer Message */}
                     <div className="mt-12 text-center">
                         <p className="text-sm text-gray-500">
-                            Have questions or suggestions? We'd love to hear
+                            Have questions or suggestions? We&apos;d love to hear
                             from you while we build this feature.
                         </p>
                         <p className="mt-4 text-sm text-gray-500">

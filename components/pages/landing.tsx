@@ -10,7 +10,6 @@ import {
 
 import Link from 'next/link'
 
-import { Logo } from '@/components/misc/logo'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
