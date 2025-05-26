@@ -4,6 +4,7 @@ import { join } from 'path'
 
 import Link from 'next/link'
 
+import { Logo } from '@/components/misc/logo'
 import { Separator } from '@/components/ui/separator'
 
 let cachedVersion: string | null = null
@@ -21,9 +22,113 @@ export function Footer() {
     const currentYear = new Date().getFullYear()
 
     return (
-        <footer className="border-border mt-auto border-t py-6">
-            <div className="text-muted-foreground container mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 px-4 text-sm md:flex-row">
-                <div className="flex items-center gap-2">
+        <footer className="mt-8 py-6">
+            <div className="border-border container mx-auto border-t px-4">
+                <div className="mt-8 grid gap-8 md:grid-cols-4">
+                    <div>
+                        <div className="mb-4 flex items-center space-x-2">
+                            <Logo />
+                        </div>
+                        <p className="text-muted-foreground">
+                            The modern flashcard app for effective learning
+                            using spaced repetition.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h4 className="mb-4 font-semibold">Product</h4>
+                        <ul className="text-muted-foreground space-y-2">
+                            <li>
+                                <Link
+                                    href="/todo"
+                                    className="hover:text-foreground transition-colors"
+                                >
+                                    Features
+                                </Link>
+                            </li>
+                            <li>
+                                <Link
+                                    href="/todo"
+                                    className="hover:text-foreground transition-colors"
+                                >
+                                    Pricing
+                                </Link>
+                            </li>
+                            <li>
+                                <Link
+                                    href="/todo"
+                                    className="hover:text-foreground transition-colors"
+                                >
+                                    Roadmap
+                                </Link>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="mb-4 font-semibold">Support</h4>
+                        <ul className="text-muted-foreground space-y-2">
+                            <li>
+                                <Link
+                                    href="/todo"
+                                    className="hover:text-foreground transition-colors"
+                                >
+                                    Documentation
+                                </Link>
+                            </li>
+                            <li>
+                                <Link
+                                    href="/todo"
+                                    className="hover:text-foreground transition-colors"
+                                >
+                                    Help Center
+                                </Link>
+                            </li>
+                            <li>
+                                <Link
+                                    href="/todo"
+                                    className="hover:text-foreground transition-colors"
+                                >
+                                    Contact
+                                </Link>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 className="mb-4 font-semibold">Legal</h4>
+                        <ul className="text-muted-foreground space-y-2">
+                            <li>
+                                <Link
+                                    href="/todo"
+                                    className="hover:text-foreground transition-colors"
+                                >
+                                    Privacy Policy
+                                </Link>
+                            </li>
+                            <li>
+                                <Link
+                                    href="/todo"
+                                    className="hover:text-foreground transition-colors"
+                                >
+                                    Terms of Service
+                                </Link>
+                            </li>
+                            <li>
+                                <Link
+                                    href="https://github.com/Fx64b/learn/blob/main/LICENSE"
+                                    className="hover:text-foreground transition-colors"
+                                >
+                                    License
+                                </Link>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div className="text-muted-foreground border-border container mx-auto mt-8 flex max-w-5xl flex-col items-center justify-between gap-4 border-t px-4 text-sm md:flex-row">
+                <div className="mt-8 flex items-center gap-2">
                     <span>© {currentYear}</span>
                     <span className="flex items-center">
                         Made with{' '}

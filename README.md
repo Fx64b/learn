@@ -107,12 +107,6 @@ pnpm db:generate
 pnpm db:migrate
 ```
 
-4. Seed the database with example data (optional):
-
-```bash
-pnpm db:seed
-```
-
 ### 5. Run the Development Server
 
 ```bash
@@ -132,7 +126,6 @@ Open [http://localhost:3000](http://localhost:3000) to view the application.
 | `pnpm format`      | Format code with Prettier               |
 | `pnpm db:generate` | Generate DB migrations                  |
 | `pnpm db:migrate`  | Run DB migrations                       |
-| `pnpm db:seed`     | Seed the database with example data     |
 
 ## Project Structure
 

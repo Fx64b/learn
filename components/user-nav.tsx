@@ -29,8 +29,10 @@ export function UserNav() {
 
     if (!session) {
         return (
-            <Button variant="ghost" size="sm" asChild>
-                <Link href="/login">Anmelden</Link>
+            <Button size="sm" asChild>
+                <Link href="/login" className="flex items-center space-x-3">
+                    Sign In
+                </Link>
             </Button>
         )
     }
