@@ -29,13 +29,11 @@ export function UserNav() {
 
     if (!session) {
         return (
-            <div>
-                <div className="flex items-center space-x-3">
-                    <Button size="sm" asChild>
-                        <Link href="/login">Sign In</Link>
-                    </Button>
-                </div>
-            </div>
+            <Button size="sm" asChild>
+                <Link href="/login" className="flex items-center space-x-3">
+                    Sign In
+                </Link>
+            </Button>
         )
     }
 
