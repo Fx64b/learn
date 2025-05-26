@@ -26,12 +26,13 @@ export default async function Dashboard({ session }: DashboardProps) {
 
     const progressData = session ? await getLearningProgress() : null
 
+    const allDueCards = session ? await getDueCards(session?.user.id) : []
+
     const deckStats = await Promise.all(
         decks.map(async (deck) => {
             const totalCards = await getFlashcardsByDeckId(deck.id)
 
-            const dueCards = session ? await getDueCards(session?.user.id) : []
-            const deckDueCards = dueCards.filter(
+            const deckDueCards = allDueCards.filter(
                 (card) => card.flashcard.deckId === deck.id
             )
 
