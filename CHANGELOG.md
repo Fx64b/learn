@@ -1,3 +1,15 @@
+# [1.7.0](https://github.com/Fx64b/learn/compare/v1.6.2...v1.7.0) (2025-05-26)
+
+
+### Bug Fixes
+
+* **landing-page:** replace apostrophes with HTML entities for consistency ([c1d532e](https://github.com/Fx64b/learn/commit/c1d532eac613207006e08da1600fc8c601563cf5))
+
+
+### Features
+
+* **landing-page:** implement landing page and dashboard components ([b1de908](https://github.com/Fx64b/learn/commit/b1de90802464341fa57a96b2fef747baa74131ef))
+
 ## [1.6.2](https://github.com/Fx64b/learn/compare/v1.6.1...v1.6.2) (2025-05-14)
 
 
