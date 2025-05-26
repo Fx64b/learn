@@ -132,3 +132,25 @@
     user-select: none;
     -webkit-user-select: none;
 }
+
+@keyframes hammer {
+    0% {
+        transform: rotate(-25deg);
+    }
+    25% {
+        transform: rotate(-25deg);
+    }
+    50% {
+        transform: rotate(10deg);
+    }
+    55% {
+        transform: rotate(10deg);
+    }
+    100% {
+        transform: rotate(-25deg);
+    }
+}
+.animate-hammer {
+    animation: hammer 1.2s ease-in-out infinite;
+    transform-origin: bottom center;
+}

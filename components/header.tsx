@@ -1,41 +1,46 @@
 'use client'
 
-import { useUserPreferences } from '@/store/userPreferences'
-
-import Image from 'next/image'
+import { useSession } from 'next-auth/react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+
+import { Logo } from '@/components/misc/logo'
 
 import { UserNav } from './user-nav'
 
 export function Header() {
-    const userPreferences = useUserPreferences()
-    let theme = userPreferences.theme
-
-    if (theme === 'system') {
-        theme = window.matchMedia('(prefers-color-scheme: dark)').matches
-            ? 'dark'
-            : 'light'
-    }
+    const pathname = usePathname()
+    const isUrlRoot = pathname === '/'
+    const { data: session } = useSession()
 
     return (
-        <header className="border-border border-b">
-            <div className="container mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-                <Link
-                    href="/"
-                    className="flex items-center gap-2 text-2xl font-bold"
-                >
-                    <Image
-                        alt={'logo'}
-                        src={
-                            theme === 'dark'
-                                ? '/logo-dark.png'
-                                : '/logo-light.png'
-                        }
-                        width={40}
-                        height={40}
-                    />
-                    Flashcards
-                </Link>
+        <header>
+            <div className="border-border container mx-auto flex max-w-5xl items-center justify-between border-b px-4 py-3">
+                <Logo />
+
+                {isUrlRoot && !session && (
+                    <nav className="hidden items-center space-x-6 md:flex">
+                        <Link
+                            href="#features"
+                            className="text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                            Features
+                        </Link>
+                        <Link
+                            href="#how-it-works"
+                            className="text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                            How it Works
+                        </Link>
+                        <Link
+                            href="/todo"
+                            className="text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                            Pricing
+                        </Link>
+                    </nav>
+                )}
+
                 <UserNav />
             </div>
         </header>
