@@ -3,6 +3,7 @@
 import { useState } from 'react'
 
 import { signIn } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -18,10 +19,13 @@ import { Input } from '@/components/ui/input'
 export default function LoginPage() {
     const [email, setEmail] = useState('')
     const [isLoading, setIsLoading] = useState(false)
+    const [useCode, setUseCode] = useState(false)
     const [message, setMessage] = useState<{
         type: 'success' | 'error'
         text: string
     } | null>(null)
+
+    const router = useRouter()
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -29,10 +33,12 @@ export default function LoginPage() {
         setMessage(null)
 
         try {
+            const callbackUrl = `/?useCode=${useCode}`
+
             const result = await signIn('email', {
                 email,
                 redirect: false,
-                callbackUrl: '/',
+                callbackUrl,
             })
 
             if (result?.error) {
@@ -41,11 +47,25 @@ export default function LoginPage() {
                     text: 'Ein Fehler ist aufgetreten. Bitte versuche es erneut.',
                 })
             } else {
-                setMessage({
-                    type: 'success',
-                    text: 'Überprüfe deine E-Mail für den Anmeldelink!',
-                })
-                setEmail('')
+                if (useCode) {
+                    setMessage({
+                        type: 'success',
+                        text: 'Code gesendet! Weiterleitung zur Code-Eingabe...',
+                    })
+
+                    // Redirect to code entry page
+                    setTimeout(() => {
+                        router.push(
+                            `/verify-code?email=${encodeURIComponent(email)}`
+                        )
+                    }, 1000)
+                } else {
+                    setMessage({
+                        type: 'success',
+                        text: 'Überprüfe deine E-Mail für den Anmeldelink!',
+                    })
+                    setEmail('')
+                }
             }
         } catch (error) {
             console.error('Login error:', error)
@@ -99,15 +119,30 @@ export default function LoginPage() {
                                 disabled={isLoading}
                             >
                                 {isLoading
-                                    ? 'Sende Link...'
-                                    : 'Login-Link senden'}
+                                    ? 'Sende...'
+                                    : useCode
+                                      ? 'Code senden'
+                                      : 'Anmeldelink senden'}
+                            </Button>
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                className="w-full"
+                                onClick={() => setUseCode(!useCode)}
+                                disabled={isLoading}
+                            >
+                                {useCode
+                                    ? 'Stattdessen Link senden'
+                                    : 'Stattdessen Code senden'}
                             </Button>
                         </div>
                     </form>
                 </CardContent>
                 <CardFooter className="flex justify-center">
                     <p className="text-muted-foreground text-sm">
-                        Du bekommst einen Anmeldelink per E-Mail zugesendet.
+                        {useCode
+                            ? 'Du bekommst einen 6-stelligen Code per E-Mail zugesendet.'
+                            : 'Du bekommst einen Anmeldelink per E-Mail zugesendet.'}
                     </p>
                 </CardFooter>
             </Card>
