@@ -23,7 +23,7 @@ export function Footer() {
 
     return (
         <footer className="mt-8 py-6">
-            <div className="border-border container mx-auto border-t px-4">
+            <div className="border-border container mx-auto max-w-5xl border-t px-4">
                 <div className="mt-8 grid gap-8 md:grid-cols-4">
                     <div>
                         <div className="mb-4 flex items-center space-x-2">
