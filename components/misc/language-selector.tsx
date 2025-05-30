@@ -19,11 +19,10 @@ export function LanguageSelector() {
             value={locale}
             onValueChange={(value) => setLocale(value as 'en' | 'de')}
         >
-            <SelectTrigger className="w-[110px]">
-                <Globe className="mr-2 h-4 w-4" />
+            <SelectTrigger className="w-[70px]">
                 <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="w-[70px]!">
                 <SelectItem value="en">
                     <div className="flex items-center">
                         <span className="mr-2">🇬🇧</span>
