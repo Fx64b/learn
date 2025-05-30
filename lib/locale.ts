@@ -1,5 +1,7 @@
-import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
+
+import { getServerSession } from 'next-auth'
+
 import { getUserPreferences } from '@/app/actions/preferences'
 
 export async function getLocale(): Promise<'en' | 'de'> {

@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState } from 'react'
+
 import { IntlProvider } from 'next-intl'
 
 type Locale = 'en' | 'de'
@@ -26,10 +27,10 @@ interface LocaleProviderProps {
 }
 
 export function LocaleProvider({
-                                   children,
-                                   initialLocale = 'en',
-                                   messages
-                               }: LocaleProviderProps) {
+    children,
+    initialLocale = 'en',
+    messages,
+}: LocaleProviderProps) {
     const [locale, setLocaleState] = useState<Locale>(initialLocale)
     const [isClient, setIsClient] = useState(false)
 
@@ -37,7 +38,8 @@ export function LocaleProvider({
         setIsClient(true)
         // Check localStorage on client side
         const savedLocale = localStorage.getItem('preferred-locale') as Locale
-        if (savedLocale && (['en', 'de'] as const).includes(savedLocale)) { // Fix: use const assertion
+        if (savedLocale && (['en', 'de'] as const).includes(savedLocale)) {
+            // Fix: use const assertion
             setLocaleState(savedLocale)
         }
     }, [])
@@ -52,7 +54,10 @@ export function LocaleProvider({
 
     return (
         <LocaleContext.Provider value={{ locale: currentLocale, setLocale }}>
-            <IntlProvider locale={currentLocale} messages={messages[currentLocale]}>
+            <IntlProvider
+                locale={currentLocale}
+                messages={messages[currentLocale]}
+            >
                 {children}
             </IntlProvider>
         </LocaleContext.Provider>

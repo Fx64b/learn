@@ -1,6 +1,8 @@
 'use client'
 
 import { Globe } from 'lucide-react'
+
+import { useLocale } from '@/components/misc/locale-provider'
 import {
     Select,
     SelectContent,
@@ -8,13 +10,15 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select'
-import { useLocale } from '@/components/misc/locale-provider'
 
 export function LanguageSelector() {
     const { locale, setLocale } = useLocale()
 
     return (
-        <Select value={locale} onValueChange={(value) => setLocale(value as 'en' | 'de')}>
+        <Select
+            value={locale}
+            onValueChange={(value) => setLocale(value as 'en' | 'de')}
+        >
             <SelectTrigger className="w-[110px]">
                 <Globe className="mr-2 h-4 w-4" />
                 <SelectValue />

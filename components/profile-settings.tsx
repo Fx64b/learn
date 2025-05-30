@@ -16,8 +16,11 @@ import { toast } from 'sonner'
 
 import { useState } from 'react'
 
+import { useTranslations } from 'next-intl'
+
 import { updateUserPreferences } from '@/app/actions/preferences'
 
+import { useLocale } from '@/components/misc/locale-provider'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -31,8 +34,6 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
-import { useLocale } from "@/components/misc/locale-provider"
-import { useTranslations } from "next-intl"
 
 interface ProfileSettingsProps {
     initialPreferences: {
@@ -63,7 +64,7 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
         localPrefs.animationsEnabled !== initialPreferences.animationsEnabled ||
         localPrefs.animationSpeed !== initialPreferences.animationSpeed ||
         localPrefs.animationDirection !==
-        initialPreferences.animationDirection ||
+            initialPreferences.animationDirection ||
         localPrefs.theme !== initialPreferences.theme ||
         localPrefs.locale !== initialPreferences.locale
 
@@ -144,7 +145,9 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
                     <div className="w-full space-y-4">
                         <div className="flex items-center gap-2">
                             <Sun className="h-5 w-5 text-amber-500" />
-                            <h3 className="text-lg font-medium">{t('appearance.title')}</h3>
+                            <h3 className="text-lg font-medium">
+                                {t('appearance.title')}
+                            </h3>
                         </div>
                         <Separator />
                         <div className="grid gap-6 sm:grid-cols-2">
@@ -167,9 +170,21 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
                                             <div className="flex items-center">
                                                 {getThemeIcon(localPrefs.theme)}
                                                 <span>
-                                                    {localPrefs.theme === 'light' && t('appearance.theme.light')}
-                                                    {localPrefs.theme === 'dark' && t('appearance.theme.dark')}
-                                                    {localPrefs.theme === 'system' && t('appearance.theme.system')}
+                                                    {localPrefs.theme ===
+                                                        'light' &&
+                                                        t(
+                                                            'appearance.theme.light'
+                                                        )}
+                                                    {localPrefs.theme ===
+                                                        'dark' &&
+                                                        t(
+                                                            'appearance.theme.dark'
+                                                        )}
+                                                    {localPrefs.theme ===
+                                                        'system' &&
+                                                        t(
+                                                            'appearance.theme.system'
+                                                        )}
                                                 </span>
                                             </div>
                                         </SelectValue>
@@ -178,19 +193,29 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
                                         <SelectItem value="light">
                                             <div className="flex items-center">
                                                 <Sun className="mr-2 h-4 w-4" />
-                                                <span>{t('appearance.theme.light')}</span>
+                                                <span>
+                                                    {t(
+                                                        'appearance.theme.light'
+                                                    )}
+                                                </span>
                                             </div>
                                         </SelectItem>
                                         <SelectItem value="dark">
                                             <div className="flex items-center">
                                                 <Moon className="mr-2 h-4 w-4" />
-                                                <span>{t('appearance.theme.dark')}</span>
+                                                <span>
+                                                    {t('appearance.theme.dark')}
+                                                </span>
                                             </div>
                                         </SelectItem>
                                         <SelectItem value="system">
                                             <div className="flex items-center">
                                                 <Monitor className="mr-2 h-4 w-4" />
-                                                <span>{t('appearance.theme.system')}</span>
+                                                <span>
+                                                    {t(
+                                                        'appearance.theme.system'
+                                                    )}
+                                                </span>
                                             </div>
                                         </SelectItem>
                                     </SelectContent>
@@ -220,7 +245,9 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
                                             <div className="flex items-center">
                                                 <Globe className="mr-2 h-4 w-4" />
                                                 <span>
-                                                    {localPrefs.locale === 'en' ? 'English' : 'Deutsch'}
+                                                    {localPrefs.locale === 'en'
+                                                        ? 'English'
+                                                        : 'Deutsch'}
                                                 </span>
                                             </div>
                                         </SelectValue>
@@ -319,7 +346,9 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
                                                 htmlFor="animation-direction"
                                                 className="text-sm font-medium"
                                             >
-                                                {t('animations.direction.label')}
+                                                {t(
+                                                    'animations.direction.label'
+                                                )}
                                             </Label>
                                         </div>
                                         <Select
@@ -340,9 +369,14 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
                                                             localPrefs.animationDirection
                                                         )}
                                                         <span>
-                                                            {localPrefs.animationDirection === 'horizontal'
-                                                                ? t('animations.direction.horizontal')
-                                                                : t('animations.direction.vertical')}
+                                                            {localPrefs.animationDirection ===
+                                                            'horizontal'
+                                                                ? t(
+                                                                      'animations.direction.horizontal'
+                                                                  )
+                                                                : t(
+                                                                      'animations.direction.vertical'
+                                                                  )}
                                                         </span>
                                                     </div>
                                                 </SelectValue>
@@ -351,19 +385,29 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
                                                 <SelectItem value="horizontal">
                                                     <div className="flex items-center">
                                                         <ArrowRight className="mr-2 h-4 w-4" />
-                                                        <span>{t('animations.direction.horizontal')}</span>
+                                                        <span>
+                                                            {t(
+                                                                'animations.direction.horizontal'
+                                                            )}
+                                                        </span>
                                                     </div>
                                                 </SelectItem>
                                                 <SelectItem value="vertical">
                                                     <div className="flex items-center">
                                                         <ArrowDown className="mr-2 h-4 w-4" />
-                                                        <span>{t('animations.direction.vertical')}</span>
+                                                        <span>
+                                                            {t(
+                                                                'animations.direction.vertical'
+                                                            )}
+                                                        </span>
                                                     </div>
                                                 </SelectItem>
                                             </SelectContent>
                                         </Select>
                                         <p className="text-muted-foreground mt-1 text-xs">
-                                            {t('animations.direction.description')}
+                                            {t(
+                                                'animations.direction.description'
+                                            )}
                                         </p>
                                     </div>
                                 </div>

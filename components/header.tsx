@@ -4,9 +4,10 @@ import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
+import { LanguageSelector } from '@/components/misc/language-selector'
 import { Logo } from '@/components/misc/logo'
+
 import { UserNav } from './user-nav'
-import {LanguageSelector} from "@/components/misc/language-selector";
 
 export function Header() {
     const pathname = usePathname()
