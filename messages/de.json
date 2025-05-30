@@ -1,13 +1,348 @@
 {
+    "common": {
+        "back": "Zurück",
+        "backToHome": "Zurück zur Übersicht",
+        "save": "Speichern",
+        "cancel": "Abbrechen",
+        "delete": "Löschen",
+        "edit": "Bearbeiten",
+        "create": "Erstellen",
+        "loading": "Lädt...",
+        "error": "Fehler",
+        "success": "Erfolg",
+        "confirm": "Bestätigen",
+        "close": "Schließen",
+        "search": "Suchen",
+        "filter": "Filtern",
+        "sort": "Sortieren",
+        "noData": "Keine Daten verfügbar",
+        "all": "Alle",
+        "none": "Keine",
+        "select": "Auswählen",
+        "selected": "Ausgewählt",
+        "copy": "Kopieren",
+        "copied": "Kopiert",
+        "export": "Exportieren",
+        "import": "Importieren",
+        "download": "Herunterladen",
+        "upload": "Hochladen",
+        "reset": "Zurücksetzen",
+        "refresh": "Aktualisieren",
+        "submit": "Absenden",
+        "continue": "Weiter",
+        "skip": "Überspringen",
+        "next": "Weiter",
+        "previous": "Zurück",
+        "finish": "Fertig",
+        "start": "Start",
+        "stop": "Stopp",
+        "pause": "Pause",
+        "resume": "Fortsetzen",
+        "retry": "Wiederholen",
+        "help": "Hilfe",
+        "info": "Info",
+        "warning": "Warnung",
+        "settings": "Einstellungen",
+        "preferences": "Präferenzen",
+        "account": "Konto",
+        "profile": "Profil",
+        "logout": "Abmelden",
+        "login": "Anmelden",
+        "register": "Registrieren",
+        "forgotPassword": "Passwort vergessen",
+        "changePassword": "Passwort ändern",
+        "email": "E-Mail",
+        "password": "Passwort",
+        "username": "Benutzername",
+        "name": "Name",
+        "description": "Beschreibung",
+        "title": "Titel",
+        "date": "Datum",
+        "time": "Zeit",
+        "duration": "Dauer",
+        "status": "Status",
+        "active": "Aktiv",
+        "inactive": "Inaktiv",
+        "enabled": "Aktiviert",
+        "disabled": "Deaktiviert",
+        "yes": "Ja",
+        "no": "Nein",
+        "or": "oder",
+        "and": "und",
+        "learn": "Lernen"
+    },
+    "navigation": {
+        "home": "Startseite",
+        "features": "Funktionen",
+        "howItWorks": "So funktioniert's",
+        "pricing": "Preise",
+        "documentation": "Dokumentation",
+        "support": "Support",
+        "contact": "Kontakt",
+        "legal": "Rechtliches",
+        "privacy": "Datenschutz",
+        "terms": "Nutzungsbedingungen",
+        "license": "Lizenz",
+        "changelog": "Änderungsprotokoll",
+        "roadmap": "Roadmap",
+        "helpCenter": "Hilfe-Center"
+    },
+    "auth": {
+        "signIn": "Anmelden",
+        "signOut": "Abmelden",
+        "signInTitle": "Anmelden",
+        "signInDescription": "Melde dich mit deiner E-Mail-Adresse an, um auf deine Lernkarten zuzugreifen.",
+        "emailPlaceholder": "E-Mail-Adresse",
+        "sendLoginLink": "Login-Link senden",
+        "sendingLink": "Sende Link...",
+        "checkEmail": "Überprüfe deine E-Mail für den Anmeldelink!",
+        "loginError": "Ein Fehler ist aufgetreten. Bitte versuche es erneut.",
+        "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten.",
+        "emailRequired": "E-Mail ist erforderlich",
+        "verifyTitle": "Link gesendet",
+        "verifySubtitle": "Überprüfe deine E-Mail",
+        "verifyDescription": "Wir haben dir einen Anmeldelink an deine E-Mail-Adresse gesendet. Bitte überprüfe deinen Posteingang und klicke auf den Link, um fortzufahren.",
+        "verifySpam": "Wenn du keine E-Mail erhältst, überprüfe bitte auch deinen Spam-Ordner.",
+        "backToLogin": "Zurück zur Anmeldung",
+        "myAccount": "Mein Konto"
+    },
+    "landing": {
+        "hero": {
+            "badge": "Jetzt in der Entwicklung",
+            "title": "Meistere jedes Thema mit",
+            "titleHighlight": "Smarten Lernkarten",
+            "description": "Lerne schneller und behalte länger mit unserem intelligenten Spaced-Repetition-System. Erstelle, lerne und verfolge deinen Fortschritt mit schön gestalteten Lernkarten.",
+            "startLearning": "Kostenlos starten",
+            "viewDemo": "Demo ansehen"
+        },
+        "features": {
+            "title": "Alles was du brauchst, um effektiv zu lernen",
+            "description": "Unsere App kombiniert bewährte Lerntechniken mit moderner Technologie, um dir zu helfen, deine Lernziele zu erreichen.",
+            "spacedRepetition": {
+                "title": "Spaced Repetition",
+                "description": "Intelligenter Algorithmus, der dir Karten kurz bevor du sie vergisst zeigt, um die Behaltensleistung zu maximieren und die Lernzeit zu minimieren."
+            },
+            "progressTracking": {
+                "title": "Fortschrittsverfolgung",
+                "description": "Überwache deine Lern-Streaks, Erfolgsraten und täglichen Fortschritt mit detaillierten Analysen und Einblicken."
+            },
+            "responsiveDesign": {
+                "title": "Responsives Design",
+                "description": "Lerne überall und jederzeit. Unsere App funktioniert perfekt auf Desktop, Tablet und Mobilgeräten."
+            },
+            "keyboardShortcuts": {
+                "title": "Tastaturkürzel",
+                "description": "Lerne schneller mit intuitiver Tastaturnavigation. Drehe Karten um und bewerte sie ohne deine Maus zu berühren."
+            },
+            "deckManagement": {
+                "title": "Deck-Verwaltung",
+                "description": "Organisiere deine Lernkarten in Decks nach Kategorie. Importiere Karten in großen Mengen oder erstelle sie einzeln."
+            },
+            "studySessions": {
+                "title": "Lernsitzungen",
+                "description": "Verfolge deine Lernzeit und analysiere deine produktivsten Stunden, um deinen Lernplan zu optimieren."
+            }
+        },
+        "howItWorks": {
+            "title": "Einfach, aber leistungsstark",
+            "description": "Starte in Minuten und sehe Ergebnisse in Tagen",
+            "step1": {
+                "title": "Erstelle deine Decks",
+                "description": "Organisiere dein Lernmaterial in thematische Decks. Füge Karten manuell hinzu oder importiere sie in großen Mengen."
+            },
+            "step2": {
+                "title": "Lerne intelligent",
+                "description": "Wiederhole Karten mit unserem Spaced-Repetition-Algorithmus. Bewerte dein Vertrauen und lass das System deinen Zeitplan optimieren."
+            },
+            "step3": {
+                "title": "Verfolge Fortschritt",
+                "description": "Überwache deine Lernreise mit detaillierten Analysen und halte deine Lern-Streaks aufrecht."
+            }
+        },
+        "cta": {
+            "title": "Bereit, dein Lernen zu verbessern?",
+            "description": "Schließe dich unserer frühen Gruppe von Lernenden an, die bereits unsere Plattform nutzen, um neue Fähigkeiten und Wissen zu meistern.",
+            "startToday": "Heute anfangen",
+            "learnMore": "Mehr erfahren"
+        }
+    },
+    "dashboard": {
+        "title": "Flashcard App",
+        "subtitle": "Eine einfache Flashcard-App mit spaced repetition.",
+        "betaWarning": {
+            "title": "Achtung!",
+            "description": "Diese App ist noch in der Entwicklungsphase. Es kann gut sein, dass Daten verloren gehen oder nicht korrekt angezeigt werden. Bitte benutze die App nur zu Testzwecken und nicht für wichtige Daten."
+        },
+        "statistics": {
+            "title": "Lernstatistik",
+            "myProfile": "Mein Profil",
+            "loginPrompt": "Bitte melde dich an, um deine Lernstatistiken zu sehen."
+        },
+        "categories": {
+            "title": "Lernkategorien",
+            "newDeck": "Neues Deck",
+            "reviewAll": "Alle Karten wiederholen",
+            "practiceDifficult": "Schwierige Karten üben"
+        },
+        "completedGoals": {
+            "title": "Abgeschlossene Lernziele",
+            "description": "Diese Decks haben ihr Lernzieldatum bereits erreicht"
+        }
+    },
+    "deck": {
+        "create": {
+            "title": "Neues Deck erstellen",
+            "details": "Deck-Details",
+            "titleLabel": "Titel",
+            "titlePlaceholder": "z.B. Mathematik Grundlagen",
+            "descriptionLabel": "Beschreibung (optional)",
+            "descriptionPlaceholder": "Kurze Beschreibung des Decks",
+            "categoryLabel": "Kategorie",
+            "categoryPlaceholder": "z.B. Mathematik, Sprachen, etc.",
+            "dueDateLabel": "Lernfrist (optional)",
+            "dueDatePlaceholder": "Kein Datum ausgewählt",
+            "dueDateHint": "Datum, bis zu dem die Karten gelernt werden sollen (z.B. Prüfungsdatum)",
+            "removeDueDate": "Datum entfernen",
+            "creating": "Wird erstellt...",
+            "createDeck": "Deck erstellen",
+            "success": "Deck erfolgreich erstellt!",
+            "error": "Fehler beim Erstellen des Decks"
+        },
+        "edit": {
+            "title": "Deck-Details bearbeiten",
+            "updating": "Wird aktualisiert...",
+            "updateDeck": "Deck aktualisieren",
+            "success": "Deck erfolgreich aktualisiert!",
+            "error": "Fehler beim Aktualisieren des Decks",
+            "export": "Exportieren",
+            "exporting": "Lädt...",
+            "exportTitle": "Deck \"{title}\" exportieren",
+            "exportDescription": "JSON-Format zum Importieren in andere Decks oder zum Backup",
+            "copyToClipboard": "In Zwischenablage kopieren",
+            "copiedSuccess": "JSON in die Zwischenablage kopiert",
+            "copyError": "Fehler beim Kopieren",
+            "dangerZone": {
+                "title": "Dangerzone",
+                "description": "Die folgenden Aktionen können nicht rückgängig gemacht werden. Bitte mit Vorsicht verwenden.",
+                "resetProgress": {
+                    "button": "Lernfortschritt zurücksetzen",
+                    "resetting": "Wird zurückgesetzt...",
+                    "confirmTitle": "Lernfortschritt zurücksetzen?",
+                    "confirmDescription": "Der gesamte Lernfortschritt für \"{title}\" wird gelöscht. Diese Aktion kann nicht rückgängig gemacht werden. Alle Karten werden als noch nie gelernt markiert.",
+                    "success": "Lernfortschritt erfolgreich zurückgesetzt!",
+                    "error": "Fehler beim Zurücksetzen des Lernfortschritts"
+                },
+                "deleteDeck": {
+                    "button": "Deck löschen",
+                    "deleting": "Wird gelöscht...",
+                    "confirmTitle": "Deck komplett löschen?",
+                    "confirmDescription": "Das Deck \"{title}\" wird mit allen Karten und Lernfortschritten unwiderruflich gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.",
+                    "success": "Deck erfolgreich gelöscht!",
+                    "error": "Fehler beim Löschen des Decks"
+                }
+            }
+        },
+        "cards": {
+            "editTab": "Karten bearbeiten",
+            "detailsTab": "Deck-Details",
+            "createTitle": "Karten erstellen",
+            "allCards": "Alle Karten ({count})",
+            "newCard": "Neue Karte",
+            "frontLabel": "Vorderseite",
+            "frontPlaceholder": "Frage oder Begriff",
+            "backLabel": "Rückseite",
+            "backPlaceholder": "Antwort oder Definition",
+            "creating": "Erstelle...",
+            "createCard": "Karte erstellen",
+            "createMultiple": "Mehrere Karten (JSON)",
+            "singleCard": "Einzelne Karte",
+            "jsonPlaceholder": "[\n  {\n    \"vorderseite\": \"Was ist ...?\",\n    \"rueckseite\": \"Die Antwort ist ...\",\n    \"istPruefungsrelevant\": true\n  },\n  {\n    \"vorderseite\": \"Nenne drei ...\",\n    \"rueckseite\": \"1. ... 2. ... 3. ...\"\n  }\n]",
+            "creatingMultiple": "Erstelle Karten...",
+            "createFromJson": "Karten aus JSON erstellen",
+            "cardCreated": "Karte erstellt",
+            "cardsCreated": "{success} Karten erstellt{errors}",
+            "withErrors": ", {count} Fehler",
+            "updateSuccess": "Karte aktualisiert",
+            "updateError": "Fehler beim Aktualisieren",
+            "deleteConfirm": "Möchten Sie diese Karte wirklich löschen?",
+            "deleteSuccess": "Karte gelöscht",
+            "deleteError": "Fehler beim Löschen"
+        },
+        "statistics": {
+            "totalCards": "Karten insgesamt",
+            "cardsToReview": "Karten zu wiederholen",
+            "wasDueBy": "War fällig bis:",
+            "dueBy": "Fällig bis:"
+        }
+    },
+    "learn": {
+        "allCards": "Alle Karten wiederholen",
+        "difficultCards": "Schwierige Karten üben",
+        "dueCards": "Fällige Karten",
+        "noCards": "Sieht so aus, als hättest du schon alles gelernt!",
+        "noCardsDescription": "Für diese Kategorie sind keine Karten verfügbar.",
+        "completed": "Lerneinheit abgeschlossen!",
+        "completedDescription": "Du hast alle {count} Karten in dieser Kategorie wiederholt.",
+        "studyTime": "Lernzeit:",
+        "repeatAgain": "Nochmal wiederholen",
+        "repeatShuffled": "Gemischt wiederholen",
+        "card": "Karte",
+        "of": "von",
+        "remaining": "Verbleibend:",
+        "cardsShuffled": "Karten gemischt!",
+        "ratingError": "Fehler beim Bewerten der Karte",
+        "allReviewed": "Alle Karten wiederholt!",
+        "sessionComplete": "Lerneinheit abgeschlossen",
+        "flipHint": "Tippen zum Umdrehen",
+        "spaceToFlip": "(Leertaste)",
+        "answer": "Antwort",
+        "rating": "Bewertung:",
+        "rateAgain": "Wieder",
+        "rateHard": "Schwer",
+        "rateGood": "Gut",
+        "rateEasy": "Einfach",
+        "keyboardHint": "Drücke die Leertaste zum Umdrehen",
+        "ratingHint": "Bewerte mit 1 bis 4 oder klicke auf die Schaltflächen"
+    },
+    "statistics": {
+        "last7Days": "Letzte 7 Tage",
+        "cardsReviewed": "Karten wiederholt",
+        "successRate": "Erfolgsquote",
+        "percentCorrect": "Prozentual richtig",
+        "learningStreak": "Lern-Streak",
+        "day": "Tag",
+        "days": "Tage",
+        "inARow": "in Folge",
+        "toReview": "Zu wiederholen",
+        "cardsForToday": "Karten für heute",
+        "reviewNow": "Jetzt lernen",
+        "learningProgress": "Lernfortschritt der letzten 7 Tage",
+        "noActivity": "Noch keine Lernaktivitäten in den letzten 7 Tagen.",
+        "cards": "Karten:",
+        "successRateLabel": "Erfolgsrate:",
+        "cardsTotal": "Karten gesamt",
+        "cardsPerDay": "Karten pro Tag",
+        "bestDay": "Bester Tag",
+        "cardsByDifficulty": "Karten nach Schwierigkeit",
+        "studyTimeAnalysis": "Lernzeiten-Analyse",
+        "beta": "Beta",
+        "noSessions": "Noch keine Lernsessions durchgeführt.",
+        "productiveTime": "Produktivste Zeit:",
+        "atTime": "{time}:00 Uhr mit durchschnittlich {cards} Karten pro Session.",
+        "totalCards": "Gesamtkarten:",
+        "cardsAcrossAllTimes": "{count} Karten über alle Zeiten."
+    },
     "profile": {
         "title": "Mein Profil",
         "email": "E-Mail",
-        "tabs": {
-            "settings": "Einstellungen",
-            "statistics": "Lernstatistik"
-        },
         "settings": {
             "title": "Einstellungen",
+            "statistics": "Lernstatistik",
+            "noData": "Noch keine Lerndaten verfügbar.",
+            "startLearning": "Beginne mit dem Lernen, um hier deinen Fortschritt zu sehen.",
+            "saved": "Einstellungen gespeichert!",
+            "saving": "Wird gespeichert...",
+            "save": "Einstellungen speichern",
             "appearance": {
                 "title": "Darstellung",
                 "theme": {
@@ -34,14 +369,51 @@
                     "vertical": "Vertikal",
                     "description": "Bestimmt die Hauptrichtung der Animationen."
                 }
-            },
-            "save": "Einstellungen speichern",
-            "saving": "Wird gespeichert...",
-            "saved": "Einstellungen gespeichert"
+            }
+        }
+    },
+    "footer": {
+        "tagline": "Die moderne Flashcard-App für effektives Lernen mit Spaced Repetition.",
+        "product": "Produkt",
+        "features": "Funktionen",
+        "pricing": "Preise",
+        "roadmap": "Roadmap",
+        "support": "Support",
+        "documentation": "Dokumentation",
+        "helpCenter": "Hilfe-Center",
+        "contact": "Kontakt",
+        "legal": "Rechtliches",
+        "privacyPolicy": "Datenschutz",
+        "termsOfService": "Nutzungsbedingungen",
+        "license": "Lizenz",
+        "madeWith": "Gemacht mit",
+        "by": "von"
+    },
+    "comingSoon": {
+        "title": "Demnächst verfügbar",
+        "subtitle": "Diese Funktion ist derzeit in Entwicklung",
+        "description": "Du hast eine Seite entdeckt, die noch bearbeitet wird. Unser Entwicklungsteam arbeitet hart daran, dir etwas Großartiges zu bieten. Schau bald wieder vorbei!",
+        "devProgress": "Entwicklungsfortschritt",
+        "devDescription": "Hier ist, woran unser Team derzeit arbeitet",
+        "followDev": "Du kannst die aktuelle Entwicklung verfolgen",
+        "here": "hier",
+        "questions": "Hast du Fragen oder Vorschläge? Wir würden gerne von dir hören, während wir diese Funktion entwickeln.",
+        "tasks": {
+            "improveUI": "Benutzerfreundlichkeit der Benutzeroberfläche verbessern",
+            "improveDashboard": "Dashboard-Analysen und Statistiken verbessern",
+            "advancedLearning": "Erweiterten Lernmodus mit benutzerdefinierten Eingaben und KI-Validierung hinzufügen",
+            "optimizeDB": "Datenbankabfragen optimieren",
+            "documentation": "Umfassende Dokumentation schreiben"
         },
-        "statistics": {
-            "noData": "Noch keine Lerndaten verfügbar.",
-            "startLearning": "Beginne mit dem Lernen, um hier deinen Fortschritt zu sehen."
+        "priority": {
+            "high": "hoch",
+            "medium": "mittel",
+            "low": "niedrig"
+        },
+        "status": {
+            "inProgress": "in Bearbeitung",
+            "planning": "Planung",
+            "todo": "zu erledigen"
         }
     }
 }
