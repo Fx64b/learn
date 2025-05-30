@@ -5,8 +5,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 import { Logo } from '@/components/misc/logo'
-
 import { UserNav } from './user-nav'
+import {LanguageSelector} from "@/components/misc/language-selector";
 
 export function Header() {
     const pathname = usePathname()
@@ -41,7 +41,10 @@ export function Header() {
                     </nav>
                 )}
 
-                <UserNav />
+                <div className="flex items-center gap-2">
+                    {!session && <LanguageSelector />}
+                    <UserNav />
+                </div>
             </div>
         </header>
     )

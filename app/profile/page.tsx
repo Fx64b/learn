@@ -10,6 +10,8 @@ import { getLearningProgress } from '@/app/actions/progress'
 import { ProfileSettings } from '@/components/profile-settings'
 import { ProgressDashboard } from '@/components/statistics/progress-dashboard'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import {getLocale} from "@/lib/locale";
+import {getTranslations} from "next-intl/server";
 
 function ensureValidDirection(direction: unknown): 'horizontal' | 'vertical' {
     if (direction === 'horizontal' || direction === 'vertical') {
@@ -27,6 +29,8 @@ function ensureValidTheme(theme: unknown): 'light' | 'dark' | 'system' {
 
 export default async function ProfilePage() {
     const session = await getServerSession(authOptions)
+    const locale = await getLocale()
+    const t = await getTranslations({ locale, namespace: 'profile' })
 
     if (!session?.user?.id) {
         redirect('/login')
@@ -43,16 +47,18 @@ export default async function ProfilePage() {
             preferencesData?.animationDirection
         ),
         theme: ensureValidTheme(preferencesData?.theme),
+        locale: preferencesData?.locale ?? 'en',
     }
+
 
     return (
         <div className="container mx-auto max-w-5xl px-4 py-8 sm:py-12">
             <div className="mb-8 space-y-2">
                 <h1 className="text-3xl font-bold tracking-tight">
-                    Mein Profil
+                    {t('title')}
                 </h1>
                 <p className="text-muted-foreground">
-                    <b>Email:</b> {session.user.email}
+                    <b>{t('email')}:</b> {session.user.email}
                 </p>
             </div>
 

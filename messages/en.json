@@ -1,0 +1,47 @@
+{
+    "profile": {
+        "title": "My Profile",
+        "email": "Email",
+        "tabs": {
+            "settings": "Settings",
+            "statistics": "Learning Statistics"
+        },
+        "settings": {
+            "title": "Settings",
+            "appearance": {
+                "title": "Appearance",
+                "theme": {
+                    "label": "Theme",
+                    "light": "Light",
+                    "dark": "Dark",
+                    "system": "System",
+                    "description": "Choose between light, dark or system theme."
+                }
+            },
+            "animations": {
+                "title": "Animation Settings",
+                "enable": {
+                    "label": "Enable animations",
+                    "description": "Enable or disable all animations."
+                },
+                "speed": {
+                    "label": "Speed",
+                    "description": "Lower values = faster animations."
+                },
+                "direction": {
+                    "label": "Direction",
+                    "horizontal": "Horizontal",
+                    "vertical": "Vertical",
+                    "description": "Determines the main direction of animations."
+                }
+            },
+            "save": "Save Settings",
+            "saving": "Saving...",
+            "saved": "Settings saved"
+        },
+        "statistics": {
+            "noData": "No learning data available yet.",
+            "startLearning": "Start learning to see your progress here."
+        }
+    }
+}

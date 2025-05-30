@@ -1,0 +1,47 @@
+{
+    "profile": {
+        "title": "Mein Profil",
+        "email": "E-Mail",
+        "tabs": {
+            "settings": "Einstellungen",
+            "statistics": "Lernstatistik"
+        },
+        "settings": {
+            "title": "Einstellungen",
+            "appearance": {
+                "title": "Darstellung",
+                "theme": {
+                    "label": "Theme",
+                    "light": "Hell",
+                    "dark": "Dunkel",
+                    "system": "System",
+                    "description": "Wähle zwischen hellem, dunklem oder System-Theme."
+                }
+            },
+            "animations": {
+                "title": "Animations-Einstellungen",
+                "enable": {
+                    "label": "Animationen aktivieren",
+                    "description": "Aktiviere oder deaktiviere alle Animationen."
+                },
+                "speed": {
+                    "label": "Geschwindigkeit",
+                    "description": "Niedrigere Werte = schnellere Animationen."
+                },
+                "direction": {
+                    "label": "Richtung",
+                    "horizontal": "Horizontal",
+                    "vertical": "Vertikal",
+                    "description": "Bestimmt die Hauptrichtung der Animationen."
+                }
+            },
+            "save": "Einstellungen speichern",
+            "saving": "Wird gespeichert...",
+            "saved": "Einstellungen gespeichert"
+        },
+        "statistics": {
+            "noData": "Noch keine Lerndaten verfügbar.",
+            "startLearning": "Beginne mit dem Lernen, um hier deinen Fortschritt zu sehen."
+        }
+    }
+}
