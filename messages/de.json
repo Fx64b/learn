@@ -101,7 +101,7 @@
         "emailRequired": "E-Mail ist erforderlich",
         "verifyTitle": "Link gesendet",
         "verifySubtitle": "Überprüfe deine E-Mail",
-        "verifyDescription": "Wir haben dir einen Anmeldelink an deine E-Mail-Adresse gesendet. Bitte überprüfe deinen Posteingang und klicke auf den Link, um fortzufahren.",
+        "verifyDescription": "Du bekommst einen Anmeldelink per E-Mail zugesendet.\n Bitte überprüfe deinen Posteingang und klicke auf den Link, um fortzufahren.",
         "verifySpam": "Wenn du keine E-Mail erhältst, überprüfe bitte auch deinen Spam-Ordner.",
         "backToLogin": "Zurück zur Anmeldung",
         "myAccount": "Mein Konto"
