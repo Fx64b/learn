@@ -1,7 +1,5 @@
 'use client'
 
-import { Globe } from 'lucide-react'
-
 import { useLocale } from '@/components/misc/locale-provider'
 import {
     Select,
