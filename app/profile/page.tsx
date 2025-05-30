@@ -1,7 +1,9 @@
 import { authOptions } from '@/lib/auth'
+import { getLocale } from '@/lib/locale'
 import { BarChart2, UserCircle } from 'lucide-react'
 
 import { getServerSession } from 'next-auth'
+import { getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
 
 import { getUserPreferences } from '@/app/actions/preferences'
@@ -10,8 +12,6 @@ import { getLearningProgress } from '@/app/actions/progress'
 import { ProfileSettings } from '@/components/profile-settings'
 import { ProgressDashboard } from '@/components/statistics/progress-dashboard'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import {getLocale} from "@/lib/locale";
-import {getTranslations} from "next-intl/server";
 
 function ensureValidDirection(direction: unknown): 'horizontal' | 'vertical' {
     if (direction === 'horizontal' || direction === 'vertical') {
@@ -49,7 +49,6 @@ export default async function ProfilePage() {
         theme: ensureValidTheme(preferencesData?.theme),
         locale: preferencesData?.locale ?? 'en',
     }
-
 
     return (
         <div className="container mx-auto max-w-5xl px-4 py-8 sm:py-12">
