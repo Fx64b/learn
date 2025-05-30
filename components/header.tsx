@@ -1,6 +1,7 @@
 'use client'
 
 import { useSession } from 'next-auth/react'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -10,6 +11,7 @@ import { Logo } from '@/components/misc/logo'
 import { UserNav } from './user-nav'
 
 export function Header() {
+    const t = useTranslations('navigation')
     const pathname = usePathname()
     const isUrlRoot = pathname === '/'
     const { data: session } = useSession()
@@ -25,19 +27,19 @@ export function Header() {
                             href="#features"
                             className="text-muted-foreground hover:text-foreground transition-colors"
                         >
-                            Features
+                            {t('features')}
                         </Link>
                         <Link
                             href="#how-it-works"
                             className="text-muted-foreground hover:text-foreground transition-colors"
                         >
-                            How it Works
+                            {t('howItWorks')}
                         </Link>
                         <Link
                             href="/todo"
                             className="text-muted-foreground hover:text-foreground transition-colors"
                         >
-                            Pricing
+                            {t('pricing')}
                         </Link>
                     </nav>
                 )}
