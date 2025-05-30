@@ -17,7 +17,7 @@ export function LanguageSelector() {
             value={locale}
             onValueChange={(value) => setLocale(value as 'en' | 'de')}
         >
-            <SelectTrigger className="w-[70px]">
+            <SelectTrigger className="w-[70px]" aria-label="Language">
                 <SelectValue />
             </SelectTrigger>
             <SelectContent className="w-[70px]!">
