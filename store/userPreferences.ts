@@ -6,6 +6,7 @@ const initialState = {
     animationSpeed: 200,
     animationDirection: 'horizontal' as const,
     theme: 'dark' as const,
+    locale: 'en' as const,
 }
 
 interface UserPreferencesState {
@@ -13,10 +14,12 @@ interface UserPreferencesState {
     animationSpeed: number
     animationDirection: 'horizontal' | 'vertical'
     theme: 'light' | 'dark' | 'system'
+    locale: 'en' | 'de'
     setAnimationsEnabled: (enabled: boolean) => void
     setAnimationSpeed: (speed: number) => void
     setAnimationDirection: (direction: 'horizontal' | 'vertical') => void
     setTheme: (theme: 'system' | 'light' | 'dark') => void
+    setLocale: (locale: 'en' | 'de') => void
 }
 
 export const useUserPreferences = create<UserPreferencesState>()(
@@ -34,6 +37,7 @@ export const useUserPreferences = create<UserPreferencesState>()(
             setAnimationDirection: (direction) =>
                 set((state) => ({ ...state, animationDirection: direction })),
             setTheme: (theme) => set((state) => ({ ...state, theme })),
+            setLocale: (locale) => set((state) => ({ ...state, locale })),
         }),
         {
             name: 'user-preferences',

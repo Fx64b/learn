@@ -103,6 +103,7 @@ export const userPreferences = sqliteTable('user_preferences', {
         .notNull()
         .default('horizontal'),
     theme: text('theme').notNull().default('dark'),
+    locale: text('locale').notNull().default('en'),
     updatedAt: integer('updated_at', { mode: 'timestamp' })
         .default(sql`CURRENT_TIMESTAMP`)
         .notNull(),

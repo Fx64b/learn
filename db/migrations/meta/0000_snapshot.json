@@ -1,216 +1,66 @@
 {
+    "id": "00000000-0000-0000-0000-000000000000",
+    "prevId": "",
     "version": "6",
     "dialect": "sqlite",
-    "id": "871e298f-be9a-4fe2-a9ad-c4aae8ab3f38",
-    "prevId": "00000000-0000-0000-0000-000000000000",
     "tables": {
-        "card_reviews": {
-            "name": "card_reviews",
-            "columns": {
-                "id": {
-                    "name": "id",
-                    "type": "text",
-                    "primaryKey": true,
-                    "notNull": true,
-                    "autoincrement": false
-                },
-                "flashcard_id": {
-                    "name": "flashcard_id",
-                    "type": "text",
-                    "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
-                },
-                "user_id": {
-                    "name": "user_id",
-                    "type": "text",
-                    "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
-                },
-                "bewertet_am": {
-                    "name": "bewertet_am",
-                    "type": "integer",
-                    "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false,
-                    "default": "CURRENT_TIMESTAMP"
-                },
-                "bewertung": {
-                    "name": "bewertung",
-                    "type": "integer",
-                    "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
-                },
-                "ease_faktor": {
-                    "name": "ease_faktor",
-                    "type": "integer",
-                    "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false,
-                    "default": 250
-                },
-                "intervall": {
-                    "name": "intervall",
-                    "type": "integer",
-                    "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false,
-                    "default": 0
-                },
-                "nächste_wiederholung": {
-                    "name": "nächste_wiederholung",
-                    "type": "integer",
-                    "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
-                }
-            },
-            "indexes": {},
-            "foreignKeys": {
-                "card_reviews_flashcard_id_flashcards_id_fk": {
-                    "name": "card_reviews_flashcard_id_flashcards_id_fk",
-                    "tableFrom": "card_reviews",
-                    "tableTo": "flashcards",
-                    "columnsFrom": ["flashcard_id"],
-                    "columnsTo": ["id"],
-                    "onDelete": "no action",
-                    "onUpdate": "no action"
-                },
-                "card_reviews_user_id_users_id_fk": {
-                    "name": "card_reviews_user_id_users_id_fk",
-                    "tableFrom": "card_reviews",
-                    "tableTo": "users",
-                    "columnsFrom": ["user_id"],
-                    "columnsTo": ["id"],
-                    "onDelete": "no action",
-                    "onUpdate": "no action"
-                }
-            },
-            "compositePrimaryKeys": {},
-            "uniqueConstraints": {},
-            "checkConstraints": {}
-        },
-        "decks": {
-            "name": "decks",
-            "columns": {
-                "id": {
-                    "name": "id",
-                    "type": "text",
-                    "primaryKey": true,
-                    "notNull": true,
-                    "autoincrement": false
-                },
-                "user_id": {
-                    "name": "user_id",
-                    "type": "text",
-                    "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
-                },
-                "titel": {
-                    "name": "titel",
-                    "type": "text",
-                    "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
-                },
-                "beschreibung": {
-                    "name": "beschreibung",
-                    "type": "text",
-                    "primaryKey": false,
-                    "notNull": false,
-                    "autoincrement": false
-                },
-                "kategorie": {
-                    "name": "kategorie",
-                    "type": "text",
-                    "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
-                },
-                "erstellt_am": {
-                    "name": "erstellt_am",
-                    "type": "integer",
-                    "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false,
-                    "default": "CURRENT_TIMESTAMP"
-                }
-            },
-            "indexes": {},
-            "foreignKeys": {
-                "decks_user_id_users_id_fk": {
-                    "name": "decks_user_id_users_id_fk",
-                    "tableFrom": "decks",
-                    "tableTo": "users",
-                    "columnsFrom": ["user_id"],
-                    "columnsTo": ["id"],
-                    "onDelete": "no action",
-                    "onUpdate": "no action"
-                }
-            },
-            "compositePrimaryKeys": {},
-            "uniqueConstraints": {},
-            "checkConstraints": {}
-        },
         "flashcards": {
             "name": "flashcards",
             "columns": {
                 "id": {
+                    "autoincrement": false,
                     "name": "id",
                     "type": "text",
                     "primaryKey": true,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "deck_id": {
+                    "autoincrement": false,
                     "name": "deck_id",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "vorderseite": {
+                    "autoincrement": false,
                     "name": "vorderseite",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
-                "rückseite": {
-                    "name": "rückseite",
+                "rueckseite": {
+                    "autoincrement": false,
+                    "name": "rueckseite",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
-                "ist_prüfungsrelevant": {
-                    "name": "ist_prüfungsrelevant",
+                "ist_pruefungsrelevant": {
+                    "default": false,
+                    "autoincrement": false,
+                    "name": "ist_pruefungsrelevant",
                     "type": "integer",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false,
-                    "default": false
+                    "notNull": true
                 },
                 "schwierigkeitsgrad": {
+                    "default": 0,
+                    "autoincrement": false,
                     "name": "schwierigkeitsgrad",
                     "type": "integer",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false,
-                    "default": 0
+                    "notNull": true
                 },
                 "erstellt_am": {
+                    "default": "(CURRENT_TIMESTAMP)",
+                    "autoincrement": false,
                     "name": "erstellt_am",
                     "type": "integer",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false,
-                    "default": "CURRENT_TIMESTAMP"
+                    "notNull": true
                 }
             },
+            "compositePrimaryKeys": {},
             "indexes": {},
             "foreignKeys": {
                 "flashcards_deck_id_decks_id_fk": {
@@ -223,45 +73,639 @@
                     "onUpdate": "no action"
                 }
             },
-            "compositePrimaryKeys": {},
             "uniqueConstraints": {},
             "checkConstraints": {}
         },
-        "users": {
-            "name": "users",
+        "user": {
+            "name": "user",
             "columns": {
                 "id": {
+                    "autoincrement": false,
                     "name": "id",
                     "type": "text",
                     "primaryKey": true,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
                 },
                 "email": {
+                    "autoincrement": false,
                     "name": "email",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false
+                    "notNull": true
+                },
+                "emailVerified": {
+                    "autoincrement": false,
+                    "name": "emailVerified",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "name": {
+                    "autoincrement": false,
+                    "name": "name",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "image": {
+                    "autoincrement": false,
+                    "name": "image",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
                 },
                 "erstellt_am": {
+                    "default": "(CURRENT_TIMESTAMP)",
+                    "autoincrement": false,
                     "name": "erstellt_am",
                     "type": "integer",
                     "primaryKey": false,
-                    "notNull": true,
-                    "autoincrement": false,
-                    "default": "CURRENT_TIMESTAMP"
+                    "notNull": true
                 }
             },
+            "compositePrimaryKeys": {},
             "indexes": {
-                "users_email_unique": {
-                    "name": "users_email_unique",
+                "user_email_unique": {
+                    "name": "user_email_unique",
                     "columns": ["email"],
                     "isUnique": true
                 }
             },
             "foreignKeys": {},
+            "uniqueConstraints": {},
+            "checkConstraints": {}
+        },
+        "account": {
+            "name": "account",
+            "columns": {
+                "id": {
+                    "autoincrement": false,
+                    "name": "id",
+                    "type": "text",
+                    "primaryKey": true,
+                    "notNull": true
+                },
+                "user_id": {
+                    "autoincrement": false,
+                    "name": "user_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "type": {
+                    "autoincrement": false,
+                    "name": "type",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "provider": {
+                    "autoincrement": false,
+                    "name": "provider",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "provider_account_id": {
+                    "autoincrement": false,
+                    "name": "provider_account_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "refresh_token": {
+                    "autoincrement": false,
+                    "name": "refresh_token",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "access_token": {
+                    "autoincrement": false,
+                    "name": "access_token",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "expires_at": {
+                    "autoincrement": false,
+                    "name": "expires_at",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "token_type": {
+                    "autoincrement": false,
+                    "name": "token_type",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "scope": {
+                    "autoincrement": false,
+                    "name": "scope",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "id_token": {
+                    "autoincrement": false,
+                    "name": "id_token",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "session_state": {
+                    "autoincrement": false,
+                    "name": "session_state",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                }
+            },
             "compositePrimaryKeys": {},
+            "indexes": {},
+            "foreignKeys": {},
+            "uniqueConstraints": {},
+            "checkConstraints": {}
+        },
+        "session": {
+            "name": "session",
+            "columns": {
+                "id": {
+                    "autoincrement": false,
+                    "name": "id",
+                    "type": "text",
+                    "primaryKey": true,
+                    "notNull": true
+                },
+                "user_id": {
+                    "autoincrement": false,
+                    "name": "user_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "session_token": {
+                    "autoincrement": false,
+                    "name": "session_token",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "expires": {
+                    "autoincrement": false,
+                    "name": "expires",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true
+                }
+            },
+            "compositePrimaryKeys": {},
+            "indexes": {
+                "session_session_token_unique": {
+                    "name": "session_session_token_unique",
+                    "columns": ["session_token"],
+                    "isUnique": true
+                }
+            },
+            "foreignKeys": {},
+            "uniqueConstraints": {},
+            "checkConstraints": {}
+        },
+        "decks": {
+            "name": "decks",
+            "columns": {
+                "id": {
+                    "autoincrement": false,
+                    "name": "id",
+                    "type": "text",
+                    "primaryKey": true,
+                    "notNull": true
+                },
+                "user_id": {
+                    "autoincrement": false,
+                    "name": "user_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "titel": {
+                    "autoincrement": false,
+                    "name": "titel",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "beschreibung": {
+                    "autoincrement": false,
+                    "name": "beschreibung",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "kategorie": {
+                    "autoincrement": false,
+                    "name": "kategorie",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "erstellt_am": {
+                    "default": "(CURRENT_TIMESTAMP)",
+                    "autoincrement": false,
+                    "name": "erstellt_am",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "aktiv_bis": {
+                    "autoincrement": false,
+                    "name": "aktiv_bis",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": false
+                }
+            },
+            "compositePrimaryKeys": {},
+            "indexes": {},
+            "foreignKeys": {
+                "decks_user_id_user_id_fk": {
+                    "name": "decks_user_id_user_id_fk",
+                    "tableFrom": "decks",
+                    "tableTo": "user",
+                    "columnsFrom": ["user_id"],
+                    "columnsTo": ["id"],
+                    "onDelete": "no action",
+                    "onUpdate": "no action"
+                }
+            },
+            "uniqueConstraints": {},
+            "checkConstraints": {}
+        },
+        "card_reviews": {
+            "name": "card_reviews",
+            "columns": {
+                "id": {
+                    "autoincrement": false,
+                    "name": "id",
+                    "type": "text",
+                    "primaryKey": true,
+                    "notNull": true
+                },
+                "flashcard_id": {
+                    "autoincrement": false,
+                    "name": "flashcard_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "user_id": {
+                    "autoincrement": false,
+                    "name": "user_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "bewertet_am": {
+                    "default": "(CURRENT_TIMESTAMP)",
+                    "autoincrement": false,
+                    "name": "bewertet_am",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "bewertung": {
+                    "autoincrement": false,
+                    "name": "bewertung",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "ease_faktor": {
+                    "default": 250,
+                    "autoincrement": false,
+                    "name": "ease_faktor",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "intervall": {
+                    "default": 0,
+                    "autoincrement": false,
+                    "name": "intervall",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "naechste_wiederholung": {
+                    "autoincrement": false,
+                    "name": "naechste_wiederholung",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true
+                }
+            },
+            "compositePrimaryKeys": {},
+            "indexes": {},
+            "foreignKeys": {
+                "card_reviews_user_id_user_id_fk": {
+                    "name": "card_reviews_user_id_user_id_fk",
+                    "tableFrom": "card_reviews",
+                    "tableTo": "user",
+                    "columnsFrom": ["user_id"],
+                    "columnsTo": ["id"],
+                    "onDelete": "no action",
+                    "onUpdate": "no action"
+                },
+                "card_reviews_flashcard_id_flashcards_id_fk": {
+                    "name": "card_reviews_flashcard_id_flashcards_id_fk",
+                    "tableFrom": "card_reviews",
+                    "tableTo": "flashcards",
+                    "columnsFrom": ["flashcard_id"],
+                    "columnsTo": ["id"],
+                    "onDelete": "no action",
+                    "onUpdate": "no action"
+                }
+            },
+            "uniqueConstraints": {},
+            "checkConstraints": {}
+        },
+        "study_sessions": {
+            "name": "study_sessions",
+            "columns": {
+                "id": {
+                    "autoincrement": false,
+                    "name": "id",
+                    "type": "text",
+                    "primaryKey": true,
+                    "notNull": true
+                },
+                "user_id": {
+                    "autoincrement": false,
+                    "name": "user_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "deck_id": {
+                    "autoincrement": false,
+                    "name": "deck_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "start_time": {
+                    "autoincrement": false,
+                    "name": "start_time",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "end_time": {
+                    "autoincrement": false,
+                    "name": "end_time",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "duration": {
+                    "autoincrement": false,
+                    "name": "duration",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "cards_reviewed": {
+                    "autoincrement": false,
+                    "name": "cards_reviewed",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "is_completed": {
+                    "default": false,
+                    "autoincrement": false,
+                    "name": "is_completed",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "erstellt_am": {
+                    "default": "(CURRENT_TIMESTAMP)",
+                    "autoincrement": false,
+                    "name": "erstellt_am",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true
+                }
+            },
+            "compositePrimaryKeys": {},
+            "indexes": {},
+            "foreignKeys": {
+                "study_sessions_user_id_user_id_fk": {
+                    "name": "study_sessions_user_id_user_id_fk",
+                    "tableFrom": "study_sessions",
+                    "tableTo": "user",
+                    "columnsFrom": ["user_id"],
+                    "columnsTo": ["id"],
+                    "onDelete": "no action",
+                    "onUpdate": "no action"
+                }
+            },
+            "uniqueConstraints": {},
+            "checkConstraints": {}
+        },
+        "user_preferences": {
+            "name": "user_preferences",
+            "columns": {
+                "user_id": {
+                    "autoincrement": false,
+                    "name": "user_id",
+                    "type": "text",
+                    "primaryKey": true,
+                    "notNull": true
+                },
+                "animations_enabled": {
+                    "default": false,
+                    "autoincrement": false,
+                    "name": "animations_enabled",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "animation_speed": {
+                    "default": 200,
+                    "autoincrement": false,
+                    "name": "animation_speed",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "animation_direction": {
+                    "default": "'horizontal'",
+                    "autoincrement": false,
+                    "name": "animation_direction",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "theme": {
+                    "default": "'dark'",
+                    "autoincrement": false,
+                    "name": "theme",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "updated_at": {
+                    "default": "(CURRENT_TIMESTAMP)",
+                    "autoincrement": false,
+                    "name": "updated_at",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "locale": {
+                    "default": "'en'",
+                    "autoincrement": false,
+                    "name": "locale",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                }
+            },
+            "compositePrimaryKeys": {},
+            "indexes": {},
+            "foreignKeys": {
+                "user_preferences_user_id_user_id_fk": {
+                    "name": "user_preferences_user_id_user_id_fk",
+                    "tableFrom": "user_preferences",
+                    "tableTo": "user",
+                    "columnsFrom": ["user_id"],
+                    "columnsTo": ["id"],
+                    "onDelete": "no action",
+                    "onUpdate": "no action"
+                }
+            },
+            "uniqueConstraints": {},
+            "checkConstraints": {}
+        },
+        "review_events": {
+            "name": "review_events",
+            "columns": {
+                "id": {
+                    "autoincrement": false,
+                    "name": "id",
+                    "type": "text",
+                    "primaryKey": true,
+                    "notNull": true
+                },
+                "flashcard_id": {
+                    "autoincrement": false,
+                    "name": "flashcard_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "user_id": {
+                    "autoincrement": false,
+                    "name": "user_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "bewertet_am": {
+                    "default": "(CURRENT_TIMESTAMP)",
+                    "autoincrement": false,
+                    "name": "bewertet_am",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "bewertung": {
+                    "autoincrement": false,
+                    "name": "bewertung",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "ease_faktor": {
+                    "autoincrement": false,
+                    "name": "ease_faktor",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "intervall": {
+                    "autoincrement": false,
+                    "name": "intervall",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "create_stamp": {
+                    "default": "(CURRENT_TIMESTAMP)",
+                    "autoincrement": false,
+                    "name": "create_stamp",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true
+                }
+            },
+            "compositePrimaryKeys": {},
+            "indexes": {},
+            "foreignKeys": {
+                "review_events_user_id_user_id_fk": {
+                    "name": "review_events_user_id_user_id_fk",
+                    "tableFrom": "review_events",
+                    "tableTo": "user",
+                    "columnsFrom": ["user_id"],
+                    "columnsTo": ["id"],
+                    "onDelete": "no action",
+                    "onUpdate": "no action"
+                },
+                "review_events_flashcard_id_flashcards_id_fk": {
+                    "name": "review_events_flashcard_id_flashcards_id_fk",
+                    "tableFrom": "review_events",
+                    "tableTo": "flashcards",
+                    "columnsFrom": ["flashcard_id"],
+                    "columnsTo": ["id"],
+                    "onDelete": "no action",
+                    "onUpdate": "no action"
+                }
+            },
+            "uniqueConstraints": {},
+            "checkConstraints": {}
+        },
+        "verificationToken": {
+            "name": "verificationToken",
+            "columns": {
+                "identifier": {
+                    "autoincrement": false,
+                    "name": "identifier",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "token": {
+                    "autoincrement": false,
+                    "name": "token",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "expires": {
+                    "autoincrement": false,
+                    "name": "expires",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true
+                }
+            },
+            "compositePrimaryKeys": {},
+            "indexes": {},
+            "foreignKeys": {},
             "uniqueConstraints": {},
             "checkConstraints": {}
         }
@@ -272,8 +716,5 @@
         "schemas": {},
         "tables": {},
         "columns": {}
-    },
-    "internal": {
-        "indexes": {}
     }
 }

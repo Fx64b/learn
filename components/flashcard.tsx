@@ -6,6 +6,8 @@ import { AnimatePresence, motion } from 'framer-motion'
 
 import { useCallback, useEffect, useState } from 'react'
 
+import { useTranslations } from 'next-intl'
+
 import { Card, CardContent } from '@/components/ui/card'
 
 interface FlashcardProps {
@@ -21,6 +23,7 @@ export function Flashcard({
     onRating,
     className,
 }: FlashcardProps) {
+    const t = useTranslations('learn')
     const [isFlipped, setIsFlipped] = useState(false)
     const [isFlipping, setIsFlipping] = useState(false)
 
@@ -97,9 +100,7 @@ export function Flashcard({
             onClick={flipCard}
             role="button"
             tabIndex={0}
-            aria-label={
-                isFlipped ? 'Vorderseite anzeigen' : 'Rückseite anzeigen'
-            }
+            aria-label={isFlipped ? t('flipHint') : t('flipHint')}
             aria-pressed={isFlipped}
         >
             <AnimatePresence
@@ -126,9 +127,9 @@ export function Flashcard({
                                         {vorderseite}
                                     </p>
                                     <p className="text-muted-foreground mt-4 text-xs">
-                                        Tippen zum Umdrehen{' '}
+                                        {t('flipHint')}{' '}
                                         <kbd className="hidden md:inline">
-                                            (Leertaste)
+                                            {t('spaceToFlip')}
                                         </kbd>
                                     </p>
                                 </div>
@@ -154,7 +155,7 @@ export function Flashcard({
                                     <div className="flex h-full min-h-[15rem] flex-1 items-center justify-center overflow-auto py-4 text-center">
                                         <div className="w-full">
                                             <p className="text-muted-foreground mb-2 text-xs">
-                                                Antwort
+                                                {t('answer')}
                                             </p>
                                             <p className="text-base leading-relaxed font-medium break-words whitespace-pre-line sm:text-lg md:text-xl lg:text-2xl">
                                                 {rueckseite}
@@ -165,7 +166,7 @@ export function Flashcard({
                                     {onRating && (
                                         <div className="border-border w-full border-t pt-2 pb-2">
                                             <p className="text-muted-foreground mb-2 text-xs">
-                                                Bewertung:
+                                                {t('rating')}
                                             </p>
                                             <div className="z-99 grid grid-cols-4 gap-1 sm:gap-2">
                                                 <button
@@ -176,10 +177,10 @@ export function Flashcard({
                                                     className="flex min-h-[44px] items-center justify-center rounded bg-red-500 px-2 py-2 text-xs text-white hover:bg-red-600 sm:text-sm dark:text-black"
                                                 >
                                                     <span className="hidden select-none md:inline">
-                                                        Wieder (1)
+                                                        {t('rateAgain')} (1)
                                                     </span>
                                                     <span className="select-none md:hidden">
-                                                        Wieder
+                                                        {t('rateAgain')}
                                                     </span>
                                                 </button>
                                                 <button
@@ -190,10 +191,10 @@ export function Flashcard({
                                                     className="flex min-h-[44px] items-center justify-center rounded bg-yellow-500 px-2 py-2 text-xs text-white hover:bg-yellow-600 sm:text-sm dark:text-black"
                                                 >
                                                     <span className="hidden select-none md:inline">
-                                                        Schwer (2)
+                                                        {t('rateHard')} (2)
                                                     </span>
                                                     <span className="select-none md:hidden">
-                                                        Schwer
+                                                        {t('rateHard')}
                                                     </span>
                                                 </button>
                                                 <button
@@ -204,10 +205,10 @@ export function Flashcard({
                                                     className="flex min-h-[44px] items-center justify-center rounded bg-blue-500 px-2 py-2 text-xs text-white hover:bg-blue-600 sm:text-sm"
                                                 >
                                                     <span className="hidden select-none md:inline">
-                                                        Gut (3)
+                                                        {t('rateGood')} (3)
                                                     </span>
                                                     <span className="select-none md:hidden">
-                                                        Gut
+                                                        {t('rateGood')}
                                                     </span>
                                                 </button>
                                                 <button
@@ -218,10 +219,10 @@ export function Flashcard({
                                                     className="flex min-h-[44px] items-center justify-center rounded bg-green-500 px-2 py-2 text-xs text-white hover:bg-green-600 sm:text-sm"
                                                 >
                                                     <span className="hidden select-none md:inline">
-                                                        Einfach (4)
+                                                        {t('rateEasy')} (4)
                                                     </span>
                                                     <span className="select-none md:hidden">
-                                                        Einfach
+                                                        {t('rateEasy')}
                                                     </span>
                                                 </button>
                                             </div>

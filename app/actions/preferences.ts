@@ -36,6 +36,7 @@ export async function updateUserPreferences(data: {
     animationSpeed?: number
     animationDirection?: 'horizontal' | 'vertical'
     theme?: 'light' | 'dark' | 'system'
+    locale?: string
 }) {
     try {
         const session = await getServerSession(authOptions)
@@ -64,6 +65,7 @@ export async function updateUserPreferences(data: {
                 animationSpeed: data.animationSpeed ?? 200,
                 animationDirection: data.animationDirection ?? 'horizontal',
                 theme: data.theme ?? 'dark',
+                locale: data.locale ?? 'en',
                 updatedAt: new Date(),
             })
         }
