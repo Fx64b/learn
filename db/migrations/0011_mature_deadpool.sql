@@ -1,1 +1,0 @@
-ALTER TABLE `decks` ADD `aktiv_bis` integer;

@@ -5,6 +5,7 @@ import {
     ArrowDown,
     ArrowRight,
     Gauge,
+    Globe,
     Monitor,
     Moon,
     Save,
@@ -30,6 +31,8 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
+import { useLocale } from "@/components/misc/locale-provider"
+import { useTranslations } from "next-intl"
 
 interface ProfileSettingsProps {
     initialPreferences: {
@@ -38,26 +41,37 @@ interface ProfileSettingsProps {
         animationSpeed: number
         animationDirection: 'horizontal' | 'vertical'
         theme: 'light' | 'dark' | 'system'
+        locale: string
     }
 }
 
 export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const userPreferences = useUserPreferences()
+    const t = useTranslations('profile.settings')
+    const { setLocale } = useLocale()
 
     const [localPrefs, setLocalPrefs] = useState({
         animationsEnabled: initialPreferences.animationsEnabled,
         animationSpeed: initialPreferences.animationSpeed,
         animationDirection: initialPreferences.animationDirection,
         theme: initialPreferences.theme,
+        locale: initialPreferences.locale,
     })
 
     const hasChanges =
         localPrefs.animationsEnabled !== initialPreferences.animationsEnabled ||
         localPrefs.animationSpeed !== initialPreferences.animationSpeed ||
         localPrefs.animationDirection !==
-            initialPreferences.animationDirection ||
-        localPrefs.theme !== initialPreferences.theme
+        initialPreferences.animationDirection ||
+        localPrefs.theme !== initialPreferences.theme ||
+        localPrefs.locale !== initialPreferences.locale
+
+    const updateLocale = (value: string) => {
+        const locale = value as 'en' | 'de'
+        setLocalPrefs((prev) => ({ ...prev, locale }))
+        setLocale(locale)
+    }
 
     const updateAnimationsEnabled = (value: boolean) => {
         setLocalPrefs((prev) => ({ ...prev, animationsEnabled: value }))
@@ -89,12 +103,14 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
             animationSpeed: localPrefs.animationSpeed,
             animationDirection: localPrefs.animationDirection,
             theme: localPrefs.theme,
+            locale: localPrefs.locale,
         })
 
         if (result.success) {
-            toast.success('Einstellungen gespeichert')
+            toast.success(t('saved'))
+            setLocale(localPrefs.locale as 'en' | 'de')
         } else {
-            toast.error('Fehler beim Speichern der Einstellungen')
+            toast.error('Error saving settings')
         }
 
         setIsSubmitting(false)
@@ -128,7 +144,7 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
                     <div className="w-full space-y-4">
                         <div className="flex items-center gap-2">
                             <Sun className="h-5 w-5 text-amber-500" />
-                            <h3 className="text-lg font-medium">Darstellung</h3>
+                            <h3 className="text-lg font-medium">{t('appearance.title')}</h3>
                         </div>
                         <Separator />
                         <div className="grid gap-6 sm:grid-cols-2">
@@ -137,7 +153,7 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
                                     htmlFor="theme"
                                     className="text-sm font-medium"
                                 >
-                                    Theme
+                                    {t('appearance.theme.label')}
                                 </Label>
                                 <Select
                                     value={localPrefs.theme}
@@ -147,16 +163,13 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
                                         id="theme"
                                         className="w-full"
                                     >
-                                        <SelectValue placeholder="Wähle ein Theme">
+                                        <SelectValue>
                                             <div className="flex items-center">
                                                 {getThemeIcon(localPrefs.theme)}
                                                 <span>
-                                                    {localPrefs.theme ===
-                                                        'light' && 'Hell'}
-                                                    {localPrefs.theme ===
-                                                        'dark' && 'Dunkel'}
-                                                    {localPrefs.theme ===
-                                                        'system' && 'System'}
+                                                    {localPrefs.theme === 'light' && t('appearance.theme.light')}
+                                                    {localPrefs.theme === 'dark' && t('appearance.theme.dark')}
+                                                    {localPrefs.theme === 'system' && t('appearance.theme.system')}
                                                 </span>
                                             </div>
                                         </SelectValue>
@@ -165,27 +178,68 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
                                         <SelectItem value="light">
                                             <div className="flex items-center">
                                                 <Sun className="mr-2 h-4 w-4" />
-                                                <span>Hell</span>
+                                                <span>{t('appearance.theme.light')}</span>
                                             </div>
                                         </SelectItem>
                                         <SelectItem value="dark">
                                             <div className="flex items-center">
                                                 <Moon className="mr-2 h-4 w-4" />
-                                                <span>Dunkel</span>
+                                                <span>{t('appearance.theme.dark')}</span>
                                             </div>
                                         </SelectItem>
                                         <SelectItem value="system">
                                             <div className="flex items-center">
                                                 <Monitor className="mr-2 h-4 w-4" />
-                                                <span>System</span>
+                                                <span>{t('appearance.theme.system')}</span>
                                             </div>
                                         </SelectItem>
                                     </SelectContent>
                                 </Select>
                                 <p className="text-muted-foreground mt-1 text-xs">
-                                    Wähle zwischen hellem, dunklem oder
-                                    System-Theme.
+                                    {t('appearance.theme.description')}
                                 </p>
+                            </div>
+
+                            {/* Add language selector */}
+                            <div className="space-y-2">
+                                <Label
+                                    htmlFor="language"
+                                    className="text-sm font-medium"
+                                >
+                                    Language / Sprache
+                                </Label>
+                                <Select
+                                    value={localPrefs.locale}
+                                    onValueChange={updateLocale}
+                                >
+                                    <SelectTrigger
+                                        id="language"
+                                        className="w-full"
+                                    >
+                                        <SelectValue>
+                                            <div className="flex items-center">
+                                                <Globe className="mr-2 h-4 w-4" />
+                                                <span>
+                                                    {localPrefs.locale === 'en' ? 'English' : 'Deutsch'}
+                                                </span>
+                                            </div>
+                                        </SelectValue>
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="en">
+                                            <div className="flex items-center">
+                                                <span className="mr-2">🇬🇧</span>
+                                                <span>English</span>
+                                            </div>
+                                        </SelectItem>
+                                        <SelectItem value="de">
+                                            <div className="flex items-center">
+                                                <span className="mr-2">🇩🇪</span>
+                                                <span>Deutsch</span>
+                                            </div>
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
                         </div>
                     </div>
@@ -194,7 +248,7 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
                         <div className="flex items-center gap-2">
                             <Sparkles className="h-5 w-5 text-purple-500" />
                             <h3 className="text-lg font-medium">
-                                Animations-Einstellungen
+                                {t('animations.title')}
                             </h3>
                         </div>
                         <Separator />
@@ -205,11 +259,10 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
                                         htmlFor="animations-enabled"
                                         className="text-sm font-medium"
                                     >
-                                        Animationen aktivieren
+                                        {t('animations.enable.label')}
                                     </Label>
                                     <p className="text-muted-foreground text-xs">
-                                        Aktiviere oder deaktiviere alle
-                                        Animationen.
+                                        {t('animations.enable.description')}
                                     </p>
                                 </div>
                                 <Switch
@@ -228,7 +281,7 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
                                                 htmlFor="animation-speed"
                                                 className="text-sm font-medium"
                                             >
-                                                Geschwindigkeit
+                                                {t('animations.speed.label')}
                                             </Label>
                                         </div>
                                         <div className="flex items-center gap-4">
@@ -253,8 +306,7 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
                                             </span>
                                         </div>
                                         <p className="text-muted-foreground mt-1 text-xs">
-                                            Niedrigere Werte = schnellere
-                                            Animationen.
+                                            {t('animations.speed.description')}
                                         </p>
                                     </div>
 
@@ -267,7 +319,7 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
                                                 htmlFor="animation-direction"
                                                 className="text-sm font-medium"
                                             >
-                                                Richtung
+                                                {t('animations.direction.label')}
                                             </Label>
                                         </div>
                                         <Select
@@ -282,18 +334,15 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
                                                 id="animation-direction"
                                                 className="w-full"
                                             >
-                                                <SelectValue placeholder="Richtung">
+                                                <SelectValue>
                                                     <div className="flex items-center">
                                                         {getDirectionIcon(
                                                             localPrefs.animationDirection
                                                         )}
                                                         <span>
-                                                            {localPrefs.animationDirection ===
-                                                                'horizontal' &&
-                                                                'Horizontal'}
-                                                            {localPrefs.animationDirection ===
-                                                                'vertical' &&
-                                                                'Vertikal'}
+                                                            {localPrefs.animationDirection === 'horizontal'
+                                                                ? t('animations.direction.horizontal')
+                                                                : t('animations.direction.vertical')}
                                                         </span>
                                                     </div>
                                                 </SelectValue>
@@ -302,20 +351,19 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
                                                 <SelectItem value="horizontal">
                                                     <div className="flex items-center">
                                                         <ArrowRight className="mr-2 h-4 w-4" />
-                                                        <span>Horizontal</span>
+                                                        <span>{t('animations.direction.horizontal')}</span>
                                                     </div>
                                                 </SelectItem>
                                                 <SelectItem value="vertical">
                                                     <div className="flex items-center">
                                                         <ArrowDown className="mr-2 h-4 w-4" />
-                                                        <span>Vertikal</span>
+                                                        <span>{t('animations.direction.vertical')}</span>
                                                     </div>
                                                 </SelectItem>
                                             </SelectContent>
                                         </Select>
                                         <p className="text-muted-foreground mt-1 text-xs">
-                                            Bestimmt die Hauptrichtung der
-                                            Animationen.
+                                            {t('animations.direction.description')}
                                         </p>
                                     </div>
                                 </div>
@@ -330,11 +378,11 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
                         className="gap-2"
                     >
                         {isSubmitting ? (
-                            <>Wird gespeichert...</>
+                            <>{t('saving')}</>
                         ) : (
                             <>
                                 <Save className="h-4 w-4" />
-                                <span>Einstellungen speichern</span>
+                                <span>{t('save')}</span>
                             </>
                         )}
                     </Button>
