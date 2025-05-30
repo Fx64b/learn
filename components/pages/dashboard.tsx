@@ -6,6 +6,7 @@ import { AlertTriangle, Plus } from 'lucide-react'
 import type React from 'react'
 
 import { Session } from 'next-auth'
+import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 
 import { getAllDecks } from '@/app/actions/deck'
@@ -22,6 +23,7 @@ interface DashboardProps {
 }
 
 export default async function Dashboard({ session }: DashboardProps) {
+    const t = await getTranslations()
     const decks = await getAllDecks()
 
     const progressData = session ? await getLearningProgress() : null
@@ -55,28 +57,29 @@ export default async function Dashboard({ session }: DashboardProps) {
     return (
         <div className="px-4 py-6 sm:py-10">
             <div className="mb-10">
-                <h1 className="mb-2 text-3xl font-bold">Flashcard App</h1>
+                <h1 className="mb-2 text-3xl font-bold">
+                    {t('dashboard.title')}
+                </h1>
                 <p className="text-muted-foreground">
-                    Eine einfache Flashcard-App mit spaced repetition.
+                    {t('dashboard.subtitle')}
                 </p>
                 <Alert className="my-4 w-full md:w-2/3">
                     <AlertTriangle className="h-5! w-5! text-amber-500!" />
-                    <AlertTitle>Achtung!</AlertTitle>
+                    <AlertTitle>{t('dashboard.betaWarning.title')}</AlertTitle>
                     <AlertDescription>
-                        Diese App ist noch in der Entwicklungsphase. Es kann gut
-                        sein, dass Daten verloren gehen oder nicht korrekt
-                        angezeigt werden. Bitte benutze die App nur zu
-                        Testzwecken und nicht für wichtige Daten.
+                        {t('dashboard.betaWarning.description')}
                     </AlertDescription>
                 </Alert>
             </div>
 
             <div className="mb-6">
                 <div className="mb-4 flex items-center justify-between">
-                    <h2 className="text-xl font-semibold">Lernstatistik</h2>
+                    <h2 className="text-xl font-semibold">
+                        {t('dashboard.statistics.title')}
+                    </h2>
                     <Link href="/profile">
                         <Button variant="ghost" size="sm">
-                            Mein Profil
+                            {t('dashboard.statistics.myProfile')}
                         </Button>
                     </Link>
                 </div>
@@ -85,10 +88,7 @@ export default async function Dashboard({ session }: DashboardProps) {
                         <SimpleProgressDashboard data={progressData} />
                     ) : (
                         <div className="text-muted-foreground py-8 text-center">
-                            <p>
-                                Bitte melde dich an, um deine Lernstatistiken zu
-                                sehen.
-                            </p>
+                            <p>{t('dashboard.statistics.loginPrompt')}</p>
                         </div>
                     )}
                 </div>
@@ -96,22 +96,24 @@ export default async function Dashboard({ session }: DashboardProps) {
 
             <div className="mb-6">
                 <div className="mb-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-0">
-                    <h2 className="text-xl font-semibold">Lernkategorien</h2>
+                    <h2 className="text-xl font-semibold">
+                        {t('dashboard.categories.title')}
+                    </h2>
                     <div className="flex flex-wrap justify-center gap-2 md:justify-end">
                         <Button variant="outline" size="default" asChild>
                             <Link href="/deck/create">
                                 <Plus className="mr-2 h-4 w-4" />
-                                Neues Deck
+                                {t('dashboard.categories.newDeck')}
                             </Link>
                         </Button>
                         <Button variant="outline" size="default" asChild>
                             <Link href="/learn/all">
-                                Alle Karten wiederholen
+                                {t('dashboard.categories.reviewAll')}
                             </Link>
                         </Button>
                         <Button variant="outline" size="default" asChild>
                             <Link href="/learn/difficult">
-                                Schwierige Karten üben
+                                {t('dashboard.categories.practiceDifficult')}
                             </Link>
                         </Button>
                     </div>
@@ -137,10 +139,10 @@ export default async function Dashboard({ session }: DashboardProps) {
 
                     <div className="mb-4">
                         <h2 className="text-xl font-semibold">
-                            Abgeschlossene Lernziele
+                            {t('dashboard.completedGoals.title')}
                         </h2>
                         <p className="text-muted-foreground text-sm">
-                            Diese Decks haben ihr Lernzieldatum bereits erreicht
+                            {t('dashboard.completedGoals.description')}
                         </p>
                     </div>
 

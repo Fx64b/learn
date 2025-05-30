@@ -3,6 +3,7 @@
 import { useState } from 'react'
 
 import { signIn } from 'next-auth/react'
+import { useTranslations } from 'next-intl'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -16,6 +17,7 @@ import {
 import { Input } from '@/components/ui/input'
 
 export default function LoginPage() {
+    const t = useTranslations()
     const [email, setEmail] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const [message, setMessage] = useState<{
@@ -38,12 +40,12 @@ export default function LoginPage() {
             if (result?.error) {
                 setMessage({
                     type: 'error',
-                    text: 'Ein Fehler ist aufgetreten. Bitte versuche es erneut.',
+                    text: t('auth.loginError'),
                 })
             } else {
                 setMessage({
                     type: 'success',
-                    text: 'Überprüfe deine E-Mail für den Anmeldelink!',
+                    text: t('auth.checkEmail'),
                 })
                 setEmail('')
             }
@@ -51,7 +53,7 @@ export default function LoginPage() {
             console.error('Login error:', error)
             setMessage({
                 type: 'error',
-                text: 'Ein unerwarteter Fehler ist aufgetreten.',
+                text: t('auth.unexpectedError'),
             })
         } finally {
             setIsLoading(false)
@@ -62,10 +64,11 @@ export default function LoginPage() {
         <div className="flex min-h-screen items-center justify-center px-4">
             <Card className="w-full max-w-md">
                 <CardHeader>
-                    <CardTitle className="text-2xl">Anmelden</CardTitle>
+                    <CardTitle className="text-2xl">
+                        {t('auth.signInTitle')}
+                    </CardTitle>
                     <CardDescription>
-                        Melde dich mit deiner E-Mail-Adresse an, um auf deine
-                        Lernkarten zuzugreifen.
+                        {t('auth.signInDescription')}
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -74,7 +77,7 @@ export default function LoginPage() {
                             <div>
                                 <Input
                                     type="email"
-                                    placeholder="E-Mail-Adresse"
+                                    placeholder={t('auth.emailPlaceholder')}
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
@@ -99,15 +102,15 @@ export default function LoginPage() {
                                 disabled={isLoading}
                             >
                                 {isLoading
-                                    ? 'Sende Link...'
-                                    : 'Login-Link senden'}
+                                    ? t('auth.sendingLink')
+                                    : t('auth.sendLoginLink')}
                             </Button>
                         </div>
                     </form>
                 </CardContent>
                 <CardFooter className="flex justify-center">
                     <p className="text-muted-foreground text-sm">
-                        Du bekommst einen Anmeldelink per E-Mail zugesendet.
+                        {t('auth.verifyDescription')}
                     </p>
                 </CardFooter>
             </Card>
