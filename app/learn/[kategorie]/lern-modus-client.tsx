@@ -13,6 +13,7 @@ import { saveStudySession } from '@/app/actions/study-session'
 
 import { Flashcard } from '@/components/flashcard'
 import { Button } from '@/components/ui/button'
+import {useTranslations} from "next-intl";
 
 interface LernModusClientProps {
     deckId: string
@@ -23,6 +24,7 @@ export default function LernModusClient({
     deckId,
     flashcards: initialFlashcards,
 }: LernModusClientProps) {
+    const t = useTranslations('learn')
     const shuffledFlashcards = [...initialFlashcards].sort(
         () => Math.random() - 0.5
     )
@@ -233,7 +235,7 @@ export default function LernModusClient({
         setFlashcards(shuffled)
 
         setHasUnsavedSession(true)
-        toast.success('Karten gemischt!')
+        toast.success(t('cardsShuffled'))
     }, [flashcards])
 
     const handleBewertung = async (bewertung: number) => {
@@ -253,13 +255,12 @@ export default function LernModusClient({
             if (aktuellerIndex < flashcards.length - 1) {
             } else {
                 setIstLernprozessAbgeschlossen(true)
-                toast.success('Alle Karten wiederholt!', {
-                    description: 'Lerneinheit abgeschlossen',
+                toast.success(t('allReviewed'), {
+                    description: t('sessionComplete'),
                 })
             }
         } else {
-            toast.error('Fehler beim Bewerten der Karte')
-        }
+            toast.error(t('ratingError'))        }
     }
 
     // Save session before component unmounts
@@ -277,13 +278,13 @@ export default function LernModusClient({
         return (
             <div className="flex flex-1 flex-col items-center justify-start gap-4 py-8">
                 <h2 className="mb-2 text-xl font-semibold">
-                    Sieht so aus, als hättest du schon alles gelernt!
+                    {t('noCards')}
                 </h2>
                 <p className="text-muted-foreground mb-4 text-center">
-                    Für diese Kategorie sind keine Karten verfügbar.
+                    {t('noCardsDescription')}
                 </p>
                 <Button asChild>
-                    <Link href="/">Zurück zur Übersicht</Link>
+                    <Link href="/">{t('common.backToHome')}</Link>
                 </Button>
             </div>
         )
@@ -293,14 +294,13 @@ export default function LernModusClient({
         return (
             <div className="flex flex-1 flex-col items-center justify-start gap-4 py-8">
                 <h2 className="mb-2 text-xl font-semibold">
-                    Lerneinheit abgeschlossen!
+                    {t('completed')}
                 </h2>
                 <p className="text-muted-foreground mb-4 text-center">
-                    Du hast alle {flashcards.length} Karten in dieser Kategorie
-                    wiederholt.
+                    {t('completedDescription', { count: flashcards.length })}
                 </p>
                 <p className="text-muted-foreground mb-4 text-sm">
-                    Lernzeit: {formatTime(studyTime)}
+                    {t('studyTime')} {formatTime(studyTime)}
                 </p>
                 <div className="flex flex-wrap justify-center gap-4 md:gap-2">
                     <Button
@@ -313,13 +313,13 @@ export default function LernModusClient({
                             setHasUnsavedSession(true)
                         }}
                     >
-                        Nochmal wiederholen
+                        {t('repeatAgain')}
                     </Button>
                     <Button variant="outline" onClick={shuffleCards}>
-                        Gemischt wiederholen
+                        {t('repeatShuffled')}
                     </Button>
                     <Button>
-                        <Link href="/">Zurück zur Übersicht</Link>
+                        <Link href="/">{t('common.backToHome')}</Link>
                     </Button>
                 </div>
             </div>
@@ -348,10 +348,10 @@ export default function LernModusClient({
             <div className="mb-6">
                 <div className="mb-2 flex items-center justify-between">
                     <div className="text-lg font-semibold">
-                        Karte {aktuellerIndex + 1} von {flashcards.length}
+                        {t('card')} {aktuellerIndex + 1} {t('of')} {flashcards.length}
                     </div>
                     <div className="text-lg font-semibold">
-                        Verbleibend: {flashcards.length - aktuellerIndex}
+                        {t('remaining')} {flashcards.length - aktuellerIndex}
                     </div>
                 </div>
                 <div className="bg-secondary h-3 w-full rounded-full">
@@ -374,24 +374,8 @@ export default function LernModusClient({
                 )}
 
                 <div className="text-muted-foreground mt-4 hidden text-center text-sm md:block">
-                    <p>
-                        Drücke die{' '}
-                        <kbd className="bg-muted border-border rounded-md border px-2 py-1.5 text-xs font-semibold">
-                            Leertaste
-                        </kbd>{' '}
-                        zum Umdrehen
-                    </p>
-                    <p className="mt-1">
-                        Bewerte mit{' '}
-                        <kbd className="bg-muted border-border rounded-md border px-1 py-0.5 text-xs font-semibold">
-                            1
-                        </kbd>{' '}
-                        bis{' '}
-                        <kbd className="bg-muted border-border rounded-md border px-1 py-0.5 text-xs font-semibold">
-                            4
-                        </kbd>{' '}
-                        oder klicke auf die Schaltflächen
-                    </p>
+                    <p>{t('keyboardHint')}</p>
+                    <p className="mt-1">{t('ratingHint')}</p>
                 </div>
             </div>
         </>

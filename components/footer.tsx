@@ -2,6 +2,7 @@ import { readFileSync } from 'fs'
 import { Github, Heart } from 'lucide-react'
 import { join } from 'path'
 
+import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 
 import { Logo } from '@/components/misc/logo'
@@ -17,7 +18,8 @@ try {
     cachedVersion = null
 }
 
-export function Footer() {
+export async function Footer() {
+    const t = await getTranslations('footer')
     const version = cachedVersion
     const currentYear = new Date().getFullYear()
 
@@ -29,21 +31,18 @@ export function Footer() {
                         <div className="mb-4 flex items-center space-x-2">
                             <Logo />
                         </div>
-                        <p className="text-muted-foreground">
-                            The modern flashcard app for effective learning
-                            using spaced repetition.
-                        </p>
+                        <p className="text-muted-foreground">{t('tagline')}</p>
                     </div>
 
                     <div>
-                        <h4 className="mb-4 font-semibold">Product</h4>
+                        <h4 className="mb-4 font-semibold">{t('product')}</h4>
                         <ul className="text-muted-foreground space-y-2">
                             <li>
                                 <Link
                                     href="/todo"
                                     className="hover:text-foreground transition-colors"
                                 >
-                                    Features
+                                    {t('features')}
                                 </Link>
                             </li>
                             <li>
@@ -51,7 +50,7 @@ export function Footer() {
                                     href="/todo"
                                     className="hover:text-foreground transition-colors"
                                 >
-                                    Pricing
+                                    {t('pricing')}
                                 </Link>
                             </li>
                             <li>
@@ -59,21 +58,21 @@ export function Footer() {
                                     href="/todo"
                                     className="hover:text-foreground transition-colors"
                                 >
-                                    Roadmap
+                                    {t('roadmap')}
                                 </Link>
                             </li>
                         </ul>
                     </div>
 
                     <div>
-                        <h4 className="mb-4 font-semibold">Support</h4>
+                        <h4 className="mb-4 font-semibold">{t('support')}</h4>
                         <ul className="text-muted-foreground space-y-2">
                             <li>
                                 <Link
                                     href="/todo"
                                     className="hover:text-foreground transition-colors"
                                 >
-                                    Documentation
+                                    {t('documentation')}
                                 </Link>
                             </li>
                             <li>
@@ -81,7 +80,7 @@ export function Footer() {
                                     href="/todo"
                                     className="hover:text-foreground transition-colors"
                                 >
-                                    Help Center
+                                    {t('helpCenter')}
                                 </Link>
                             </li>
                             <li>
@@ -89,21 +88,21 @@ export function Footer() {
                                     href="/todo"
                                     className="hover:text-foreground transition-colors"
                                 >
-                                    Contact
+                                    {t('contact')}
                                 </Link>
                             </li>
                         </ul>
                     </div>
 
                     <div>
-                        <h4 className="mb-4 font-semibold">Legal</h4>
+                        <h4 className="mb-4 font-semibold">{t('legal')}</h4>
                         <ul className="text-muted-foreground space-y-2">
                             <li>
                                 <Link
                                     href="/todo"
                                     className="hover:text-foreground transition-colors"
                                 >
-                                    Privacy Policy
+                                    {t('privacyPolicy')}
                                 </Link>
                             </li>
                             <li>
@@ -111,7 +110,7 @@ export function Footer() {
                                     href="/todo"
                                     className="hover:text-foreground transition-colors"
                                 >
-                                    Terms of Service
+                                    {t('termsOfService')}
                                 </Link>
                             </li>
                             <li>
@@ -119,7 +118,7 @@ export function Footer() {
                                     href="https://github.com/Fx64b/learn/blob/main/LICENSE"
                                     className="hover:text-foreground transition-colors"
                                 >
-                                    License
+                                    {t('license')}
                                 </Link>
                             </li>
                         </ul>
@@ -131,9 +130,9 @@ export function Footer() {
                 <div className="mt-8 flex items-center gap-2">
                     <span>© {currentYear}</span>
                     <span className="flex items-center">
-                        Made with{' '}
+                        {t('madeWith')}{' '}
                         <Heart className="mx-1 h-3 w-3 fill-red-500 text-red-500" />{' '}
-                        by
+                        {t('by')}
                         <Link
                             href="https://fx64b.dev"
                             target="_blank"
