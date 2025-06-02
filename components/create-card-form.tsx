@@ -4,7 +4,7 @@ import { toast } from 'sonner'
 
 import { useState } from 'react'
 
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 
 import {
     createFlashcard,
@@ -19,12 +19,41 @@ import { Textarea } from '@/components/ui/textarea'
 
 export function CreateCardForm({ deckId }: { deckId: string }) {
     const t = useTranslations('deck.cards')
+    const locale = useLocale()
     const [singleCard, setSingleCard] = useState({
         vorderseite: '',
         rueckseite: '',
     })
     const [jsonCards, setJsonCards] = useState('')
     const [isSubmitting, setIsSubmitting] = useState(false)
+
+    const getJsonPlaceholder = () => {
+        if (locale === 'de') {
+            return `[
+  {
+    "vorderseite": "Was ist ...?",
+    "rueckseite": "Die Antwort ist ...",
+    "istPruefungsrelevant": true
+  },
+  {
+    "vorderseite": "Nenne drei ...",
+    "rueckseite": "1. ... 2. ... 3. ..."
+  }
+]`
+        }
+
+        return `[
+  {
+    "vorderseite": "What is ...?",
+    "rueckseite": "The answer is ...",
+    "istPruefungsrelevant": true
+  },
+  {
+    "vorderseite": "Name three ...",
+    "rueckseite": "1. ... 2. ... 3. ..."
+  }
+]`
+    }
 
     const handleSingleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -155,7 +184,7 @@ export function CreateCardForm({ deckId }: { deckId: string }) {
                                         setJsonCards(e.target.value)
                                     }
                                     className="h-72 w-full rounded border p-2"
-                                    placeholder={t('jsonPlaceholder')}
+                                    placeholder={getJsonPlaceholder()}
                                     required
                                 />
                             </div>

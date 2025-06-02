@@ -42,7 +42,7 @@ export default async function EditDeckPage({
             <div className="mb-8 flex items-center justify-between">
                 <h1 className="text-2xl font-bold">{deck.titel}</h1>
                 <Button variant="outline" asChild>
-                    <Link href="/">{common('back')}</Link>{' '}
+                    <Link href="/">{common('back')}</Link>
                 </Button>
             </div>
 

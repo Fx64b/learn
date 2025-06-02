@@ -275,7 +275,6 @@
             "createCard": "Karte erstellen",
             "createMultiple": "Mehrere Karten (JSON)",
             "singleCard": "Einzelne Karte",
-            "jsonPlaceholder": "[\n  {\n    \"vorderseite\": \"Was ist ...?\",\n    \"rueckseite\": \"Die Antwort ist ...\",\n    \"istPruefungsrelevant\": true\n  },\n  {\n    \"vorderseite\": \"Nenne drei ...\",\n    \"rueckseite\": \"1. ... 2. ... 3. ...\"\n  }\n]",
             "creatingMultiple": "Erstelle Karten...",
             "createFromJson": "Karten aus JSON erstellen",
             "cardCreated": "Karte erstellt",
@@ -294,11 +293,11 @@
             "cardsToReview": "Karten zu wiederholen",
             "wasDueBy": "War fällig bis:",
             "dueBy": "Fällig bis:"
+        },
+        "tabs": {
+            "details": "Deck Details",
+            "editCards": "Karten bearbeiten"
         }
-    },
-    "tabs": {
-        "details": "Deck-Details",
-        "editCards": "Karten bearbeiten"
     },
     "learn": {
         "allCards": "Alle Karten wiederholen",

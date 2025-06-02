@@ -2,6 +2,8 @@
 
 import { useMemo } from 'react'
 
+import { useTranslations } from 'next-intl'
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface ProgressData {
@@ -15,6 +17,7 @@ interface LearningProgressChartProps {
 }
 
 export function LearningProgressChart({ data }: LearningProgressChartProps) {
+    const t = useTranslations('statistics.progressChart')
     const chartData = useMemo(() => {
         return data.slice(-7)
     }, [data])
@@ -51,14 +54,12 @@ export function LearningProgressChart({ data }: LearningProgressChartProps) {
     return (
         <Card className="w-full">
             <CardHeader>
-                <CardTitle>Lernfortschritt der letzten 7 Tage</CardTitle>
+                <CardTitle>{t('title')}</CardTitle>
             </CardHeader>
             <CardContent>
                 {chartData.length === 0 ? (
                     <div className="text-muted-foreground text-sm">
-                        <p>
-                            Noch keine Lernaktivitäten in den letzten 7 Tagen.
-                        </p>
+                        <p>{t('noActivity')}</p>
                     </div>
                 ) : (
                     <div className="space-y-6">
