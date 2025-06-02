@@ -231,6 +231,15 @@
             "copyToClipboard": "Copy to clipboard",
             "copiedSuccess": "JSON copied to clipboard",
             "copyError": "Error copying",
+            "titleRequired": "Title",
+            "titlePlaceholder": "e.g. Math Basics",
+            "descriptionLabel": "Description",
+            "descriptionPlaceholder": "Brief description of the deck",
+            "categoryRequired": "Category",
+            "categoryPlaceholder": "e.g. Mathematics, Languages, etc.",
+            "dueDateLabel": "Study deadline",
+            "noDateSelected": "No date selected",
+            "dueDateHint": "Date by which the cards should be learned (e.g. exam date)",
             "dangerZone": {
                 "title": "Danger Zone",
                 "description": "The following actions cannot be undone. Please use with caution.",
@@ -276,7 +285,13 @@
             "updateError": "Error updating",
             "deleteConfirm": "Do you really want to delete this card?",
             "deleteSuccess": "Card deleted",
-            "deleteError": "Error deleting"
+            "deleteError": "Error deleting",
+            "frontSide": "Front",
+            "backSide": "Back"
+        },
+        "tabs": {
+            "details": "Deck Details",
+            "editCards": "Edit Cards"
         },
         "statistics": {
             "totalCards": "cards total",
@@ -312,7 +327,9 @@
         "rateGood": "Good",
         "rateEasy": "Easy",
         "keyboardHint": "Press spacebar to flip",
-        "ratingHint": "Rate with 1 to 4 or click the buttons"
+        "ratingHint": "Rate with 1 to 4 or click the buttons",
+        "loginRequired": "Please login to view this page",
+        "help": "Help"
     },
     "statistics": {
         "last7Days": "Last 7 Days",
@@ -340,11 +357,51 @@
         "productiveTime": "Most productive time:",
         "atTime": "{time}:00 with an average of {cards} cards per session.",
         "totalCards": "Total cards:",
-        "cardsAcrossAllTimes": "{count} cards across all times."
+        "cardsAcrossAllTimes": "{count} cards across all times.",
+        "progressChart": {
+            "title": "Learning Progress Last 7 Days",
+            "noActivity": "No learning activity in the last 7 days.",
+            "cards": "Cards:",
+            "successRate": "Success rate:",
+            "monday": "Mon",
+            "tuesday": "Tue",
+            "wednesday": "Wed",
+            "thursday": "Thu",
+            "friday": "Fri",
+            "saturday": "Sat",
+            "sunday": "Sun"
+        },
+        "timeAnalysis": {
+            "title": "Study Time Analysis",
+            "beta": "Beta",
+            "noSessions": "No study sessions completed yet.",
+            "productiveTime": "Most productive time:",
+            "withAverage": "{time}:00 with an average of {cards} cards per session.",
+            "totalCards": "Total cards:",
+            "acrossAllTimes": "{count} cards across all times."
+        },
+        "dashboard": {
+            "last7Days": "Last 7 Days",
+            "cardsReviewed": "Cards reviewed",
+            "successRate": "Success rate",
+            "percentCorrect": "Percent correct",
+            "learningStreak": "Learning streak",
+            "day": "Day",
+            "days": "Days",
+            "inARow": "in a row",
+            "toReview": "To review",
+            "cardsForToday": "Cards for today",
+            "reviewNow": "Review now",
+            "cardsByDifficulty": "Cards by Difficulty"
+        }
     },
     "profile": {
         "title": "My Profile",
         "email": "Email",
+        "tabs": {
+            "settings": "Settings",
+            "statistics": "Learning Statistics"
+        },
         "settings": {
             "title": "Settings",
             "statistics": "Learning Statistics",

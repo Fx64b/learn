@@ -8,7 +8,6 @@ import { cookies } from 'next/headers'
 
 import { updateUserPreferences } from './preferences'
 
-
 export async function updateLocale(locale: 'en' | 'de') {
     const session = await getServerSession(authOptions)
 
