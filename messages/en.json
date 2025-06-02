@@ -105,6 +105,9 @@
         "verifySpam": "If you don't receive an email, please also check your spam folder.",
         "backToLogin": "Back to login",
         "myAccount": "My Account",
+        "notAuthenticated": "You are not authenticated",
+        "ratelimitExceeded": "Rate limit exceeded. Please try again later.",
+        "bulkRatelimitExceeded": "Too many bulk requests. Please wait.",
         "verifyRequest": {
             "title": "Link sent",
             "subtitle": "Check your email",
@@ -240,6 +243,7 @@
             "dueDateLabel": "Study deadline",
             "noDateSelected": "No date selected",
             "dueDateHint": "Date by which the cards should be learned (e.g. exam date)",
+            "notFound": "Deck not found or not authorized",
             "dangerZone": {
                 "title": "Danger Zone",
                 "description": "The following actions cannot be undone. Please use with caution.",
@@ -276,6 +280,7 @@
             "createMultiple": "Multiple Cards (JSON)",
             "singleCard": "Single Card",
             "creatingMultiple": "Creating cards...",
+            "createError": "Error creating card",
             "createFromJson": "Create cards from JSON",
             "cardCreated": "Card created",
             "cardsCreated": "{success} cards created{errors}",
@@ -286,7 +291,14 @@
             "deleteSuccess": "Card deleted",
             "deleteError": "Error deleting",
             "frontSide": "Front",
-            "backSide": "Back"
+            "backSide": "Back",
+            "bulkCreateError": "Invalid JSON or error creating cards",
+            "invalidJsonArray": "JSON must be an array",
+            "missingFields": "Card with missing fields skipped",
+            "loadError": "Error loading flashcards",
+            "reviewError": "Error reviewing card",
+            "notFound": "Card not found",
+            "unauthorized": "Unauthorized"
         },
         "tabs": {
             "details": "Deck Details",
