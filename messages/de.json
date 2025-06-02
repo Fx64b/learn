@@ -105,6 +105,9 @@
         "verifySpam": "Wenn du keine E-Mail erhältst, überprüfe bitte auch deinen Spam-Ordner.",
         "backToLogin": "Zurück zur Anmeldung",
         "myAccount": "Mein Konto",
+        "notAuthenticated": "Du bist nicht angemeldet",
+        "ratelimitExceeded": "Zu viele Anfragen. Bitte versuche es später erneut.",
+        "bulkRatelimitExceeded": "Zu viele Bulk-Anfragen. Bitte warten Sie.",
         "verifyRequest": {
             "title": "Link gesendet",
             "subtitle": "Überprüfe deine E-Mail",
@@ -240,6 +243,7 @@
             "dueDateLabel": "Lernfrist",
             "noDateSelected": "Kein Datum ausgewählt",
             "dueDateHint": "Datum, bis zu dem die Karten gelernt werden sollen (z.B. Prüfungsdatum)",
+            "notFound": "Deck nicht gefunden oder nicht autorisiert",
             "dangerZone": {
                 "title": "Dangerzone",
                 "description": "Die folgenden Aktionen können nicht rückgängig gemacht werden. Bitte mit Vorsicht verwenden.",
@@ -274,6 +278,7 @@
             "creating": "Erstelle...",
             "createCard": "Karte erstellen",
             "createMultiple": "Mehrere Karten (JSON)",
+            "createError": "Fehler beim Erstellen der Karte",
             "singleCard": "Einzelne Karte",
             "creatingMultiple": "Erstelle Karten...",
             "createFromJson": "Karten aus JSON erstellen",
@@ -286,7 +291,14 @@
             "deleteSuccess": "Karte gelöscht",
             "deleteError": "Fehler beim Löschen",
             "frontSide": "Vorderseite",
-            "backSide": "Rückseite"
+            "backSide": "Rückseite",
+            "bulkCreateError": "Ungültiges JSON oder Fehler beim Erstellen",
+            "invalidJsonArray": "JSON muss ein Array sein",
+            "missingFields": "Karte mit fehlenden Feldern übersprungen",
+            "loadError": "Fehler beim Laden der Flashcards",
+            "reviewError": "Fehler beim Bewerten der Karte",
+            "notFound": "Karte nicht gefunden",
+            "unauthorized": "Nicht autorisiert"
         },
         "statistics": {
             "totalCards": "Karten insgesamt",
