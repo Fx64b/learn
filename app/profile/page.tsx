@@ -68,14 +68,14 @@ export default async function ProfilePage() {
                         className="flex items-center gap-2"
                     >
                         <UserCircle className="h-4 w-4" />
-                        <span>Einstellungen</span>
+                        <span>{t('tabs.settings')}</span>
                     </TabsTrigger>
                     <TabsTrigger
                         value="progress"
                         className="flex items-center gap-2"
                     >
                         <BarChart2 className="h-4 w-4" />
-                        <span>Lernstatistik</span>
+                        <span>{t('tabs.statistics')}</span>
                     </TabsTrigger>
                 </TabsList>
 
@@ -93,11 +93,10 @@ export default async function ProfilePage() {
                                     <BarChart2 className="text-muted-foreground h-6 w-6" />
                                 </div>
                                 <p className="text-muted-foreground">
-                                    Noch keine Lerndaten verfügbar.
+                                    {t('noData')}
                                 </p>
                                 <p className="text-muted-foreground mt-2 text-sm">
-                                    Beginne mit dem Lernen, um hier deinen
-                                    Fortschritt zu sehen.
+                                    {t('startLearning')}
                                 </p>
                             </div>
                         )}

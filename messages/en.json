@@ -275,7 +275,6 @@
             "createCard": "Create Card",
             "createMultiple": "Multiple Cards (JSON)",
             "singleCard": "Single Card",
-            "jsonPlaceholder": "[\n  {\n    \"vorderseite\": \"What is ...?\",\n    \"rueckseite\": \"The answer is ...\",\n    \"istPruefungsrelevant\": true\n  },\n  {\n    \"vorderseite\": \"Name three ...\",\n    \"rueckseite\": \"1. ... 2. ... 3. ...\"\n  }\n]",
             "creatingMultiple": "Creating cards...",
             "createFromJson": "Create cards from JSON",
             "cardCreated": "Card created",
