@@ -104,7 +104,17 @@
         "verifyDescription": "Du bekommst einen Anmeldelink per E-Mail zugesendet.\n Bitte überprüfe deinen Posteingang und klicke auf den Link, um fortzufahren.",
         "verifySpam": "Wenn du keine E-Mail erhältst, überprüfe bitte auch deinen Spam-Ordner.",
         "backToLogin": "Zurück zur Anmeldung",
-        "myAccount": "Mein Konto"
+        "myAccount": "Mein Konto",
+        "verifyRequest": {
+            "title": "Link gesendet",
+            "subtitle": "Überprüfe deine E-Mail",
+            "description": "Wir haben dir einen Anmeldelink an deine E-Mail-Adresse gesendet. Bitte überprüfe deinen Posteingang und klicke auf den Link, um fortzufahren.",
+            "note": "Wenn du keine E-Mail erhältst, überprüfe bitte auch deinen Spam-Ordner",
+            "backToLogin": "Zurück zur Anmeldung",
+            "trouble": "Hast du Probleme?\n",
+            "contactSupport": "Kontaktiere unseren Support",
+            "orWriteAnEmail": "\noder schreibe uns eine E-Mail an"
+        }
     },
     "landing": {
         "hero": {

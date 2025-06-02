@@ -11,6 +11,7 @@ export default getRequestConfig(async () => {
         return {
             locale,
             messages,
+            timeZone: 'Europe/Zurich',
         }
     } catch (error) {
         console.warn(
@@ -22,6 +23,7 @@ export default getRequestConfig(async () => {
         return {
             locale: 'en',
             messages,
+            timeZone: 'Europe/Zurich',
         }
     }
 })
