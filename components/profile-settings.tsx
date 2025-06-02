@@ -16,7 +16,7 @@ import { toast } from 'sonner'
 
 import { useState } from 'react'
 
-import { useLocale, useTranslations } from 'next-intl'
+import { useTranslations } from 'next-intl'
 
 import { updateLocale as updateLocaleAction } from '@/app/actions/locale'
 import { updateUserPreferences } from '@/app/actions/preferences'
