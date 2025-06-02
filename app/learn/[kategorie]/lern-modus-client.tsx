@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 
 import { reviewCard } from '@/app/actions/flashcard'
@@ -13,7 +14,6 @@ import { saveStudySession } from '@/app/actions/study-session'
 
 import { Flashcard } from '@/components/flashcard'
 import { Button } from '@/components/ui/button'
-import {useTranslations} from "next-intl";
 
 interface LernModusClientProps {
     deckId: string
@@ -260,7 +260,8 @@ export default function LernModusClient({
                 })
             }
         } else {
-            toast.error(t('ratingError'))        }
+            toast.error(t('ratingError'))
+        }
     }
 
     // Save session before component unmounts
@@ -277,9 +278,7 @@ export default function LernModusClient({
     if (flashcards.length === 0) {
         return (
             <div className="flex flex-1 flex-col items-center justify-start gap-4 py-8">
-                <h2 className="mb-2 text-xl font-semibold">
-                    {t('noCards')}
-                </h2>
+                <h2 className="mb-2 text-xl font-semibold">{t('noCards')}</h2>
                 <p className="text-muted-foreground mb-4 text-center">
                     {t('noCardsDescription')}
                 </p>
@@ -293,9 +292,7 @@ export default function LernModusClient({
     if (istLernprozessAbgeschlossen) {
         return (
             <div className="flex flex-1 flex-col items-center justify-start gap-4 py-8">
-                <h2 className="mb-2 text-xl font-semibold">
-                    {t('completed')}
-                </h2>
+                <h2 className="mb-2 text-xl font-semibold">{t('completed')}</h2>
                 <p className="text-muted-foreground mb-4 text-center">
                     {t('completedDescription', { count: flashcards.length })}
                 </p>
@@ -348,7 +345,8 @@ export default function LernModusClient({
             <div className="mb-6">
                 <div className="mb-2 flex items-center justify-between">
                     <div className="text-lg font-semibold">
-                        {t('card')} {aktuellerIndex + 1} {t('of')} {flashcards.length}
+                        {t('card')} {aktuellerIndex + 1} {t('of')}{' '}
+                        {flashcards.length}
                     </div>
                     <div className="text-lg font-semibold">
                         {t('remaining')} {flashcards.length - aktuellerIndex}

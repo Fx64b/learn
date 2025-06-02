@@ -16,11 +16,11 @@ import { toast } from 'sonner'
 
 import { useState } from 'react'
 
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 
+import { updateLocale as updateLocaleAction } from '@/app/actions/locale'
 import { updateUserPreferences } from '@/app/actions/preferences'
 
-import { useLocale } from '@/components/misc/locale-provider'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -50,7 +50,6 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const userPreferences = useUserPreferences()
     const t = useTranslations('profile.settings')
-    const { setLocale } = useLocale()
 
     const [localPrefs, setLocalPrefs] = useState({
         animationsEnabled: initialPreferences.animationsEnabled,
@@ -68,12 +67,11 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
         localPrefs.theme !== initialPreferences.theme ||
         localPrefs.locale !== initialPreferences.locale
 
-    const updateLocale = (value: string) => {
+    const updateLocale = async (value: string) => {
         const locale = value as 'en' | 'de'
         setLocalPrefs((prev) => ({ ...prev, locale }))
-        setLocale(locale)
+        await updateLocaleAction(locale)
     }
-
     const updateAnimationsEnabled = (value: boolean) => {
         setLocalPrefs((prev) => ({ ...prev, animationsEnabled: value }))
     }
@@ -109,7 +107,6 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
 
         if (result.success) {
             toast.success(t('saved'))
-            setLocale(localPrefs.locale as 'en' | 'de')
         } else {
             toast.error('Error saving settings')
         }

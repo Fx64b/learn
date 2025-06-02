@@ -104,7 +104,17 @@
         "verifyDescription": "We'll send a login link to your email address. Please check your inbox and click the link to continue.",
         "verifySpam": "If you don't receive an email, please also check your spam folder.",
         "backToLogin": "Back to login",
-        "myAccount": "My Account"
+        "myAccount": "My Account",
+        "verifyRequest": {
+            "title": "Link sent",
+            "subtitle": "Check your email",
+            "description": "We have sent you a login link to your email address. Please check your inbox and click on the link to continue.",
+            "note": "If you don't receive an email, please also check your spam folder",
+            "backToLogin": "Back to login",
+            "trouble": "Having trouble?\n",
+            "contactSupport": "Contact our support",
+            "orWriteAnEmail": "\nor write us an email at"
+        }
     },
     "landing": {
         "hero": {
