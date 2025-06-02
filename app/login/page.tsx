@@ -4,6 +4,7 @@ import { useState } from 'react'
 
 import { signIn } from 'next-auth/react'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'next/navigation'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -18,6 +19,7 @@ import { Input } from '@/components/ui/input'
 
 export default function LoginPage() {
     const t = useTranslations()
+    const router = useRouter()
     const [email, setEmail] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const [message, setMessage] = useState<{
@@ -38,17 +40,18 @@ export default function LoginPage() {
             })
 
             if (result?.error) {
+                console.error('Login error:', result.error)
                 setMessage({
                     type: 'error',
                     text: t('auth.loginError'),
                 })
             } else {
-                setMessage({
-                    type: 'success',
-                    text: t('auth.checkEmail'),
-                })
                 setEmail('')
-            }
+                    setMessage({
+                        type: 'success',
+                        text: t('auth.checkEmail'),
+                    })
+                router.push("/verify-request")            }
         } catch (error) {
             console.error('Login error:', error)
             setMessage({

@@ -1,4 +1,3 @@
-// app/actions/locale.ts
 'use server'
 
 import { authOptions } from '@/lib/auth'
@@ -9,7 +8,6 @@ import { cookies } from 'next/headers'
 
 import { updateUserPreferences } from './preferences'
 
-// app/actions/locale.ts
 
 export async function updateLocale(locale: 'en' | 'de') {
     const session = await getServerSession(authOptions)
