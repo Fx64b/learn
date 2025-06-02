@@ -47,11 +47,12 @@ export default function LoginPage() {
                 })
             } else {
                 setEmail('')
-                    setMessage({
-                        type: 'success',
-                        text: t('auth.checkEmail'),
-                    })
-                router.push("/verify-request")            }
+                setMessage({
+                    type: 'success',
+                    text: t('auth.checkEmail'),
+                })
+                router.push('/verify-request')
+            }
         } catch (error) {
             console.error('Login error:', error)
             setMessage({

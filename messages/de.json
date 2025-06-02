@@ -231,6 +231,15 @@
             "copyToClipboard": "In Zwischenablage kopieren",
             "copiedSuccess": "JSON in die Zwischenablage kopiert",
             "copyError": "Fehler beim Kopieren",
+            "titleRequired": "Titel",
+            "titlePlaceholder": "z.B. Mathematik Grundlagen",
+            "descriptionLabel": "Beschreibung",
+            "descriptionPlaceholder": "Kurze Beschreibung des Decks",
+            "categoryRequired": "Kategorie",
+            "categoryPlaceholder": "z.B. Mathematik, Sprachen, etc.",
+            "dueDateLabel": "Lernfrist",
+            "noDateSelected": "Kein Datum ausgewählt",
+            "dueDateHint": "Datum, bis zu dem die Karten gelernt werden sollen (z.B. Prüfungsdatum)",
             "dangerZone": {
                 "title": "Dangerzone",
                 "description": "Die folgenden Aktionen können nicht rückgängig gemacht werden. Bitte mit Vorsicht verwenden.",
@@ -276,7 +285,9 @@
             "updateError": "Fehler beim Aktualisieren",
             "deleteConfirm": "Möchten Sie diese Karte wirklich löschen?",
             "deleteSuccess": "Karte gelöscht",
-            "deleteError": "Fehler beim Löschen"
+            "deleteError": "Fehler beim Löschen",
+            "frontSide": "Vorderseite",
+            "backSide": "Rückseite"
         },
         "statistics": {
             "totalCards": "Karten insgesamt",
@@ -284,6 +295,10 @@
             "wasDueBy": "War fällig bis:",
             "dueBy": "Fällig bis:"
         }
+    },
+    "tabs": {
+        "details": "Deck-Details",
+        "editCards": "Karten bearbeiten"
     },
     "learn": {
         "allCards": "Alle Karten wiederholen",
@@ -312,7 +327,9 @@
         "rateGood": "Gut",
         "rateEasy": "Einfach",
         "keyboardHint": "Drücke die Leertaste zum Umdrehen",
-        "ratingHint": "Bewerte mit 1 bis 4 oder klicke auf die Schaltflächen"
+        "ratingHint": "Bewerte mit 1 bis 4 oder klicke auf die Schaltflächen",
+        "loginRequired": "Bitte melden Sie sich an, um diese Seite zu sehen",
+        "help": "Hilfe"
     },
     "statistics": {
         "last7Days": "Letzte 7 Tage",
@@ -340,11 +357,51 @@
         "productiveTime": "Produktivste Zeit:",
         "atTime": "{time}:00 Uhr mit durchschnittlich {cards} Karten pro Session.",
         "totalCards": "Gesamtkarten:",
-        "cardsAcrossAllTimes": "{count} Karten über alle Zeiten."
+        "cardsAcrossAllTimes": "{count} Karten über alle Zeiten.",
+        "progressChart": {
+            "title": "Lernfortschritt der letzten 7 Tage",
+            "noActivity": "Noch keine Lernaktivitäten in den letzten 7 Tagen.",
+            "cards": "Karten:",
+            "successRate": "Erfolgsrate:",
+            "monday": "Mo",
+            "tuesday": "Di",
+            "wednesday": "Mi",
+            "thursday": "Do",
+            "friday": "Fr",
+            "saturday": "Sa",
+            "sunday": "So"
+        },
+        "timeAnalysis": {
+            "title": "Lernzeiten-Analyse",
+            "beta": "Beta",
+            "noSessions": "Noch keine Lernsessions durchgeführt.",
+            "productiveTime": "Produktivste Zeit:",
+            "withAverage": "{time}:00 Uhr mit durchschnittlich {cards} Karten pro Session.",
+            "totalCards": "Gesamtkarten:",
+            "acrossAllTimes": "{count} Karten über alle Zeiten."
+        },
+        "dashboard": {
+            "last7Days": "Letzte 7 Tage",
+            "cardsReviewed": "Karten wiederholt",
+            "successRate": "Erfolgsquote",
+            "percentCorrect": "Prozentual richtig",
+            "learningStreak": "Lern-Streak",
+            "day": "Tag",
+            "days": "Tage",
+            "inARow": "in Folge",
+            "toReview": "Zu wiederholen",
+            "cardsForToday": "Karten für heute",
+            "reviewNow": "Jetzt lernen",
+            "cardsByDifficulty": "Karten nach Schwierigkeit"
+        }
     },
     "profile": {
         "title": "Mein Profil",
         "email": "E-Mail",
+        "tabs": {
+            "settings": "Einstellungen",
+            "statistics": "Lernstatistik"
+        },
         "settings": {
             "title": "Einstellungen",
             "statistics": "Lernstatistik",
