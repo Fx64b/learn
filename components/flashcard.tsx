@@ -151,7 +151,7 @@ export function Flashcard({
                         <Card className="border-primary/30 h-full w-full border-2 shadow-md">
                             <CardContent className="h-full overflow-hidden">
                                 <div className="flex h-full flex-col">
-                                    <div className="flex h-full min-h-[15rem] flex-1 items-center justify-center overflow-auto py-4 text-center">
+                                    <div className="flex h-full min-h-60 flex-1 items-center justify-center overflow-auto py-4 text-center">
                                         <div className="w-full">
                                             <p className="text-muted-foreground mb-2 text-xs">
                                                 Antwort
