@@ -7,7 +7,7 @@ import { eq, sql } from 'drizzle-orm'
 import { nanoid } from 'nanoid'
 
 import { getServerSession } from 'next-auth'
-import {getTranslations} from "next-intl/server";
+import { getTranslations } from 'next-intl/server'
 
 export async function saveStudySession(data: {
     id?: string

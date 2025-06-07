@@ -6,8 +6,8 @@ import { authOptions } from '@/lib/auth'
 import { eq } from 'drizzle-orm'
 
 import { getServerSession } from 'next-auth'
+import { getTranslations } from 'next-intl/server'
 import { revalidatePath } from 'next/cache'
-import {getTranslations} from "next-intl/server";
 
 export async function getUserPreferences() {
     const session = await getServerSession(authOptions)

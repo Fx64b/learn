@@ -121,7 +121,7 @@
     },
     "landing": {
         "hero": {
-            "badge": "Jetzt in der Entwicklung",
+            "badge": "Jetzt in der frühen Entwicklung",
             "title": "Meistere jedes Thema mit",
             "titleHighlight": "Smarten Lernkarten",
             "description": "Lerne schneller und behalte länger mit unserem intelligenten Spaced-Repetition-System. Erstelle, lerne und verfolge deinen Fortschritt mit schön gestalteten Lernkarten.",
@@ -160,14 +160,17 @@
             "title": "Einfach, aber leistungsstark",
             "description": "Starte in Minuten und sehe Ergebnisse in Tagen",
             "step1": {
+                "number": "1",
                 "title": "Erstelle deine Decks",
                 "description": "Organisiere dein Lernmaterial in thematische Decks. Füge Karten manuell hinzu oder importiere sie in großen Mengen."
             },
             "step2": {
+                "number": "2",
                 "title": "Lerne intelligent",
                 "description": "Wiederhole Karten mit unserem Spaced-Repetition-Algorithmus. Bewerte dein Vertrauen und lass das System deinen Zeitplan optimieren."
             },
             "step3": {
+                "number": "3",
                 "title": "Verfolge Fortschritt",
                 "description": "Überwache deine Lernreise mit detaillierten Analysen und halte deine Lern-Streaks aufrecht."
             }

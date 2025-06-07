@@ -25,6 +25,7 @@ export default function LernModusClient({
     flashcards: initialFlashcards,
 }: LernModusClientProps) {
     const t = useTranslations('learn')
+    const common = useTranslations('common')
     const shuffledFlashcards = [...initialFlashcards].sort(
         () => Math.random() - 0.5
     )
@@ -283,7 +284,7 @@ export default function LernModusClient({
                     {t('noCardsDescription')}
                 </p>
                 <Button asChild>
-                    <Link href="/">{t('common.backToHome')}</Link>
+                    <Link href="/">{common('backToHome')}</Link>
                 </Button>
             </div>
         )
@@ -316,7 +317,7 @@ export default function LernModusClient({
                         {t('repeatShuffled')}
                     </Button>
                     <Button>
-                        <Link href="/">{t('common.backToHome')}</Link>
+                        <Link href="/">{common('backToHome')}</Link>
                     </Button>
                 </div>
             </div>
