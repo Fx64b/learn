@@ -406,7 +406,8 @@
             "productiveTime": "Most productive time:",
             "withAverage": "{time}:00 with an average of {cards} cards per session.",
             "totalCards": "Total cards:",
-            "acrossAllTimes": "{count} cards across all times."
+            "acrossAllTimes": "{count} cards across all times.",
+            "cards": "cards"
         },
         "dashboard": {
             "last7Days": "Last 7 Days",

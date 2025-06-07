@@ -409,7 +409,8 @@
             "productiveTime": "Produktivste Zeit:",
             "withAverage": "{time}:00 Uhr mit durchschnittlich {cards} Karten pro Session.",
             "totalCards": "Gesamtkarten:",
-            "acrossAllTimes": "{count} Karten über alle Zeiten."
+            "acrossAllTimes": "{count} Karten über alle Zeiten.",
+            "cards": "Karten"
         },
         "dashboard": {
             "last7Days": "Letzte 7 Tage",

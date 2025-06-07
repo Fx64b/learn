@@ -1,10 +1,11 @@
 'use client'
 
+import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
-import { ArrowLeft, CalendarIcon } from 'lucide-react'
+import { ArrowLeft, CalendarIcon, X } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
@@ -138,57 +139,67 @@ export default function CreateDeckPage() {
                             <Label htmlFor="aktivBis">
                                 {t('dueDateLabel')}
                             </Label>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button
-                                        variant="outline"
-                                        className="w-full justify-start text-left font-normal"
-                                        id="aktivBis"
+                            <div className="flex w-full gap-2">
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            className={cn(
+                                                'w-full flex-1 justify-start text-left font-normal',
+                                                !formData.aktivBis &&
+                                                    'text-muted-foreground'
+                                            )}
+                                            id="aktivBis"
+                                        >
+                                            <CalendarIcon className="mr-2 h-4 w-4" />
+                                            {formData.aktivBis ? (
+                                                format(
+                                                    formData.aktivBis,
+                                                    'dd.MM.yyyy'
+                                                )
+                                            ) : (
+                                                <span>
+                                                    {t('dueDatePlaceholder')}
+                                                </span>
+                                            )}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent
+                                        className="p-0"
+                                        align="start"
                                     >
-                                        <CalendarIcon className="mr-2 h-4 w-4" />
-                                        {formData.aktivBis ? (
-                                            format(
-                                                formData.aktivBis,
-                                                'dd.MM.yyyy'
-                                            )
-                                        ) : (
-                                            <span className="text-muted-foreground">
-                                                {t('dueDatePlaceholder')}
-                                            </span>
-                                        )}
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0">
-                                    <Calendar
-                                        mode="single"
-                                        selected={
-                                            formData.aktivBis || undefined
-                                        }
-                                        onSelect={(date) =>
+                                        <Calendar
+                                            mode="single"
+                                            selected={
+                                                formData.aktivBis || undefined
+                                            }
+                                            onSelect={(date) =>
+                                                setFormData((prev) => ({
+                                                    ...prev,
+                                                    aktivBis: date || null,
+                                                }))
+                                            }
+                                            initialFocus
+                                        />
+                                    </PopoverContent>
+                                </Popover>
+
+                                {formData.aktivBis && (
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        onClick={() =>
                                             setFormData((prev) => ({
                                                 ...prev,
-                                                aktivBis: date || null,
+                                                aktivBis: null,
                                             }))
                                         }
-                                        initialFocus
-                                    />
-                                </PopoverContent>
-                            </Popover>
-                            {formData.aktivBis && (
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() =>
-                                        setFormData((prev) => ({
-                                            ...prev,
-                                            aktivBis: null,
-                                        }))
-                                    }
-                                    className="mt-2"
-                                >
-                                    {t('removeDueDate')}
-                                </Button>
-                            )}
+                                        className="flex w-auto items-center justify-center gap-1"
+                                    >
+                                        <X className="h-3.5 w-3.5" />
+                                    </Button>
+                                )}
+                            </div>
                             <p className="text-muted-foreground text-xs">
                                 {t('dueDateHint')}
                             </p>

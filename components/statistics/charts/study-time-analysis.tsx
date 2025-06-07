@@ -2,6 +2,8 @@
 
 import { useMemo } from 'react'
 
+import { useTranslations } from 'next-intl'
+
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
@@ -15,6 +17,8 @@ interface StudyTimeAnalysisProps {
 }
 
 export function StudyTimeAnalysis({ rawData }: StudyTimeAnalysisProps) {
+    const t = useTranslations('statistics.timeAnalysis')
+
     const data = useMemo(() => {
         const hourlyMap = new Map<
             number,
@@ -85,14 +89,14 @@ export function StudyTimeAnalysis({ rawData }: StudyTimeAnalysisProps) {
         <Card>
             <CardHeader>
                 <CardTitle className="flex justify-between">
-                    Lernzeiten-Analyse <Badge variant="outline">Beta</Badge>
+                    {t('title')} <Badge variant="outline">{t('beta')}</Badge>
                 </CardTitle>
             </CardHeader>
             <CardContent>
                 {data.length === 0 ||
                 data.every((hour) => hour.cardsTotal === 0) ? (
                     <div className="text-muted-foreground text-sm">
-                        <p>Noch keine Lernsessions durchgeführt.</p>
+                        <p>{t('noSessions')}</p>
                     </div>
                 ) : (
                     <div className="space-y-4">
@@ -125,7 +129,8 @@ export function StudyTimeAnalysis({ rawData }: StudyTimeAnalysisProps) {
                                             >
                                                 <div className="bg-popover text-popover-foreground pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 transform rounded px-2 py-1 text-xs whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100">
                                                     {hour.hour}:00 -{' '}
-                                                    {hour.cardsTotal} Karten
+                                                    {hour.cardsTotal}{' '}
+                                                    {t('cards')}
                                                 </div>
                                             </div>
 
@@ -147,14 +152,14 @@ export function StudyTimeAnalysis({ rawData }: StudyTimeAnalysisProps) {
                                 <div className="text-sm">
                                     <p className="text-muted-foreground">
                                         <span className="text-foreground font-medium">
-                                            Produktivste Zeit:
+                                            {t('productiveTime')}
                                         </span>{' '}
-                                        {mostProductiveLocalHour.hour}:00 Uhr
-                                        mit durchschnittlich{' '}
-                                        {mostProductiveLocalHour.avgCards.toFixed(
-                                            1
-                                        )}{' '}
-                                        Karten pro Session.
+                                        {t('withAverage', {
+                                            time: mostProductiveLocalHour.hour,
+                                            cards: mostProductiveLocalHour.avgCards.toFixed(
+                                                1
+                                            ),
+                                        })}
                                     </p>
                                 </div>
                             )}
@@ -162,13 +167,15 @@ export function StudyTimeAnalysis({ rawData }: StudyTimeAnalysisProps) {
                             <div className="text-sm">
                                 <p className="text-muted-foreground">
                                     <span className="text-foreground font-medium">
-                                        Gesamtkarten:
+                                        {t('totalCards')}
                                     </span>{' '}
-                                    {data.reduce(
-                                        (sum, hour) => sum + hour.cardsTotal,
-                                        0
-                                    )}{' '}
-                                    Karten über alle Zeiten.
+                                    {t('acrossAllTimes', {
+                                        count: data.reduce(
+                                            (sum, hour) =>
+                                                sum + hour.cardsTotal,
+                                            0
+                                        ),
+                                    })}
                                 </p>
                             </div>
                         </div>
