@@ -1,3 +1,10 @@
+## [1.8.1](https://github.com/Fx64b/learn/compare/v1.8.0...v1.8.1) (2025-06-07)
+
+
+### Bug Fixes
+
+* **flashcard:** adjust card content styling for better overflow handling ([b766586](https://github.com/Fx64b/learn/commit/b766586c7deedee7f0ba3547c00936861a5ca39c))
+
 # [1.8.0](https://github.com/Fx64b/learn/compare/v1.7.0...v1.8.0) (2025-06-07)
 
 
