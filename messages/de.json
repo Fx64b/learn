@@ -423,7 +423,13 @@
             "toReview": "Zu wiederholen",
             "cardsForToday": "Karten für heute",
             "reviewNow": "Jetzt lernen",
-            "cardsByDifficulty": "Karten nach Schwierigkeit"
+            "cardsByDifficulty": "Karten nach Schwierigkeit",
+            "difficulty": {
+                "again": "Wieder",
+                "hard": "Schwer",
+                "good": "Gut",
+                "easy": "Einfach"
+            }
         }
     },
     "profile": {

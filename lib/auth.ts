@@ -52,7 +52,7 @@ export const authOptions: NextAuthOptions = {
                 </p>
               </div>
             `,
-                        text: `${t('email.textVersion', {url: url})}`, // wtf,... FIXME
+                        text: `${t('email.textVersion', { url: url })}`, // wtf,... FIXME
                     })
 
                     if (result.error) {

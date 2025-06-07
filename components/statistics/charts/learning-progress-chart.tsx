@@ -72,19 +72,18 @@ export function LearningProgressChart({ data }: LearningProgressChartProps) {
                                     const height =
                                         day.cardsReviewed > 0
                                             ? Math.max(
-                                                5,
-                                                (day.cardsReviewed /
-                                                    maxCards) *
-                                                100
-                                            )
+                                                  5,
+                                                  (day.cardsReviewed /
+                                                      maxCards) *
+                                                      100
+                                              )
                                             : 0
 
                                     const displayDate = new Date(day.date)
                                     const dayName =
-                                        displayDate.toLocaleDateString(
-                                            locale,
-                                            { weekday: 'short' }
-                                        )
+                                        displayDate.toLocaleDateString(locale, {
+                                            weekday: 'short',
+                                        })
                                     const dayNum = displayDate.getDate()
                                     const month = String(
                                         displayDate.getMonth() + 1
@@ -127,7 +126,9 @@ export function LearningProgressChart({ data }: LearningProgressChartProps) {
                                                             )}
                                                         </div>
                                                         <div className="flex justify-between gap-4">
-                                                            <span>{t('cards')}</span>
+                                                            <span>
+                                                                {t('cards')}
+                                                            </span>
                                                             <span className="font-medium">
                                                                 {
                                                                     day.cardsReviewed
@@ -136,7 +137,9 @@ export function LearningProgressChart({ data }: LearningProgressChartProps) {
                                                         </div>
                                                         <div className="flex justify-between gap-4">
                                                             <span>
-                                                                {t('successRate')}
+                                                                {t(
+                                                                    'successRate'
+                                                                )}
                                                             </span>
                                                             <span className="font-medium">
                                                                 {

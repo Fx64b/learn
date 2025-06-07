@@ -420,7 +420,13 @@
             "toReview": "To review",
             "cardsForToday": "Cards for today",
             "reviewNow": "Review now",
-            "cardsByDifficulty": "Cards by Difficulty"
+            "cardsByDifficulty": "Cards by Difficulty",
+            "difficulty": {
+                "again": "Again",
+                "hard": "Hard",
+                "good": "Good",
+                "easy": "Easy"
+            }
         }
     },
     "profile": {
