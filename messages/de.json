@@ -72,6 +72,10 @@
         "learn": "Lernen",
         "language": "Sprache"
     },
+    "metadata": {
+        "title": "Flashcard App",
+        "description": "Eine einfache Flashcard-App mit Spaced Repetition."
+    },
     "navigation": {
         "home": "Startseite",
         "features": "Funktionen",
@@ -118,6 +122,14 @@
             "trouble": "Hast du Probleme?\n",
             "contactSupport": "Kontaktiere unseren Support",
             "orWriteAnEmail": "\noder schreibe uns eine E-Mail an"
+        },
+        "email": {
+            "subject": "Anmeldung bei Flashcard App",
+            "title": "Flashcard App",
+            "message": "Klicke auf den folgenden Link, um dich anzumelden:",
+            "button": "Einloggen",
+            "ignore": "Wenn du diese E-Mail nicht angefordert hast, kannst du sie ignorieren.",
+            "textVersion": "Melde dich bei der Flashcard App an, indem du auf diesen Link klickst: {url}"
         }
     },
     "landing": {
@@ -379,6 +391,9 @@
             "noActivity": "Noch keine Lernaktivitäten in den letzten 7 Tagen.",
             "cards": "Karten:",
             "successRate": "Erfolgsrate:",
+            "cardsTotal": "Karten gesamt",
+            "cardsPerDay": "Karten pro Tag",
+            "bestDay": "Bester Tag",
             "monday": "Mo",
             "tuesday": "Di",
             "wednesday": "Mi",

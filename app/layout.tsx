@@ -3,7 +3,6 @@ import deMessages from '@/messages/de.json'
 import enMessages from '@/messages/en.json'
 import { Toaster } from 'sonner'
 
-import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 
 import { Analytics } from '@vercel/analytics/react'
@@ -18,9 +17,14 @@ import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
 
-export const metadata: Metadata = {
-    title: 'Flashcard App',
-    description: 'A simple flashcard app with spaced repetition.',
+export async function generateMetadata() {
+    const locale = await getLocale()
+    const messages = locale === 'de' ? deMessages : enMessages
+
+    return {
+        title: messages.metadata.title,
+        description: messages.metadata.description,
+    }
 }
 
 const messages = {

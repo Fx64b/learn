@@ -72,6 +72,10 @@
         "learn": "Learn",
         "language": "Language"
     },
+    "metadata": {
+        "title": "Flashcard App",
+        "description": "A simple flashcard app with spaced repetition."
+    },
     "navigation": {
         "home": "Home",
         "features": "Features",
@@ -118,6 +122,14 @@
             "trouble": "Having trouble?\n",
             "contactSupport": "Contact our support",
             "orWriteAnEmail": "\nor write us an email at"
+        },
+        "email": {
+            "subject": "Sign in to Flashcard App",
+            "title": "Flashcard App",
+            "message": "Click the following link to sign in:",
+            "button": "Sign in",
+            "ignore": "If you didn't request this email, you can safely ignore it.",
+            "textVersion": "Sign in to Flashcard App by clicking this link: {url}"
         }
     },
     "landing": {
@@ -376,6 +388,9 @@
             "noActivity": "No learning activity in the last 7 days.",
             "cards": "Cards:",
             "successRate": "Success rate:",
+            "cardsTotal": "Cards total",
+            "cardsPerDay": "Cards per day",
+            "bestDay": "Best day",
             "monday": "Mon",
             "tuesday": "Tue",
             "wednesday": "Wed",
