@@ -3,6 +3,7 @@ import { authOptions } from '@/lib/auth'
 import { ArrowLeft } from 'lucide-react'
 
 import { getServerSession } from 'next-auth'
+import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 
 import LernModusClient from '@/app/learn/[kategorie]/lern-modus-client'
@@ -11,9 +12,10 @@ import { Button } from '@/components/ui/button'
 
 export default async function DueCardsPage() {
     const session = await getServerSession(authOptions)
+    const t = await getTranslations('learn')
 
     if (!session?.user?.id) {
-        return <div>Please login to view this page</div>
+        return <div>{t('loginRequired')}</div>
     }
 
     const dueCardsData = await getDueCards(session.user.id)
@@ -29,7 +31,7 @@ export default async function DueCardsPage() {
                         </Link>
                     </Button>
                     <h1 className="text-xl font-bold sm:text-2xl">
-                        Fällige Karten
+                        {t('dueCards')}{' '}
                     </h1>
                 </div>
             </header>

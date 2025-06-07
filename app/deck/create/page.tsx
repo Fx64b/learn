@@ -1,11 +1,13 @@
 'use client'
 
+import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
-import { ArrowLeft, CalendarIcon } from 'lucide-react'
+import { ArrowLeft, CalendarIcon, X } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
@@ -24,6 +26,9 @@ import {
 
 export default function CreateDeckPage() {
     const router = useRouter()
+    const t = useTranslations('deck.create')
+    const common = useTranslations('common')
+
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [formData, setFormData] = useState({
         titel: '',
@@ -48,10 +53,10 @@ export default function CreateDeckPage() {
         const result = await createDeck(formDataToSend)
 
         if (result.success) {
-            toast.success('Deck erfolgreich erstellt!')
+            toast.success(t('success'))
             router.push(`/deck/${result.id}/edit`)
         } else {
-            toast.error('Fehler beim Erstellen des Decks')
+            toast.error(t('error'))
         }
 
         setIsSubmitting(false)
@@ -70,17 +75,17 @@ export default function CreateDeckPage() {
                         <ArrowLeft />
                     </Link>
                 </Button>
-                <h1 className="text-2xl font-bold">Neues Deck erstellen</h1>
+                <h1 className="text-2xl font-bold">{t('title')}</h1>
             </div>
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Deck-Details</CardTitle>
+                    <CardTitle>{t('details')}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="titel">Titel</Label>
+                            <Label htmlFor="titel">{t('titleLabel')}</Label>
                             <Input
                                 id="titel"
                                 value={formData.titel}
@@ -90,14 +95,14 @@ export default function CreateDeckPage() {
                                         titel: e.target.value,
                                     }))
                                 }
-                                placeholder="z.B. Mathematik Grundlagen"
+                                placeholder={t('titlePlaceholder')}
                                 required
                             />
                         </div>
 
                         <div className="space-y-2">
                             <Label htmlFor="beschreibung">
-                                Beschreibung (optional)
+                                {t('descriptionLabel')}
                             </Label>
                             <Input
                                 id="beschreibung"
@@ -108,12 +113,14 @@ export default function CreateDeckPage() {
                                         beschreibung: e.target.value,
                                     }))
                                 }
-                                placeholder="Kurze Beschreibung des Decks"
+                                placeholder={t('descriptionPlaceholder')}
                             />
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="kategorie">Kategorie</Label>
+                            <Label htmlFor="kategorie">
+                                {t('categoryLabel')}
+                            </Label>
                             <Input
                                 id="kategorie"
                                 value={formData.kategorie}
@@ -123,80 +130,87 @@ export default function CreateDeckPage() {
                                         kategorie: e.target.value,
                                     }))
                                 }
-                                placeholder="z.B. Mathematik, Sprachen, etc."
+                                placeholder={t('categoryPlaceholder')}
                                 required
                             />
                         </div>
 
                         <div className="space-y-2">
                             <Label htmlFor="aktivBis">
-                                Lernfrist (optional)
+                                {t('dueDateLabel')}
                             </Label>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button
-                                        variant="outline"
-                                        className="w-full justify-start text-left font-normal"
-                                        id="aktivBis"
+                            <div className="flex w-full gap-2">
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            className={cn(
+                                                'w-full flex-1 justify-start text-left font-normal',
+                                                !formData.aktivBis &&
+                                                    'text-muted-foreground'
+                                            )}
+                                            id="aktivBis"
+                                        >
+                                            <CalendarIcon className="mr-2 h-4 w-4" />
+                                            {formData.aktivBis ? (
+                                                format(
+                                                    formData.aktivBis,
+                                                    'dd.MM.yyyy'
+                                                )
+                                            ) : (
+                                                <span>
+                                                    {t('dueDatePlaceholder')}
+                                                </span>
+                                            )}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent
+                                        className="p-0"
+                                        align="start"
                                     >
-                                        <CalendarIcon className="mr-2 h-4 w-4" />
-                                        {formData.aktivBis ? (
-                                            format(
-                                                formData.aktivBis,
-                                                'dd.MM.yyyy'
-                                            )
-                                        ) : (
-                                            <span className="text-muted-foreground">
-                                                Kein Datum ausgewählt
-                                            </span>
-                                        )}
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0">
-                                    <Calendar
-                                        mode="single"
-                                        selected={
-                                            formData.aktivBis || undefined
-                                        }
-                                        onSelect={(date) =>
+                                        <Calendar
+                                            mode="single"
+                                            selected={
+                                                formData.aktivBis || undefined
+                                            }
+                                            onSelect={(date) =>
+                                                setFormData((prev) => ({
+                                                    ...prev,
+                                                    aktivBis: date || null,
+                                                }))
+                                            }
+                                            initialFocus
+                                        />
+                                    </PopoverContent>
+                                </Popover>
+
+                                {formData.aktivBis && (
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        onClick={() =>
                                             setFormData((prev) => ({
                                                 ...prev,
-                                                aktivBis: date || null,
+                                                aktivBis: null,
                                             }))
                                         }
-                                        initialFocus
-                                    />
-                                </PopoverContent>
-                            </Popover>
-                            {formData.aktivBis && (
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() =>
-                                        setFormData((prev) => ({
-                                            ...prev,
-                                            aktivBis: null,
-                                        }))
-                                    }
-                                    className="mt-2"
-                                >
-                                    Datum entfernen
-                                </Button>
-                            )}
+                                        className="flex w-auto items-center justify-center gap-1"
+                                    >
+                                        <X className="h-3.5 w-3.5" />
+                                    </Button>
+                                )}
+                            </div>
                             <p className="text-muted-foreground text-xs">
-                                Datum, bis zu dem die Karten gelernt werden
-                                sollen (z.B. Prüfungsdatum)
+                                {t('dueDateHint')}
                             </p>
                         </div>
 
                         <div className="flex items-center justify-between gap-2 pt-4 md:justify-end">
                             <Button variant="outline" asChild>
-                                <Link href="/">Abbrechen</Link>
+                                <Link href="/">{common('cancel')}</Link>
                             </Button>
                             <Button type="submit" disabled={isSubmitting}>
-                                {isSubmitting
-                                    ? 'Wird erstellt...'
-                                    : 'Deck erstellen'}
+                                {isSubmitting ? t('creating') : t('createDeck')}
                             </Button>
                         </div>
                     </form>

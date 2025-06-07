@@ -3,6 +3,7 @@
 import { ProgressData } from '@/types'
 import { Calendar, Clock, TrendingUp } from 'lucide-react'
 
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 
 import { LearningProgressChart } from '@/components/statistics/charts/learning-progress-chart'
@@ -46,6 +47,8 @@ interface SimpleProgressDashboardProps {
 export function SimpleProgressDashboard({
     data,
 }: SimpleProgressDashboardProps) {
+    const t = useTranslations('statistics.dashboard')
+
     const last7DaysData = data.dailyProgress.slice(-7)
 
     const cardsLearned7Days = last7DaysData.reduce(
@@ -59,10 +62,10 @@ export function SimpleProgressDashboard({
             : 0
 
     const difficultyLabels: Record<number, string> = {
-        1: 'Wieder',
-        2: 'Schwer',
-        3: 'Gut',
-        4: 'Einfach',
+        1: t('difficulty.again'),
+        2: t('difficulty.hard'),
+        3: t('difficulty.good'),
+        4: t('difficulty.easy'),
     }
 
     return (
@@ -71,7 +74,7 @@ export function SimpleProgressDashboard({
                 <Card>
                     <CardHeader className="pb-2">
                         <CardTitle className="text-sm font-medium">
-                            Letzte 7 Tage
+                            {t('last7Days')}
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -79,7 +82,7 @@ export function SimpleProgressDashboard({
                             {cardsLearned7Days}
                         </div>
                         <p className="text-muted-foreground text-xs">
-                            Karten wiederholt
+                            {t('cardsReviewed')}
                         </p>
                     </CardContent>
                 </Card>
@@ -87,7 +90,7 @@ export function SimpleProgressDashboard({
                 <Card>
                     <CardHeader className="pb-2">
                         <CardTitle className="text-sm font-medium">
-                            Erfolgsquote
+                            {t('successRate')}
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -98,7 +101,7 @@ export function SimpleProgressDashboard({
                             <TrendingUp className="ml-2 h-4 w-4 text-green-500" />
                         </div>
                         <p className="text-muted-foreground text-xs">
-                            Prozentual richtig
+                            {t('percentCorrect')}
                         </p>
                     </CardContent>
                 </Card>
@@ -106,7 +109,7 @@ export function SimpleProgressDashboard({
                 <Card>
                     <CardHeader className="pb-2">
                         <CardTitle className="text-sm font-medium">
-                            Lern-Streak
+                            {t('learningStreak')}
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -117,7 +120,8 @@ export function SimpleProgressDashboard({
                             <Calendar className="ml-2 h-4 w-4 text-blue-500" />
                         </div>
                         <p className="text-muted-foreground text-xs">
-                            {data.streak === 1 ? 'Tag' : 'Tage'} in Folge
+                            {data.streak === 1 ? t('day') : t('days')}{' '}
+                            {t('inARow')}
                         </p>
                     </CardContent>
                 </Card>
@@ -125,7 +129,7 @@ export function SimpleProgressDashboard({
                 <Card>
                     <CardHeader className="pb-2">
                         <CardTitle className="text-sm font-medium">
-                            Zu wiederholen
+                            {t('toReview')}
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -136,12 +140,12 @@ export function SimpleProgressDashboard({
                             <Clock className="ml-2 h-4 w-4 text-orange-500" />
                         </div>
                         <p className="text-muted-foreground mb-2 text-xs">
-                            Karten für heute
+                            {t('cardsForToday')}
                         </p>
                         {data.needsReview.length > 0 && (
                             <Link href="/learn/due">
                                 <Button size="sm" variant="outline">
-                                    Jetzt lernen
+                                    {t('reviewNow')}
                                 </Button>
                             </Link>
                         )}
@@ -154,7 +158,7 @@ export function SimpleProgressDashboard({
 
                 <Card className="w-full">
                     <CardHeader>
-                        <CardTitle>Karten nach Schwierigkeit</CardTitle>
+                        <CardTitle>{t('cardsByDifficulty')}</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-2">

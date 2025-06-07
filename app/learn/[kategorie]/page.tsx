@@ -1,6 +1,7 @@
 import { getDeckById } from '@/db/utils'
 import { ArrowLeft, Info } from 'lucide-react'
 
+import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
@@ -16,6 +17,7 @@ export default async function LernSeite({
     params: Promise<{ kategorie: string }>
 }) {
     const { kategorie } = await params
+    const t = await getTranslations('learn')
 
     const deck = await getDeckById(kategorie)
     if (!deck) {
@@ -47,7 +49,7 @@ export default async function LernSeite({
                     <div className="flex items-center gap-2">
                         <Button variant="ghost" size="sm">
                             <Info className="mr-1 h-4 w-4" />
-                            Hilfe
+                            {t('help')}
                         </Button>
                     </div>
                 </div>

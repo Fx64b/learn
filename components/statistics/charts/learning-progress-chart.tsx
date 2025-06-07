@@ -2,6 +2,9 @@
 
 import { useMemo } from 'react'
 
+import { useTranslations } from 'next-intl'
+import { useLocale } from 'next-intl'
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface ProgressData {
@@ -15,6 +18,9 @@ interface LearningProgressChartProps {
 }
 
 export function LearningProgressChart({ data }: LearningProgressChartProps) {
+    const t = useTranslations('statistics.progressChart')
+    const locale = useLocale()
+
     const chartData = useMemo(() => {
         return data.slice(-7)
     }, [data])
@@ -51,14 +57,12 @@ export function LearningProgressChart({ data }: LearningProgressChartProps) {
     return (
         <Card className="w-full">
             <CardHeader>
-                <CardTitle>Lernfortschritt der letzten 7 Tage</CardTitle>
+                <CardTitle>{t('title')}</CardTitle>
             </CardHeader>
             <CardContent>
                 {chartData.length === 0 ? (
                     <div className="text-muted-foreground text-sm">
-                        <p>
-                            Noch keine Lernaktivitäten in den letzten 7 Tagen.
-                        </p>
+                        <p>{t('noActivity')}</p>
                     </div>
                 ) : (
                     <div className="space-y-6">
@@ -77,10 +81,9 @@ export function LearningProgressChart({ data }: LearningProgressChartProps) {
 
                                     const displayDate = new Date(day.date)
                                     const dayName =
-                                        displayDate.toLocaleDateString(
-                                            'de-DE',
-                                            { weekday: 'short' }
-                                        )
+                                        displayDate.toLocaleDateString(locale, {
+                                            weekday: 'short',
+                                        })
                                     const dayNum = displayDate.getDate()
                                     const month = String(
                                         displayDate.getMonth() + 1
@@ -95,8 +98,8 @@ export function LearningProgressChart({ data }: LearningProgressChartProps) {
                                                 <div
                                                     className="absolute inset-0 rounded opacity-20"
                                                     style={{
-                                                        background: `linear-gradient(to top, 
-                                                            hsl(var(--primary)/${day.correctPercentage / 100}) 0%, 
+                                                        background: `linear-gradient(to top,
+                                                            hsl(var(--primary)/${day.correctPercentage / 100}) 0%,
                                                             hsl(var(--primary)/${day.correctPercentage / 200}) 100%)`,
                                                     }}
                                                 />
@@ -115,7 +118,7 @@ export function LearningProgressChart({ data }: LearningProgressChartProps) {
                                                     <div className="bg-popover text-popover-foreground pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 transform rounded p-2 text-xs opacity-0 shadow-md transition-opacity group-hover:opacity-100">
                                                         <div className="font-medium">
                                                             {displayDate.toLocaleDateString(
-                                                                'de-DE',
+                                                                locale,
                                                                 {
                                                                     weekday:
                                                                         'long',
@@ -123,7 +126,9 @@ export function LearningProgressChart({ data }: LearningProgressChartProps) {
                                                             )}
                                                         </div>
                                                         <div className="flex justify-between gap-4">
-                                                            <span>Karten:</span>
+                                                            <span>
+                                                                {t('cards')}
+                                                            </span>
                                                             <span className="font-medium">
                                                                 {
                                                                     day.cardsReviewed
@@ -132,7 +137,9 @@ export function LearningProgressChart({ data }: LearningProgressChartProps) {
                                                         </div>
                                                         <div className="flex justify-between gap-4">
                                                             <span>
-                                                                Erfolgsrate:
+                                                                {t(
+                                                                    'successRate'
+                                                                )}
                                                             </span>
                                                             <span className="font-medium">
                                                                 {
@@ -165,7 +172,7 @@ export function LearningProgressChart({ data }: LearningProgressChartProps) {
                                     {stats.totalCards}
                                 </div>
                                 <div className="text-muted-foreground text-sm">
-                                    Karten gesamt
+                                    {t('cardsTotal')}
                                 </div>
                             </div>
                             <div className="text-center">
@@ -173,7 +180,7 @@ export function LearningProgressChart({ data }: LearningProgressChartProps) {
                                     {stats.avgCards.toFixed(1)}
                                 </div>
                                 <div className="text-muted-foreground text-sm">
-                                    Karten pro Tag
+                                    {t('cardsPerDay')}
                                 </div>
                             </div>
                             <div className="text-center">
@@ -181,12 +188,12 @@ export function LearningProgressChart({ data }: LearningProgressChartProps) {
                                     {stats.bestDay &&
                                         new Date(
                                             stats.bestDay.date
-                                        ).toLocaleDateString('de-DE', {
+                                        ).toLocaleDateString(locale, {
                                             weekday: 'short',
                                         })}
                                 </div>
                                 <div className="text-muted-foreground text-sm">
-                                    Bester Tag
+                                    {t('bestDay')}
                                 </div>
                             </div>
                         </div>

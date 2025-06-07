@@ -2,6 +2,7 @@ import { getDeckById } from '@/db/utils'
 import { authOptions } from '@/lib/auth'
 
 import { getServerSession } from 'next-auth'
+import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
@@ -21,6 +22,8 @@ export default async function EditDeckPage({
 }) {
     const { id } = await params
     const session = await getServerSession(authOptions)
+    const t = await getTranslations('deck')
+    const common = await getTranslations('common')
 
     if (!session?.user?.id) {
         notFound()
@@ -39,14 +42,18 @@ export default async function EditDeckPage({
             <div className="mb-8 flex items-center justify-between">
                 <h1 className="text-2xl font-bold">{deck.titel}</h1>
                 <Button variant="outline" asChild>
-                    <Link href="/">Zurück</Link>
+                    <Link href="/">{common('back')}</Link>
                 </Button>
             </div>
 
             <Tabs defaultValue="cards" className="mb-8">
                 <TabsList className="mb-4">
-                    <TabsTrigger value="details">Deck-Details</TabsTrigger>
-                    <TabsTrigger value="cards">Karten bearbeiten</TabsTrigger>
+                    <TabsTrigger value="details">
+                        {t('tabs.details')}
+                    </TabsTrigger>
+                    <TabsTrigger value="cards">
+                        {t('tabs.editCards')}
+                    </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="details">
@@ -57,14 +64,16 @@ export default async function EditDeckPage({
                     <div className="grid gap-8 md:grid-cols-2">
                         <div>
                             <h2 className="mb-4 text-lg font-semibold">
-                                Karten erstellen
+                                {t('cards.createCard')}
                             </h2>
                             <CreateCardForm deckId={deck.id} />
                         </div>
 
                         <div>
                             <h2 className="mb-4 text-lg font-semibold">
-                                Alle Karten ({flashcards.length})
+                                {t('cards.allCards', {
+                                    count: flashcards.length,
+                                })}
                             </h2>
                             <CardList flashcards={flashcards} />
                         </div>

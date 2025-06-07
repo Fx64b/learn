@@ -6,6 +6,8 @@ import { toast } from 'sonner'
 
 import { useState } from 'react'
 
+import { useTranslations } from 'next-intl'
+
 import { deleteFlashcard, updateFlashcard } from '@/app/actions/flashcard'
 
 import { Button } from '@/components/ui/button'
@@ -24,6 +26,7 @@ interface EditingState {
 }
 
 export default function CardList({ flashcards }: CardListProps) {
+    const t = useTranslations('deck.cards')
     const [editing, setEditing] = useState<EditingState>({
         id: null,
         vorderseite: '',
@@ -55,22 +58,22 @@ export default function CardList({ flashcards }: CardListProps) {
         })
 
         if (result.success) {
-            toast.success('Karte aktualisiert')
+            toast.success(t('updateSuccess'))
             cancelEditing()
         } else {
-            toast.error('Fehler beim Aktualisieren')
+            toast.error(t('updateError'))
         }
         setIsSubmitting(false)
     }
 
     const handleDelete = async (id: string) => {
-        if (!confirm('Möchten Sie diese Karte wirklich löschen?')) return
+        if (!confirm(t('deleteConfirm'))) return
 
         const result = await deleteFlashcard(id)
         if (result.success) {
-            toast.success('Karte gelöscht')
+            toast.success(t('deleteSuccess'))
         } else {
-            toast.error('Fehler beim Löschen')
+            toast.error(t('deleteError'))
         }
     }
 
@@ -83,7 +86,7 @@ export default function CardList({ flashcards }: CardListProps) {
                             <div className="space-y-4">
                                 <div>
                                     <label className="block text-sm font-medium">
-                                        Vorderseite
+                                        {t('frontSide')}
                                     </label>
                                     <Input
                                         value={editing.vorderseite}
@@ -97,7 +100,7 @@ export default function CardList({ flashcards }: CardListProps) {
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium">
-                                        Rückseite
+                                        {t('backSide')}
                                     </label>
                                     <Textarea
                                         value={editing.rueckseite}
@@ -107,7 +110,7 @@ export default function CardList({ flashcards }: CardListProps) {
                                                 rueckseite: e.target.value,
                                             }))
                                         }
-                                        placeholder="Antwort oder Definition"
+                                        placeholder={t('backPlaceholder')}
                                         className="h-56 w-full rounded border p-2"
                                         required
                                     />

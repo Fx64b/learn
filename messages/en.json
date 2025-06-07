@@ -1,0 +1,525 @@
+{
+    "common": {
+        "back": "Back",
+        "backToHome": "Back to Overview",
+        "save": "Save",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "edit": "Edit",
+        "create": "Create",
+        "loading": "Loading...",
+        "error": "Error",
+        "success": "Success",
+        "confirm": "Confirm",
+        "close": "Close",
+        "search": "Search",
+        "filter": "Filter",
+        "sort": "Sort",
+        "noData": "No data available",
+        "all": "All",
+        "none": "None",
+        "select": "Select",
+        "selected": "Selected",
+        "copy": "Copy",
+        "copied": "Copied",
+        "export": "Export",
+        "import": "Import",
+        "download": "Download",
+        "upload": "Upload",
+        "reset": "Reset",
+        "refresh": "Refresh",
+        "submit": "Submit",
+        "continue": "Continue",
+        "skip": "Skip",
+        "next": "Next",
+        "previous": "Previous",
+        "finish": "Finish",
+        "start": "Start",
+        "stop": "Stop",
+        "pause": "Pause",
+        "resume": "Resume",
+        "retry": "Retry",
+        "help": "Help",
+        "info": "Info",
+        "warning": "Warning",
+        "settings": "Settings",
+        "preferences": "Preferences",
+        "account": "Account",
+        "profile": "Profile",
+        "logout": "Logout",
+        "login": "Login",
+        "register": "Register",
+        "forgotPassword": "Forgot Password",
+        "changePassword": "Change Password",
+        "email": "Email",
+        "password": "Password",
+        "username": "Username",
+        "name": "Name",
+        "description": "Description",
+        "title": "Title",
+        "date": "Date",
+        "time": "Time",
+        "duration": "Duration",
+        "status": "Status",
+        "active": "Active",
+        "inactive": "Inactive",
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "yes": "Yes",
+        "no": "No",
+        "or": "or",
+        "and": "and",
+        "learn": "Learn",
+        "language": "Language"
+    },
+    "metadata": {
+        "title": "Flashcard App",
+        "description": "A simple flashcard app with spaced repetition."
+    },
+    "navigation": {
+        "home": "Home",
+        "features": "Features",
+        "howItWorks": "How it Works",
+        "pricing": "Pricing",
+        "documentation": "Documentation",
+        "support": "Support",
+        "contact": "Contact",
+        "legal": "Legal",
+        "privacy": "Privacy Policy",
+        "terms": "Terms of Service",
+        "license": "License",
+        "changelog": "Changelog",
+        "roadmap": "Roadmap",
+        "helpCenter": "Help Center"
+    },
+    "auth": {
+        "signIn": "Sign In",
+        "signOut": "Sign Out",
+        "signInTitle": "Sign In",
+        "signInDescription": "Sign in with your email address to access your flashcards.",
+        "emailPlaceholder": "Email address",
+        "sendLoginLink": "Send login link",
+        "sendingLink": "Sending link...",
+        "checkEmail": "Check your email for the login link!",
+        "loginError": "An error occurred. Please try again.",
+        "unexpectedError": "An unexpected error occurred.",
+        "emailRequired": "Email is required",
+        "verifyTitle": "Link sent",
+        "verifySubtitle": "Check your email",
+        "verifyDescription": "We'll send a login link to your email address. Please check your inbox and click the link to continue.",
+        "verifySpam": "If you don't receive an email, please also check your spam folder.",
+        "backToLogin": "Back to login",
+        "myAccount": "My Account",
+        "notAuthenticated": "You are not authenticated",
+        "ratelimitExceeded": "Rate limit exceeded. Please try again later.",
+        "bulkRatelimitExceeded": "Too many bulk requests. Please wait.",
+        "verifyRequest": {
+            "title": "Link sent",
+            "subtitle": "Check your email",
+            "description": "We have sent you a login link to your email address. Please check your inbox and click on the link to continue.",
+            "note": "If you don't receive an email, please also check your spam folder",
+            "backToLogin": "Back to login",
+            "trouble": "Having trouble?\n",
+            "contactSupport": "Contact our support",
+            "orWriteAnEmail": "\nor write us an email at"
+        },
+        "email": {
+            "subject": "Sign in to Flashcard App",
+            "title": "Flashcard App",
+            "message": "Click the following link to sign in:",
+            "button": "Sign in",
+            "ignore": "If you didn't request this email, you can safely ignore it.",
+            "textVersion": "Sign in to Flashcard App by clicking this link: {url}"
+        }
+    },
+    "landing": {
+        "hero": {
+            "badge": "Now in Early Development",
+            "title": "Master Any Subject with",
+            "titleHighlight": "Smart Flashcards",
+            "description": "Learn faster and remember longer with our intelligent spaced repetition system. Create, study, and track your progress with beautifully designed flashcards.",
+            "startLearning": "Start Learning Free",
+            "viewDemo": "View Demo"
+        },
+        "features": {
+            "title": "Everything you need to learn effectively",
+            "description": "Our app combines proven learning techniques with modern technology to help you achieve your learning goals.",
+            "spacedRepetition": {
+                "title": "Spaced Repetition",
+                "description": "Intelligent algorithm that shows you cards just before you forget them, maximizing retention and minimizing study time."
+            },
+            "progressTracking": {
+                "title": "Progress Tracking",
+                "description": "Monitor your learning streaks, success rates, and daily progress with detailed analytics and insights."
+            },
+            "responsiveDesign": {
+                "title": "Responsive Design",
+                "description": "Study anywhere, anytime. Our app works perfectly on desktop, tablet, and mobile devices."
+            },
+            "keyboardShortcuts": {
+                "title": "Keyboard Shortcuts",
+                "description": "Learn faster with intuitive keyboard navigation. Flip cards and rate them without touching your mouse."
+            },
+            "deckManagement": {
+                "title": "Deck Management",
+                "description": "Organize your flashcards into decks by category. Import cards in bulk or create them one by one."
+            },
+            "studySessions": {
+                "title": "Study Sessions",
+                "description": "Track your study time and analyze your most productive hours to optimize your learning schedule."
+            }
+        },
+        "howItWorks": {
+            "title": "Simple, yet powerful",
+            "description": "Get started in minutes and see results in days",
+            "step1": {
+                "title": "Create Your Decks",
+                "description": "Organize your learning material into themed decks. Add cards manually or import them in bulk."
+            },
+            "step2": {
+                "title": "Study Smart",
+                "description": "Review cards using our spaced repetition algorithm. Rate your confidence and let the system optimize your schedule."
+            },
+            "step3": {
+                "title": "Track Progress",
+                "description": "Monitor your learning journey with detailed analytics and maintain your study streaks."
+            }
+        },
+        "cta": {
+            "title": "Ready to supercharge your learning?",
+            "description": "Join our early group of learners who are already using our platform to master new skills and knowledge.",
+            "startToday": "Start Learning Today",
+            "learnMore": "Learn More"
+        }
+    },
+    "dashboard": {
+        "title": "Flashcard App",
+        "subtitle": "A simple flashcard app with spaced repetition.",
+        "betaWarning": {
+            "title": "Warning!",
+            "description": "This app is still in development. Data may be lost or not displayed correctly. Please use the app for testing purposes only and not for important data."
+        },
+        "statistics": {
+            "title": "Learning Statistics",
+            "myProfile": "My Profile",
+            "loginPrompt": "Please sign in to see your learning statistics."
+        },
+        "categories": {
+            "title": "Learning Categories",
+            "newDeck": "New Deck",
+            "reviewAll": "Review All Cards",
+            "practiceDifficult": "Practice Difficult Cards"
+        },
+        "completedGoals": {
+            "title": "Completed Learning Goals",
+            "description": "These decks have already reached their target date"
+        }
+    },
+    "deck": {
+        "create": {
+            "title": "Create New Deck",
+            "details": "Deck Details",
+            "titleLabel": "Title",
+            "titlePlaceholder": "e.g. Math Basics",
+            "descriptionLabel": "Description (optional)",
+            "descriptionPlaceholder": "Brief description of the deck",
+            "categoryLabel": "Category",
+            "categoryPlaceholder": "e.g. Mathematics, Languages, etc.",
+            "dueDateLabel": "Study deadline (optional)",
+            "dueDatePlaceholder": "No date selected",
+            "dueDateHint": "Date by which the cards should be learned (e.g. exam date)",
+            "removeDueDate": "Remove date",
+            "creating": "Creating...",
+            "createDeck": "Create Deck",
+            "success": "Deck created successfully!",
+            "error": "Error creating deck"
+        },
+        "edit": {
+            "title": "Edit Deck Details",
+            "updating": "Updating...",
+            "updateDeck": "Update Deck",
+            "success": "Deck updated successfully!",
+            "error": "Error updating deck",
+            "export": "Export",
+            "exporting": "Loading...",
+            "exportTitle": "Export Deck \"{title}\"",
+            "exportDescription": "JSON format for importing into other decks or for backup",
+            "exportError": "Error exporting deck",
+            "copyToClipboard": "Copy to clipboard",
+            "copiedSuccess": "JSON copied to clipboard",
+            "copyError": "Error copying",
+            "titleRequired": "Title",
+            "titlePlaceholder": "e.g. Math Basics",
+            "descriptionLabel": "Description",
+            "descriptionPlaceholder": "Brief description of the deck",
+            "categoryRequired": "Category",
+            "categoryPlaceholder": "e.g. Mathematics, Languages, etc.",
+            "dueDateLabel": "Study deadline",
+            "noDateSelected": "No date selected",
+            "dueDateHint": "Date by which the cards should be learned (e.g. exam date)",
+            "notFound": "Deck not found or not authorized",
+            "dangerZone": {
+                "title": "Danger Zone",
+                "description": "The following actions cannot be undone. Please use with caution.",
+                "resetProgress": {
+                    "button": "Reset Learning Progress",
+                    "resetting": "Resetting...",
+                    "confirmTitle": "Reset learning progress?",
+                    "confirmDescription": "All learning progress for \"{title}\" will be deleted. This action cannot be undone. All cards will be marked as never learned.",
+                    "success": "Learning progress reset successfully!",
+                    "error": "Error resetting learning progress"
+                },
+                "deleteDeck": {
+                    "button": "Delete Deck",
+                    "deleting": "Deleting...",
+                    "confirmTitle": "Delete deck completely?",
+                    "confirmDescription": "The deck \"{title}\" will be permanently deleted with all cards and learning progress. This action cannot be undone.",
+                    "success": "Deck deleted successfully!",
+                    "error": "Error deleting deck"
+                }
+            }
+        },
+        "cards": {
+            "editTab": "Edit Cards",
+            "detailsTab": "Deck Details",
+            "createTitle": "Create Cards",
+            "allCards": "All Cards ({count})",
+            "newCard": "New Card",
+            "frontLabel": "Front",
+            "frontPlaceholder": "Question or term",
+            "backLabel": "Back",
+            "backPlaceholder": "Answer or definition",
+            "creating": "Creating...",
+            "createCard": "Create Card",
+            "createMultiple": "Multiple Cards (JSON)",
+            "singleCard": "Single Card",
+            "creatingMultiple": "Creating cards...",
+            "createError": "Error creating card",
+            "createFromJson": "Create cards from JSON",
+            "cardCreated": "Card created",
+            "cardsCreated": "{success} cards created{errors}",
+            "withErrors": ", {count} errors",
+            "updateSuccess": "Card updated",
+            "updateError": "Error updating",
+            "deleteConfirm": "Do you really want to delete this card?",
+            "deleteSuccess": "Card deleted",
+            "deleteError": "Error deleting",
+            "frontSide": "Front",
+            "backSide": "Back",
+            "bulkCreateError": "Invalid JSON or error creating cards",
+            "invalidJsonArray": "JSON must be an array",
+            "missingFields": "Card with missing fields skipped",
+            "loadError": "Error loading flashcards",
+            "reviewError": "Error reviewing card",
+            "notFound": "Card not found",
+            "unauthorized": "Unauthorized"
+        },
+        "tabs": {
+            "details": "Deck Details",
+            "editCards": "Edit Cards"
+        },
+        "statistics": {
+            "totalCards": "cards total",
+            "cardsToReview": "cards to review",
+            "wasDueBy": "Was due by:",
+            "dueBy": "Due by:"
+        }
+    },
+    "learn": {
+        "allCards": "Review All Cards",
+        "difficultCards": "Practice Difficult Cards",
+        "dueCards": "Due Cards",
+        "noCards": "Looks like you've already learned everything!",
+        "noCardsDescription": "No cards are available for this category.",
+        "completed": "Learning unit completed!",
+        "completedDescription": "You have reviewed all {count} cards in this category.",
+        "studyTime": "Study time:",
+        "repeatAgain": "Review again",
+        "repeatShuffled": "Review shuffled",
+        "card": "Card",
+        "of": "of",
+        "remaining": "Remaining:",
+        "cardsShuffled": "Cards shuffled!",
+        "ratingError": "Error rating card",
+        "allReviewed": "All cards reviewed!",
+        "sessionComplete": "Learning unit completed",
+        "flipHint": "Tap to flip",
+        "spaceToFlip": "(Spacebar)",
+        "answer": "Answer",
+        "rating": "Rating:",
+        "rateAgain": "Again",
+        "rateHard": "Hard",
+        "rateGood": "Good",
+        "rateEasy": "Easy",
+        "keyboardHint": "Press spacebar to flip",
+        "ratingHint": "Rate with 1 to 4 or click the buttons",
+        "loginRequired": "Please login to view this page",
+        "help": "Help"
+    },
+    "statistics": {
+        "last7Days": "Last 7 Days",
+        "cardsReviewed": "Cards reviewed",
+        "successRate": "Success rate",
+        "percentCorrect": "Percent correct",
+        "learningStreak": "Learning streak",
+        "day": "Day",
+        "days": "Days",
+        "inARow": "in a row",
+        "toReview": "To review",
+        "cardsForToday": "Cards for today",
+        "reviewNow": "Review now",
+        "learningProgress": "Learning Progress Last 7 Days",
+        "noActivity": "No learning activity in the last 7 days.",
+        "cards": "Cards:",
+        "successRateLabel": "Success rate:",
+        "cardsTotal": "Cards total",
+        "cardsPerDay": "Cards per day",
+        "bestDay": "Best day",
+        "cardsByDifficulty": "Cards by Difficulty",
+        "studyTimeAnalysis": "Study Time Analysis",
+        "beta": "Beta",
+        "noSessions": "No study sessions completed yet.",
+        "productiveTime": "Most productive time:",
+        "atTime": "{time}:00 with an average of {cards} cards per session.",
+        "totalCards": "Total cards:",
+        "cardsAcrossAllTimes": "{count} cards across all times.",
+        "progressChart": {
+            "title": "Learning Progress Last 7 Days",
+            "noActivity": "No learning activity in the last 7 days.",
+            "cards": "Cards:",
+            "successRate": "Success rate:",
+            "cardsTotal": "Cards total",
+            "cardsPerDay": "Cards per day",
+            "bestDay": "Best day",
+            "monday": "Mon",
+            "tuesday": "Tue",
+            "wednesday": "Wed",
+            "thursday": "Thu",
+            "friday": "Fri",
+            "saturday": "Sat",
+            "sunday": "Sun"
+        },
+        "timeAnalysis": {
+            "title": "Study Time Analysis",
+            "beta": "Beta",
+            "noSessions": "No study sessions completed yet.",
+            "productiveTime": "Most productive time:",
+            "withAverage": "{time}:00 with an average of {cards} cards per session.",
+            "totalCards": "Total cards:",
+            "acrossAllTimes": "{count} cards across all times.",
+            "cards": "cards"
+        },
+        "dashboard": {
+            "last7Days": "Last 7 Days",
+            "cardsReviewed": "Cards reviewed",
+            "successRate": "Success rate",
+            "percentCorrect": "Percent correct",
+            "learningStreak": "Learning streak",
+            "day": "Day",
+            "days": "Days",
+            "inARow": "in a row",
+            "toReview": "To review",
+            "cardsForToday": "Cards for today",
+            "reviewNow": "Review now",
+            "cardsByDifficulty": "Cards by Difficulty",
+            "difficulty": {
+                "again": "Again",
+                "hard": "Hard",
+                "good": "Good",
+                "easy": "Easy"
+            }
+        }
+    },
+    "profile": {
+        "title": "My Profile",
+        "email": "Email",
+        "tabs": {
+            "settings": "Settings",
+            "statistics": "Learning Statistics"
+        },
+        "settings": {
+            "title": "Settings",
+            "statistics": "Learning Statistics",
+            "noData": "No learning data available yet.",
+            "startLearning": "Start learning to see your progress here.",
+            "saved": "Settings saved!",
+            "saving": "Saving...",
+            "save": "Save Settings",
+            "saveError": "Error saving settings",
+            "language": {
+                "label": "Language"
+            },
+            "appearance": {
+                "title": "Appearance",
+                "theme": {
+                    "label": "Theme",
+                    "light": "Light",
+                    "dark": "Dark",
+                    "system": "System",
+                    "description": "Choose between light, dark, or system theme."
+                }
+            },
+            "animations": {
+                "title": "Animation Settings",
+                "enable": {
+                    "label": "Enable animations",
+                    "description": "Enable or disable all animations."
+                },
+                "speed": {
+                    "label": "Speed",
+                    "description": "Lower values = faster animations."
+                },
+                "direction": {
+                    "label": "Direction",
+                    "horizontal": "Horizontal",
+                    "vertical": "Vertical",
+                    "description": "Determines the main direction of animations."
+                }
+            }
+        }
+    },
+    "footer": {
+        "tagline": "The modern flashcard app for effective learning using spaced repetition.",
+        "product": "Product",
+        "features": "Features",
+        "pricing": "Pricing",
+        "roadmap": "Roadmap",
+        "support": "Support",
+        "documentation": "Documentation",
+        "helpCenter": "Help Center",
+        "contact": "Contact",
+        "legal": "Legal",
+        "privacyPolicy": "Privacy Policy",
+        "termsOfService": "Terms of Service",
+        "license": "License",
+        "madeWith": "Made with",
+        "by": "by"
+    },
+    "comingSoon": {
+        "title": "Coming Soon",
+        "subtitle": "This feature is currently under development",
+        "description": "You've discovered a page that's still being crafted. Our development team is working hard to bring you something amazing. Check back soon!",
+        "devProgress": "Development Progress",
+        "devDescription": "Here's what our team is currently working on",
+        "followDev": "You can follow the current development",
+        "here": "here",
+        "questions": "Have questions or suggestions? We'd love to hear from you while we build this feature.",
+        "tasks": {
+            "improveUI": "Improve usability of the user interface",
+            "improveDashboard": "Improve dashboard analytics and statistics",
+            "advancedLearning": "Add advanced learning mode with custom input and AI validation",
+            "optimizeDB": "Optimize database queries",
+            "documentation": "Write comprehensive documentation"
+        },
+        "priority": {
+            "high": "high",
+            "medium": "medium",
+            "low": "low"
+        },
+        "status": {
+            "inProgress": "in progress",
+            "planning": "planning",
+            "todo": "todo"
+        }
+    }
+}

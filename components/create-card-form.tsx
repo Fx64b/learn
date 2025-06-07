@@ -4,6 +4,8 @@ import { toast } from 'sonner'
 
 import { useState } from 'react'
 
+import { useLocale, useTranslations } from 'next-intl'
+
 import {
     createFlashcard,
     createFlashcardsFromJson,
@@ -16,12 +18,42 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
 
 export function CreateCardForm({ deckId }: { deckId: string }) {
+    const t = useTranslations('deck.cards')
+    const locale = useLocale()
     const [singleCard, setSingleCard] = useState({
         vorderseite: '',
         rueckseite: '',
     })
     const [jsonCards, setJsonCards] = useState('')
     const [isSubmitting, setIsSubmitting] = useState(false)
+
+    const getJsonPlaceholder = () => {
+        if (locale === 'de') {
+            return `[
+  {
+    "vorderseite": "Was ist ...?",
+    "rueckseite": "Die Antwort ist ...",
+    "istPruefungsrelevant": true
+  },
+  {
+    "vorderseite": "Nenne drei ...",
+    "rueckseite": "1. ... 2. ... 3. ..."
+  }
+]`
+        }
+
+        return `[
+  {
+    "vorderseite": "What is ...?",
+    "rueckseite": "The answer is ...",
+    "istPruefungsrelevant": true
+  },
+  {
+    "vorderseite": "Name three ...",
+    "rueckseite": "1. ... 2. ... 3. ..."
+  }
+]`
+    }
 
     const handleSingleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -36,10 +68,10 @@ export function CreateCardForm({ deckId }: { deckId: string }) {
         const result = await createFlashcard(formData)
 
         if (result.success) {
-            toast.success('Karte erstellt')
+            toast.success(t('cardCreated'))
             setSingleCard({ vorderseite: '', rueckseite: '' })
         } else {
-            toast.error('Fehler beim Erstellen der Karte')
+            toast.error(t('common.error'))
         }
 
         setIsSubmitting(false)
@@ -60,12 +92,18 @@ export function CreateCardForm({ deckId }: { deckId: string }) {
             const errorCount =
                 result.results?.filter((r) => !r.success).length || 0
 
-            toast.success(
-                `${successCount} Karten erstellt${errorCount > 0 ? `, ${errorCount} Fehler` : ''}`
-            )
+            const message =
+                errorCount > 0
+                    ? t('cardsCreated', {
+                          success: successCount,
+                          errors: t('withErrors', { count: errorCount }),
+                      })
+                    : t('cardsCreated', { success: successCount, errors: '' })
+
+            toast.success(message)
             setJsonCards('')
         } else {
-            toast.error(result.error || 'Fehler beim Erstellen der Karten')
+            toast.error(result.error || t('common.error'))
         }
 
         setIsSubmitting(false)
@@ -74,14 +112,14 @@ export function CreateCardForm({ deckId }: { deckId: string }) {
     return (
         <Tabs defaultValue="single" className="w-full">
             <TabsList className="grid h-full w-full grid-cols-2">
-                <TabsTrigger value="single">Einzelne Karte</TabsTrigger>
-                <TabsTrigger value="bulk">Mehrere Karten (JSON)</TabsTrigger>
+                <TabsTrigger value="single">{t('singleCard')}</TabsTrigger>
+                <TabsTrigger value="bulk">{t('createMultiple')}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="single">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Neue Karte erstellen</CardTitle>
+                        <CardTitle>{t('newCard')}</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <form
@@ -90,7 +128,7 @@ export function CreateCardForm({ deckId }: { deckId: string }) {
                         >
                             <div>
                                 <label className="mb-1 block text-sm font-medium">
-                                    Vorderseite
+                                    {t('frontLabel')}
                                 </label>
                                 <Input
                                     value={singleCard.vorderseite}
@@ -100,13 +138,13 @@ export function CreateCardForm({ deckId }: { deckId: string }) {
                                             vorderseite: e.target.value,
                                         }))
                                     }
-                                    placeholder="Frage oder Begriff"
+                                    placeholder={t('frontPlaceholder')}
                                     required
                                 />
                             </div>
                             <div>
                                 <label className="mb-1 block text-sm font-medium">
-                                    Rueckseite
+                                    {t('backLabel')}
                                 </label>
                                 <Textarea
                                     value={singleCard.rueckseite}
@@ -116,15 +154,13 @@ export function CreateCardForm({ deckId }: { deckId: string }) {
                                             rueckseite: e.target.value,
                                         }))
                                     }
-                                    placeholder="Antwort oder Definition"
+                                    placeholder={t('backPlaceholder')}
                                     className="h-56 w-full rounded border p-2"
                                     required
                                 />
                             </div>
                             <Button type="submit" disabled={isSubmitting}>
-                                {isSubmitting
-                                    ? 'Erstelle...'
-                                    : 'Karte erstellen'}
+                                {isSubmitting ? t('creating') : t('createCard')}
                             </Button>
                         </form>
                     </CardContent>
@@ -134,13 +170,13 @@ export function CreateCardForm({ deckId }: { deckId: string }) {
             <TabsContent value="bulk">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Mehrere Karten aus JSON erstellen</CardTitle>
+                        <CardTitle>{t('createMultiple')}</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={handleBulkSubmit} className="space-y-4">
                             <div>
                                 <label className="mb-2 block text-sm font-medium">
-                                    JSON Array von Karten
+                                    JSON Array
                                 </label>
                                 <Textarea
                                     value={jsonCards}
@@ -148,24 +184,14 @@ export function CreateCardForm({ deckId }: { deckId: string }) {
                                         setJsonCards(e.target.value)
                                     }
                                     className="h-72 w-full rounded border p-2"
-                                    placeholder={`[
-  {
-    "vorderseite": "Was ist ...?",
-    "rueckseite": "Die Antwort ist ...",
-    "istPruefungsrelevant": true
-  },
-  {
-    "vorderseite": "Nenne drei ...",
-    "rueckseite": "1. ... 2. ... 3. ..."
-  }
-]`}
+                                    placeholder={getJsonPlaceholder()}
                                     required
                                 />
                             </div>
                             <Button type="submit" disabled={isSubmitting}>
                                 {isSubmitting
-                                    ? 'Erstelle Karten...'
-                                    : 'Karten aus JSON erstellen'}
+                                    ? t('creatingMultiple')
+                                    : t('createFromJson')}
                             </Button>
                         </form>
                     </CardContent>

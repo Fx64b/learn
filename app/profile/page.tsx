@@ -1,7 +1,9 @@
 import { authOptions } from '@/lib/auth'
+import { getLocale } from '@/lib/locale'
 import { BarChart2, UserCircle } from 'lucide-react'
 
 import { getServerSession } from 'next-auth'
+import { getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
 
 import { getUserPreferences } from '@/app/actions/preferences'
@@ -27,6 +29,8 @@ function ensureValidTheme(theme: unknown): 'light' | 'dark' | 'system' {
 
 export default async function ProfilePage() {
     const session = await getServerSession(authOptions)
+    const locale = await getLocale()
+    const t = await getTranslations({ locale, namespace: 'profile' })
 
     if (!session?.user?.id) {
         redirect('/login')
@@ -43,16 +47,17 @@ export default async function ProfilePage() {
             preferencesData?.animationDirection
         ),
         theme: ensureValidTheme(preferencesData?.theme),
+        locale: preferencesData?.locale ?? 'en',
     }
 
     return (
         <div className="container mx-auto max-w-5xl px-4 py-8 sm:py-12">
             <div className="mb-8 space-y-2">
                 <h1 className="text-3xl font-bold tracking-tight">
-                    Mein Profil
+                    {t('title')}
                 </h1>
                 <p className="text-muted-foreground">
-                    <b>Email:</b> {session.user.email}
+                    <b>{t('email')}:</b> {session.user.email}
                 </p>
             </div>
 
@@ -63,14 +68,14 @@ export default async function ProfilePage() {
                         className="flex items-center gap-2"
                     >
                         <UserCircle className="h-4 w-4" />
-                        <span>Einstellungen</span>
+                        <span>{t('tabs.settings')}</span>
                     </TabsTrigger>
                     <TabsTrigger
                         value="progress"
                         className="flex items-center gap-2"
                     >
                         <BarChart2 className="h-4 w-4" />
-                        <span>Lernstatistik</span>
+                        <span>{t('tabs.statistics')}</span>
                     </TabsTrigger>
                 </TabsList>
 
@@ -88,11 +93,10 @@ export default async function ProfilePage() {
                                     <BarChart2 className="text-muted-foreground h-6 w-6" />
                                 </div>
                                 <p className="text-muted-foreground">
-                                    Noch keine Lerndaten verfügbar.
+                                    {t('noData')}
                                 </p>
                                 <p className="text-muted-foreground mt-2 text-sm">
-                                    Beginne mit dem Lernen, um hier deinen
-                                    Fortschritt zu sehen.
+                                    {t('startLearning')}
                                 </p>
                             </div>
                         )}

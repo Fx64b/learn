@@ -5,13 +5,17 @@ import { authOptions } from '@/lib/auth'
 import { checkRateLimit } from '@/lib/rate-limit'
 
 import { getServerSession } from 'next-auth'
+import { getTranslations } from 'next-intl/server'
 import { revalidatePath } from 'next/cache'
 
 export async function createFlashcard(formData: FormData) {
+    const authT = await getTranslations('auth')
+    const t = await getTranslations('deck.cards')
+
     try {
         const session = await getServerSession(authOptions)
         if (!session?.user?.id) {
-            return { success: false, error: 'Not authenticated' }
+            return { success: false, error: authT('notAuthenticated') }
         }
 
         const rateLimitResult = await checkRateLimit(
@@ -21,7 +25,7 @@ export async function createFlashcard(formData: FormData) {
         if (!rateLimitResult.success) {
             return {
                 success: false,
-                error: 'Zu viele Anfragen. Bitte warten Sie einen Moment.',
+                error: authT('ratelimitExceeded'),
             }
         }
 
@@ -42,7 +46,7 @@ export async function createFlashcard(formData: FormData) {
         return { success: true, id }
     } catch (error) {
         console.error('Fehler beim Erstellen der Flashcard:', error)
-        return { success: false, error: 'Fehler beim Erstellen der Flashcard' }
+        return { success: false, error: t('createError') }
     }
 }
 
@@ -50,10 +54,13 @@ export async function createFlashcardsFromJson(data: {
     deckId: string
     cardsJson: string
 }) {
+    const authT = await getTranslations('auth')
+    const t = await getTranslations('deck.cards')
+
     try {
         const session = await getServerSession(authOptions)
         if (!session?.user?.id) {
-            return { success: false, error: 'Not authenticated' }
+            return { success: false, error: authT('notAuthenticated') }
         }
 
         const rateLimitResult = await checkRateLimit(
@@ -63,14 +70,14 @@ export async function createFlashcardsFromJson(data: {
         if (!rateLimitResult.success) {
             return {
                 success: false,
-                error: 'Zu viele Bulk-Anfragen. Bitte warten Sie.',
+                error: authT('bulkRatelimitExceeded'),
             }
         }
 
         const cards = JSON.parse(data.cardsJson)
 
         if (!Array.isArray(cards)) {
-            return { success: false, error: 'JSON muss ein Array sein' }
+            return { success: false, error: t('invalidJsonArray') }
         }
 
         const results = []
@@ -79,7 +86,7 @@ export async function createFlashcardsFromJson(data: {
             if (!card.vorderseite || !card.rueckseite) {
                 results.push({
                     success: false,
-                    error: 'Karte mit fehlenden Feldern übersprungen',
+                    error: t('missingFields'),
                     vorderseite: card.vorderseite,
                 })
                 continue
@@ -103,7 +110,7 @@ export async function createFlashcardsFromJson(data: {
         console.error('Fehler beim Erstellen der Karten:', error)
         return {
             success: false,
-            error: 'Ungültiges JSON oder Fehler beim Erstellen',
+            error: t('bulkCreateError'),
         }
     }
 }
@@ -123,10 +130,13 @@ export async function getFlashcardsByDeckId(deckId: string) {
 }
 
 export async function reviewCard(flashcardId: string, bewertung: number) {
+    const authT = await getTranslations('auth')
+    const t = await getTranslations('deck.cards')
+
     try {
         const session = await getServerSession(authOptions)
         if (!session?.user?.id) {
-            return { success: false, error: 'Not authenticated' }
+            return { success: false, error: authT('notAuthenticated') }
         }
 
         const result = await dbUtils.reviewCard({
@@ -139,7 +149,7 @@ export async function reviewCard(flashcardId: string, bewertung: number) {
         return { success: true, ...result }
     } catch (error) {
         console.error('Fehler beim Bewerten der Karte:', error)
-        return { success: false, error: 'Fehler beim Bewerten der Karte' }
+        return { success: false, error: t('reviewError') }
     }
 }
 
@@ -149,15 +159,18 @@ export async function updateFlashcard(data: {
     rueckseite: string
     istPruefungsrelevant: boolean
 }) {
+    const authT = await getTranslations('auth')
+    const t = await getTranslations('deck.cards')
+
     try {
         const session = await getServerSession(authOptions)
         if (!session?.user?.id) {
-            return { success: false, error: 'Not authenticated' }
+            return { success: false, error: authT('notAuthenticated') }
         }
 
         const flashcard = await dbUtils.getFlashcardById(data.id)
         if (!flashcard) {
-            return { success: false, error: 'Karte nicht gefunden' }
+            return { success: false, error: t('notFound') }
         }
 
         const deck = await dbUtils.getDeckById(
@@ -165,7 +178,7 @@ export async function updateFlashcard(data: {
             session.user.id
         )
         if (!deck) {
-            return { success: false, error: 'Unauthorized' }
+            return { success: false, error: t('unauthorized') }
         }
 
         await dbUtils.updateFlashcard({
@@ -181,15 +194,23 @@ export async function updateFlashcard(data: {
         return { success: true }
     } catch (error) {
         console.error('Fehler beim Aktualisieren der Karte:', error)
-        return { success: false, error: 'Fehler beim Aktualisieren der Karte' }
+        return { success: false, error: t('updateError') }
     }
 }
 
 export async function deleteFlashcard(id: string) {
+    const t = await getTranslations('deck.cards')
+    const authT = await getTranslations('auth')
+
     try {
+        const session = await getServerSession(authOptions)
+        if (!session?.user?.id) {
+            return { success: false, error: authT('notAuthenticated') }
+        }
+
         const flashcard = await dbUtils.getFlashcardById(id)
         if (!flashcard) {
-            return { success: false, error: 'Karte nicht gefunden' }
+            return { success: false, error: t('notFound') }
         }
 
         const deckId = flashcard.deckId
@@ -201,6 +222,6 @@ export async function deleteFlashcard(id: string) {
         return { success: true }
     } catch (error) {
         console.error('Fehler beim Löschen der Karte:', error)
-        return { success: false, error: 'Fehler beim Löschen der Karte' }
+        return { success: false, error: t('deleteError') }
     }
 }

@@ -2,6 +2,7 @@ import { DeckType } from '@/types'
 import { format } from 'date-fns'
 import { AlertTriangle, PencilIcon } from 'lucide-react'
 
+import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 
 import { Button } from '@/components/ui/button'
@@ -27,12 +28,14 @@ interface DeckCardProps {
     isPastDue?: boolean
 }
 
-export function DeckCard({
+export async function DeckCard({
     deck,
     totalCards,
     dueCards,
     isPastDue = false,
 }: DeckCardProps) {
+    const t = await getTranslations()
+
     return (
         <Card
             className={`transition-shadow hover:shadow-md ${isPastDue ? 'border-dashed' : ''}`}
@@ -51,7 +54,7 @@ export function DeckCard({
                                 </TooltipTrigger>
                                 <TooltipContent>
                                     <p>
-                                        Lernziel abgelaufen am{' '}
+                                        {t('deck.statistics.wasDueBy')}{' '}
                                         {format(
                                             new Date(deck.aktivBis!),
                                             'dd.MM.yyyy'
@@ -67,7 +70,9 @@ export function DeckCard({
                     {deck.aktivBis && (
                         <div className="mt-1 text-xs">
                             <span className="text-muted-foreground">
-                                {isPastDue ? 'War fällig bis:' : 'Fällig bis:'}{' '}
+                                {isPastDue
+                                    ? t('deck.statistics.wasDueBy')
+                                    : t('deck.statistics.dueBy')}{' '}
                                 {format(new Date(deck.aktivBis), 'dd.MM.yyyy')}
                             </span>
                         </div>
@@ -77,11 +82,12 @@ export function DeckCard({
             <CardContent className="mt-auto pb-2">
                 <div className="space-y-1">
                     <p className="text-sm">
-                        <b>{totalCards}</b> Karten insgesamt
+                        <b>{totalCards}</b> {t('deck.statistics.totalCards')}
                     </p>
                     {!isPastDue && (
                         <p className="text-sm">
-                            <b>{dueCards}</b> Karten zu wiederholen
+                            <b>{dueCards}</b>{' '}
+                            {t('deck.statistics.cardsToReview')}
                         </p>
                     )}
                 </div>
@@ -89,7 +95,7 @@ export function DeckCard({
             <CardFooter className="mt-auto flex gap-8 md:gap-2">
                 <Link href={`/learn/${deck.id}`} className="flex-1">
                     <Button className="w-full" size="sm">
-                        Lernen
+                        {t('common.learn')}
                     </Button>
                 </Link>
                 <Button variant="outline" size="sm">

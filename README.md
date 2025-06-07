@@ -249,9 +249,8 @@ The dashboard provides insights into:
 See [TODO.md](./TODO.md) for a complete list of planned features.
 
 ### Activity
- ![Alt](https://repobeats.axiom.co/api/embed/e26f5c728d5b30144b3d3353306a519469a999f0.svg "Repobeats analytics image")
 
-
+![Alt](https://repobeats.axiom.co/api/embed/e26f5c728d5b30144b3d3353306a519469a999f0.svg 'Repobeats analytics image')
 
 ## License
 

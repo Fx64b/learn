@@ -7,6 +7,7 @@ import { eq, sql } from 'drizzle-orm'
 import { nanoid } from 'nanoid'
 
 import { getServerSession } from 'next-auth'
+import { getTranslations } from 'next-intl/server'
 
 export async function saveStudySession(data: {
     id?: string
@@ -17,11 +18,13 @@ export async function saveStudySession(data: {
     cardsReviewed: number
     isCompleted: boolean
 }) {
-    // TOD: this is not working 100% yet.
+    const authT = await getTranslations('auth')
+
+    // TODO: this is not working 100% yet.
     try {
         const session = await getServerSession(authOptions)
         if (!session?.user?.id) {
-            return { success: false, error: 'Not authenticated' }
+            return { success: false, error: authT('notAuthenticated') }
         }
 
         const id = data.id || nanoid()

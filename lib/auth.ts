@@ -5,6 +5,7 @@ import { Resend } from 'resend'
 
 import { NextAuthOptions } from 'next-auth'
 import EmailProvider from 'next-auth/providers/email'
+import { getTranslations } from 'next-intl/server'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -19,38 +20,39 @@ export const authOptions: NextAuthOptions = {
                     pass: process.env.RESEND_API_KEY || '',
                 },
             },
-            from: process.env.EMAIL_FROM || 'noreply@example.com',
+            from: process.env.EMAIL_FROM || '',
             sendVerificationRequest: async ({
                 identifier: email,
                 url,
                 provider: { from },
             }) => {
+                const t = await getTranslations('auth')
+
                 const rateLimitResult = await checkRateLimit(`email:${email}`)
 
                 if (!rateLimitResult.success) {
-                    throw new Error(
-                        'Zu viele Anfragen. Bitte versuchen Sie es später erneut.'
-                    )
+                    throw new Error(t('ratelimitExceeded'))
                 }
 
                 try {
                     const result = await resend.emails.send({
                         from,
                         to: email,
-                        subject: `Anmeldung bei Flashcard App`,
+                        subject: t('email.subject'),
                         html: `
               <div style="font-family: sans-serif; padding: 24px;">
                 <h1>Flashcard App</h1>
-                <p>Klicke auf den folgenden Link, um dich anzumelden:</p>
+                <h1>${t('email.title')}</h1>
+                <p>${t('email.message')}</p>
                 <a href="${url}" style="display: inline-block; padding: 12px 24px; background-color: #4F46E5; color: white; text-decoration: none; border-radius: 4px;">
-                  Einloggen
+                  ${t('email.button')}
                 </a>
                 <p style="margin-top: 24px; color: #666;">
-                  Wenn du diese E-Mail nicht angefordert hast, kannst du sie ignorieren.
+                  ${t('email.ignore')}
                 </p>
               </div>
             `,
-                        text: `Melde dich bei der Flashcard App an, indem du auf diesen Link klickst: ${url}`,
+                        text: `${t('email.textVersion', { url: url })}`, // wtf,... FIXME
                     })
 
                     if (result.error) {

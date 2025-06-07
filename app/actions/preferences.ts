@@ -6,6 +6,7 @@ import { authOptions } from '@/lib/auth'
 import { eq } from 'drizzle-orm'
 
 import { getServerSession } from 'next-auth'
+import { getTranslations } from 'next-intl/server'
 import { revalidatePath } from 'next/cache'
 
 export async function getUserPreferences() {
@@ -36,11 +37,14 @@ export async function updateUserPreferences(data: {
     animationSpeed?: number
     animationDirection?: 'horizontal' | 'vertical'
     theme?: 'light' | 'dark' | 'system'
+    locale?: string
 }) {
+    const authT = await getTranslations('auth')
+
     try {
         const session = await getServerSession(authOptions)
         if (!session?.user?.id) {
-            return { success: false, error: 'Not authenticated' }
+            return { success: false, error: authT('notAuthenticated') }
         }
 
         const existing = await db
@@ -64,6 +68,7 @@ export async function updateUserPreferences(data: {
                 animationSpeed: data.animationSpeed ?? 200,
                 animationDirection: data.animationDirection ?? 'horizontal',
                 theme: data.theme ?? 'dark',
+                locale: data.locale ?? 'en',
                 updatedAt: new Date(),
             })
         }

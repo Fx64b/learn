@@ -2,6 +2,7 @@
 
 import { CheckCircle2, Clock, Code2, Hammer, Lightbulb } from 'lucide-react'
 
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 
 import { Badge } from '@/components/ui/badge'
@@ -14,25 +15,31 @@ import {
 } from '@/components/ui/card'
 
 export default function TodoPage() {
+    const t = useTranslations('comingSoon')
+
     const developerTodos = [
         {
-            task: 'Improve usability of the user interface',
+            task: t('tasks.improveUI'),
             status: 'in-progress',
             priority: 'high',
         },
         {
-            task: 'Improve dashboard analytics and statistics',
+            task: t('tasks.improveDashboard'),
             status: 'in-progress',
             priority: 'medium',
         },
         {
-            task: 'Add advanced learning mode with custom input and AI validation',
+            task: t('tasks.advancedLearning'),
             status: 'planning',
             priority: 'medium',
         },
-        { task: 'Optimize database queries', status: 'todo', priority: 'low' },
         {
-            task: 'Write comprehensive documentation',
+            task: t('tasks.optimizeDB'),
+            status: 'todo',
+            priority: 'low',
+        },
+        {
+            task: t('tasks.documentation'),
             status: 'todo',
             priority: 'medium',
         },
@@ -75,16 +82,10 @@ export default function TodoPage() {
                             <div className="relative top-[-10] left-5 inline-flex h-16 w-16 items-center justify-center rounded-full">
                                 <Hammer className="animate-hammer h-8 w-8" />
                             </div>
-                            Coming Soon
+                            {t('title')}
                         </h1>
-                        <p className="mb-2 text-xl">
-                            This feature is currently under development
-                        </p>
-                        <p className="mx-auto max-w-2xl">
-                            You&apos;ve discovered a page that&apos;s still
-                            being crafted. Our development team is working hard
-                            to bring you something amazing. Check back soon!
-                        </p>
+                        <p className="mb-2 text-xl">{t('subtitle')}</p>
+                        <p className="mx-auto max-w-2xl">{t('description')}</p>
                     </div>
 
                     {/* Developer Todo Section */}
@@ -92,11 +93,10 @@ export default function TodoPage() {
                         <CardHeader className="pb-4 text-center sm:pb-6">
                             <CardTitle className="flex items-center justify-center gap-2 text-xl font-semibold sm:text-2xl">
                                 <Code2 className="text-primary h-5 w-5 sm:h-6 sm:w-6" />
-                                Development Progress
+                                {t('devProgress')}
                             </CardTitle>
                             <CardDescription className="text-sm sm:text-base">
-                                Here&apos;s what our team is currently working
-                                on
+                                {t('devDescription')}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="px-4 sm:px-6">
@@ -117,13 +117,15 @@ export default function TodoPage() {
                                                 variant="outline"
                                                 className={`text-xs font-medium select-none hover:cursor-default ${getPriorityColor(todo.priority)}`}
                                             >
-                                                {todo.priority}
+                                                {t(`priority.${todo.priority}`)}
                                             </Badge>
                                             <Badge
                                                 variant="secondary"
                                                 className="selection-none text-xs font-medium capitalize"
                                             >
-                                                {todo.status.replace('-', ' ')}
+                                                {t(
+                                                    `status.${todo.status.replace(/-.*$/, 'Progress')}`
+                                                )}
                                             </Badge>
                                         </div>
                                     </div>
@@ -135,16 +137,15 @@ export default function TodoPage() {
                     {/* Footer Message */}
                     <div className="mt-12 text-center">
                         <p className="text-sm text-gray-500">
-                            Have questions or suggestions? We&apos;d love to
-                            hear from you while we build this feature.
+                            {t('questions')}
                         </p>
                         <p className="mt-4 text-sm text-gray-500">
-                            You can follow the current development{' '}
+                            {t('followDev')}{' '}
                             <Link
                                 className="text-primary underline"
                                 href={'https://github.com/Fx64b/learn'}
                             >
-                                here
+                                {t('here')}
                             </Link>
                             .
                         </p>
