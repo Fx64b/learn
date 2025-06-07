@@ -1,3 +1,42 @@
+# [1.8.0](https://github.com/Fx64b/learn/compare/v1.7.0...v1.8.0) (2025-06-07)
+
+
+### Bug Fixes
+
+* **flashcard:** revert flashcard min height ([3f17e9d](https://github.com/Fx64b/learn/commit/3f17e9d1b4360a05be8ccb933aab440f35b14281))
+* **i18n:** improve weird German translations from ai ([eda4c97](https://github.com/Fx64b/learn/commit/eda4c97878dd26e26565d6114a89020cffd613b6))
+* **language-selector:** adjust width of language selector for better UI consistency ([737d31a](https://github.com/Fx64b/learn/commit/737d31a81b498cc1e0a2ca2ba4813f75e304ac0a))
+* **language-selector:** adjust width of language selector for better UI consistency ([d895dee](https://github.com/Fx64b/learn/commit/d895deeb62cb23775ee43f08fde3448c639455c7))
+
+
+### Features
+
+* **i18n:** add comprehensive English and German translations for UI components ([e64cff1](https://github.com/Fx64b/learn/commit/e64cff1971159c19e68881d7e1bfcfc7b8102bfc))
+* **i18n:** add comprehensive English and German translations for UI components ([fff8d34](https://github.com/Fx64b/learn/commit/fff8d3464c4304b08ea143f560bb6f67bab517cb))
+* **i18n:** add English and German translations for various components and improve locale handling ([bbfd194](https://github.com/Fx64b/learn/commit/bbfd1943a2ce555acd975e7816d7c54a5337f79e))
+* **i18n:** add English and German translations for various components and improve locale handling ([403b55a](https://github.com/Fx64b/learn/commit/403b55af2d6655993cf96cc0b9edfb3bc8194b0a))
+* **i18n:** add English translations for authentication emails and update footer component ([e5bdaa3](https://github.com/Fx64b/learn/commit/e5bdaa3fedd8e71c06af1cd6445a8f9400d6a08d))
+* **i18n:** add English translations for create card form and deck card components ([e456c43](https://github.com/Fx64b/learn/commit/e456c43ff0d664803de732394cd6a96c3a7dbbcd))
+* **i18n:** add English translations for create card form and deck card components ([e05aed7](https://github.com/Fx64b/learn/commit/e05aed7582c09c487d8b90715586741d10544bf3))
+* **i18n:** add English translations for difficulty levels and update various components ([5eb58c7](https://github.com/Fx64b/learn/commit/5eb58c72231fd30347c8f479037664fd443a4730))
+* **i18n:** add English translations for error messages and improve authentication handling ([d8854ef](https://github.com/Fx64b/learn/commit/d8854ef92f0dabb8b1a294af7b219d46a597048e))
+* **i18n:** add English translations for error messages and improve authentication handling ([e2bfd93](https://github.com/Fx64b/learn/commit/e2bfd93a73dd3161057955100961da8d2040417f))
+* **i18n:** add English translations for study time analysis and improve date handling ([6892e65](https://github.com/Fx64b/learn/commit/6892e65d9f8d76c06966530f345fe7cf35746c46))
+* **i18n:** add English translations for various components and improve text handling ([e72b0aa](https://github.com/Fx64b/learn/commit/e72b0aa25b85560fe925fbc002cef9ed8700761f))
+* **i18n:** add English translations for various pages and improve locale handling ([a242b75](https://github.com/Fx64b/learn/commit/a242b75c9b1bcb27bc37a5854e248cbf06c56c60))
+* **i18n:** add English translations for various pages and improve locale handling ([4dd8074](https://github.com/Fx64b/learn/commit/4dd80743bb9266486dd29fbfd82761f9d5f57444))
+* **i18n:** add English translations for verify request page and update locale handling ([80c6b51](https://github.com/Fx64b/learn/commit/80c6b51aa755f2a2c00d77ba3dba11b6fa094a9d))
+* **i18n:** add English translations for verify request page and update locale handling ([8fb276a](https://github.com/Fx64b/learn/commit/8fb276aea6d2341b127717000c557696db5b00c4))
+* **i18n:** add internationalization support with English and German locales ([2881f94](https://github.com/Fx64b/learn/commit/2881f94298388a94e56bc853adb0503a0f2af0b2))
+* **i18n:** add internationalization support with English and German locales ([a259f87](https://github.com/Fx64b/learn/commit/a259f87e7d176c5e6dc8915b2cbf113b08713168))
+* **i18n:** implement English translations for landing page and improve common text handling ([5b398ef](https://github.com/Fx64b/learn/commit/5b398efafe20fe8339dd58fddc99c61a9be0505c))
+* **i18n:** implement translations for dashboard and login components ([6e56727](https://github.com/Fx64b/learn/commit/6e56727c387860968d2d01fbe144ef4727a0c1c8))
+* **i18n:** implement translations for dashboard and login components ([8775e8c](https://github.com/Fx64b/learn/commit/8775e8ccca9ee75e0e3c65a9547163ec62e654e9))
+* **i18n:** update locale handling in login page and improve error messaging ([baedd6f](https://github.com/Fx64b/learn/commit/baedd6fcec8d81e50ecd1cde31e24f86f7a9d417))
+* **i18n:** update locale handling in login page and improve error messaging ([2378fd4](https://github.com/Fx64b/learn/commit/2378fd439bc0b0b5f7b73dc0eecbd0ab2abf652e))
+* **i18n:** update translation handling in lern-modus-client and profile-settings components ([527d35f](https://github.com/Fx64b/learn/commit/527d35f7b615914006fc2b936a69bd4326d847c6))
+* **landing-page:** enhance footer and page content layout for improved readability ([5c70062](https://github.com/Fx64b/learn/commit/5c7006215a2a63473c0dad2b7f267b27ce8ad04c))
+
 # [1.7.0](https://github.com/Fx64b/learn/compare/v1.6.2...v1.7.0) (2025-05-26)
 
 
