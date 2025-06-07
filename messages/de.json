@@ -69,7 +69,8 @@
         "no": "Nein",
         "or": "oder",
         "and": "und",
-        "learn": "Lernen"
+        "learn": "Lernen",
+        "language": "Sprache"
     },
     "navigation": {
         "home": "Startseite",
@@ -234,6 +235,7 @@
             "exporting": "Lädt...",
             "exportTitle": "Deck \"{title}\" exportieren",
             "exportDescription": "JSON-Format zum Importieren in andere Decks oder zum Backup",
+            "exportError": "Fehler beim Exportieren des Decks",
             "copyToClipboard": "In Zwischenablage kopieren",
             "copiedSuccess": "JSON in die Zwischenablage kopiert",
             "copyError": "Fehler beim Kopieren",
@@ -424,6 +426,10 @@
             "saved": "Einstellungen gespeichert!",
             "saving": "Wird gespeichert...",
             "save": "Einstellungen speichern",
+            "saveError": "Fehler beim Speichern der Einstellungen",
+            "language": {
+                "label": "Sprache"
+            },
             "appearance": {
                 "title": "Darstellung",
                 "theme": {

@@ -2,7 +2,7 @@
 
 import { useTransition } from 'react'
 
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 
 import { updateLocale } from '@/app/actions/locale'
@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/select'
 
 export function LanguageSelector() {
+    const t = useTranslations('common')
     const locale = useLocale()
     const router = useRouter()
     const [isPending, startTransition] = useTransition()
@@ -33,7 +34,7 @@ export function LanguageSelector() {
             onValueChange={handleLocaleChange}
             disabled={isPending}
         >
-            <SelectTrigger className="w-[70px]" aria-label="Language">
+            <SelectTrigger className="w-[70px]" aria-label={t('language')}>
                 <SelectValue />
             </SelectTrigger>
             <SelectContent className="w-[70px]!">

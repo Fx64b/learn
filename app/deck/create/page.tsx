@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 
 import { useState } from 'react'
 
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
@@ -24,6 +25,9 @@ import {
 
 export default function CreateDeckPage() {
     const router = useRouter()
+    const t = useTranslations('deck.create')
+    const common = useTranslations('common')
+
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [formData, setFormData] = useState({
         titel: '',
@@ -48,10 +52,10 @@ export default function CreateDeckPage() {
         const result = await createDeck(formDataToSend)
 
         if (result.success) {
-            toast.success('Deck erfolgreich erstellt!')
+            toast.success(t('success'))
             router.push(`/deck/${result.id}/edit`)
         } else {
-            toast.error('Fehler beim Erstellen des Decks')
+            toast.error(t('error'))
         }
 
         setIsSubmitting(false)
@@ -70,17 +74,17 @@ export default function CreateDeckPage() {
                         <ArrowLeft />
                     </Link>
                 </Button>
-                <h1 className="text-2xl font-bold">Neues Deck erstellen</h1>
+                <h1 className="text-2xl font-bold">{t('title')}</h1>
             </div>
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Deck-Details</CardTitle>
+                    <CardTitle>{t('details')}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="titel">Titel</Label>
+                            <Label htmlFor="titel">{t('titleLabel')}</Label>
                             <Input
                                 id="titel"
                                 value={formData.titel}
@@ -90,14 +94,14 @@ export default function CreateDeckPage() {
                                         titel: e.target.value,
                                     }))
                                 }
-                                placeholder="z.B. Mathematik Grundlagen"
+                                placeholder={t('titlePlaceholder')}
                                 required
                             />
                         </div>
 
                         <div className="space-y-2">
                             <Label htmlFor="beschreibung">
-                                Beschreibung (optional)
+                                {t('descriptionLabel')}
                             </Label>
                             <Input
                                 id="beschreibung"
@@ -108,12 +112,14 @@ export default function CreateDeckPage() {
                                         beschreibung: e.target.value,
                                     }))
                                 }
-                                placeholder="Kurze Beschreibung des Decks"
+                                placeholder={t('descriptionPlaceholder')}
                             />
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="kategorie">Kategorie</Label>
+                            <Label htmlFor="kategorie">
+                                {t('categoryLabel')}
+                            </Label>
                             <Input
                                 id="kategorie"
                                 value={formData.kategorie}
@@ -123,14 +129,14 @@ export default function CreateDeckPage() {
                                         kategorie: e.target.value,
                                     }))
                                 }
-                                placeholder="z.B. Mathematik, Sprachen, etc."
+                                placeholder={t('categoryPlaceholder')}
                                 required
                             />
                         </div>
 
                         <div className="space-y-2">
                             <Label htmlFor="aktivBis">
-                                Lernfrist (optional)
+                                {t('dueDateLabel')}
                             </Label>
                             <Popover>
                                 <PopoverTrigger asChild>
@@ -147,7 +153,7 @@ export default function CreateDeckPage() {
                                             )
                                         ) : (
                                             <span className="text-muted-foreground">
-                                                Kein Datum ausgewählt
+                                                {t('dueDatePlaceholder')}
                                             </span>
                                         )}
                                     </Button>
@@ -180,23 +186,20 @@ export default function CreateDeckPage() {
                                     }
                                     className="mt-2"
                                 >
-                                    Datum entfernen
+                                    {t('removeDueDate')}
                                 </Button>
                             )}
                             <p className="text-muted-foreground text-xs">
-                                Datum, bis zu dem die Karten gelernt werden
-                                sollen (z.B. Prüfungsdatum)
+                                {t('dueDateHint')}
                             </p>
                         </div>
 
                         <div className="flex items-center justify-between gap-2 pt-4 md:justify-end">
                             <Button variant="outline" asChild>
-                                <Link href="/">Abbrechen</Link>
+                                <Link href="/">{common('cancel')}</Link>
                             </Button>
                             <Button type="submit" disabled={isSubmitting}>
-                                {isSubmitting
-                                    ? 'Wird erstellt...'
-                                    : 'Deck erstellen'}
+                                {isSubmitting ? t('creating') : t('createDeck')}
                             </Button>
                         </div>
                     </form>

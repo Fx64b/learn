@@ -69,7 +69,8 @@
         "no": "No",
         "or": "or",
         "and": "and",
-        "learn": "Learn"
+        "learn": "Learn",
+        "language": "Language"
     },
     "navigation": {
         "home": "Home",
@@ -231,6 +232,7 @@
             "exporting": "Loading...",
             "exportTitle": "Export Deck \"{title}\"",
             "exportDescription": "JSON format for importing into other decks or for backup",
+            "exportError": "Error exporting deck",
             "copyToClipboard": "Copy to clipboard",
             "copiedSuccess": "JSON copied to clipboard",
             "copyError": "Error copying",
@@ -421,6 +423,10 @@
             "saved": "Settings saved!",
             "saving": "Saving...",
             "save": "Save Settings",
+            "saveError": "Error saving settings",
+            "language": {
+                "label": "Language"
+            },
             "appearance": {
                 "title": "Appearance",
                 "theme": {

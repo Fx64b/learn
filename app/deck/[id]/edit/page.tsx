@@ -71,7 +71,9 @@ export default async function EditDeckPage({
 
                         <div>
                             <h2 className="mb-4 text-lg font-semibold">
-                                Alle Karten ({flashcards.length})
+                                {t('cards.allCards', {
+                                    count: flashcards.length,
+                                })}
                             </h2>
                             <CardList flashcards={flashcards} />
                         </div>

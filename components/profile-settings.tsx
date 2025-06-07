@@ -50,6 +50,7 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const userPreferences = useUserPreferences()
     const t = useTranslations('profile.settings')
+    const common = useTranslations('common')
 
     const [localPrefs, setLocalPrefs] = useState({
         animationsEnabled: initialPreferences.animationsEnabled,
@@ -108,7 +109,7 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
         if (result.success) {
             toast.success(t('saved'))
         } else {
-            toast.error('Error saving settings')
+            toast.error(t('saveError'))
         }
 
         setIsSubmitting(false)
@@ -228,7 +229,7 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
                                     htmlFor="language"
                                     className="text-sm font-medium"
                                 >
-                                    Language / Sprache
+                                    {t('language.label')}
                                 </Label>
                                 <Select
                                     value={localPrefs.locale}

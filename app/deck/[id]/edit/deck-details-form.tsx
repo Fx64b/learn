@@ -20,6 +20,8 @@ import { toast } from 'sonner'
 import type React from 'react'
 import { useState } from 'react'
 
+import { useTranslations } from 'next-intl'
+
 import { deleteDeck, resetDeckProgress, updateDeck } from '@/app/actions/deck'
 import { getExportableFlashcards } from '@/app/actions/export'
 
@@ -59,6 +61,9 @@ interface DeckDetailsFormProps {
 }
 
 export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
+    const t = useTranslations('deck.edit')
+    const common = useTranslations('common')
+
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [isResetting, setIsResetting] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
@@ -100,13 +105,13 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
             const result = await updateDeck(formDataToSend)
 
             if (result.success) {
-                toast.success('Deck erfolgreich aktualisiert!')
+                toast.success(t('success'))
             } else {
-                toast.error('Fehler beim Aktualisieren des Decks')
+                toast.error(t('error'))
             }
         } catch (error) {
             console.error('Fehler beim Aktualisieren des Decks:', error)
-            toast.error('Ein unerwarteter Fehler ist aufgetreten')
+            toast.error(common('error'))
         } finally {
             setIsSubmitting(false)
         }
@@ -118,16 +123,16 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
             const result = await resetDeckProgress(deck.id)
 
             if (result.success) {
-                toast.success('Lernfortschritt erfolgreich zurückgesetzt!')
+                toast.success(t('dangerZone.resetProgress.success'))
             } else {
-                toast.error('Fehler beim Zurücksetzen des Lernfortschritts')
+                toast.error(t('dangerZone.resetProgress.error'))
             }
         } catch (error) {
             console.error(
                 'Fehler beim Zurücksetzen des Lernfortschritts:',
                 error
             )
-            toast.error('Ein unerwarteter Fehler ist aufgetreten')
+            toast.error(common('error'))
         } finally {
             setIsResetting(false)
         }
@@ -139,14 +144,14 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
             const result = await deleteDeck(deck.id)
 
             if (result.success) {
-                toast.success('Deck erfolgreich gelöscht!')
+                toast.success(t('dangerZone.deleteDeck.success'))
                 window.location.href = '/'
             } else {
-                toast.error('Fehler beim Löschen des Decks')
+                toast.error(t('dangerZone.deleteDeck.error'))
             }
         } catch (error) {
             console.error('Fehler beim Löschen des Decks:', error)
-            toast.error('Ein unerwarteter Fehler ist aufgetreten')
+            toast.error(common('error'))
         } finally {
             setIsDeleting(false)
         }
@@ -160,7 +165,7 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
             setIsExportDialogOpen(true)
         } catch (error) {
             console.error('Error fetching export data:', error)
-            toast.error('Fehler beim Exportieren des Decks')
+            toast.error(t('exportError'))
         } finally {
             setIsLoadingExport(false)
         }
@@ -174,10 +179,10 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                 JSON.stringify(exportData, null, 2)
             )
             setIsCopied(true)
-            toast.success('JSON in die Zwischenablage kopiert')
+            toast.success(t('copiedSuccess'))
             setTimeout(() => setIsCopied(false), 2000)
         } catch (err) {
-            toast.error('Fehler beim Kopieren')
+            toast.error(t('copyError'))
             console.error('Failed to copy: ', err)
         }
     }
@@ -187,7 +192,7 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
             <Card className="w-full shadow-md">
                 <CardHeader>
                     <CardTitle className="text-xl md:text-2xl">
-                        Deck-Details bearbeiten
+                        {t('title')}
                     </CardTitle>
                 </CardHeader>
                 <form onSubmit={handleSubmit}>
@@ -198,7 +203,7 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                                     htmlFor="titel"
                                     className="text-sm font-medium"
                                 >
-                                    Titel{' '}
+                                    {t('titleRequired')}{' '}
                                     <span className="text-red-500">*</span>
                                 </Label>
                                 <Input
@@ -210,7 +215,7 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                                             titel: e.target.value,
                                         }))
                                     }
-                                    placeholder="z.B. Mathematik Grundlagen"
+                                    placeholder={t('titlePlaceholder')}
                                     required
                                     className="transition-all focus-visible:ring-offset-2"
                                 />
@@ -221,7 +226,7 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                                     htmlFor="beschreibung"
                                     className="text-sm font-medium"
                                 >
-                                    Beschreibung
+                                    {t('descriptionLabel')}
                                 </Label>
                                 <Textarea
                                     id="beschreibung"
@@ -232,7 +237,7 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                                             beschreibung: e.target.value,
                                         }))
                                     }
-                                    placeholder="Kurze Beschreibung des Decks"
+                                    placeholder={t('descriptionPlaceholder')}
                                     className="min-h-[100px] transition-all focus-visible:ring-offset-2"
                                 />
                             </div>
@@ -242,7 +247,7 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                                     htmlFor="kategorie"
                                     className="text-sm font-medium"
                                 >
-                                    Kategorie{' '}
+                                    {t('categoryRequired')}{' '}
                                     <span className="text-red-500">*</span>
                                 </Label>
                                 <Input
@@ -254,7 +259,7 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                                             kategorie: e.target.value,
                                         }))
                                     }
-                                    placeholder="z.B. Mathematik, Sprachen, etc."
+                                    placeholder={t('categoryPlaceholder')}
                                     required
                                     className="transition-all focus-visible:ring-offset-2"
                                 />
@@ -265,7 +270,7 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                                     htmlFor="aktivBis"
                                     className="text-sm font-medium"
                                 >
-                                    Lernfrist
+                                    {t('dueDateLabel')}
                                 </Label>
                                 <div className="flex w-full gap-2">
                                     <Popover>
@@ -287,7 +292,7 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                                                     )
                                                 ) : (
                                                     <span>
-                                                        Kein Datum ausgewählt
+                                                        {t('noDateSelected')}
                                                     </span>
                                                 )}
                                             </Button>
@@ -330,8 +335,7 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                                     )}
                                 </div>
                                 <p className="text-muted-foreground text-xs">
-                                    Datum, bis zu dem die Karten gelernt werden
-                                    sollen (z.B. Prüfungsdatum)
+                                    {t('dueDateHint')}
                                 </p>
                             </div>
                         </div>
@@ -346,12 +350,12 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                                 {isLoadingExport ? (
                                     <>
                                         <Loader2 className="h-4 w-4 animate-spin" />
-                                        <span>Lädt...</span>
+                                        <span>{t('exporting')}</span>
                                     </>
                                 ) : (
                                     <>
                                         <Download className="h-4 w-4" />
-                                        <span>Exportieren</span>
+                                        <span>{t('export')}</span>
                                     </>
                                 )}
                             </Button>
@@ -363,12 +367,12 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                                 {isSubmitting ? (
                                     <>
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        <span>Wird aktualisiert...</span>
+                                        <span>{t('updating')}</span>
                                     </>
                                 ) : (
                                     <>
                                         <Save className="mr-2 h-4 w-4" />
-                                        <span>Deck aktualisieren</span>
+                                        <span>{t('updateDeck')}</span>
                                     </>
                                 )}
                             </Button>
@@ -379,15 +383,14 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
             <Card className="w-full border-red-200 shadow-md dark:border-red-950">
                 <CardHeader>
                     <CardTitle className="text-xl text-red-600 md:text-2xl dark:text-red-400">
-                        Dangerzone
+                        {t('dangerZone.title')}
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
                     <div className="flex flex-col space-y-4">
                         <div className="flex flex-col items-center md:items-start">
                             <p className="text-muted-foreground mb-4 text-sm">
-                                Die folgenden Aktionen können nicht rückgängig
-                                gemacht werden. Bitte mit Vorsicht verwenden.
+                                {t('dangerZone.description')}
                             </p>
                             <div className="flex flex-col gap-4 sm:flex-row">
                                 <AlertDialog>
@@ -402,15 +405,18 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                                                 <>
                                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                                     <span>
-                                                        Wird zurückgesetzt...
+                                                        {t(
+                                                            'dangerZone.resetProgress.resetting'
+                                                        )}
                                                     </span>
                                                 </>
                                             ) : (
                                                 <>
                                                     <RotateCcw className="mr-2 h-4 w-4" />
                                                     <span>
-                                                        Lernfortschritt
-                                                        zurücksetzen
+                                                        {t(
+                                                            'dangerZone.resetProgress.button'
+                                                        )}
                                                     </span>
                                                 </>
                                             )}
@@ -420,28 +426,26 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                                         <AlertDialogHeader>
                                             <AlertDialogTitle className="flex items-center gap-2">
                                                 <AlertTriangle className="h-5 w-5 text-amber-500" />
-                                                Lernfortschritt zurücksetzen?
+                                                {t(
+                                                    'dangerZone.resetProgress.confirmTitle'
+                                                )}
                                             </AlertDialogTitle>
                                             <AlertDialogDescription>
-                                                Der gesamte Lernfortschritt für{' '}
-                                                <strong>
-                                                    &quot;{formData.titel}&quot;
-                                                </strong>{' '}
-                                                wird gelöscht. Diese Aktion kann
-                                                nicht rückgängig gemacht werden.
-                                                Alle Karten werden als noch nie
-                                                gelernt markiert.
+                                                {t(
+                                                    'dangerZone.resetProgress.confirmDescription',
+                                                    { title: formData.titel }
+                                                )}
                                             </AlertDialogDescription>
                                         </AlertDialogHeader>
                                         <AlertDialogFooter>
                                             <AlertDialogCancel>
-                                                Abbrechen
+                                                {common('cancel')}
                                             </AlertDialogCancel>
                                             <AlertDialogAction
                                                 onClick={handleResetProgress}
                                                 className="bg-amber-500 hover:bg-amber-600"
                                             >
-                                                Zurücksetzen
+                                                {common('reset')}
                                             </AlertDialogAction>
                                         </AlertDialogFooter>
                                     </AlertDialogContent>
@@ -458,13 +462,19 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                                                 <>
                                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                                     <span>
-                                                        Wird gelöscht...
+                                                        {t(
+                                                            'dangerZone.deleteDeck.deleting'
+                                                        )}
                                                     </span>
                                                 </>
                                             ) : (
                                                 <>
                                                     <Trash2 className="mr-2 h-4 w-4" />
-                                                    <span>Deck löschen</span>
+                                                    <span>
+                                                        {t(
+                                                            'dangerZone.deleteDeck.button'
+                                                        )}
+                                                    </span>
                                                 </>
                                             )}
                                         </Button>
@@ -473,28 +483,28 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                                         <AlertDialogHeader>
                                             <AlertDialogTitle className="flex items-center gap-2">
                                                 <AlertTriangle className="h-5 w-5 text-red-500" />
-                                                Deck komplett löschen?
+                                                {t(
+                                                    'dangerZone.deleteDeck.confirmTitle'
+                                                )}
                                             </AlertDialogTitle>
                                             <AlertDialogDescription>
-                                                Das Deck{' '}
-                                                <strong>
-                                                    &quot;{formData.titel}&quot;
-                                                </strong>{' '}
-                                                wird mit allen Karten und
-                                                Lernfortschritten unwiderruflich
-                                                gelöscht. Diese Aktion kann
-                                                nicht rückgängig gemacht werden.
+                                                {t(
+                                                    'dangerZone.deleteDeck.confirmDescription',
+                                                    { title: formData.titel }
+                                                )}
                                             </AlertDialogDescription>
                                         </AlertDialogHeader>
                                         <AlertDialogFooter>
                                             <AlertDialogCancel>
-                                                Abbrechen
+                                                {common('cancel')}
                                             </AlertDialogCancel>
                                             <AlertDialogAction
                                                 onClick={handleDeleteDeck}
                                                 className="bg-red-500 hover:bg-red-600"
                                             >
-                                                Deck löschen
+                                                {t(
+                                                    'dangerZone.deleteDeck.button'
+                                                )}
                                             </AlertDialogAction>
                                         </AlertDialogFooter>
                                     </AlertDialogContent>
@@ -512,11 +522,10 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                     <DialogContent>
                         <DialogHeader>
                             <DialogTitle>
-                                Deck &quot;{deck.titel}&quot; exportieren
+                                {t('exportTitle', { title: deck.titel })}
                             </DialogTitle>
                             <DialogDescription>
-                                JSON-Format zum Importieren in andere Decks oder
-                                zum Backup
+                                {t('exportDescription')}
                             </DialogDescription>
                         </DialogHeader>
 
@@ -543,12 +552,12 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                                 {isCopied ? (
                                     <>
                                         <Check className="h-4 w-4" />
-                                        Kopiert
+                                        {common('copied')}
                                     </>
                                 ) : (
                                     <>
                                         <Copy className="h-4 w-4" />
-                                        In Zwischenablage kopieren
+                                        {t('copyToClipboard')}
                                     </>
                                 )}
                             </Button>
