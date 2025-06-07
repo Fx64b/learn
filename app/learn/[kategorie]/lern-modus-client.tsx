@@ -237,7 +237,7 @@ export default function LernModusClient({
 
         setHasUnsavedSession(true)
         toast.success(t('cardsShuffled'))
-    }, [flashcards])
+    }, [flashcards, t])
 
     const handleBewertung = async (bewertung: number) => {
         if (flashcards.length === 0 || aktuellerIndex >= flashcards.length)

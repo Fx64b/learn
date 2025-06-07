@@ -50,7 +50,6 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const userPreferences = useUserPreferences()
     const t = useTranslations('profile.settings')
-    const common = useTranslations('common')
 
     const [localPrefs, setLocalPrefs] = useState({
         animationsEnabled: initialPreferences.animationsEnabled,
