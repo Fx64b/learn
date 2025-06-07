@@ -150,8 +150,8 @@ export function Flashcard({
                         className="absolute inset-0 h-fit min-h-full"
                     >
                         <Card className="border-primary/30 h-full w-full border-2 shadow-md">
-                            <CardContent className="h-full overflow-hidden">
-                                <div className="flex h-full flex-col">
+                            <CardContent className="h-full py-0 min-h-max">
+                                <div className="flex h-full flex-col overflow-auto">
                                     <div className="flex h-full min-h-60 flex-1 items-center justify-center overflow-auto py-4 text-center">
                                         <div className="w-full">
                                             <p className="text-muted-foreground mb-2 text-xs">
@@ -164,7 +164,7 @@ export function Flashcard({
                                     </div>
 
                                     {onRating && (
-                                        <div className="border-border w-full border-t pt-2 pb-2">
+                                        <div className="border-border w-full border-t pt-2 pb-2 sticky bottom-0 z-10">
                                             <p className="text-muted-foreground mb-2 text-xs">
                                                 {t('rating')}
                                             </p>
