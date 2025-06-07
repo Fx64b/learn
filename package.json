@@ -49,7 +49,7 @@
         "resend": "^4.5.1",
         "sonner": "^2.0.3",
         "tailwind-merge": "^3.3.0",
-        "zustand": "^5.0.4"
+        "zustand": "^5.0.5"
     },
     "devDependencies": {
         "@eslint/eslintrc": "^3.3.1",
