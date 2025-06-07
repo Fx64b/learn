@@ -7,7 +7,7 @@ A modern flashcard application for effective learning using the Spaced Repetitio
 [![Build and Lint](https://github.com/Fx64b/learn/actions/workflows/build-lint.yml/badge.svg)](https://github.com/Fx64b/learn/actions/workflows/build-lint.yml)
 
 > [!IMPORTANT]  
-> This project is currently in **early development**. Features may change, and the application is not yet ready for personal production use. The app is only available in german for now.
+> This project is currently in **early development**. Features may change, and the application is not yet ready for personal production use.
 
 ## Features
 
