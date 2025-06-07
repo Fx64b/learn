@@ -137,7 +137,7 @@
             "badge": "Jetzt in der frühen Entwicklung",
             "title": "Meistere jedes Thema mit",
             "titleHighlight": "Smarten Lernkarten",
-            "description": "Lerne schneller und behalte länger mit unserem intelligenten Spaced-Repetition-System. Erstelle, lerne und verfolge deinen Fortschritt mit schön gestalteten Lernkarten.",
+            "description": "Lerne schneller und erinnere dich länger mit unserem intelligenten Spaced-Repetition-System. Erstelle, lerne und verfolge deinen Fortschritt mit schön gestalteten Lernkarten.",
             "startLearning": "Kostenlos starten",
             "viewDemo": "Demo ansehen"
         },
@@ -146,7 +146,7 @@
             "description": "Unsere App kombiniert bewährte Lerntechniken mit moderner Technologie, um dir zu helfen, deine Lernziele zu erreichen.",
             "spacedRepetition": {
                 "title": "Spaced Repetition",
-                "description": "Intelligenter Algorithmus, der dir Karten kurz bevor du sie vergisst zeigt, um die Behaltensleistung zu maximieren und die Lernzeit zu minimieren."
+                "description": "Intelligenter Algorithmus, der dir Karten kurz bevor du sie vergisst zeigt, um die Lernleistung zu maximieren und die Lernzeit zu minimieren."
             },
             "progressTracking": {
                 "title": "Fortschrittsverfolgung",
