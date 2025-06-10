@@ -41,7 +41,6 @@ export const authOptions: NextAuthOptions = {
                         subject: t('email.subject'),
                         html: `
               <div style="font-family: sans-serif; padding: 24px;">
-                <h1>Flashcard App</h1>
                 <h1>${t('email.title')}</h1>
                 <p>${t('email.message')}</p>
                 <a href="${url}" style="display: inline-block; padding: 12px 24px; background-color: #4F46E5; color: white; text-decoration: none; border-radius: 4px;">
