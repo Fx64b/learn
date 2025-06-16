@@ -1,3 +1,13 @@
+## [1.8.2](https://github.com/Fx64b/learn/compare/v1.8.1...v1.8.2) (2025-06-16)
+
+
+### Bug Fixes
+
+* **auth:** duplicate title in login email ([7c31dbc](https://github.com/Fx64b/learn/commit/7c31dbcaff7549197c339fee55da93e7a27a65f8))
+* **learn:** improve progress calculation for last 7 days and card difficulty distribution ([321def9](https://github.com/Fx64b/learn/commit/321def9c54e0b89720b171c434d23468257b1195))
+* **learn:** suppress eslint warning for unused variable in progress calculation ([8840c13](https://github.com/Fx64b/learn/commit/8840c13b23a7a038d02bd75cd84c09e6fde1fa2a))
+* **learn:** update 'startLearning' text for clarity ([02c515d](https://github.com/Fx64b/learn/commit/02c515d7e379893e249d41bb9857f9c667096929))
+
 ## [1.8.1](https://github.com/Fx64b/learn/compare/v1.8.0...v1.8.1) (2025-06-07)
 
 
