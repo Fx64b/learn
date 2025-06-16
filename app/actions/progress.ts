@@ -115,8 +115,6 @@ export async function getLearningProgress() {
         }))
         .sort((a, b) => b.difficultyCategory - a.difficultyCategory)
 
-    console.log('cardsByDifficulty', cardsByDifficulty)
-
     const needsReview = await db
         .select({
             flashcard: flashcards,
