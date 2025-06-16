@@ -108,7 +108,7 @@ export async function getLearningProgress() {
     }
 
     const cardsByDifficulty = Object.entries(difficultyGroups)
-        .filter(([_, count]) => count > 0)
+        .filter(([_, count]) => count > 0) // eslint-disable-line @typescript-eslint/no-unused-vars
         .map(([difficulty, count]) => ({
             difficultyCategory: parseInt(difficulty),
             count,
