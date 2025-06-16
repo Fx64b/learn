@@ -3,6 +3,8 @@
 import { ProgressData } from '@/types'
 import { Calendar, Clock, TrendingUp } from 'lucide-react'
 
+import { useMemo } from 'react'
+
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 
@@ -49,7 +51,30 @@ export function SimpleProgressDashboard({
 }: SimpleProgressDashboardProps) {
     const t = useTranslations('statistics.dashboard')
 
-    const last7DaysData = data.dailyProgress.slice(-7)
+    const last7DaysData = useMemo(() => {
+        // Create array of last 7 days
+        const today = new Date()
+        const last7Days = []
+
+        for (let i = 6; i >= 0; i--) {
+            const date = new Date(today)
+            date.setDate(date.getDate() - i)
+            const dateStr = date.toISOString().split('T')[0]
+
+            // Find data for this date or create empty entry
+            const existingData = data.dailyProgress.find(
+                (d) => d.date === dateStr
+            )
+
+            last7Days.push({
+                date: dateStr,
+                cardsReviewed: existingData?.cardsReviewed || 0,
+                correctPercentage: existingData?.correctPercentage || 0,
+            })
+        }
+
+        return last7Days
+    }, [data.dailyProgress])
 
     const cardsLearned7Days = last7DaysData.reduce(
         (total, day) => total + day.cardsReviewed,
