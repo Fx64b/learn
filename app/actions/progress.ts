@@ -62,31 +62,60 @@ export async function getLearningProgress() {
 
     const streak = await calculateStreak(userId)
 
-    const cardsByDifficulty = await db
+    // Replace the cardsByDifficulty query with this:
+
+    // Get the most recent review for each card in active decks
+    const latestActiveReviews = await db
         .select({
-            difficultyCategory: sql<number>`
-                CASE 
-                WHEN t.ease_faktor >= 265 THEN 4
-                WHEN t.ease_faktor >= 250 THEN 3
-                WHEN t.ease_faktor >= 235 THEN 2
-                ELSE 1
-                END`.as('difficultyCategory'),
-            count: sql<number>`COUNT(*)`.as('count'),
+            flashcardId: cardReviews.flashcardId,
+            easeFaktor: cardReviews.easeFaktor,
+            bewertetAm: cardReviews.bewertetAm,
         })
-        .from(
-            sql`(
-                    SELECT
-                        cr.flashcard_id,
-                        cr.ease_faktor,
-                        cr.bewertung,
-                        ROW_NUMBER() OVER (PARTITION BY cr.flashcard_id ORDER BY cr.bewertet_am DESC) as rn
-                    FROM card_reviews cr
-                    WHERE cr.user_id = ${userId}
-                ) t`
+        .from(cardReviews)
+        .innerJoin(flashcards, eq(cardReviews.flashcardId, flashcards.id))
+        .innerJoin(decks, eq(flashcards.deckId, decks.id))
+        .where(
+            and(
+                eq(cardReviews.userId, userId),
+                eq(decks.userId, userId),
+                or(isNull(decks.aktivBis), gte(decks.aktivBis, now))
+            )
         )
-        .where(sql`t.rn = 1`)
-        .groupBy(sql`difficultyCategory`)
-        .orderBy(sql`difficultyCategory DESC`)
+        .orderBy(desc(cardReviews.bewertetAm))
+
+    // Group by flashcard and keep only the most recent review
+    const latestReviewsMap = new Map<string, (typeof latestActiveReviews)[0]>()
+    for (const review of latestActiveReviews) {
+        if (!latestReviewsMap.has(review.flashcardId)) {
+            latestReviewsMap.set(review.flashcardId, review)
+        }
+    }
+
+    // Calculate difficulty distribution
+    const difficultyGroups: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0 }
+
+    for (const review of latestReviewsMap.values()) {
+        const difficulty =
+            review.easeFaktor >= 265
+                ? 4
+                : review.easeFaktor >= 250
+                  ? 3
+                  : review.easeFaktor >= 235
+                    ? 2
+                    : 1
+
+        difficultyGroups[difficulty]++
+    }
+
+    const cardsByDifficulty = Object.entries(difficultyGroups)
+        .filter(([_, count]) => count > 0)
+        .map(([difficulty, count]) => ({
+            difficultyCategory: parseInt(difficulty),
+            count,
+        }))
+        .sort((a, b) => b.difficultyCategory - a.difficultyCategory)
+
+    console.log('cardsByDifficulty', cardsByDifficulty)
 
     const needsReview = await db
         .select({

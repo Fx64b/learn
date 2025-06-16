@@ -22,7 +22,26 @@ export function LearningProgressChart({ data }: LearningProgressChartProps) {
     const locale = useLocale()
 
     const chartData = useMemo(() => {
-        return data.slice(-7)
+        // Create array of last 7 days
+        const today = new Date()
+        const last7Days = []
+
+        for (let i = 6; i >= 0; i--) {
+            const date = new Date(today)
+            date.setDate(date.getDate() - i)
+            const dateStr = date.toISOString().split('T')[0]
+
+            // Find data for this date or create empty entry
+            const existingData = data.find((d) => d.date === dateStr)
+
+            last7Days.push({
+                date: dateStr,
+                cardsReviewed: existingData?.cardsReviewed || 0,
+                correctPercentage: existingData?.correctPercentage || 0,
+            })
+        }
+
+        return last7Days
     }, [data])
 
     const stats = useMemo(() => {
