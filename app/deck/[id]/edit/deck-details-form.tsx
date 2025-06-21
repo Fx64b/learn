@@ -56,7 +56,7 @@ import {
     PopoverTrigger,
 } from '@/components/ui/popover'
 import { Textarea } from '@/components/ui/textarea'
-import { redirect } from 'next/navigation'
+import { redirect, useRouter } from 'next/navigation'
 
 interface DeckDetailsFormProps {
     deck: DeckType
@@ -86,6 +86,8 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
         kategorie: deck.kategorie,
         aktivBis: fromUTCDateOnly(deck.aktivBis),
     })
+
+    const router = useRouter()
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
