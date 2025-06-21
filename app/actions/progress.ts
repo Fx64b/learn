@@ -62,47 +62,98 @@ export async function getLearningProgress() {
 
     const streak = await calculateStreak(userId)
 
-    // Replace the cardsByDifficulty query with this:
-
-    // Get the most recent review for each card in active decks
-    const latestActiveReviews = await db
+    /*
+    const allActiveFlashcards = await db
         .select({
-            flashcardId: cardReviews.flashcardId,
+            flashcardId: flashcards.id,
+            easeFaktor: cardReviews.easeFaktor,
+        })
+        .from(flashcards)
+        .innerJoin(decks, eq(flashcards.deckId, decks.id))
+        .leftJoin(
+            cardReviews,
+            and(
+                eq(flashcards.id, cardReviews.flashcardId),
+                eq(cardReviews.userId, userId)
+            )
+        )
+        .where(
+            and(
+                eq(decks.userId, userId),
+                or(isNull(decks.aktivBis), gte(decks.aktivBis, new Date()))
+            )
+        )
+
+    // Group by flashcard and keep only the most recent review (or null if never reviewed)
+    const latestReviewsMap = new Map<string, { easeFaktor: number | null }>()
+    const seen = new Set<string>()
+
+    for (const record of allActiveFlashcards) {
+        if (!seen.has(record.flashcardId)) {
+            seen.add(record.flashcardId)
+            latestReviewsMap.set(record.flashcardId, {
+                easeFaktor: record.easeFaktor,
+            })
+        }
+    }
+*/
+
+    const allActiveFlashcards = await db
+        .select({
+            flashcardId: flashcards.id,
             easeFaktor: cardReviews.easeFaktor,
             bewertetAm: cardReviews.bewertetAm,
         })
-        .from(cardReviews)
-        .innerJoin(flashcards, eq(cardReviews.flashcardId, flashcards.id))
+        .from(flashcards)
         .innerJoin(decks, eq(flashcards.deckId, decks.id))
-        .where(
+        .leftJoin(
+            cardReviews,
             and(
-                eq(cardReviews.userId, userId),
-                eq(decks.userId, userId),
-                or(isNull(decks.aktivBis), gte(decks.aktivBis, now))
+                eq(flashcards.id, cardReviews.flashcardId),
+                eq(cardReviews.userId, userId)
             )
         )
-        .orderBy(desc(cardReviews.bewertetAm))
+        .where(
+            and(
+                eq(decks.userId, userId),
+                or(isNull(decks.aktivBis), gte(decks.aktivBis, new Date()))
+            )
+        )
+        .orderBy(desc(sql`COALESCE(${cardReviews.bewertetAm}, 0)`))
 
     // Group by flashcard and keep only the most recent review
-    const latestReviewsMap = new Map<string, (typeof latestActiveReviews)[0]>()
-    for (const review of latestActiveReviews) {
-        if (!latestReviewsMap.has(review.flashcardId)) {
-            latestReviewsMap.set(review.flashcardId, review)
+    const latestReviewsMap = new Map<string, { easeFaktor: number | null }>()
+    const seen = new Set<string>()
+
+    for (const record of allActiveFlashcards) {
+        // Only keep the first occurrence of each flashcard (which is the most recent due to ordering)
+        if (!seen.has(record.flashcardId)) {
+            seen.add(record.flashcardId)
+            latestReviewsMap.set(record.flashcardId, {
+                easeFaktor: record.easeFaktor,
+            })
         }
     }
 
     // Calculate difficulty distribution
     const difficultyGroups: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0 }
 
-    for (const review of latestReviewsMap.values()) {
-        const difficulty =
-            review.easeFaktor >= 265
-                ? 4
-                : review.easeFaktor >= 250
-                  ? 3
-                  : review.easeFaktor >= 235
-                    ? 2
-                    : 1
+    for (const [flashcardId, review] of latestReviewsMap.entries()) {
+        let difficulty: number
+
+        if (!review.easeFaktor || !flashcardId) {
+            continue
+        } else {
+            // Calculate difficulty based on ease factor
+            difficulty =
+                review.easeFaktor >= 265
+                    ? 4
+                    : review.easeFaktor >= 250
+                      ? 3
+                      : review.easeFaktor >= 235
+                        ? 2
+                        : 1
+        }
 
         difficultyGroups[difficulty]++
     }
@@ -136,7 +187,10 @@ export async function getLearningProgress() {
                     isNull(cardReviews.naechsteWiederholung),
                     lte(cardReviews.naechsteWiederholung, now)
                 ),
-                or(isNull(decks.aktivBis), gte(decks.aktivBis, now))
+                or(
+                    isNull(decks.aktivBis),
+                    sql`${decks.aktivBis} IS NULL OR datetime(${decks.aktivBis} / 1000, 'unixepoch') >= date('now')`
+                )
             )
         )
 

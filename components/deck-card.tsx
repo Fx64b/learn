@@ -1,3 +1,4 @@
+import { fromUTCDateOnly } from '@/lib/date'
 import { DeckType } from '@/types'
 import { format } from 'date-fns'
 import { AlertTriangle, PencilIcon } from 'lucide-react'
@@ -55,10 +56,11 @@ export async function DeckCard({
                                 <TooltipContent>
                                     <p>
                                         {t('deck.statistics.wasDueBy')}{' '}
-                                        {format(
-                                            new Date(deck.aktivBis!),
-                                            'dd.MM.yyyy'
-                                        )}
+                                        {fromUTCDateOnly(deck.aktivBis) &&
+                                            format(
+                                                fromUTCDateOnly(deck.aktivBis)!,
+                                                'dd.MM.yyyy'
+                                            )}
                                     </p>
                                 </TooltipContent>
                             </Tooltip>
@@ -73,7 +75,11 @@ export async function DeckCard({
                                 {isPastDue
                                     ? t('deck.statistics.wasDueBy')
                                     : t('deck.statistics.dueBy')}{' '}
-                                {format(new Date(deck.aktivBis), 'dd.MM.yyyy')}
+                                {fromUTCDateOnly(deck.aktivBis) &&
+                                    format(
+                                        fromUTCDateOnly(deck.aktivBis)!,
+                                        'dd.MM.yyyy'
+                                    )}
                             </span>
                         </div>
                     )}

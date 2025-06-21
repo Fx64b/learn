@@ -1,6 +1,7 @@
 'use server'
 
 import { getDueCards, getFlashcardsByDeckId } from '@/db/utils'
+import { isDateCurrent, isDatePast } from '@/lib/date'
 import { AlertTriangle, Plus } from 'lucide-react'
 
 import type React from 'react'
@@ -46,12 +47,11 @@ export default async function Dashboard({ session }: DashboardProps) {
         })
     )
 
-    const currentDate = new Date()
     const currentDecks = deckStats.filter(
-        ({ deck }) => !deck.aktivBis || new Date(deck.aktivBis) >= currentDate
+        ({ deck }) => !deck.aktivBis || isDateCurrent(deck.aktivBis)
     )
     const pastDecks = deckStats.filter(
-        ({ deck }) => deck.aktivBis && new Date(deck.aktivBis) < currentDate
+        ({ deck }) => deck.aktivBis && isDatePast(deck.aktivBis)
     )
 
     return (
