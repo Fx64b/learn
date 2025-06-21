@@ -1,5 +1,6 @@
 'use client'
 
+import { ChevronDown, Copy } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { useState } from 'react'
@@ -13,6 +14,12 @@ import {
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
@@ -33,7 +40,6 @@ export function CreateCardForm({ deckId }: { deckId: string }) {
   {
     "vorderseite": "Was ist ...?",
     "rueckseite": "Die Antwort ist ...",
-    "istPruefungsrelevant": true
   },
   {
     "vorderseite": "Nenne drei ...",
@@ -46,13 +52,64 @@ export function CreateCardForm({ deckId }: { deckId: string }) {
   {
     "vorderseite": "What is ...?",
     "rueckseite": "The answer is ...",
-    "istPruefungsrelevant": true
   },
   {
     "vorderseite": "Name three ...",
     "rueckseite": "1. ... 2. ... 3. ..."
   }
 ]`
+    }
+
+    const getAiPrompt = () => {
+        const schema = getJsonPlaceholder()
+
+        if (locale === 'de') {
+            return `Bitte erstelle Lernkarten für das gewünschte Thema im folgenden JSON-Format:
+
+${schema}
+
+Wichtige Hinweise:
+- "vorderseite" ist die Frage oder der Begriff
+- "rueckseite" ist die Antwort oder Erklärung  
+- "istPruefungsrelevant" ist optional (Standard: true)
+- Verwende \\n für Zeilenumbrüche in längeren Texten
+- Erstelle mindestens 5-10 Karten pro Thema
+- Variiere die Fragetypen (Definitionen, Aufzählungen, Erklärungen)
+
+Thema für die Lernkarten:`
+        }
+
+        return `Please create flashcards for the requested topic in the following JSON format:
+
+${schema}
+
+Important notes:
+- "vorderseite" is the question or term (front side)
+- "rueckseite" is the answer or explanation (back side)
+- "istPruefungsrelevant" is optional (defaults to true)
+- Use \\n for line breaks in longer texts
+- Create at least 5-10 cards per topic
+- Vary question types (definitions, lists, explanations)
+
+Topic for the flashcards:`
+    }
+
+    const copyToClipboard = async (text: string) => {
+        try {
+            await navigator.clipboard.writeText(text)
+            toast.success(t('copiedToClipboard'))
+        } catch (err) {
+            console.error('Failed to copy: ', err)
+            toast.error(t('copyFailed'))
+        }
+    }
+
+    const handleCopySchema = () => {
+        copyToClipboard(getJsonPlaceholder())
+    }
+
+    const handleCopyWithAiPrompt = () => {
+        copyToClipboard(getAiPrompt())
     }
 
     const handleSingleSubmit = async (e: React.FormEvent) => {
@@ -175,9 +232,39 @@ export function CreateCardForm({ deckId }: { deckId: string }) {
                     <CardContent>
                         <form onSubmit={handleBulkSubmit} className="space-y-4">
                             <div>
-                                <label className="mb-2 block text-sm font-medium">
-                                    JSON Array
-                                </label>
+                                <div className="mb-2 flex items-center justify-between">
+                                    <label className="block text-sm font-medium">
+                                        JSON Array
+                                    </label>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                type="button"
+                                                className="gap-1"
+                                            >
+                                                <Copy className="h-3 w-3" />
+                                                {t('copySchema')}
+                                                <ChevronDown className="h-3 w-3" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem
+                                                onClick={handleCopySchema}
+                                            >
+                                                <Copy className="mr-2 h-4 w-4" />
+                                                {t('copySchema')}
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem
+                                                onClick={handleCopyWithAiPrompt}
+                                            >
+                                                <Copy className="mr-2 h-4 w-4" />
+                                                {t('copyWithAiPrompt')}
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </div>
                                 <Textarea
                                     value={jsonCards}
                                     onChange={(e) =>
