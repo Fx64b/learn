@@ -102,9 +102,8 @@ export async function getLearningProgress() {
     for (const [flashcardId, review] of latestReviewsMap.entries()) {
         let difficulty: number
 
-        if (review.easeFaktor === null) {
-            // Unreviewed cards default to "Good" (3)
-            difficulty = 3
+        if (review.easeFaktor === null || flashcardId === null) {
+            continue
         } else {
             // Calculate difficulty based on ease factor
             difficulty =
