@@ -1,3 +1,21 @@
+# [1.9.0](https://github.com/Fx64b/learn/compare/v1.8.2...v1.9.0) (2025-06-21)
+
+
+### Bug Fixes
+
+* **footer:** adjust padding for footer layout and improve readability ([e85fe57](https://github.com/Fx64b/learn/commit/e85fe576720a80db478583af09338a4603053067))
+* **footer:** copyright and version alignment ([be7167a](https://github.com/Fx64b/learn/commit/be7167a92df82ad577903aaf790933f0e35e32d7))
+* **progress:** optimize due card retrieval and sorting logic ([c90a0d9](https://github.com/Fx64b/learn/commit/c90a0d99acfa0605301503d9d09c1f732e80d172))
+* **progress:** refactor flashcard selection logic to improve review handling ([7fb0bd3](https://github.com/Fx64b/learn/commit/7fb0bd373f8ebba55c862de78a60f996d84acc5e))
+* **progress:** simplify condition for review validity check ([d614f11](https://github.com/Fx64b/learn/commit/d614f110835d507025d26eb2c3893c965c1adc9d))
+* **progress:** skip unreviewed cards in difficulty calculation ([447e974](https://github.com/Fx64b/learn/commit/447e974811cd58bc91bba61877020693991eb8ec))
+
+
+### Features
+
+* **create-card-form:** add dropdown menu for copying JSON schema and AI prompt ([f8670d2](https://github.com/Fx64b/learn/commit/f8670d27d84c66c038b20eff632da495910aa795))
+* **date:** add utility functions for date handling and update dashboard logic ([06747ef](https://github.com/Fx64b/learn/commit/06747ef0919b6b9eb9991754167c0eadbe0de9c8))
+
 ## [1.8.2](https://github.com/Fx64b/learn/compare/v1.8.1...v1.8.2) (2025-06-16)
 
 
