@@ -56,7 +56,7 @@ import {
     PopoverTrigger,
 } from '@/components/ui/popover'
 import { Textarea } from '@/components/ui/textarea'
-import { redirect, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 
 interface DeckDetailsFormProps {
     deck: DeckType
