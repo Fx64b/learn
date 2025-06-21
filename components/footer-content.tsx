@@ -119,7 +119,7 @@ export function FooterContent({ version, currentYear }: FooterContentProps) {
                 </div>
             </div>
 
-            <div className="text-muted-foreground border-border container mx-auto pt-6 mt-8 flex max-w-5xl flex-col items-center justify-between gap-4 border-t px-4 text-sm md:flex-row">
+            <div className="text-muted-foreground border-border container mx-auto mt-8 flex max-w-5xl flex-col items-center justify-between gap-4 border-t px-4 pt-6 text-sm md:flex-row">
                 <div className="flex items-center gap-2">
                     <span>© {currentYear}</span>
                     <span className="flex items-center">

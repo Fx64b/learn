@@ -79,17 +79,17 @@ export async function getLearningProgress() {
         .where(
             and(
                 eq(decks.userId, userId),
-                or(
-                    isNull(decks.aktivBis),
-                    gte(decks.aktivBis, new Date())
-                )
+                or(isNull(decks.aktivBis), gte(decks.aktivBis, new Date()))
             )
         )
 
     // Group by flashcard and keep only the most recent review (or null if never reviewed)
     const latestReviewsMap = new Map<string, { easeFaktor: number | null }>()
+    const seen = new Set<string>()
+
     for (const record of allActiveFlashcards) {
-        if (!latestReviewsMap.has(record.flashcardId)) {
+        if (!seen.has(record.flashcardId)) {
+            seen.add(record.flashcardId)
             latestReviewsMap.set(record.flashcardId, {
                 easeFaktor: record.easeFaktor,
             })
