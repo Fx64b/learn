@@ -315,7 +315,11 @@
             "loadError": "Fehler beim Laden der Flashcards",
             "reviewError": "Fehler beim Bewerten der Karte",
             "notFound": "Karte nicht gefunden",
-            "unauthorized": "Nicht autorisiert"
+            "unauthorized": "Nicht autorisiert",
+            "copySchema": "Schema kopieren",
+            "copyWithAiPrompt": "Mit KI-Prompt kopieren",
+            "copiedToClipboard": "In Zwischenablage kopiert",
+            "copyFailed": "Kopieren fehlgeschlagen"
         },
         "statistics": {
             "totalCards": "Karten insgesamt",

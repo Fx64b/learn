@@ -312,7 +312,11 @@
             "loadError": "Error loading flashcards",
             "reviewError": "Error reviewing card",
             "notFound": "Card not found",
-            "unauthorized": "Unauthorized"
+            "unauthorized": "Unauthorized",
+            "copySchema": "Copy Schema",
+            "copyWithAiPrompt": "Copy with AI Prompt",
+            "copiedToClipboard": "Copied to clipboard",
+            "copyFailed": "Failed to copy"
         },
         "tabs": {
             "details": "Deck Details",
