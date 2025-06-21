@@ -141,7 +141,7 @@ export async function getLearningProgress() {
     for (const [flashcardId, review] of latestReviewsMap.entries()) {
         let difficulty: number
 
-        if (review.easeFaktor === null || flashcardId === null) {
+        if (!review.easeFaktor || !flashcardId) {
             continue
         } else {
             // Calculate difficulty based on ease factor
