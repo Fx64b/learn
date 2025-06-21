@@ -112,78 +112,113 @@ export async function createFlashcard(data: {
 export async function getDueCards(userId: string) {
     const now = new Date()
 
-    const latestReviews = db
-        .select({
-            flashcardId: cardReviews.flashcardId,
-            reviewId: cardReviews.id,
-            latestReviewDate: sql<Date>`MAX(${cardReviews.bewertetAm})`.as(
-                'latestReviewDate'
-            ),
-        })
-        .from(cardReviews)
-        .where(eq(cardReviews.userId, userId))
-        .groupBy(cardReviews.flashcardId)
-        .as('latestReviews')
-
-    const cardsWithReviews = await db
+    const cardsWithLatestReview = await db
         .select({
             flashcard: flashcards,
             review: cardReviews,
             deckTitel: decks.titel,
-            isNew: sql<boolean>`CASE WHEN ${cardReviews.id} IS NULL THEN TRUE ELSE FALSE END`.as(
-                'isNew'
-            ),
-            daysOverdue: sql<number>`CASE 
-                WHEN ${cardReviews.naechsteWiederholung} IS NULL THEN 0
-                ELSE CAST((julianday(datetime('now')) - julianday(datetime(${cardReviews.naechsteWiederholung} / 1000, 'unixepoch'))) AS INTEGER)
-                END`.as('daysOverdue'),
+            bewertetAm: cardReviews.bewertetAm,
         })
         .from(flashcards)
         .innerJoin(decks, eq(flashcards.deckId, decks.id))
-        .leftJoin(latestReviews, eq(flashcards.id, latestReviews.flashcardId))
         .leftJoin(
             cardReviews,
             and(
-                eq(cardReviews.id, latestReviews.reviewId),
+                eq(flashcards.id, cardReviews.flashcardId),
                 eq(cardReviews.userId, userId)
             )
         )
         .where(
             and(
                 eq(decks.userId, userId),
-                or(
-                    isNull(cardReviews.id),
-                    lte(cardReviews.naechsteWiederholung, now)
-                ),
-                or(
-                    isNull(decks.aktivBis),
-                    sql`${decks.aktivBis} IS NULL OR datetime(${decks.aktivBis} / 1000, 'unixepoch') >= date('now')`
-                )
+                or(isNull(decks.aktivBis), gte(decks.aktivBis, now))
             )
         )
-        // Order by priority: overdue first (most overdue at top), then new cards, then by deck title
-        .orderBy(
-            desc(sql`daysOverdue`),
-            desc(sql`isNew`),
-            decks.titel,
-            desc(flashcards.erstelltAm)
-        )
+        .orderBy(desc(cardReviews.bewertetAm))
 
-    return cardsWithReviews.map((card) => ({
-        ...card,
-        metadata: {
-            isNew: card.isNew,
-            daysOverdue: card.daysOverdue,
-            priorityScore:
-                card.daysOverdue > 7
-                    ? 3 // Severely overdue
-                    : card.daysOverdue > 0
-                      ? 2 // Overdue
-                      : card.isNew
-                        ? 1
-                        : 0, // New cards have priority over just-due cards
-        },
-    }))
+    const latestReviewsByCard = new Map<
+        string,
+        (typeof cardsWithLatestReview)[0]
+    >()
+
+    for (const record of cardsWithLatestReview) {
+        const cardId = record.flashcard.id
+        if (!latestReviewsByCard.has(cardId)) {
+            latestReviewsByCard.set(cardId, record)
+        }
+    }
+
+    const dueCards = Array.from(latestReviewsByCard.values()).filter(
+        (record) => {
+            // New cards (never reviewed)
+            if (!record.review || !record.review.id) {
+                return true
+            }
+
+            return (
+                record.review.naechsteWiederholung &&
+                record.review.naechsteWiederholung <= now
+            )
+        }
+    )
+
+    const sortedDueCards = dueCards.map((record) => {
+        const isNew = !record.review || !record.review.id
+        let daysOverdue = 0
+
+        if (record.review && record.review.naechsteWiederholung) {
+            const overdueDays = Math.floor(
+                (now.getTime() - record.review.naechsteWiederholung.getTime()) /
+                    (1000 * 60 * 60 * 24)
+            )
+            daysOverdue = Math.max(0, overdueDays)
+        }
+
+        return {
+            flashcard: record.flashcard,
+            review: record.review,
+            deckTitel: record.deckTitel,
+            isNew,
+            daysOverdue,
+            metadata: {
+                isNew,
+                daysOverdue,
+                priorityScore:
+                    daysOverdue > 7
+                        ? 3 // Severely overdue
+                        : daysOverdue > 0
+                          ? 2 // Overdue
+                          : isNew
+                            ? 1 // New cards
+                            : 0, // Just due
+            },
+        }
+    })
+
+    // Sort by priority
+    sortedDueCards.sort((a, b) => {
+        // First by priority score (higher first)
+        if (a.metadata.priorityScore !== b.metadata.priorityScore) {
+            return b.metadata.priorityScore - a.metadata.priorityScore
+        }
+
+        // Then by days overdue (more overdue first)
+        if (a.daysOverdue !== b.daysOverdue) {
+            return b.daysOverdue - a.daysOverdue
+        }
+
+        // Then by deck title
+        if (a.deckTitel !== b.deckTitel) {
+            return a.deckTitel.localeCompare(b.deckTitel)
+        }
+
+        // Finally by creation date (newer first)
+        return (
+            b.flashcard.erstelltAm.getTime() - a.flashcard.erstelltAm.getTime()
+        )
+    })
+
+    return sortedDueCards
 }
 
 export async function reviewCard(data: {

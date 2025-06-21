@@ -187,10 +187,7 @@ export async function getLearningProgress() {
                     isNull(cardReviews.naechsteWiederholung),
                     lte(cardReviews.naechsteWiederholung, now)
                 ),
-                or(
-                    isNull(decks.aktivBis),
-                    sql`${decks.aktivBis} IS NULL OR datetime(${decks.aktivBis} / 1000, 'unixepoch') >= date('now')`
-                )
+                or(isNull(decks.aktivBis), gte(decks.aktivBis, now))
             )
         )
 
