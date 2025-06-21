@@ -1,5 +1,6 @@
 'use client'
 
+import { fromUTCDateOnly, toUTCDateOnly } from '@/lib/date'
 import { cn } from '@/lib/utils'
 import type { DeckType } from '@/types'
 import { format } from 'date-fns'
@@ -82,9 +83,7 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
         titel: deck.titel,
         beschreibung: deck.beschreibung || '',
         kategorie: deck.kategorie,
-        aktivBis: deck.aktivBis
-            ? new Date(deck.aktivBis)
-            : (null as Date | null),
+        aktivBis: fromUTCDateOnly(deck.aktivBis),
     })
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -98,7 +97,9 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
         formDataToSend.append('kategorie', formData.kategorie)
 
         if (formData.aktivBis) {
-            formDataToSend.append('aktivBis', formData.aktivBis.toISOString())
+            // Convert to UTC date-only before sending
+            const utcDate = toUTCDateOnly(formData.aktivBis)
+            formDataToSend.append('aktivBis', utcDate.toISOString())
         }
 
         try {
@@ -116,7 +117,6 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
             setIsSubmitting(false)
         }
     }
-
     const handleResetProgress = async () => {
         setIsResetting(true)
         try {

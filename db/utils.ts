@@ -155,7 +155,10 @@ export async function getDueCards(userId: string) {
                     isNull(cardReviews.id),
                     lte(cardReviews.naechsteWiederholung, now)
                 ),
-                or(isNull(decks.aktivBis), gte(decks.aktivBis, now))
+                or(
+                    isNull(decks.aktivBis),
+                    sql`${decks.aktivBis} IS NULL OR datetime(${decks.aktivBis} / 1000, 'unixepoch') >= date('now')`
+                )
             )
         )
         // Order by priority: overdue first (most overdue at top), then new cards, then by deck title
@@ -325,7 +328,10 @@ export async function getAllFlashcards(userId: string) {
         .where(
             and(
                 eq(decks.userId, userId),
-                or(isNull(decks.aktivBis), gte(decks.aktivBis, now))
+                or(
+                    isNull(decks.aktivBis),
+                    sql`${decks.aktivBis} IS NULL OR datetime(${decks.aktivBis} / 1000, 'unixepoch') >= date('now')`
+                )
             )
         )
 }
@@ -350,7 +356,10 @@ export async function getDifficultCards(userId: string) {
         .where(
             and(
                 eq(decks.userId, userId),
-                or(isNull(decks.aktivBis), gte(decks.aktivBis, now))
+                or(
+                    isNull(decks.aktivBis),
+                    sql`${decks.aktivBis} IS NULL OR datetime(${decks.aktivBis} / 1000, 'unixepoch') >= date('now')`
+                )
             )
         )
         .orderBy(desc(cardReviews.bewertetAm))

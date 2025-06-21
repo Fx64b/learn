@@ -1,5 +1,6 @@
 'use client'
 
+import { toUTCDateOnly } from '@/lib/date'
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
 import { ArrowLeft, CalendarIcon, X } from 'lucide-react'
@@ -47,7 +48,8 @@ export default function CreateDeckPage() {
         formDataToSend.append('kategorie', formData.kategorie)
 
         if (formData.aktivBis) {
-            formDataToSend.append('aktivBis', formData.aktivBis.toISOString())
+            const utcDate = toUTCDateOnly(formData.aktivBis)
+            formDataToSend.append('aktivBis', utcDate.toISOString())
         }
 
         const result = await createDeck(formDataToSend)
