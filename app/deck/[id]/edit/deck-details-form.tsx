@@ -56,6 +56,7 @@ import {
     PopoverTrigger,
 } from '@/components/ui/popover'
 import { Textarea } from '@/components/ui/textarea'
+import { useRouter } from 'next/navigation'
 
 interface DeckDetailsFormProps {
     deck: DeckType
@@ -85,6 +86,8 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
         kategorie: deck.kategorie,
         aktivBis: fromUTCDateOnly(deck.aktivBis),
     })
+
+    const router = useRouter()
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -145,7 +148,7 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
 
             if (result.success) {
                 toast.success(t('dangerZone.deleteDeck.success'))
-                window.location.href = '/'
+                router.push("/")
             } else {
                 toast.error(t('dangerZone.deleteDeck.error'))
             }
