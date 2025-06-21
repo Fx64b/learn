@@ -1,3 +1,11 @@
+## [1.9.1](https://github.com/Fx64b/learn/compare/v1.9.0...v1.9.1) (2025-06-21)
+
+
+### Bug Fixes
+
+* **deck:** add useRouter hook for improved navigation handling in deck details form ([681b17a](https://github.com/Fx64b/learn/commit/681b17ad36047ba293eab4e93c244cd15fb2e976))
+* **deck:** update deck deletion logic and improve database interactions ([160d11c](https://github.com/Fx64b/learn/commit/160d11cf9fb7d16e7dca4d782a1f1b7b38494948))
+
 # [1.9.0](https://github.com/Fx64b/learn/compare/v1.8.2...v1.9.0) (2025-06-21)
 
 
