@@ -146,7 +146,7 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
 
             if (result.success) {
                 toast.success(t('dangerZone.deleteDeck.success'))
-                redirect("/")
+                router.push("/")
             } else {
                 toast.error(t('dangerZone.deleteDeck.error'))
             }
