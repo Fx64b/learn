@@ -1,5 +1,5 @@
 import { calculateNextReview } from '@/lib/srs'
-import { and, desc, eq, gte, isNull, lte, or, sql } from 'drizzle-orm'
+import { and, desc, eq, gte, isNull, or, sql, inArray } from 'drizzle-orm'
 import { nanoid } from 'nanoid'
 
 import { db } from './index'
@@ -431,20 +431,20 @@ export async function deleteDeck(userId: string, deckId: string) {
 
             if (flashcardIds.length > 0) {
                 await tx
-                    .delete(cardReviews)
-                    .where(
-                        and(
-                            eq(cardReviews.userId, userId),
-                            sql`${cardReviews.flashcardId} IN (${sql.join(flashcardIds)})`
-                        )
-                    )
-
-                await tx
                     .delete(reviewEvents)
                     .where(
                         and(
                             eq(reviewEvents.userId, userId),
-                            sql`${reviewEvents.flashcardId} IN (${sql.join(flashcardIds)})`
+                            inArray(reviewEvents.flashcardId, flashcardIds)
+                        )
+                    )
+
+                await tx
+                    .delete(cardReviews)
+                    .where(
+                        and(
+                            eq(cardReviews.userId, userId),
+                            inArray(cardReviews.flashcardId, flashcardIds)
                         )
                     )
             }

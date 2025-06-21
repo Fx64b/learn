@@ -56,6 +56,7 @@ import {
     PopoverTrigger,
 } from '@/components/ui/popover'
 import { Textarea } from '@/components/ui/textarea'
+import { redirect } from 'next/navigation'
 
 interface DeckDetailsFormProps {
     deck: DeckType
@@ -145,7 +146,7 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
 
             if (result.success) {
                 toast.success(t('dangerZone.deleteDeck.success'))
-                window.location.href = '/'
+                redirect("/")
             } else {
                 toast.error(t('dangerZone.deleteDeck.error'))
             }
