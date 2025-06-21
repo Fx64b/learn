@@ -62,6 +62,7 @@ export async function getLearningProgress() {
 
     const streak = await calculateStreak(userId)
 
+    /*
     const allActiveFlashcards = await db
         .select({
             flashcardId: flashcards.id,
@@ -88,6 +89,44 @@ export async function getLearningProgress() {
     const seen = new Set<string>()
 
     for (const record of allActiveFlashcards) {
+        if (!seen.has(record.flashcardId)) {
+            seen.add(record.flashcardId)
+            latestReviewsMap.set(record.flashcardId, {
+                easeFaktor: record.easeFaktor,
+            })
+        }
+    }
+*/
+
+    const allActiveFlashcards = await db
+        .select({
+            flashcardId: flashcards.id,
+            easeFaktor: cardReviews.easeFaktor,
+            bewertetAm: cardReviews.bewertetAm,
+        })
+        .from(flashcards)
+        .innerJoin(decks, eq(flashcards.deckId, decks.id))
+        .leftJoin(
+            cardReviews,
+            and(
+                eq(flashcards.id, cardReviews.flashcardId),
+                eq(cardReviews.userId, userId)
+            )
+        )
+        .where(
+            and(
+                eq(decks.userId, userId),
+                or(isNull(decks.aktivBis), gte(decks.aktivBis, new Date()))
+            )
+        )
+        .orderBy(desc(sql`COALESCE(${cardReviews.bewertetAm}, 0)`))
+
+    // Group by flashcard and keep only the most recent review
+    const latestReviewsMap = new Map<string, { easeFaktor: number | null }>()
+    const seen = new Set<string>()
+
+    for (const record of allActiveFlashcards) {
+        // Only keep the first occurrence of each flashcard (which is the most recent due to ordering)
         if (!seen.has(record.flashcardId)) {
             seen.add(record.flashcardId)
             latestReviewsMap.set(record.flashcardId, {
