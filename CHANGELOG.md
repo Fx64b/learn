@@ -1,3 +1,16 @@
+# [1.10.0](https://github.com/Fx64b/learn/compare/v1.9.2...v1.10.0) (2025-06-23)
+
+
+### Bug Fixes
+
+* **database:** update default values for boolean fields to use integers ([c8db4ce](https://github.com/Fx64b/learn/commit/c8db4ce770f32702594c586ed23c93e5b10301b3))
+
+
+### Features
+
+* **database:** add indexes to improve query performance on multiple tables ([e5fdb59](https://github.com/Fx64b/learn/commit/e5fdb59c2f6144a8c9dd49fa7f26bc751f500587))
+* **database:** update indexes and modify column default for improved performance ([964b910](https://github.com/Fx64b/learn/commit/964b9107284c85ae72e223eb9548f62f5d0566cc))
+
 ## [1.9.2](https://github.com/Fx64b/learn/compare/v1.9.1...v1.9.2) (2025-06-23)
 
 ## [1.9.1](https://github.com/Fx64b/learn/compare/v1.9.0...v1.9.1) (2025-06-21)
