@@ -515,7 +515,6 @@
             "improveUI": "Benutzerfreundlichkeit der Benutzeroberfläche verbessern",
             "improveDashboard": "Dashboard-Analysen und Statistiken verbessern",
             "advancedLearning": "Erweiterten Lernmodus mit benutzerdefinierten Eingaben und KI-Validierung hinzufügen",
-            "optimizeDB": "Datenbankabfragen optimieren",
             "documentation": "Umfassende Dokumentation schreiben"
         },
         "priority": {

@@ -34,11 +34,6 @@ export default function TodoPage() {
             priority: 'medium',
         },
         {
-            task: t('tasks.optimizeDB'),
-            status: 'todo',
-            priority: 'low',
-        },
-        {
             task: t('tasks.documentation'),
             status: 'todo',
             priority: 'medium',

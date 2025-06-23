@@ -512,7 +512,6 @@
             "improveUI": "Improve usability of the user interface",
             "improveDashboard": "Improve dashboard analytics and statistics",
             "advancedLearning": "Add advanced learning mode with custom input and AI validation",
-            "optimizeDB": "Optimize database queries",
             "documentation": "Write comprehensive documentation"
         },
         "priority": {
