@@ -1,6 +1,6 @@
-import { accounts, users } from '@/db/auth-schema'
+import { users } from '@/db/auth-schema'
 import { sql } from 'drizzle-orm'
-import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core'
+import { integer, sqliteTable, text, index } from 'drizzle-orm/sqlite-core'
 
 export * from './auth-schema'
 
@@ -16,7 +16,10 @@ export const decks = sqliteTable('decks', {
     createdAt: integer('created_at', { mode: 'timestamp' })
         .default(sql`CURRENT_TIMESTAMP`)
         .notNull(),
-})
+}, (table) => ({
+    userIdIdx: index('decks_user_id_idx').on(table.userId),
+    activeUntilIdx: index('decks_active_until_idx').on(table.activeUntil),
+}))
 
 export const flashcards = sqliteTable('flashcards', {
     id: text('id').primaryKey().notNull(),
@@ -27,12 +30,15 @@ export const flashcards = sqliteTable('flashcards', {
     back: text('back').notNull(),
     isExamRelevant: integer('is_exam_relevant', { mode: 'boolean' })
         .notNull()
-        .default(false),
+        .default(sql`0`),
     difficultyLevel: integer('difficulty_level').notNull().default(0),
     createdAt: integer('created_at', { mode: 'timestamp' })
         .default(sql`CURRENT_TIMESTAMP`)
         .notNull(),
-})
+}, (table) => ({
+    deckIdIdx: index('flashcards_deck_id_idx').on(table.deckId),
+    examRelevantIdx: index('flashcards_exam_relevant_idx').on(table.isExamRelevant),
+}))
 
 export const cardReviews = sqliteTable('card_reviews', {
     id: text('id').primaryKey().notNull(),
@@ -51,7 +57,12 @@ export const cardReviews = sqliteTable('card_reviews', {
     nextReview: integer('next_review', {
         mode: 'timestamp',
     }).notNull(),
-})
+}, (table) => ({
+    userIdIdx: index('card_reviews_user_id_idx').on(table.userId),
+    flashcardIdIdx: index('card_reviews_flashcard_id_idx').on(table.flashcardId),
+    nextReviewIdx: index('card_reviews_next_review_idx').on(table.nextReview),
+    userFlashcardIdx: index('card_reviews_user_flashcard_idx').on(table.userId, table.flashcardId),
+}))
 
 export const reviewEvents = sqliteTable('review_events', {
     id: text('id').primaryKey().notNull(),
@@ -70,7 +81,11 @@ export const reviewEvents = sqliteTable('review_events', {
     createStamp: integer('create_stamp', { mode: 'timestamp' })
         .default(sql`CURRENT_TIMESTAMP`)
         .notNull(),
-})
+}, (table) => ({
+    userIdIdx: index('review_events_user_id_idx').on(table.userId),
+    flashcardIdIdx: index('review_events_flashcard_id_idx').on(table.flashcardId),
+    reviewedAtIdx: index('review_events_reviewed_at_idx').on(table.reviewedAt),
+}))
 
 export const studySessions = sqliteTable('study_sessions', {
     id: text('id').primaryKey().notNull(),
@@ -88,7 +103,11 @@ export const studySessions = sqliteTable('study_sessions', {
     createdAt: integer('created_at', { mode: 'timestamp' })
         .default(sql`CURRENT_TIMESTAMP`)
         .notNull(),
-})
+}, (table) => ({
+    userIdIdx: index('study_sessions_user_id_idx').on(table.userId),
+    deckIdIdx: index('study_sessions_deck_id_idx').on(table.deckId),
+    userDeckIdx: index('study_sessions_user_deck_idx').on(table.userId, table.deckId),
+}))
 
 export const userPreferences = sqliteTable('user_preferences', {
     userId: text('user_id')

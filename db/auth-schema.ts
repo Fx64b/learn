@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm'
-import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core'
+import { integer, sqliteTable, text, index } from 'drizzle-orm/sqlite-core'
 
 export const users = sqliteTable('user', {
     id: text('id').primaryKey(),
@@ -10,7 +10,9 @@ export const users = sqliteTable('user', {
     createdAt: integer('created_at', { mode: 'timestamp' })
         .default(sql`CURRENT_TIMESTAMP`)
         .notNull(),
-})
+}, (table) => ({
+    emailIdx: index('users_email_idx').on(table.email),
+}))
 
 export const accounts = sqliteTable('account', {
     id: text('id').primaryKey(),
