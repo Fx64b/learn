@@ -6,7 +6,7 @@ import { getServerSession } from 'next-auth'
 import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 
-import LernModusClient from '@/app/learn/[kategorie]/lern-modus-client'
+import LearnModeClient from '@/app/learn/[category]/learn-mode-client'
 
 import { Button } from '@/components/ui/button'
 
@@ -37,7 +37,7 @@ export default async function DueCardsPage() {
             </header>
 
             <main className="flex flex-1 flex-col">
-                <LernModusClient deckId="due" flashcards={flashcards} />
+                <LearnModeClient deckId="due" flashcards={flashcards} />
             </main>
         </div>
     )

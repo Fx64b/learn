@@ -10,7 +10,7 @@
         "format": "prettier --write .",
         "db:generate": "drizzle-kit generate",
         "db:migrate": "drizzle-kit migrate",
-        "db:seed": "node seed-standalone.js"
+        "db:push": "drizzle-kit push"
     },
     "dependencies": {
         "@auth/drizzle-adapter": "^1.9.1",

@@ -6,7 +6,7 @@ export async function getExportableFlashcards(deckId: string) {
     const flashcards = await getFlashcardsByDeckId(deckId)
 
     return flashcards.map((card) => ({
-        vorderseite: card.vorderseite,
-        rueckseite: card.rueckseite,
+        front: card.front,
+        back: card.back,
     }))
 }

@@ -1,11 +1,11 @@
 export interface FlashcardType {
     id: string
-    vorderseite: string
-    rueckseite: string
+    front: string
+    back: string
     deckId: string
-    istPruefungsrelevant: boolean
-    schwierigkeitsgrad: number
-    erstelltAm: Date
+    isExamRelevant: boolean
+    difficultyLevel: number
+    createdAt: Date
     nextReview?: Date
 }
 
@@ -18,9 +18,9 @@ export interface ProgressData {
 export interface DeckType {
     id: string
     userId: string
-    titel: string
-    beschreibung: string | null
-    kategorie: string
-    aktivBis: Date | null
-    erstelltAm: Date
+    title: string
+    description: string | null
+    category: string
+    activeUntil: Date | null
+    createdAt: Date
 }

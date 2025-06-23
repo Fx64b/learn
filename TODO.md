@@ -2,13 +2,9 @@
 
 Todos and improvements according to ai.
 
-## Critical Missing Features:
-
-1**Export Functionality** - Currently only import from JSON exists - Add deck/card export to JSON, CSV, or PDF - Include backup/restore features
-
 ## Mobile Experience Improvements:
 
-1**Keyboard Shortcuts Info**
+1. **Keyboard Shortcuts Info**
 
     - Current keyboard shortcuts aren't discoverable
     - Add a help modal with key commands
@@ -19,7 +15,7 @@ Todos and improvements according to ai.
 
 1. **Gamification Elements**
 
-    - Add streaks for daily study
+    - Add streaks for daily study (DONE)
     - Create achievement badges
     - Add experience points/levels
     - Implement study goals and rewards

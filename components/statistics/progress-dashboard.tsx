@@ -18,22 +18,22 @@ interface ProgressDashboardProps {
         needsReview: Array<{
             flashcard: {
                 id: string
-                vorderseite: string
-                rueckseite: string
+                front: string
+                back: string
                 deckId: string
-                istPruefungsrelevant: boolean
-                schwierigkeitsgrad: number
-                erstelltAm: Date
+                isExamRelevant: boolean
+                difficultyLevel: number
+                createdAt: Date
             }
             review: {
                 id: string
                 flashcardId: string
                 userId: string
-                bewertetAm: Date
-                bewertung: number
-                easeFaktor: number
-                intervall: number
-                naechsteWiederholung: Date
+                reviewedAt: Date
+                rating: number
+                easeFactor: number
+                interval: number
+                nextReview: Date
             } | null
         }>
         timeOfDay: {

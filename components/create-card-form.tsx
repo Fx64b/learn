@@ -28,8 +28,8 @@ export function CreateCardForm({ deckId }: { deckId: string }) {
     const t = useTranslations('deck.cards')
     const locale = useLocale()
     const [singleCard, setSingleCard] = useState({
-        vorderseite: '',
-        rueckseite: '',
+        front: '',
+        back: '',
     })
     const [jsonCards, setJsonCards] = useState('')
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -38,24 +38,24 @@ export function CreateCardForm({ deckId }: { deckId: string }) {
         if (locale === 'de') {
             return `[
   {
-    "vorderseite": "Was ist ...?",
-    "rueckseite": "Die Antwort ist ...",
+    "front": "Was ist ...?",
+    "back": "Die Antwort ist ...",
   },
   {
-    "vorderseite": "Nenne drei ...",
-    "rueckseite": "1. ... 2. ... 3. ..."
+    "front": "Nenne drei ...",
+    "back": "1. ... 2. ... 3. ..."
   }
 ]`
         }
 
         return `[
   {
-    "vorderseite": "What is ...?",
-    "rueckseite": "The answer is ...",
+    "front": "What is ...?",
+    "back": "The answer is ...",
   },
   {
-    "vorderseite": "Name three ...",
-    "rueckseite": "1. ... 2. ... 3. ..."
+    "front": "Name three ...",
+    "back": "1. ... 2. ... 3. ..."
   }
 ]`
     }
@@ -69,9 +69,9 @@ export function CreateCardForm({ deckId }: { deckId: string }) {
 ${schema}
 
 Wichtige Hinweise:
-- "vorderseite" ist die Frage oder der Begriff
-- "rueckseite" ist die Antwort oder Erklärung  
-- "istPruefungsrelevant" ist optional (Standard: true)
+- "front" ist die Frage oder der Begriff
+- "back" ist die Antwort oder Erklärung  
+- "isExamRelevant" ist optional (Standard: true)
 - Verwende \\n für Zeilenumbrüche in längeren Texten
 - Erstelle mindestens 5-10 Karten pro Thema
 - Variiere die Fragetypen (Definitionen, Aufzählungen, Erklärungen)
@@ -84,9 +84,9 @@ Thema für die Lernkarten:`
 ${schema}
 
 Important notes:
-- "vorderseite" is the question or term (front side)
-- "rueckseite" is the answer or explanation (back side)
-- "istPruefungsrelevant" is optional (defaults to true)
+- "front" is the question or term (front side)
+- "back" is the answer or explanation (back side)
+- "isExamRelevant" is optional (defaults to true)
 - Use \\n for line breaks in longer texts
 - Create at least 5-10 cards per topic
 - Vary question types (definitions, lists, explanations)
@@ -118,15 +118,15 @@ Topic for the flashcards:`
 
         const formData = new FormData()
         formData.append('deckId', deckId)
-        formData.append('vorderseite', singleCard.vorderseite)
-        formData.append('rueckseite', singleCard.rueckseite)
-        formData.append('istPruefungsrelevant', 'true')
+        formData.append('front', singleCard.front)
+        formData.append('back', singleCard.back)
+        formData.append('isExamRelevant', 'true')
 
         const result = await createFlashcard(formData)
 
         if (result.success) {
             toast.success(t('cardCreated'))
-            setSingleCard({ vorderseite: '', rueckseite: '' })
+            setSingleCard({ front: '', back: '' })
         } else {
             toast.error(t('common.error'))
         }
@@ -188,11 +188,11 @@ Topic for the flashcards:`
                                     {t('frontLabel')}
                                 </label>
                                 <Input
-                                    value={singleCard.vorderseite}
+                                    value={singleCard.front}
                                     onChange={(e) =>
                                         setSingleCard((prev) => ({
                                             ...prev,
-                                            vorderseite: e.target.value,
+                                            front: e.target.value,
                                         }))
                                     }
                                     placeholder={t('frontPlaceholder')}
@@ -204,11 +204,11 @@ Topic for the flashcards:`
                                     {t('backLabel')}
                                 </label>
                                 <Textarea
-                                    value={singleCard.rueckseite}
+                                    value={singleCard.back}
                                     onChange={(e) =>
                                         setSingleCard((prev) => ({
                                             ...prev,
-                                            rueckseite: e.target.value,
+                                            back: e.target.value,
                                         }))
                                     }
                                     placeholder={t('backPlaceholder')}

@@ -11,15 +11,15 @@ import { useTranslations } from 'next-intl'
 import { Card, CardContent } from '@/components/ui/card'
 
 interface FlashcardProps {
-    vorderseite: string
-    rueckseite: string
+    front: string
+    back: string
     onRating?: (rating: number) => void
     className?: string
 }
 
 export function Flashcard({
-    vorderseite,
-    rueckseite,
+    front,
+    back,
     onRating,
     className,
 }: FlashcardProps) {
@@ -124,7 +124,7 @@ export function Flashcard({
                             <CardContent className="flex h-full items-center justify-center p-4 sm:p-6">
                                 <div className="max-h-full w-full overflow-auto text-center">
                                     <p className="text-base leading-relaxed break-words whitespace-pre-line sm:text-lg md:text-xl lg:text-2xl">
-                                        {vorderseite}
+                                        {front}
                                     </p>
                                     <p className="text-muted-foreground mt-4 text-xs">
                                         {t('flipHint')}{' '}
@@ -158,7 +158,7 @@ export function Flashcard({
                                                 {t('answer')}
                                             </p>
                                             <p className="text-base leading-relaxed font-medium break-words whitespace-pre-line sm:text-lg md:text-xl lg:text-2xl">
-                                                {rueckseite}
+                                                {back}
                                             </p>
                                         </div>
                                     </div>

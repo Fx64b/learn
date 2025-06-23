@@ -17,25 +17,25 @@ export async function createDeck(formData: FormData) {
             return { success: false, error: 'Not authenticated' }
         }
 
-        const titel = formData.get('titel') as string
-        const beschreibung = formData.get('beschreibung') as string
-        const kategorie = formData.get('kategorie') as string
-        const aktivBisStr = formData.get('aktivBis') as string | null
+        const title = formData.get('title') as string
+        const description = formData.get('description') as string
+        const category = formData.get('category') as string
+        const activeUntilStr = formData.get('activeUntil') as string | null
 
-        const aktivBis = aktivBisStr ? new Date(aktivBisStr) : null
+        const activeUntil = activeUntilStr ? new Date(activeUntilStr) : null
 
         const id = await dbUtils.createDeck({
-            titel,
-            beschreibung,
-            kategorie,
-            aktivBis,
+            title,
+            description,
+            category,
+            activeUntil,
             userId: session.user.id,
         })
 
         revalidatePath('/')
         return { success: true, id }
     } catch (error) {
-        console.error('Fehler beim Erstellen des Decks:', error)
+        console.error('Error creating deck:', error)
         return { success: false, error: t('error') }
     }
 }
@@ -49,7 +49,7 @@ export async function getAllDecks(): Promise<DeckType[]> {
 
         return await dbUtils.getAllDecks(session.user.id)
     } catch (error) {
-        console.error('Fehler beim Laden der Decks:', error)
+        console.error('Error loading decks:', error)
         return []
     }
 }
@@ -65,12 +65,12 @@ export async function updateDeck(formData: FormData) {
         }
 
         const id = formData.get('id') as string
-        const titel = formData.get('titel') as string
-        const beschreibung = formData.get('beschreibung') as string
-        const kategorie = formData.get('kategorie') as string
-        const aktivBisStr = formData.get('aktivBis') as string | null
+        const title = formData.get('title') as string
+        const description = formData.get('description') as string
+        const category = formData.get('category') as string
+        const activeUntilStr = formData.get('activeUntil') as string | null
 
-        const aktivBis = aktivBisStr ? new Date(aktivBisStr) : null
+        const activeUntil = activeUntilStr ? new Date(activeUntilStr) : null
 
         const existingDeck = await dbUtils.getDeckById(id, session.user.id)
         if (!existingDeck) {
@@ -79,17 +79,17 @@ export async function updateDeck(formData: FormData) {
 
         await dbUtils.updateDeck({
             id,
-            titel,
-            beschreibung,
-            kategorie,
-            aktivBis,
+            title,
+            description,
+            category,
+            activeUntil,
         })
 
         revalidatePath('/')
         revalidatePath(`/deck/${id}/edit`)
         return { success: true }
     } catch (error) {
-        console.error('Fehler beim Aktualisieren des Decks:', error)
+        console.error('Error updating deck:', error)
         return { success: false, error: t('edit.error') }
     }
 }
@@ -115,7 +115,7 @@ export async function resetDeckProgress(deckId: string) {
         revalidatePath(`/deck/${deckId}/edit`)
         return { success: true }
     } catch (error) {
-        console.error('Fehler beim Zurücksetzen des Deck-Fortschritts:', error)
+        console.error('Error resetting deck progress:', error)
         return {
             success: false,
             error: t('edit.dangerZone.resetProgress.error'),
@@ -143,7 +143,7 @@ export async function deleteDeck(deckId: string) {
         revalidatePath('/')
         return { success: true }
     } catch (error) {
-        console.error('Fehler beim Löschen des Decks:', error)
+        console.error('Error deleting deck:', error)
         return { success: false, error: t('edit.dangerZone.deleteDeck.error') }
     }
 }

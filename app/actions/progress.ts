@@ -21,12 +21,12 @@ export async function getLearningProgress() {
 
     const dailyProgress = await db
         .select({
-            date: sql<string>`DATE(${reviewEvents.bewertetAm}, 'unixepoch', 'localtime')`.as(
+            date: sql<string>`DATE(${reviewEvents.reviewedAt}, 'unixepoch', 'localtime')`.as(
                 'date'
             ),
             cardsReviewed: sql<number>`COUNT(*)`.as('cardsReviewed'),
             correctPercentage:
-                sql<number>`CAST(SUM(CASE WHEN ${reviewEvents.bewertung} >= 3 THEN 1 ELSE 0 END) * 100.0 / COUNT(*) AS INTEGER)`.as(
+                sql<number>`CAST(SUM(CASE WHEN ${reviewEvents.rating} >= 3 THEN 1 ELSE 0 END) * 100.0 / COUNT(*) AS INTEGER)`.as(
                     'correctPercentage'
                 ),
         })
@@ -34,14 +34,14 @@ export async function getLearningProgress() {
         .where(
             and(
                 eq(reviewEvents.userId, userId),
-                gte(reviewEvents.bewertetAm, thirtyDaysAgo)
+                gte(reviewEvents.reviewedAt, thirtyDaysAgo)
             )
         )
         .groupBy(
-            sql`DATE(${reviewEvents.bewertetAm}, 'unixepoch', 'localtime')`
+            sql`DATE(${reviewEvents.reviewedAt}, 'unixepoch', 'localtime')`
         )
         .orderBy(
-            sql`DATE(${reviewEvents.bewertetAm}, 'unixepoch', 'localtime')`
+            sql`DATE(${reviewEvents.reviewedAt}, 'unixepoch', 'localtime')`
         )
 
     const totalReviews = await db
@@ -57,16 +57,16 @@ export async function getLearningProgress() {
         })
         .from(reviewEvents)
         .where(
-            and(eq(reviewEvents.userId, userId), gte(reviewEvents.bewertung, 3))
+            and(eq(reviewEvents.userId, userId), gte(reviewEvents.rating, 3))
         )
 
     const streak = await calculateStreak(userId)
 
-    /*
     const allActiveFlashcards = await db
         .select({
             flashcardId: flashcards.id,
-            easeFaktor: cardReviews.easeFaktor,
+            easeFactor: cardReviews.easeFactor,
+            reviewedAt: cardReviews.reviewedAt,
         })
         .from(flashcards)
         .innerJoin(decks, eq(flashcards.deckId, decks.id))
@@ -80,49 +80,16 @@ export async function getLearningProgress() {
         .where(
             and(
                 eq(decks.userId, userId),
-                or(isNull(decks.aktivBis), gte(decks.aktivBis, new Date()))
+                or(
+                    isNull(decks.activeUntil),
+                    gte(decks.activeUntil, new Date())
+                )
             )
         )
-
-    // Group by flashcard and keep only the most recent review (or null if never reviewed)
-    const latestReviewsMap = new Map<string, { easeFaktor: number | null }>()
-    const seen = new Set<string>()
-
-    for (const record of allActiveFlashcards) {
-        if (!seen.has(record.flashcardId)) {
-            seen.add(record.flashcardId)
-            latestReviewsMap.set(record.flashcardId, {
-                easeFaktor: record.easeFaktor,
-            })
-        }
-    }
-*/
-
-    const allActiveFlashcards = await db
-        .select({
-            flashcardId: flashcards.id,
-            easeFaktor: cardReviews.easeFaktor,
-            bewertetAm: cardReviews.bewertetAm,
-        })
-        .from(flashcards)
-        .innerJoin(decks, eq(flashcards.deckId, decks.id))
-        .leftJoin(
-            cardReviews,
-            and(
-                eq(flashcards.id, cardReviews.flashcardId),
-                eq(cardReviews.userId, userId)
-            )
-        )
-        .where(
-            and(
-                eq(decks.userId, userId),
-                or(isNull(decks.aktivBis), gte(decks.aktivBis, new Date()))
-            )
-        )
-        .orderBy(desc(sql`COALESCE(${cardReviews.bewertetAm}, 0)`))
+        .orderBy(desc(sql`COALESCE(${cardReviews.reviewedAt}, 0)`))
 
     // Group by flashcard and keep only the most recent review
-    const latestReviewsMap = new Map<string, { easeFaktor: number | null }>()
+    const latestReviewsMap = new Map<string, { easeFactor: number | null }>()
     const seen = new Set<string>()
 
     for (const record of allActiveFlashcards) {
@@ -130,7 +97,7 @@ export async function getLearningProgress() {
         if (!seen.has(record.flashcardId)) {
             seen.add(record.flashcardId)
             latestReviewsMap.set(record.flashcardId, {
-                easeFaktor: record.easeFaktor,
+                easeFactor: record.easeFactor,
             })
         }
     }
@@ -141,16 +108,16 @@ export async function getLearningProgress() {
     for (const [flashcardId, review] of latestReviewsMap.entries()) {
         let difficulty: number
 
-        if (!review.easeFaktor || !flashcardId) {
+        if (!review.easeFactor || !flashcardId) {
             continue
         } else {
             // Calculate difficulty based on ease factor
             difficulty =
-                review.easeFaktor >= 265
+                review.easeFactor >= 265
                     ? 4
-                    : review.easeFaktor >= 250
+                    : review.easeFactor >= 250
                       ? 3
-                      : review.easeFaktor >= 235
+                      : review.easeFactor >= 235
                         ? 2
                         : 1
         }
@@ -184,10 +151,10 @@ export async function getLearningProgress() {
             and(
                 eq(decks.userId, userId),
                 or(
-                    isNull(cardReviews.naechsteWiederholung),
-                    lte(cardReviews.naechsteWiederholung, now)
+                    isNull(cardReviews.nextReview),
+                    lte(cardReviews.nextReview, now)
                 ),
-                or(isNull(decks.aktivBis), gte(decks.aktivBis, now))
+                or(isNull(decks.activeUntil), gte(decks.activeUntil, now))
             )
         )
 
@@ -209,18 +176,18 @@ export async function getLearningProgress() {
 async function calculateStreak(userId: string): Promise<number> {
     const reviewDates = await db
         .select({
-            date: sql<string>`DATE(${reviewEvents.bewertetAm}, 'unixepoch', 'localtime')`.as(
+            date: sql<string>`DATE(${reviewEvents.reviewedAt}, 'unixepoch', 'localtime')`.as(
                 'date'
             ),
         })
         .from(reviewEvents)
         .where(eq(reviewEvents.userId, userId))
         .groupBy(
-            sql`DATE(${reviewEvents.bewertetAm}, 'unixepoch', 'localtime')`
+            sql`DATE(${reviewEvents.reviewedAt}, 'unixepoch', 'localtime')`
         )
         .orderBy(
             desc(
-                sql`DATE(${reviewEvents.bewertetAm}, 'unixepoch', 'localtime')`
+                sql`DATE(${reviewEvents.reviewedAt}, 'unixepoch', 'localtime')`
             )
         )
 

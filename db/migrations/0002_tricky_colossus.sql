@@ -1,0 +1,20 @@
+ALTER TABLE `card_reviews` RENAME COLUMN "bewertet_am" TO "reviewed_at";--> statement-breakpoint
+ALTER TABLE `card_reviews` RENAME COLUMN "bewertung" TO "rating";--> statement-breakpoint
+ALTER TABLE `card_reviews` RENAME COLUMN "ease_faktor" TO "ease_factor";--> statement-breakpoint
+ALTER TABLE `card_reviews` RENAME COLUMN "intervall" TO "interval";--> statement-breakpoint
+ALTER TABLE `card_reviews` RENAME COLUMN "naechste_wiederholung" TO "next_review";--> statement-breakpoint
+ALTER TABLE `decks` RENAME COLUMN "titel" TO "title";--> statement-breakpoint
+ALTER TABLE `decks` RENAME COLUMN "beschreibung" TO "description";--> statement-breakpoint
+ALTER TABLE `decks` RENAME COLUMN "kategorie" TO "category";--> statement-breakpoint
+ALTER TABLE `decks` RENAME COLUMN "aktiv_bis" TO "active_until";--> statement-breakpoint
+ALTER TABLE `decks` RENAME COLUMN "erstellt_am" TO "created_at";--> statement-breakpoint
+ALTER TABLE `flashcards` RENAME COLUMN "vorderseite" TO "front";--> statement-breakpoint
+ALTER TABLE `flashcards` RENAME COLUMN "rueckseite" TO "back";--> statement-breakpoint
+ALTER TABLE `flashcards` RENAME COLUMN "ist_pruefungsrelevant" TO "is_exam_relevant";--> statement-breakpoint
+ALTER TABLE `flashcards` RENAME COLUMN "schwierigkeitsgrad" TO "difficulty_level";--> statement-breakpoint
+ALTER TABLE `flashcards` RENAME COLUMN "erstellt_am" TO "created_at";--> statement-breakpoint
+ALTER TABLE `review_events` RENAME COLUMN "bewertet_am" TO "reviewed_at";--> statement-breakpoint
+ALTER TABLE `review_events` RENAME COLUMN "bewertung" TO "rating";--> statement-breakpoint
+ALTER TABLE `review_events` RENAME COLUMN "ease_faktor" TO "ease_factor";--> statement-breakpoint
+ALTER TABLE `review_events` RENAME COLUMN "intervall" TO "interval";--> statement-breakpoint
+ALTER TABLE `study_sessions` RENAME COLUMN "erstellt_am" TO "created_at";

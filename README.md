@@ -216,32 +216,20 @@ The dashboard provides insights into:
 
 ### Upcoming Features
 
-1. **Profile/Settings Page**
-
-    - User preferences
-    - Account management
-    - Theme customization
-
-2. **Export Functionality**
-
-    - Export decks to JSON/CSV
-    - Backup/restore capabilities
-    - Print flashcards
-
-3. **Advanced Learning Features**
+1. **Advanced Learning Features**
 
     - Image support for flashcards
     - Audio pronunciation
     - Rich text formatting
     - Multi-language support
 
-4. **Collaboration**
+2. **Collaboration**
 
     - Share decks with others
     - Community deck library
     - Group studying
 
-5. **Gamification**
+3. **Gamification**
     - Achievement system
     - Experience points
     - Daily challenges
