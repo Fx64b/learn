@@ -2,46 +2,121 @@
 
 <img src="public/logo-dark.png" alt="Logo" style="width: 150px;" />
 
-A modern flashcard application for effective learning using the Spaced Repetition System (SRS). Built with Next.js 15, TypeScript, and Turso database.
+A modern flashcard application for effective learning using the Spaced Repetition System (SRS). Built with Next.js 15, TypeScript, and Turso database. Available in English and German.
 
 [![Build and Lint](https://github.com/Fx64b/learn/actions/workflows/build-lint.yml/badge.svg)](https://github.com/Fx64b/learn/actions/workflows/build-lint.yml)
 
 > [!IMPORTANT]  
-> This project is currently in **early development**. Features may change, and the application is not yet ready for personal production use.
+> This project is currently in **beta**. While core features are stable, some features may change based on user feedback.
 
 ## Features
 
-- 🗂️ **Deck Management**: Create and organize flashcard decks by categories
-- 📚 **Spaced Repetition**: Study cards with an intelligent SRS algorithm
-- 👤 **User Authentication**: Secure email-based login via Resend
-- 📊 **Progress Tracking**: Monitor learning streaks, success rates, and daily progress
-- 🔄 **Bulk Import**: Import multiple cards via JSON format
-- ⏱️ **Study Sessions**: Track study time and analyze productive hours
-- 📱 **Responsive Design**: Works perfectly on desktop and mobile devices
-- 🌙 **Dark Mode**: Eye-friendly interface with dark mode support
-- ⌨️ **Keyboard Shortcuts**: Learn faster with keyboard navigation
+### Core Learning Features
+-  **Advanced Deck Management**
+   - Create and organize flashcard decks by categories
+   - Set due dates for time-sensitive learning goals
+   - Export decks to JSON format
+   - Import decks from JSON with bulk card creation
+   - Reset learning progress while keeping cards
+   - Safe deck deletion with cascade removal
+
+- **Intelligent Spaced Repetition System**
+   - SuperMemo-2 algorithm implementation
+   - Smart scheduling based on performance
+   - Review intervals up to 365 days
+
+- **Flexible Study Modes**
+   - Study individual decks
+   - Review all cards across decks
+   - Focus on difficult cards (ease factor < 2.5)
+   - Review due cards with smart prioritization
+   - Shuffle cards for varied practice
+
+### Progress & Analytics
+- **Comprehensive Statistics**
+   - Daily/weekly/monthly progress tracking
+   - Success rate monitoring
+   - Learning streak tracking
+   - Cards by difficulty distribution
+   - Time of day productivity analysis
+   - Study session duration tracking
+
+- **Smart Study Sessions**
+   - Real-time session timer
+   - Auto-save progress every 20 seconds
+   - Pause/resume on tab switching
+   - Session completion tracking
+   - Cards reviewed counter
+
+### User Experience
+- **Internationalization**
+   - Full support for English and German
+   - Language switcher in header
+   - Locale persistence for users
+   - Localized date/time formats
+
+- **Customization Options**
+   - Light/Dark/System theme modes
+   - Animation controls (enable/disable)
+   - Animation speed adjustment (100-500ms)
+   - Animation direction (horizontal/vertical)
+   - User preferences persistence
+
+- **Keyboard Shortcuts**
+   - Space: Flip card
+   - 1-4: Rate card (when flipped)
+   - Arrow keys: Alternative rating
+      - ←: Again (1)
+      - ↓: Hard (2)
+      - ↑: Good (3)
+      - →: Easy (4)
+
+### Technical Features
+- **Secure Authentication**
+   - Email-based magic link authentication
+   - Session management with JWT
+   - Protected routes
+   - Email verification flow
+
+- **Security & Performance**
+   - Rate limiting on API endpoints
+   - Security headers (XSS, CSRF protection)
+   - SQL injection prevention
+   - Optimized database queries with indexes
+
+- **Responsive Design**
+   - Mobile-first approach
+   - Touch-optimized interactions
+   - Progressive Web App ready
+   - Offline capability (planned)
 
 ## Tech Stack
 
-- **Framework**: Next.js 15.3.1 with App Router
+- **Framework**: Next.js 15 with App Router
 - **Language**: TypeScript
 - **Database**: Turso (SQLite) with Drizzle ORM
-- **Authentication**: NextAuth.js with email provider
-- **Email**: Resend
-- **UI**: shadcn/ui + Tailwind CSS
-- **Animations**: Framer Motion
-- **State Management**: Zustand
+- **Authentication**: NextAuth.js v4 with email provider
+- **Email Service**: Resend
+- **UI Components**:
+   - shadcn/ui (Radix UI + Tailwind CSS)
+   - Framer Motion for animations
+   - Sonner for toast notifications
+- **State Management**: Zustand for client state
+- **Internationalization**: next-intl
+- **Date Handling**: date-fns
 - **Rate Limiting**: Upstash Redis
+- **Analytics**: Vercel Analytics
+- **Styling**: Tailwind CSS v4 with CSS variables
 
 ## Prerequisites
 
-- Node.js 20+ (for React 19 support)
-- pnpm
-- A Turso account (database)
-- A Resend account (email authentication)
-- Optional: Redis/Upstash for rate limiting
+- Node.js 20+ (required for React 19)
+- pnpm 10+
+- A Turso account for database
+- A Resend account for email authentication
+- Optional: Redis/Upstash account for rate limiting
 
-## Getting Started
+## 🚀 Getting Started
 
 ### 1. Clone the Repository
 
@@ -67,41 +142,41 @@ cp .env.local.example .env.local
 Fill in the required environment variables:
 
 ```env
-# Turso Database
-DATABASE_URL="your-turso-database-url"
+# Turso Database (Required)
+DATABASE_URL="libsql://your-database.turso.io"
 DATABASE_AUTH_TOKEN="your-turso-auth-token"
 
-# NextAuth
+# NextAuth (Required)
 NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="your-random-secret"
+NEXTAUTH_SECRET="generate-a-random-secret-here"
 
-# Resend (for email authentication)
-RESEND_API_KEY="your-resend-api-key"
+# Resend (Required for email authentication)
+RESEND_API_KEY="re_your_api_key"
 EMAIL_FROM="noreply@yourdomain.com"
 
-# Optional: Redis for rate limiting
-REDIS_URL="your-redis-url"
-KV_REST_API_TOKEN="your-api-token"
-KV_REST_API_URL="your-api-url"
+# Redis for rate limiting (Optional but recommended)
+REDIS_URL="redis://your-redis-url"
+KV_REST_API_TOKEN="your-upstash-token"
+KV_REST_API_URL="https://your-instance.upstash.io"
+
+# Environment
+NODE_ENV="development"
 ```
 
 ### 4. Database Setup
 
 1. Create a Turso database:
-
 ```bash
 turso db create flashcard-app
 ```
 
 2. Get your database credentials:
-
 ```bash
 turso db url flashcard-app
-turso db token create flashcard-app --write
+turso db tokens create flashcard-app
 ```
 
-3. Run migrations:
-
+3. Generate and run migrations:
 ```bash
 pnpm db:generate
 pnpm db:migrate
@@ -113,7 +188,7 @@ pnpm db:migrate
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view the application.
+Open [http://localhost:3000](http://localhost:3000) to start learning!
 
 ## Available Scripts
 
@@ -124,130 +199,206 @@ Open [http://localhost:3000](http://localhost:3000) to view the application.
 | `pnpm start`       | Start production server                 |
 | `pnpm lint`        | Run ESLint                              |
 | `pnpm format`      | Format code with Prettier               |
-| `pnpm db:generate` | Generate DB migrations                  |
-| `pnpm db:migrate`  | Run DB migrations                       |
+| `pnpm db:generate` | Generate Drizzle migrations             |
+| `pnpm db:migrate`  | Run database migrations                 |
 
 ## Project Structure
 
 ```
 .
 ├── app/                    # Next.js app directory
-│   ├── actions/           # Server actions
-│   ├── api/               # API routes
+│   ├── actions/           # Server actions for data mutations
+│   ├── api/               # API routes (auth)
 │   ├── deck/              # Deck management pages
+│   │   ├── create/        # Create new deck
+│   │   └── [id]/
+│   │       └── edit/      # Edit deck & manage cards
 │   ├── learn/             # Learning/study pages
-│   └── ...
+│   │   ├── [category]/    # Study specific deck
+│   │   ├── all/           # Study all cards
+│   │   ├── difficult/     # Study difficult cards
+│   │   └── due/           # Study due cards
+│   ├── login/             # Authentication page
+│   ├── profile/           # User profile & settings
+│   └── verify-request/    # Email verification
 ├── components/            # React components
-│   ├── ui/               # shadcn/ui components
-│   ├── flashcard.tsx     # Main flashcard component
-│   └── ...
-├── db/                    # Database setup
-│   ├── migrations/       # Drizzle migrations
-│   ├── schema.ts         # Database schema
+│   ├── ui/               # shadcn/ui base components
+│   ├── misc/             # Utility components
+│   ├── pages/            # Page-specific components
+│   ├── statistics/       # Charts and analytics
+│   └── flashcard.tsx     # Core flashcard component
+├── db/                    # Database layer
+│   ├── migrations/       # SQL migrations
+│   ├── auth-schema.ts    # Auth-related tables
+│   ├── schema.ts         # Main database schema
 │   └── utils.ts          # Database utilities
-├── lib/                   # Utilities & helpers
-│   ├── auth.ts           # Authentication setup
+├── lib/                   # Utilities & configuration
+│   ├── auth.ts           # NextAuth configuration
 │   ├── srs.ts            # Spaced repetition algorithm
-│   └── ...
-├── types/                 # TypeScript types
-└── ...
+│   ├── i18n.ts           # Internationalization setup
+│   └── date.ts           # Date handling utilities
+├── messages/              # Translation files
+│   ├── en.json           # English translations
+│   └── de.json           # German translations
+├── store/                 # Client-side state
+│   └── userPreferences.ts # User preferences store
+├── types/                 # TypeScript definitions
+└── middleware.ts          # Next.js middleware
 ```
-
-## Authentication
-
-The app uses NextAuth with email-based authentication via Resend:
-
-1. Users enter their email address
-2. They receive a login link via email
-3. Clicking the link logs them in
-4. Sessions are managed with JWT
 
 ## Database Schema
 
-Key tables:
+The app uses the following main tables:
 
-- `users` - User accounts
-- `decks` - Flashcard collections
-- `flashcards` - Individual cards
-- `card_reviews` - Spaced repetition tracking
-- `study_sessions` - Study time tracking
+- **users** - User accounts and profiles
+- **decks** - Flashcard collections with metadata
+- **flashcards** - Individual cards with front/back content
+- **card_reviews** - Current SRS state for each card/user
+- **review_events** - Historical review data for analytics
+- **study_sessions** - Study time tracking
+- **user_preferences** - User settings and preferences
 
-## Usage
+All tables include appropriate indexes for optimal query performance.
 
-### Creating a Deck
+## Usage Guide
 
-1. Click "Neues Deck" on the home page
-2. Fill in the title, description, and category
-3. Click "Deck erstellen"
-4. You'll be redirected to the edit page to add cards
+### Creating Your First Deck
 
-### Adding Cards
+1. Click "Neues Deck" (New Deck) on the dashboard
+2. Enter deck details:
+   - **Title**: Name your deck
+   - **Description**: Optional context
+   - **Category**: Organize your decks
+   - **Due Date**: Optional deadline for time-sensitive content
+3. Add cards using:
+   - **Single Card**: Add one card at a time
+   - **Bulk Import**: Paste JSON array of cards
 
-1. On the edit page, you can:
-    - Add individual cards manually
-    - Import multiple cards from JSON
-2. Cards automatically appear in the learning queue
+### JSON Format for Bulk Import
 
-### Learning
+```json
+[
+  {
+    "front": "What is the capital of France?",
+    "back": "Paris",
+    "isExamRelevant": true
+  },
+  {
+    "front": "Explain the water cycle",
+    "back": "1. Evaporation\n2. Condensation\n3. Precipitation\n4. Collection"
+  }
+]
+```
 
-1. Click "Lernen" on a deck
-2. Review cards and rate them (1-4):
-    - 1: Again (hard)
-    - 2: Hard
-    - 3: Good
-    - 4: Easy
-3. The system schedules reviews based on your ratings
-4. Use keyboard shortcuts for faster navigation:
-    - Space: Flip card
-    - 1-4: Rate card
-    - Arrow keys: Rate card (when flipped)
+### Study Workflow
 
-### Study Analytics
+1. **Choose Study Mode**:
+   - Individual deck for focused learning
+   - All cards for comprehensive review
+   - Difficult cards for challenging content
+   - Due cards for scheduled reviews
 
-The dashboard provides insights into:
+2. **Review Process**:
+   - Read the question (front side)
+   - Think of your answer
+   - Flip the card (Space or click)
+   - Rate your performance:
+      - **Again (1)**: Didn't know it
+      - **Hard (2)**: Struggled but got it
+      - **Good (3)**: Knew it well
+      - **Easy (4)**: Too easy
 
-- Daily learning progress
-- Streak tracking
-- Time of day analysis
-- Cards by difficulty
-- Due cards overview
+3. **Track Progress**:
+   - Monitor daily streaks
+   - Review success rates
+   - Analyze best study times
+   - Adjust based on statistics
 
-## Development Roadmap
+## Configuration
 
-### Upcoming Features
+### Theme Customization
 
-1. **Advanced Learning Features**
+The app uses CSS variables for theming. Colors are defined in OKLCH color space for better color manipulation:
 
-    - Image support for flashcards
-    - Audio pronunciation
-    - Rich text formatting
-    - Multi-language support
+```css
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  /* ... more variables */
+}
+```
 
-2. **Collaboration**
+### Animation Settings
 
-    - Share decks with others
-    - Community deck library
-    - Group studying
+Users can customize animations through the profile settings:
+- Enable/disable all animations
+- Adjust animation speed (100-500ms)
+- Choose animation direction (horizontal/vertical)
 
-3. **Gamification**
-    - Achievement system
-    - Experience points
-    - Daily challenges
+### Internationalization
 
-See [TODO.md](./TODO.md) for a complete list of planned features.
+Add new languages by:
+1. Creating a new translation file in `/messages/`
+2. Updating the locale type in `lib/locale.ts`
+3. Adding the language option to language selectors
 
-### Activity
+## Deployment
 
-![Alt](https://repobeats.axiom.co/api/embed/e26f5c728d5b30144b3d3353306a519469a999f0.svg 'Repobeats analytics image')
+### Vercel (Recommended)
 
-## License
+1. Push your code to GitHub
+2. Import project in Vercel
+3. Add environment variables
+4. Deploy
 
-MIT License
+### Self-Hosting
 
-## Support
+1. Build the project:
+```bash
+pnpm build
+```
 
-For issues and feature requests, please create an issue in the repository.
+2. Set production environment variables
+3. Start the server:
+```bash
+pnpm start
+```
+
+(Docker support is planned for future releases)
+
+## Monitoring & Analytics
+
+- **Vercel Analytics**: Automatic performance monitoring
+- **Rate Limit Status**: Monitor API usage
+- **Database Metrics**: Available through Turso dashboard
 
 ## Contributing
 
-Contributions are welcome! Please fork the repository and submit a pull request.
+Contributions are welcome! Please:
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to your fork
+5. Submit a pull request
+
+## License
+
+MIT License - see [LICENSE](./LICENSE) for details
+
+## Support
+
+- **Issues**: [GitHub Issues](https://github.com/Fx64b/learn/issues)
+- **Email**: learn@fx64b.dev
+- **Documentation**: Coming soon
+
+## 🎉 Acknowledgments
+
+- [shadcn/ui](https://ui.shadcn.com/) for the component library
+- [Turso](https://turso.tech/) for the database platform
+- [Resend](https://resend.com/) for email infrastructure
+- The spaced repetition algorithm is based on SuperMemo-2
+
+---
+
+Built with ❤️ by [Fx64b](https://fx64b.dev)
