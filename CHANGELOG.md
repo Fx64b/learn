@@ -1,3 +1,5 @@
+## [1.10.1](https://github.com/Fx64b/learn/compare/v1.10.0...v1.10.1) (2025-06-23)
+
 # [1.10.0](https://github.com/Fx64b/learn/compare/v1.9.2...v1.10.0) (2025-06-23)
 
 
