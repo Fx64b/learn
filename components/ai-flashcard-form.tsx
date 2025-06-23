@@ -148,7 +148,7 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
                             value={prompt}
                             onChange={(e) => setPrompt(e.target.value)}
                             placeholder={t('promptPlaceholder')}
-                            className="min-h-[100px]"
+                            className="min-h-[110px]"
                             maxLength={1000}
                             required
                         />

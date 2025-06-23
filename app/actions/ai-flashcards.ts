@@ -16,7 +16,7 @@ const ALLOWED_FILE_TYPES = ['application/pdf']
 const MAX_PROMPT_LENGTH = 1000
 const MAX_CARDS_PER_GENERATION = 50
 
-const flashcardSchema = z.object({
+const flashcardSchema= z.object({
     flashcards: z
         .array(
             z.object({
@@ -55,22 +55,22 @@ async function parsePDF(buffer: Buffer): Promise<string> {
                 const PDFParser = module.default
                 const pdfParser = new PDFParser(null, true)
 
-                pdfParser.on('pdfParser_dataError', (errData: any) => {
+                pdfParser.on('pdfParser_dataError', (errData) => {
                     console.error('PDF parsing error:', errData.parserError)
                     reject(new Error('Failed to parse PDF'))
                 })
 
-                pdfParser.on('pdfParser_dataReady', (pdfData: any) => {
+                pdfParser.on('pdfParser_dataReady', (pdfData) => {
                     try {
                         let fullText = ''
 
                         // Extract text from all pages
                         if (pdfData && pdfData.Pages) {
-                            pdfData.Pages.forEach((page: any) => {
+                            pdfData.Pages.forEach((page) => {
                                 if (page.Texts) {
-                                    page.Texts.forEach((text: any) => {
+                                    page.Texts.forEach((text) => {
                                         if (text.R) {
-                                            text.R.forEach((r: any) => {
+                                            text.R.forEach((r) => {
                                                 if (r.T) {
                                                     // Decode URI component to handle special characters
                                                     const decodedText =
