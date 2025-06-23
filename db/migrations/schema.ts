@@ -6,7 +6,7 @@ export const flashcards = sqliteTable("flashcards", {
 	deckId: text("deck_id").notNull().references(() => decks.id),
 	front: text().notNull(),
 	back: text().notNull(),
-	isExamRelevant: integer("is_exam_relevant").default(false).notNull(),
+	isExamRelevant: integer("is_exam_relevant").default(0).notNull(),
 	difficultyLevel: integer("difficulty_level").default(0).notNull(),
 	createdAt: integer("created_at").default(sql`(CURRENT_TIMESTAMP)`).notNull(),
 });
@@ -77,13 +77,13 @@ export const studySessions = sqliteTable("study_sessions", {
 	endTime: integer("end_time").notNull(),
 	duration: integer().notNull(),
 	cardsReviewed: integer("cards_reviewed").notNull(),
-	isCompleted: integer("is_completed").default(false).notNull(),
+	isCompleted: integer("is_completed").default(0).notNull(),
 	createdAt: integer("created_at").default(sql`(CURRENT_TIMESTAMP)`).notNull(),
 });
 
 export const userPreferences = sqliteTable("user_preferences", {
 	userId: text("user_id").primaryKey().notNull().references(() => user.id),
-	animationsEnabled: integer("animations_enabled").default(false).notNull(),
+	animationsEnabled: integer("animations_enabled").default(0).notNull(),
 	animationSpeed: integer("animation_speed").default(200).notNull(),
 	animationDirection: text("animation_direction").default("horizontal").notNull(),
 	theme: text().default("dark").notNull(),
