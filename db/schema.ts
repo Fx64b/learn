@@ -30,7 +30,7 @@ export const flashcards = sqliteTable('flashcards', {
     back: text('back').notNull(),
     isExamRelevant: integer('is_exam_relevant', { mode: 'boolean' })
         .notNull()
-        .default(false),
+        .default(sql`0`),
     difficultyLevel: integer('difficulty_level').notNull().default(0),
     createdAt: integer('created_at', { mode: 'timestamp' })
         .default(sql`CURRENT_TIMESTAMP`)
