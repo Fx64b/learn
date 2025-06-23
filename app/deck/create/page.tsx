@@ -34,7 +34,7 @@ export default function CreateDeckPage() {
     const [formData, setFormData] = useState({
         title: '',
         description: '',
-        kategorie: '',
+        category: '',
         activeUntil: null as Date | null,
     })
 
@@ -45,7 +45,7 @@ export default function CreateDeckPage() {
         const formDataToSend = new FormData()
         formDataToSend.append('title', formData.title)
         formDataToSend.append('description', formData.description)
-        formDataToSend.append('kategorie', formData.kategorie)
+        formDataToSend.append('category', formData.category)
 
         if (formData.activeUntil) {
             const utcDate = toUTCDateOnly(formData.activeUntil)
@@ -120,16 +120,16 @@ export default function CreateDeckPage() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="kategorie">
+                            <Label htmlFor="category">
                                 {t('categoryLabel')}
                             </Label>
                             <Input
-                                id="kategorie"
-                                value={formData.kategorie}
+                                id="category"
+                                value={formData.category}
                                 onChange={(e) =>
                                     setFormData((prev) => ({
                                         ...prev,
-                                        kategorie: e.target.value,
+                                        category: e.target.value,
                                     }))
                                 }
                                 placeholder={t('categoryPlaceholder')}

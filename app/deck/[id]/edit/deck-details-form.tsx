@@ -83,7 +83,7 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
         id: deck.id,
         title: deck.title,
         description: deck.description || '',
-        kategorie: deck.category,
+        category: deck.category,
         activeUntil: fromUTCDateOnly(deck.activeUntil),
     })
 
@@ -97,7 +97,7 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
         formDataToSend.append('id', formData.id)
         formDataToSend.append('title', formData.title)
         formDataToSend.append('description', formData.description)
-        formDataToSend.append('kategorie', formData.kategorie)
+        formDataToSend.append('category', formData.category)
 
         if (formData.activeUntil) {
             // Convert to UTC date-only before sending
@@ -114,7 +114,7 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                 toast.error(t('error'))
             }
         } catch (error) {
-            console.error('Fehler beim Aktualisieren des Decks:', error)
+            console.error('Error updating deck:', error)
             toast.error(common('error'))
         } finally {
             setIsSubmitting(false)
@@ -132,7 +132,7 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
             }
         } catch (error) {
             console.error(
-                'Fehler beim Zurücksetzen des Lernfortschritts:',
+                'Error when resetting learning progress:',
                 error
             )
             toast.error(common('error'))
@@ -153,7 +153,7 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                 toast.error(t('dangerZone.deleteDeck.error'))
             }
         } catch (error) {
-            console.error('Fehler beim Löschen des Decks:', error)
+            console.error('Error deleting deck:', error)
             toast.error(common('error'))
         } finally {
             setIsDeleting(false)
@@ -247,19 +247,19 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
 
                             <div className="col-span-2 space-y-2 md:col-span-1">
                                 <Label
-                                    htmlFor="kategorie"
+                                    htmlFor="category"
                                     className="text-sm font-medium"
                                 >
                                     {t('categoryRequired')}{' '}
                                     <span className="text-red-500">*</span>
                                 </Label>
                                 <Input
-                                    id="kategorie"
-                                    value={formData.kategorie}
+                                    id="category"
+                                    value={formData.category}
                                     onChange={(e) =>
                                         setFormData((prev) => ({
                                             ...prev,
-                                            kategorie: e.target.value,
+                                            category: e.target.value,
                                         }))
                                     }
                                     placeholder={t('categoryPlaceholder')}
