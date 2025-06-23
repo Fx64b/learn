@@ -319,7 +319,29 @@
             "copySchema": "Schema kopieren",
             "copyWithAiPrompt": "Mit KI-Prompt kopieren",
             "copiedToClipboard": "In Zwischenablage kopiert",
-            "copyFailed": "Kopieren fehlgeschlagen"
+            "copyFailed": "Kopieren fehlgeschlagen",
+            "aiGenerate": "KI-Generierung"
+        },
+        "ai": {
+            "title": "KI-Lernkarten Generator",
+            "promptLabel": "Was möchtest du lernen?",
+            "promptPlaceholder": "Z.B. Erstelle Lernkarten über den Wasserkreislauf, Schlüsselkonzepte der Photosynthese oder wichtige Daten des Zweiten Weltkriegs",
+            "documentLabel": "Dokument hochladen (Optional)",
+            "dropFile": "PDF hier ablegen oder klicken zum Durchsuchen",
+            "maxFileSize": "Nur PDF, max. 10MB",
+            "characters": "Zeichen",
+            "helpText": "Die KI generiert 5-50 hochwertige Lernkarten basierend auf deiner Eingabe. Du kannst auch ein PDF-Dokument hochladen, um Lernkarten aus dessen Inhalt zu erstellen.",
+            "generateButton": "Lernkarten generieren",
+            "generating": "Generiere...",
+            "success": "Lernkarten erfolgreich erstellt!",
+            "error": "Fehler beim Generieren der Lernkarten",
+            "promptRequired": "Bitte beschreibe, was du lernen möchtest",
+            "invalidFileType": "Nur PDF-Dateien werden unterstützt",
+            "fileTooLarge": "Dateigröße muss kleiner als {max} sein",
+            "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuche es erneut.",
+            "flashcardsGenerated": "{count} Lernkarten erfolgreich generiert",
+            "aiGenerationError": "Fehler bei der KI-Generierung der Lernkarten",
+            "noCardsGenerated": "Keine Lernkarten generiert. Bitte versuche es erneut mit einer anderen Eingabe."
         },
         "statistics": {
             "totalCards": "Karten insgesamt",

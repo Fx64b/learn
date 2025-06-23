@@ -173,7 +173,8 @@ export default function CreateDeckPage() {
                                         <Calendar
                                             mode="single"
                                             selected={
-                                                formData.activeUntil || undefined
+                                                formData.activeUntil ||
+                                                undefined
                                             }
                                             onSelect={(date) =>
                                                 setFormData((prev) => ({

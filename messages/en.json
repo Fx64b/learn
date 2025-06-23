@@ -316,7 +316,29 @@
             "copySchema": "Copy Schema",
             "copyWithAiPrompt": "Copy with AI Prompt",
             "copiedToClipboard": "Copied to clipboard",
-            "copyFailed": "Failed to copy"
+            "copyFailed": "Failed to copy",
+            "aiGenerate": "AI Generate"
+        },
+        "ai": {
+            "title": "AI Flashcard Generator",
+            "promptLabel": "What do you want to learn?",
+            "promptPlaceholder": "E.g., Generate flashcards about the water cycle, key concepts in photosynthesis, or important dates in World War II",
+            "documentLabel": "Upload Document (Optional)",
+            "dropFile": "Drop your PDF here or click to browse",
+            "maxFileSize": "PDF only, max 10MB",
+            "characters": "characters",
+            "helpText": "The AI will generate 5-50 high-quality flashcards based on your prompt. You can also upload a PDF document to generate flashcards from its content.",
+            "generateButton": "Generate Flashcards",
+            "generating": "Generating...",
+            "success": "Flashcards generated successfully!",
+            "error": "Failed to generate flashcards",
+            "promptRequired": "Please describe what you want to learn",
+            "invalidFileType": "Only PDF files are supported",
+            "fileTooLarge": "File size must be less than {max}",
+            "unexpectedError": "An unexpected error occurred. Please try again.",
+            "flashcardsGenerated": "{count} flashcards successfully generated",
+            "aiGenerateError": "Error generating flashcards with AI",
+            "noCardsGenerated": "No flashcards generated. Please try a different prompt or check the document."
         },
         "tabs": {
             "details": "Deck Details",

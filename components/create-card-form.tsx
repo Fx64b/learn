@@ -1,6 +1,6 @@
 'use client'
 
-import { ChevronDown, Copy } from 'lucide-react'
+import { ChevronDown, Copy, Sparkles } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { useState } from 'react'
@@ -12,6 +12,7 @@ import {
     createFlashcardsFromJson,
 } from '@/app/actions/flashcard'
 
+import { AIFlashcardForm } from '@/components/ai-flashcard-form'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -71,7 +72,6 @@ ${schema}
 Wichtige Hinweise:
 - "front" ist die Frage oder der Begriff
 - "back" ist die Antwort oder Erklärung  
-- "isExamRelevant" ist optional (Standard: true)
 - Verwende \\n für Zeilenumbrüche in längeren Texten
 - Erstelle mindestens 5-10 Karten pro Thema
 - Variiere die Fragetypen (Definitionen, Aufzählungen, Erklärungen)
@@ -86,7 +86,6 @@ ${schema}
 Important notes:
 - "front" is the question or term (front side)
 - "back" is the answer or explanation (back side)
-- "isExamRelevant" is optional (defaults to true)
 - Use \\n for line breaks in longer texts
 - Create at least 5-10 cards per topic
 - Vary question types (definitions, lists, explanations)
@@ -168,9 +167,13 @@ Topic for the flashcards:`
 
     return (
         <Tabs defaultValue="single" className="w-full">
-            <TabsList className="grid h-full w-full grid-cols-2">
+            <TabsList className="grid h-full w-full grid-cols-3">
                 <TabsTrigger value="single">{t('singleCard')}</TabsTrigger>
                 <TabsTrigger value="bulk">{t('createMultiple')}</TabsTrigger>
+                <TabsTrigger value="ai" className="flex items-center gap-1">
+                    <Sparkles className="h-3 w-3" />
+                    {t('aiGenerate')}
+                </TabsTrigger>
             </TabsList>
 
             <TabsContent value="single">
@@ -283,6 +286,10 @@ Topic for the flashcards:`
                         </form>
                     </CardContent>
                 </Card>
+            </TabsContent>
+
+            <TabsContent value="ai">
+                <AIFlashcardForm deckId={deckId} />
             </TabsContent>
         </Tabs>
     )
