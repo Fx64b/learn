@@ -30,22 +30,21 @@ export async function createFlashcard(formData: FormData) {
         }
 
         const deckId = formData.get('deckId') as string
-        const vorderseite = formData.get('vorderseite') as string
-        const rueckseite = formData.get('rueckseite') as string
-        const istPruefungsrelevant =
-            formData.get('istPruefungsrelevant') === 'true'
+        const front = formData.get('front') as string
+        const back = formData.get('back') as string
+        const isExamRelevant = formData.get('isExamRelevant') === 'true'
 
         const id = await dbUtils.createFlashcard({
             deckId,
-            vorderseite,
-            rueckseite,
-            istPruefungsrelevant,
+            front,
+            back,
+            isExamRelevant,
         })
 
-        revalidatePath(`/lernen/${deckId}`)
+        revalidatePath(`/learn/${deckId}`)
         return { success: true, id }
     } catch (error) {
-        console.error('Fehler beim Erstellen der Flashcard:', error)
+        console.error('Error creating flashcard:', error)
         return { success: false, error: t('createError') }
     }
 }
@@ -83,31 +82,31 @@ export async function createFlashcardsFromJson(data: {
         const results = []
 
         for (const card of cards) {
-            if (!card.vorderseite || !card.rueckseite) {
+            if (!card.front || !card.back) {
                 results.push({
                     success: false,
                     error: t('missingFields'),
-                    vorderseite: card.vorderseite,
+                    front: card.front,
                 })
                 continue
             }
 
             const id = await dbUtils.createFlashcard({
                 deckId: data.deckId,
-                vorderseite: card.vorderseite,
-                rueckseite: card.rueckseite,
-                istPruefungsrelevant: card.istPruefungsrelevant ?? true,
+                front: card.front,
+                back: card.back,
+                isExamRelevant: card.isExamRelevant ?? true,
             })
 
             results.push({ success: true, id })
         }
 
         revalidatePath(`/deck/${data.deckId}/edit`)
-        revalidatePath(`/lernen/${data.deckId}`)
+        revalidatePath(`/learn/${data.deckId}`)
 
         return { success: true, results }
     } catch (error) {
-        console.error('Fehler beim Erstellen der Karten:', error)
+        console.error('Error creating cards:', error)
         return {
             success: false,
             error: t('bulkCreateError'),
@@ -124,12 +123,12 @@ export async function getFlashcardsByDeckId(deckId: string) {
 
         return await dbUtils.getFlashcardsByDeckId(deckId, session.user.id)
     } catch (error) {
-        console.error('Fehler beim Laden der Flashcards:', error)
+        console.error('Error loading flashcards:', error)
         return []
     }
 }
 
-export async function reviewCard(flashcardId: string, bewertung: number) {
+export async function reviewCard(flashcardId: string, rating: number) {
     const authT = await getTranslations('auth')
     const t = await getTranslations('deck.cards')
 
@@ -142,22 +141,22 @@ export async function reviewCard(flashcardId: string, bewertung: number) {
         const result = await dbUtils.reviewCard({
             flashcardId,
             userId: session.user.id,
-            bewertung,
+            rating,
         })
 
-        revalidatePath(`/lernen/${flashcardId.split('-')[0]}`)
+        revalidatePath(`/learn/${flashcardId.split('-')[0]}`)
         return { success: true, ...result }
     } catch (error) {
-        console.error('Fehler beim Bewerten der Karte:', error)
+        console.error('Error reviewing card:', error)
         return { success: false, error: t('reviewError') }
     }
 }
 
 export async function updateFlashcard(data: {
     id: string
-    vorderseite: string
-    rueckseite: string
-    istPruefungsrelevant: boolean
+    front: string
+    back: string
+    isExamRelevant: boolean
 }) {
     const authT = await getTranslations('auth')
     const t = await getTranslations('deck.cards')
@@ -183,17 +182,17 @@ export async function updateFlashcard(data: {
 
         await dbUtils.updateFlashcard({
             id: data.id,
-            vorderseite: data.vorderseite,
-            rueckseite: data.rueckseite,
-            istPruefungsrelevant: data.istPruefungsrelevant,
+            front: data.front,
+            back: data.back,
+            isExamRelevant: data.isExamRelevant,
         })
 
         revalidatePath(`/deck/${flashcard.deckId}/edit`)
-        revalidatePath(`/lernen/${flashcard.deckId}`)
+        revalidatePath(`/learn/${flashcard.deckId}`)
 
         return { success: true }
     } catch (error) {
-        console.error('Fehler beim Aktualisieren der Karte:', error)
+        console.error('Error updating card:', error)
         return { success: false, error: t('updateError') }
     }
 }
@@ -217,11 +216,11 @@ export async function deleteFlashcard(id: string) {
         await dbUtils.deleteFlashcard(id)
 
         revalidatePath(`/deck/${deckId}/edit`)
-        revalidatePath(`/lernen/${deckId}`)
+        revalidatePath(`/learn/${deckId}`)
 
         return { success: true }
     } catch (error) {
-        console.error('Fehler beim Löschen der Karte:', error)
+        console.error('Error deleting card:', error)
         return { success: false, error: t('deleteError') }
     }
 }

@@ -54,7 +54,7 @@ export async function saveStudySession(data: {
                 duration: data.duration,
                 cardsReviewed: data.cardsReviewed,
                 isCompleted: data.isCompleted,
-                erstelltAm: new Date(),
+                createdAt: new Date(),
             })
         }
 

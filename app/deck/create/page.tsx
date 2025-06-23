@@ -32,10 +32,10 @@ export default function CreateDeckPage() {
 
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [formData, setFormData] = useState({
-        titel: '',
-        beschreibung: '',
+        title: '',
+        description: '',
         kategorie: '',
-        aktivBis: null as Date | null,
+        activeUntil: null as Date | null,
     })
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -43,13 +43,13 @@ export default function CreateDeckPage() {
         setIsSubmitting(true)
 
         const formDataToSend = new FormData()
-        formDataToSend.append('titel', formData.titel)
-        formDataToSend.append('beschreibung', formData.beschreibung)
+        formDataToSend.append('title', formData.title)
+        formDataToSend.append('description', formData.description)
         formDataToSend.append('kategorie', formData.kategorie)
 
-        if (formData.aktivBis) {
-            const utcDate = toUTCDateOnly(formData.aktivBis)
-            formDataToSend.append('aktivBis', utcDate.toISOString())
+        if (formData.activeUntil) {
+            const utcDate = toUTCDateOnly(formData.activeUntil)
+            formDataToSend.append('activeUntil', utcDate.toISOString())
         }
 
         const result = await createDeck(formDataToSend)
@@ -87,14 +87,14 @@ export default function CreateDeckPage() {
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="titel">{t('titleLabel')}</Label>
+                            <Label htmlFor="title">{t('titleLabel')}</Label>
                             <Input
-                                id="titel"
-                                value={formData.titel}
+                                id="title"
+                                value={formData.title}
                                 onChange={(e) =>
                                     setFormData((prev) => ({
                                         ...prev,
-                                        titel: e.target.value,
+                                        title: e.target.value,
                                     }))
                                 }
                                 placeholder={t('titlePlaceholder')}
@@ -103,16 +103,16 @@ export default function CreateDeckPage() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="beschreibung">
+                            <Label htmlFor="description">
                                 {t('descriptionLabel')}
                             </Label>
                             <Input
-                                id="beschreibung"
-                                value={formData.beschreibung}
+                                id="description"
+                                value={formData.description}
                                 onChange={(e) =>
                                     setFormData((prev) => ({
                                         ...prev,
-                                        beschreibung: e.target.value,
+                                        description: e.target.value,
                                     }))
                                 }
                                 placeholder={t('descriptionPlaceholder')}
@@ -138,7 +138,7 @@ export default function CreateDeckPage() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="aktivBis">
+                            <Label htmlFor="activeUntil">
                                 {t('dueDateLabel')}
                             </Label>
                             <div className="flex w-full gap-2">
@@ -148,15 +148,15 @@ export default function CreateDeckPage() {
                                             variant="outline"
                                             className={cn(
                                                 'w-full flex-1 justify-start text-left font-normal',
-                                                !formData.aktivBis &&
+                                                !formData.activeUntil &&
                                                     'text-muted-foreground'
                                             )}
-                                            id="aktivBis"
+                                            id="activeUntil"
                                         >
                                             <CalendarIcon className="mr-2 h-4 w-4" />
-                                            {formData.aktivBis ? (
+                                            {formData.activeUntil ? (
                                                 format(
-                                                    formData.aktivBis,
+                                                    formData.activeUntil,
                                                     'dd.MM.yyyy'
                                                 )
                                             ) : (
@@ -173,12 +173,12 @@ export default function CreateDeckPage() {
                                         <Calendar
                                             mode="single"
                                             selected={
-                                                formData.aktivBis || undefined
+                                                formData.activeUntil || undefined
                                             }
                                             onSelect={(date) =>
                                                 setFormData((prev) => ({
                                                     ...prev,
-                                                    aktivBis: date || null,
+                                                    activeUntil: date || null,
                                                 }))
                                             }
                                             initialFocus
@@ -186,14 +186,14 @@ export default function CreateDeckPage() {
                                     </PopoverContent>
                                 </Popover>
 
-                                {formData.aktivBis && (
+                                {formData.activeUntil && (
                                     <Button
                                         type="button"
                                         variant="ghost"
                                         onClick={() =>
                                             setFormData((prev) => ({
                                                 ...prev,
-                                                aktivBis: null,
+                                                activeUntil: null,
                                             }))
                                         }
                                         className="flex w-auto items-center justify-center gap-1"

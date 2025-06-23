@@ -48,10 +48,10 @@ export default async function Dashboard({ session }: DashboardProps) {
     )
 
     const currentDecks = deckStats.filter(
-        ({ deck }) => !deck.aktivBis || isDateCurrent(deck.aktivBis)
+        ({ deck }) => !deck.activeUntil || isDateCurrent(deck.activeUntil)
     )
     const pastDecks = deckStats.filter(
-        ({ deck }) => deck.aktivBis && isDatePast(deck.aktivBis)
+        ({ deck }) => deck.activeUntil && isDatePast(deck.activeUntil)
     )
 
     return (

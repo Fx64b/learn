@@ -20,7 +20,7 @@ interface LernModusClientProps {
     flashcards: FlashcardType[]
 }
 
-export default function LernModusClient({
+export default function LearnModeClient({
     deckId,
     flashcards: initialFlashcards,
 }: LernModusClientProps) {
@@ -239,7 +239,7 @@ export default function LernModusClient({
         toast.success(t('cardsShuffled'))
     }, [flashcards, t])
 
-    const handleBewertung = async (bewertung: number) => {
+    const handleRating = async (rating: number) => {
         if (flashcards.length === 0 || aktuellerIndex >= flashcards.length)
             return
 
@@ -248,7 +248,7 @@ export default function LernModusClient({
         // Don't wait for api response, to improve UX on slow connections
         setAktuellerIndex(aktuellerIndex + 1)
 
-        const result = await reviewCard(aktuelleKarte.id, bewertung)
+        const result = await reviewCard(aktuelleKarte.id, rating)
 
         setHasUnsavedSession(true)
 
@@ -365,9 +365,9 @@ export default function LernModusClient({
                 {flashcards[aktuellerIndex] && (
                     <Flashcard
                         key={flashcards[aktuellerIndex].id}
-                        vorderseite={flashcards[aktuellerIndex].vorderseite}
-                        rueckseite={flashcards[aktuellerIndex].rueckseite}
-                        onRating={handleBewertung}
+                        front={flashcards[aktuellerIndex].front}
+                        back={flashcards[aktuellerIndex].back}
+                        onRating={handleRating}
                         className="w-full max-w-2xl"
                     />
                 )}

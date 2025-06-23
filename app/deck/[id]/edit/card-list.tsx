@@ -21,29 +21,29 @@ interface CardListProps {
 
 interface EditingState {
     id: string | null
-    vorderseite: string
-    rueckseite: string
+    front: string
+    back: string
 }
 
 export default function CardList({ flashcards }: CardListProps) {
     const t = useTranslations('deck.cards')
     const [editing, setEditing] = useState<EditingState>({
         id: null,
-        vorderseite: '',
-        rueckseite: '',
+        front: '',
+        back: '',
     })
     const [isSubmitting, setIsSubmitting] = useState(false)
 
     const startEditing = (card: FlashcardType) => {
         setEditing({
             id: card.id,
-            vorderseite: card.vorderseite,
-            rueckseite: card.rueckseite,
+            front: card.front,
+            back: card.back,
         })
     }
 
     const cancelEditing = () => {
-        setEditing({ id: null, vorderseite: '', rueckseite: '' })
+        setEditing({ id: null, front: '', back: '' })
     }
 
     const saveEdit = async () => {
@@ -52,9 +52,9 @@ export default function CardList({ flashcards }: CardListProps) {
         setIsSubmitting(true)
         const result = await updateFlashcard({
             id: editing.id,
-            vorderseite: editing.vorderseite,
-            rueckseite: editing.rueckseite,
-            istPruefungsrelevant: true, // Default to true, this is not implemented yet
+            front: editing.front,
+            back: editing.back,
+            isExamRelevant: true, // Default to true, this is not implemented yet
         })
 
         if (result.success) {
@@ -89,11 +89,11 @@ export default function CardList({ flashcards }: CardListProps) {
                                         {t('frontSide')}
                                     </label>
                                     <Input
-                                        value={editing.vorderseite}
+                                        value={editing.front}
                                         onChange={(e) =>
                                             setEditing((prev) => ({
                                                 ...prev,
-                                                vorderseite: e.target.value,
+                                                front: e.target.value,
                                             }))
                                         }
                                     />
@@ -103,11 +103,11 @@ export default function CardList({ flashcards }: CardListProps) {
                                         {t('backSide')}
                                     </label>
                                     <Textarea
-                                        value={editing.rueckseite}
+                                        value={editing.back}
                                         onChange={(e) =>
                                             setEditing((prev) => ({
                                                 ...prev,
-                                                rueckseite: e.target.value,
+                                                back: e.target.value,
                                             }))
                                         }
                                         placeholder={t('backPlaceholder')}
@@ -135,11 +135,9 @@ export default function CardList({ flashcards }: CardListProps) {
                         ) : (
                             <div className="flex items-start justify-between gap-4">
                                 <div>
-                                    <p className="font-medium">
-                                        {card.vorderseite}
-                                    </p>
+                                    <p className="font-medium">{card.front}</p>
                                     <p className="text-muted-foreground text-sm">
-                                        {card.rueckseite}
+                                        {card.back}
                                     </p>
                                 </div>
                                 <div className="flex gap-1">

@@ -9,22 +9,22 @@ import { getFlashcardsByDeckId } from '@/app/actions/flashcard'
 
 import { Button } from '@/components/ui/button'
 
-import LernModusClient from './lern-modus-client'
+import LearnModeClient from './learn-mode-client'
 
 export default async function LernSeite({
     params,
 }: {
-    params: Promise<{ kategorie: string }>
+    params: Promise<{ category: string }>
 }) {
-    const { kategorie } = await params
+    const { category } = await params
     const t = await getTranslations('learn')
 
-    const deck = await getDeckById(kategorie)
+    const deck = await getDeckById(category)
     if (!deck) {
         notFound()
     }
 
-    const flashcards = await getFlashcardsByDeckId(kategorie)
+    const flashcards = await getFlashcardsByDeckId(category)
 
     return (
         <div className="container mx-auto flex min-h-screen max-w-4xl flex-col px-4 py-6 sm:py-8">
@@ -42,7 +42,7 @@ export default async function LernSeite({
                             </Link>
                         </Button>
                         <h1 className="text-xl font-bold sm:text-2xl">
-                            {deck.titel}
+                            {deck.title}
                         </h1>
                     </div>
 
@@ -56,7 +56,7 @@ export default async function LernSeite({
             </header>
 
             <main className="flex flex-1 flex-col">
-                <LernModusClient deckId={deck.id} flashcards={flashcards} />
+                <LearnModeClient deckId={deck.id} flashcards={flashcards} />
             </main>
         </div>
     )

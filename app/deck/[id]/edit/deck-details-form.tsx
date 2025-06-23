@@ -22,6 +22,7 @@ import type React from 'react'
 import { useState } from 'react'
 
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'next/navigation'
 
 import { deleteDeck, resetDeckProgress, updateDeck } from '@/app/actions/deck'
 import { getExportableFlashcards } from '@/app/actions/export'
@@ -56,7 +57,6 @@ import {
     PopoverTrigger,
 } from '@/components/ui/popover'
 import { Textarea } from '@/components/ui/textarea'
-import { useRouter } from 'next/navigation'
 
 interface DeckDetailsFormProps {
     deck: DeckType
@@ -71,8 +71,8 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
     const [isDeleting, setIsDeleting] = useState(false)
     const [exportData, setExportData] = useState<
         | {
-              vorderseite: string
-              rueckseite: string
+              front: string
+              back: string
           }[]
         | null
     >(null)
@@ -81,10 +81,10 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
     const [isLoadingExport, setIsLoadingExport] = useState(false)
     const [formData, setFormData] = useState({
         id: deck.id,
-        titel: deck.titel,
-        beschreibung: deck.beschreibung || '',
-        kategorie: deck.kategorie,
-        aktivBis: fromUTCDateOnly(deck.aktivBis),
+        title: deck.title,
+        description: deck.description || '',
+        kategorie: deck.category,
+        activeUntil: fromUTCDateOnly(deck.activeUntil),
     })
 
     const router = useRouter()
@@ -95,14 +95,14 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
 
         const formDataToSend = new FormData()
         formDataToSend.append('id', formData.id)
-        formDataToSend.append('titel', formData.titel)
-        formDataToSend.append('beschreibung', formData.beschreibung)
+        formDataToSend.append('title', formData.title)
+        formDataToSend.append('description', formData.description)
         formDataToSend.append('kategorie', formData.kategorie)
 
-        if (formData.aktivBis) {
+        if (formData.activeUntil) {
             // Convert to UTC date-only before sending
-            const utcDate = toUTCDateOnly(formData.aktivBis)
-            formDataToSend.append('aktivBis', utcDate.toISOString())
+            const utcDate = toUTCDateOnly(formData.activeUntil)
+            formDataToSend.append('activeUntil', utcDate.toISOString())
         }
 
         try {
@@ -148,7 +148,7 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
 
             if (result.success) {
                 toast.success(t('dangerZone.deleteDeck.success'))
-                router.push("/")
+                router.push('/')
             } else {
                 toast.error(t('dangerZone.deleteDeck.error'))
             }
@@ -203,19 +203,19 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                         <div className="grid gap-6 md:grid-cols-2">
                             <div className="col-span-2 space-y-2">
                                 <Label
-                                    htmlFor="titel"
+                                    htmlFor="title"
                                     className="text-sm font-medium"
                                 >
                                     {t('titleRequired')}{' '}
                                     <span className="text-red-500">*</span>
                                 </Label>
                                 <Input
-                                    id="titel"
-                                    value={formData.titel}
+                                    id="title"
+                                    value={formData.title}
                                     onChange={(e) =>
                                         setFormData((prev) => ({
                                             ...prev,
-                                            titel: e.target.value,
+                                            title: e.target.value,
                                         }))
                                     }
                                     placeholder={t('titlePlaceholder')}
@@ -226,18 +226,18 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
 
                             <div className="col-span-2 space-y-2">
                                 <Label
-                                    htmlFor="beschreibung"
+                                    htmlFor="description"
                                     className="text-sm font-medium"
                                 >
                                     {t('descriptionLabel')}
                                 </Label>
                                 <Textarea
-                                    id="beschreibung"
-                                    value={formData.beschreibung}
+                                    id="description"
+                                    value={formData.description}
                                     onChange={(e) =>
                                         setFormData((prev) => ({
                                             ...prev,
-                                            beschreibung: e.target.value,
+                                            description: e.target.value,
                                         }))
                                     }
                                     placeholder={t('descriptionPlaceholder')}
@@ -270,7 +270,7 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
 
                             <div className="col-span-2 space-y-2 md:col-span-1">
                                 <Label
-                                    htmlFor="aktivBis"
+                                    htmlFor="activeUntil"
                                     className="text-sm font-medium"
                                 >
                                     {t('dueDateLabel')}
@@ -282,15 +282,15 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                                                 variant="outline"
                                                 className={cn(
                                                     'w-full flex-1 justify-start text-left font-normal',
-                                                    !formData.aktivBis &&
+                                                    !formData.activeUntil &&
                                                         'text-muted-foreground'
                                                 )}
-                                                id="aktivBis"
+                                                id="activeUntil"
                                             >
                                                 <CalendarIcon className="mr-2 h-4 w-4" />
-                                                {formData.aktivBis ? (
+                                                {formData.activeUntil ? (
                                                     format(
-                                                        formData.aktivBis,
+                                                        formData.activeUntil,
                                                         'dd.MM.yyyy'
                                                     )
                                                 ) : (
@@ -307,13 +307,13 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                                             <Calendar
                                                 mode="single"
                                                 selected={
-                                                    formData.aktivBis ||
+                                                    formData.activeUntil ||
                                                     undefined
                                                 }
                                                 onSelect={(date) =>
                                                     setFormData((prev) => ({
                                                         ...prev,
-                                                        aktivBis: date || null,
+                                                        activeUntil: date || null,
                                                     }))
                                                 }
                                                 initialFocus
@@ -321,14 +321,14 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                                         </PopoverContent>
                                     </Popover>
 
-                                    {formData.aktivBis && (
+                                    {formData.activeUntil && (
                                         <Button
                                             type="button"
                                             variant="ghost"
                                             onClick={() =>
                                                 setFormData((prev) => ({
                                                     ...prev,
-                                                    aktivBis: null,
+                                                    activeUntil: null,
                                                 }))
                                             }
                                             className="flex w-auto items-center justify-center gap-1"
@@ -436,7 +436,7 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                                             <AlertDialogDescription>
                                                 {t(
                                                     'dangerZone.resetProgress.confirmDescription',
-                                                    { title: formData.titel }
+                                                    { title: formData.title }
                                                 )}
                                             </AlertDialogDescription>
                                         </AlertDialogHeader>
@@ -493,7 +493,7 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                                             <AlertDialogDescription>
                                                 {t(
                                                     'dangerZone.deleteDeck.confirmDescription',
-                                                    { title: formData.titel }
+                                                    { title: formData.title }
                                                 )}
                                             </AlertDialogDescription>
                                         </AlertDialogHeader>
@@ -525,7 +525,7 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                     <DialogContent>
                         <DialogHeader>
                             <DialogTitle>
-                                {t('exportTitle', { title: deck.titel })}
+                                {t('exportTitle', { title: deck.title })}
                             </DialogTitle>
                             <DialogDescription>
                                 {t('exportDescription')}

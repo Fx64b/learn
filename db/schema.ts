@@ -9,11 +9,11 @@ export const decks = sqliteTable('decks', {
     userId: text('user_id')
         .notNull()
         .references(() => users.id),
-    titel: text('titel').notNull(),
-    beschreibung: text('beschreibung'),
-    kategorie: text('kategorie').notNull(),
-    aktivBis: integer('aktiv_bis', { mode: 'timestamp' }),
-    erstelltAm: integer('erstellt_am', { mode: 'timestamp' })
+    title: text('title').notNull(),
+    description: text('description'),
+    category: text('category').notNull(),
+    activeUntil: integer('active_until', { mode: 'timestamp' }),
+    createdAt: integer('created_at', { mode: 'timestamp' })
         .default(sql`CURRENT_TIMESTAMP`)
         .notNull(),
 })
@@ -23,13 +23,13 @@ export const flashcards = sqliteTable('flashcards', {
     deckId: text('deck_id')
         .notNull()
         .references(() => decks.id),
-    vorderseite: text('vorderseite').notNull(),
-    rueckseite: text('rueckseite').notNull(),
-    istPruefungsrelevant: integer('ist_pruefungsrelevant', { mode: 'boolean' })
+    front: text('front').notNull(),
+    back: text('back').notNull(),
+    isExamRelevant: integer('is_exam_relevant', { mode: 'boolean' })
         .notNull()
         .default(false),
-    schwierigkeitsgrad: integer('schwierigkeitsgrad').notNull().default(0),
-    erstelltAm: integer('erstellt_am', { mode: 'timestamp' })
+    difficultyLevel: integer('difficulty_level').notNull().default(0),
+    createdAt: integer('created_at', { mode: 'timestamp' })
         .default(sql`CURRENT_TIMESTAMP`)
         .notNull(),
 })
@@ -42,13 +42,13 @@ export const cardReviews = sqliteTable('card_reviews', {
     userId: text('user_id')
         .notNull()
         .references(() => users.id),
-    bewertetAm: integer('bewertet_am', { mode: 'timestamp' })
+    reviewedAt: integer('reviewed_at', { mode: 'timestamp' })
         .default(sql`CURRENT_TIMESTAMP`)
         .notNull(),
-    bewertung: integer('bewertung').notNull(), // 1-4 (wieder, schwer, gut, einfach)
-    easeFaktor: integer('ease_faktor').notNull().default(250), // Skaliert x100 (2.5 = 250)
-    intervall: integer('intervall').notNull().default(0), // In Tagen
-    naechsteWiederholung: integer('naechste_wiederholung', {
+    rating: integer('rating').notNull(), // 1-4 (again, hard, good, easy)
+    easeFactor: integer('ease_factor').notNull().default(250), // Scaled x100 (2.5 = 250)
+    interval: integer('interval').notNull().default(0), // In days
+    nextReview: integer('next_review', {
         mode: 'timestamp',
     }).notNull(),
 })
@@ -61,12 +61,12 @@ export const reviewEvents = sqliteTable('review_events', {
     userId: text('user_id')
         .notNull()
         .references(() => users.id),
-    bewertetAm: integer('bewertet_am', { mode: 'timestamp' })
+    reviewedAt: integer('reviewed_at', { mode: 'timestamp' })
         .default(sql`CURRENT_TIMESTAMP`)
         .notNull(),
-    bewertung: integer('bewertung').notNull(),
-    easeFaktor: integer('ease_faktor').notNull(),
-    intervall: integer('intervall').notNull(),
+    rating: integer('rating').notNull(),
+    easeFactor: integer('ease_factor').notNull(),
+    interval: integer('interval').notNull(),
     createStamp: integer('create_stamp', { mode: 'timestamp' })
         .default(sql`CURRENT_TIMESTAMP`)
         .notNull(),
@@ -80,12 +80,12 @@ export const studySessions = sqliteTable('study_sessions', {
     deckId: text('deck_id').notNull(),
     startTime: integer('start_time', { mode: 'timestamp' }).notNull(),
     endTime: integer('end_time', { mode: 'timestamp' }).notNull(),
-    duration: integer('duration').notNull(), // in Millisekunden
+    duration: integer('duration').notNull(), // in milliseconds
     cardsReviewed: integer('cards_reviewed').notNull(),
     isCompleted: integer('is_completed', { mode: 'boolean' })
         .notNull()
         .default(false),
-    erstelltAm: integer('erstellt_am', { mode: 'timestamp' })
+    createdAt: integer('created_at', { mode: 'timestamp' })
         .default(sql`CURRENT_TIMESTAMP`)
         .notNull(),
 })

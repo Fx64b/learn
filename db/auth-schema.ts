@@ -7,7 +7,7 @@ export const users = sqliteTable('user', {
     emailVerified: integer('emailVerified', { mode: 'timestamp' }),
     name: text('name'),
     image: text('image'),
-    erstelltAm: integer('erstellt_am', { mode: 'timestamp' })
+    createdAt: integer('created_at', { mode: 'timestamp' })
         .default(sql`CURRENT_TIMESTAMP`)
         .notNull(),
 })

@@ -43,7 +43,7 @@ export async function DeckCard({
         >
             <CardHeader className="pb-2">
                 <div className="flex items-center gap-2">
-                    <CardTitle>{deck.titel}</CardTitle>
+                    <CardTitle>{deck.title}</CardTitle>
 
                     {isPastDue && (
                         <TooltipProvider>
@@ -56,9 +56,11 @@ export async function DeckCard({
                                 <TooltipContent>
                                     <p>
                                         {t('deck.statistics.wasDueBy')}{' '}
-                                        {fromUTCDateOnly(deck.aktivBis) &&
+                                        {fromUTCDateOnly(deck.activeUntil) &&
                                             format(
-                                                fromUTCDateOnly(deck.aktivBis)!,
+                                                fromUTCDateOnly(
+                                                    deck.activeUntil
+                                                )!,
                                                 'dd.MM.yyyy'
                                             )}
                                     </p>
@@ -68,16 +70,16 @@ export async function DeckCard({
                     )}
                 </div>
                 <CardDescription>
-                    {deck.beschreibung}
-                    {deck.aktivBis && (
+                    {deck.description}
+                    {deck.activeUntil && (
                         <div className="mt-1 text-xs">
                             <span className="text-muted-foreground">
                                 {isPastDue
                                     ? t('deck.statistics.wasDueBy')
                                     : t('deck.statistics.dueBy')}{' '}
-                                {fromUTCDateOnly(deck.aktivBis) &&
+                                {fromUTCDateOnly(deck.activeUntil) &&
                                     format(
-                                        fromUTCDateOnly(deck.aktivBis)!,
+                                        fromUTCDateOnly(deck.activeUntil)!,
                                         'dd.MM.yyyy'
                                     )}
                             </span>
