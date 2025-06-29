@@ -382,6 +382,9 @@ Contributions are welcome! Please:
 4. Push to your fork
 5. Submit a pull request
 
+## Activity
+![Alt](https://repobeats.axiom.co/api/embed/e26f5c728d5b30144b3d3353306a519469a999f0.svg "Repobeats analytics image")
+
 ## License
 
 MIT License - see [LICENSE](./LICENSE) for details
