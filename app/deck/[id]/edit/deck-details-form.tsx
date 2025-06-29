@@ -131,10 +131,7 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                 toast.error(t('dangerZone.resetProgress.error'))
             }
         } catch (error) {
-            console.error(
-                'Error when resetting learning progress:',
-                error
-            )
+            console.error('Error when resetting learning progress:', error)
             toast.error(common('error'))
         } finally {
             setIsResetting(false)
@@ -313,7 +310,8 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                                                 onSelect={(date) =>
                                                     setFormData((prev) => ({
                                                         ...prev,
-                                                        activeUntil: date || null,
+                                                        activeUntil:
+                                                            date || null,
                                                     }))
                                                 }
                                                 initialFocus
