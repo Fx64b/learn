@@ -14,7 +14,7 @@ import { createFlashcardsFromJson } from './flashcard'
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
 const ALLOWED_FILE_TYPES = ['application/pdf']
 const MAX_PROMPT_LENGTH = 1000
-const MAX_CARDS_PER_GENERATION = 50
+const MAX_CARDS_PER_GENERATION = 60
 
 const flashcardSchema= z.object({
     flashcards: z
@@ -186,7 +186,7 @@ export async function generateAIFlashcards({
                     }
 
                     // Truncate document content if too long (keep under token limits)
-                    const maxDocumentLength = 50000
+                    const maxDocumentLength = 5000000
                     if (documentContent.length > maxDocumentLength) {
                         documentContent =
                             documentContent.substring(0, maxDocumentLength) +
@@ -215,7 +215,7 @@ Your task is to generate high-quality flashcards based on the user's request. Fo
 9. For complex topics, break them down into multiple simpler cards
 10. Maintain consistent difficulty appropriate to the topic
 
-Generate between 5 and ${MAX_CARDS_PER_GENERATION} flashcards based on the content provided.`
+Generate between 5 and ${MAX_CARDS_PER_GENERATION - 5} flashcards based on the content provided. Make sure to never exceed this limit under any circumstances.`
 
         // Build the user prompt
         let userPrompt = `Create flashcards for: ${sanitizedPrompt}`
