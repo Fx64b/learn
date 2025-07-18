@@ -2,11 +2,12 @@
 
 import { authOptions } from '@/lib/auth'
 import { checkRateLimit } from '@/lib/rate-limit'
+import { isUserPro } from '@/lib/subscription'
 import { google } from '@ai-sdk/google'
 import { generateObject } from 'ai'
 import { z } from 'zod'
 
-import { getServerSession, Session } from 'next-auth'
+import { Session, getServerSession } from 'next-auth'
 import { getTranslations } from 'next-intl/server'
 
 import { createFlashcardsFromJson } from './flashcard'
@@ -16,7 +17,7 @@ const ALLOWED_FILE_TYPES = ['application/pdf']
 const MAX_PROMPT_LENGTH = 1000
 const MAX_CARDS_PER_GENERATION = 60
 
-const flashcardSchema= z.object({
+const flashcardSchema = z.object({
     flashcards: z
         .array(
             z.object({
@@ -119,7 +120,14 @@ export async function generateAIFlashcards({
             return { success: false, error: authT('notAuthenticated') }
         }
 
-        // TODO: implement pro subscription check
+        const isPro = await isUserPro(session.user.id)
+        if (!isPro) {
+            return {
+                success: false,
+                error: t('proRequired'),
+                requiresPro: true,
+            }
+        }
 
         // Rate limiting - 5 per hour for AI generation
         const rateLimitResult = await checkRateLimit(

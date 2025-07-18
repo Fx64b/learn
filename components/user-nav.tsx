@@ -1,6 +1,9 @@
+// components/user-nav.tsx
 'use client'
 
-import { User } from 'lucide-react'
+import { Sparkles, User } from 'lucide-react'
+
+import { useEffect, useState } from 'react'
 
 import { signOut, useSession } from 'next-auth/react'
 import { useTranslations } from 'next-intl'
@@ -16,10 +19,36 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
+// components/user-nav.tsx
+
+// components/user-nav.tsx
+
+// components/user-nav.tsx
+
+// components/user-nav.tsx
+
+// components/user-nav.tsx
+
+// components/user-nav.tsx
+
+// components/user-nav.tsx
+
 export function UserNav() {
     const t = useTranslations()
     const { data: session, status } = useSession()
     const loading = status === 'loading'
+    const [isPro, setIsPro] = useState(false)
+
+    useEffect(() => {
+        if (session?.user?.id) {
+            fetch('/api/user/subscription-status')
+                .then((res) => res.json())
+                .then((data) => setIsPro(data.isPro))
+                .catch((err) =>
+                    console.error('Failed to fetch subscription status:', err)
+                )
+        }
+    }, [session])
 
     if (loading) {
         return (
@@ -50,6 +79,15 @@ export function UserNav() {
                 <DropdownMenuLabel>
                     {session.user?.email || t('auth.myAccount')}
                 </DropdownMenuLabel>
+                {isPro && (
+                    <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuLabel className="flex items-center gap-2 text-xs">
+                            <Sparkles className="h-3 w-3 text-purple-600" />
+                            Learn Pro
+                        </DropdownMenuLabel>
+                    </>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                     <Link href="/profile">{t('common.profile')}</Link>

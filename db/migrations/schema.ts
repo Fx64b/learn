@@ -2,6 +2,7 @@ import { sql } from 'drizzle-orm'
 import {
     AnySQLiteColumn,
     foreignKey,
+    index,
     integer,
     sqliteTable,
     text,
@@ -15,7 +16,7 @@ export const flashcards = sqliteTable('flashcards', {
         .references(() => decks.id),
     front: text().notNull(),
     back: text().notNull(),
-    isExamRelevant: integer('is_exam_relevant').default(0).notNull(),
+    isExamRelevant: integer('is_exam_relevant').default(false).notNull(),
     difficultyLevel: integer('difficulty_level').default(0).notNull(),
     createdAt: integer('created_at')
         .default(sql`(CURRENT_TIMESTAMP)`)
@@ -34,7 +35,10 @@ export const user = sqliteTable(
             .default(sql`(CURRENT_TIMESTAMP)`)
             .notNull(),
     },
-    (table) => [uniqueIndex('user_email_unique').on(table.email)]
+    (table) => [
+        index('users_email_idx').on(table.email),
+        uniqueIndex('user_email_unique').on(table.email),
+    ]
 )
 
 export const account = sqliteTable('account', {
@@ -106,7 +110,7 @@ export const studySessions = sqliteTable('study_sessions', {
     endTime: integer('end_time').notNull(),
     duration: integer().notNull(),
     cardsReviewed: integer('cards_reviewed').notNull(),
-    isCompleted: integer('is_completed').default(0).notNull(),
+    isCompleted: integer('is_completed').default(false).notNull(),
     createdAt: integer('created_at')
         .default(sql`(CURRENT_TIMESTAMP)`)
         .notNull(),
@@ -117,7 +121,7 @@ export const userPreferences = sqliteTable('user_preferences', {
         .primaryKey()
         .notNull()
         .references(() => user.id),
-    animationsEnabled: integer('animations_enabled').default(0).notNull(),
+    animationsEnabled: integer('animations_enabled').default(false).notNull(),
     animationSpeed: integer('animation_speed').default(200).notNull(),
     animationDirection: text('animation_direction')
         .default('horizontal')

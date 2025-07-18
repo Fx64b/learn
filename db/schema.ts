@@ -163,3 +163,56 @@ export const userPreferences = sqliteTable('user_preferences', {
         .default(sql`CURRENT_TIMESTAMP`)
         .notNull(),
 })
+
+export const subscriptions = sqliteTable(
+    'subscriptions',
+    {
+        id: text('id').primaryKey().notNull(),
+        userId: text('user_id')
+            .notNull()
+            .references(() => users.id)
+            .unique(),
+        stripeCustomerId: text('stripe_customer_id').unique(),
+        stripeSubscriptionId: text('stripe_subscription_id').unique(),
+        stripePriceId: text('stripe_price_id'),
+        stripeCurrentPeriodEnd: integer('stripe_current_period_end', {
+            mode: 'timestamp',
+        }),
+        status: text('status'), // 'active', 'canceled', 'past_due', etc.
+        cancelAtPeriodEnd: integer('cancel_at_period_end', {
+            mode: 'boolean',
+        }).default(false),
+        createdAt: integer('created_at', { mode: 'timestamp' })
+            .default(sql`CURRENT_TIMESTAMP`)
+            .notNull(),
+        updatedAt: integer('updated_at', { mode: 'timestamp' })
+            .default(sql`CURRENT_TIMESTAMP`)
+            .notNull(),
+    },
+    (table) => ({
+        userIdIdx: index('subscriptions_user_id_idx').on(table.userId),
+        stripeCustomerIdIdx: index('subscriptions_stripe_customer_id_idx').on(
+            table.stripeCustomerId
+        ),
+    })
+)
+
+export const webhookEvents = sqliteTable(
+    'webhook_events',
+    {
+        id: text('id').primaryKey().notNull(), // Stripe event ID
+        type: text('type').notNull(),
+        processedAt: integer('processed_at', { mode: 'timestamp' })
+            .default(sql`CURRENT_TIMESTAMP`)
+            .notNull(),
+        retryCount: integer('retry_count').default(0),
+        status: text('status').notNull().default('processed'), // processed, failed, skipped
+        error: text('error'),
+    },
+    (table) => ({
+        typeIdx: index('webhook_events_type_idx').on(table.type),
+        processedAtIdx: index('webhook_events_processed_at_idx').on(
+            table.processedAt
+        ),
+    })
+)

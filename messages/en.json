@@ -338,7 +338,8 @@
             "unexpectedError": "An unexpected error occurred. Please try again.",
             "flashcardsGenerated": "{count} flashcards successfully generated",
             "aiGenerateError": "Error generating flashcards with AI",
-            "noCardsGenerated": "No flashcards generated. Please try a different prompt or check the document."
+            "noCardsGenerated": "No flashcards generated. Please try a different prompt or check the document.",
+            "proRequired": "AI flashcard generation is a Pro feature. Upgrade to continue."
         },
         "tabs": {
             "details": "Deck Details",
@@ -545,6 +546,40 @@
             "inProgress": "in progress",
             "planning": "planning",
             "todo": "todo"
+        }
+    },
+    "pricing": {
+        "title": "Choose Your Plan",
+        "subtitle": "Unlock AI-powered learning features with Learn Pro",
+        "monthly": "Monthly",
+        "yearly": "Yearly",
+        "save": "Save ${amount}",
+        "month": "month",
+        "year": "year",
+        "currentPlan": "Current Plan",
+        "loading": "Loading...",
+        "subscriptionError": "Failed to start subscription process",
+        "free": {
+            "title": "Free",
+            "description": "Perfect for getting started",
+            "features": {
+                "unlimitedCards": "Unlimited flashcards",
+                "basicStats": "Basic statistics",
+                "spacedRepetition": "Spaced repetition algorithm"
+            }
+        },
+        "pro": {
+            "title": "Learn Pro",
+            "badge": "POPULAR",
+            "description": "Supercharge your learning with AI",
+            "cta": "Upgrade to Pro",
+            "features": {
+                "everything": "Everything in Free",
+                "aiFlashcards": "AI-powered flashcard generation",
+                "advancedAnalytics": "Advanced learning analytics",
+                "unlimitedDecks": "Unlimited decks",
+                "prioritySupport": "Priority support"
+            }
         }
     }
 }

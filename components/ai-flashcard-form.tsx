@@ -114,6 +114,13 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
                 fileType,
             })
 
+            if (result.requiresPro) {
+                // Show upgrade modal or redirect
+                toast.error(result.error || t('proRequired'))
+                router.push('/pricing')
+                return
+            }
+
             if (result.success) {
                 toast.success(result.message || t('success'))
                 setPrompt('')

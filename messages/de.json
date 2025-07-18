@@ -341,7 +341,8 @@
             "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuche es erneut.",
             "flashcardsGenerated": "{count} Lernkarten erfolgreich generiert",
             "aiGenerationError": "Fehler bei der KI-Generierung der Lernkarten",
-            "noCardsGenerated": "Keine Lernkarten generiert. Bitte versuche es erneut mit einer anderen Eingabe."
+            "noCardsGenerated": "Keine Lernkarten generiert. Bitte versuche es erneut mit einer anderen Eingabe.",
+            "proRequired": "AI-Lernkarten-Generator ist nur für Pro-Nutzer verfügbar"
         },
         "statistics": {
             "totalCards": "Karten insgesamt",
@@ -548,6 +549,40 @@
             "inProgress": "in Bearbeitung",
             "planning": "Planung",
             "todo": "zu erledigen"
+        }
+    },
+    "pricing": {
+        "title": "Plan wählen",
+        "subtitle": "Schalten Sie KI-gestützte Lernfunktionen mit Learn Pro frei",
+        "monthly": "Monatlich",
+        "yearly": "Jährlich",
+        "save": "${amount} sparen",
+        "month": "Monat",
+        "year": "Jahr",
+        "currentPlan": "Aktueller Plan",
+        "loading": "Wird geladen...",
+        "subscriptionError": "Abonnement-Prozess konnte nicht gestartet werden",
+        "free": {
+            "title": "Kostenlos",
+            "description": "Perfekt für den Einstieg",
+            "features": {
+                "unlimitedCards": "Unbegrenzte Lernkarten",
+                "basicStats": "Grundlegende Statistiken",
+                "spacedRepetition": "Spaced-Repetition-Algorithmus"
+            }
+        },
+        "pro": {
+            "title": "Learn Pro",
+            "badge": "BELIEBT",
+            "description": "Verbessern Sie Ihr Lernen mit KI",
+            "cta": "Auf Pro upgraden",
+            "features": {
+                "everything": "Alles aus dem kostenlosen Plan",
+                "aiFlashcards": "KI-gestützte Lernkarten-Erstellung",
+                "advancedAnalytics": "Erweiterte Lernanalysen",
+                "unlimitedDecks": "Unbegrenzte Kartenstapel",
+                "prioritySupport": "Prioritäts-Support"
+            }
         }
     }
 }
