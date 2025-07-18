@@ -1,6 +1,16 @@
 import { db } from '@/db'
 import { subscriptions, webhookEvents } from '@/db/schema'
+import {
+    ErrorCategory,
+    createRateLimitErrorResponse,
+    createSecureErrorResponse,
+} from '@/lib/stripe/secure-error-handling'
+import { checkStripeRateLimit } from '@/lib/stripe/stripe-rate-limit'
 import { stripe } from '@/lib/stripe/stripe-server'
+import {
+    logWebhookSecurityEvent,
+    validateStripeWebhookSource,
+} from '@/lib/stripe/stripe-webhook-security'
 import { eq } from 'drizzle-orm'
 import Stripe from 'stripe'
 
@@ -18,47 +28,70 @@ const HANDLED_EVENTS = new Set([
     'customer.subscription.trial_will_end',
 ])
 
-interface WebhookError extends Error {
-    statusCode?: number
-    shouldRetry?: boolean
-}
-
 export async function POST(request: NextRequest) {
     const startTime = Date.now()
     let eventId: string | undefined
 
     try {
-        // Validate environment
-        if (!process.env.STRIPE_WEBHOOK_SECRET) {
-            console.error('STRIPE_WEBHOOK_SECRET not configured')
-            return NextResponse.json(
-                { error: 'Webhook not configured' },
-                { status: 500 }
+        // Step 1: Check rate limiting
+        const rateLimitResponse = await checkStripeRateLimit(request, 'webhook')
+        if (rateLimitResponse) {
+            return rateLimitResponse
+        }
+
+        // Step 2: Validate webhook source (IP + User-Agent)
+        const sourceValidation = validateStripeWebhookSource(request)
+        if (!sourceValidation.isValid) {
+            logWebhookSecurityEvent('blocked', sourceValidation, {
+                reason: sourceValidation.reason,
+                endpoint: '/api/stripe/webhook',
+            })
+
+            return createSecureErrorResponse(
+                403,
+                ErrorCategory.AUTHORIZATION,
+                `Webhook source validation failed: ${sourceValidation.reason}`
             )
         }
 
-        // Get request body and headers
+        logWebhookSecurityEvent('allowed', sourceValidation, {
+            endpoint: '/api/stripe/webhook',
+        })
+
+        // Step 3: Validate environment
+        if (!process.env.STRIPE_WEBHOOK_SECRET) {
+            console.error('STRIPE_WEBHOOK_SECRET not configured')
+            return createSecureErrorResponse(
+                500,
+                ErrorCategory.SYSTEM,
+                'Webhook configuration error'
+            )
+        }
+
+        // Step 4: Get request body and headers
         const body = await request.text()
         const headersList = await headers()
         const signature = headersList.get('stripe-signature')
 
         if (!signature) {
             console.error('Missing stripe-signature header')
-            return NextResponse.json(
-                { error: 'Missing stripe-signature header' },
-                { status: 400 }
+            return createSecureErrorResponse(
+                400,
+                ErrorCategory.VALIDATION,
+                'Missing stripe-signature header'
             )
         }
 
         if (!body) {
             console.error('Empty request body')
-            return NextResponse.json(
-                { error: 'Empty request body' },
-                { status: 400 }
+            return createSecureErrorResponse(
+                400,
+                ErrorCategory.VALIDATION,
+                'Empty request body'
             )
         }
 
-        // Verify webhook signature
+        // Step 5: Verify webhook signature
         let event: Stripe.Event
         try {
             event = stripe.webhooks.constructEvent(
@@ -68,22 +101,23 @@ export async function POST(request: NextRequest) {
             )
         } catch (err: any) {
             console.error('Webhook signature verification failed:', err.message)
-            return NextResponse.json(
-                { error: 'Invalid signature' },
-                { status: 400 }
+            return createSecureErrorResponse(
+                400,
+                ErrorCategory.AUTHENTICATION,
+                'Webhook signature verification failed'
             )
         }
 
         eventId = event.id
         console.log(`Processing webhook: ${event.type} [${eventId}]`)
 
-        // Check if event is handled
+        // Step 6: Check if event is handled
         if (!HANDLED_EVENTS.has(event.type)) {
             console.log(`Unhandled event type: ${event.type}`)
             return NextResponse.json({ received: true })
         }
 
-        // Check for idempotency (prevent duplicate processing)
+        // Step 7: Check for idempotency (prevent duplicate processing)
         const existingEvent = await db
             .select()
             .from(webhookEvents)
@@ -95,10 +129,10 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ received: true })
         }
 
-        // Process the event
+        // Step 8: Process the event
         await processWebhookEvent(event)
 
-        // Log processing time
+        // Step 9: Log processing time
         const processingTime = Date.now() - startTime
         console.log(
             `Webhook ${eventId} processed successfully in ${processingTime}ms`
@@ -128,17 +162,12 @@ export async function POST(request: NextRequest) {
             }
         }
 
-        // Return appropriate status code
-        const statusCode = error.statusCode || 500
-        const shouldRetry = error.shouldRetry !== false
-
-        return NextResponse.json(
-            {
-                error: 'Webhook processing failed',
-                retryable: shouldRetry,
-            },
-            { status: statusCode }
-        )
+        // Return secure error response
+        return createSecureErrorResponse(500, ErrorCategory.SYSTEM, error, {
+            eventId,
+            processingTime,
+            retryable: true,
+        })
     }
 }
 
@@ -385,21 +414,67 @@ async function upsertSubscription(
         updatedAt: new Date(),
     }
 
-    // Check if subscription exists
-    const existingSubscription = await tx
+    // Check for existing subscription by multiple criteria
+    // 1. By stripeSubscriptionId (exact match)
+    // 2. By userId (user's current subscription)
+    // 3. By stripeCustomerId (customer's subscription)
+    const existingBySubscriptionId = await tx
         .select()
         .from(subscriptions)
         .where(eq(subscriptions.stripeSubscriptionId, subscription.id))
         .limit(1)
 
-    if (existingSubscription.length > 0) {
+    const existingByUserId = await tx
+        .select()
+        .from(subscriptions)
+        .where(eq(subscriptions.userId, userId))
+        .limit(1)
+
+    const existingByCustomerId = await tx
+        .select()
+        .from(subscriptions)
+        .where(
+            eq(subscriptions.stripeCustomerId, subscription.customer as string)
+        )
+        .limit(1)
+
+    // Determine which record to update
+    let recordToUpdate = null
+
+    if (existingBySubscriptionId.length > 0) {
+        // Exact match by subscription ID - this is the most specific
+        recordToUpdate = existingBySubscriptionId[0]
+        console.log(
+            `Found existing subscription by subscription ID: ${recordToUpdate.id}`
+        )
+    } else if (existingByUserId.length > 0) {
+        // User has an existing subscription - update it with new subscription details
+        recordToUpdate = existingByUserId[0]
+        console.log(
+            `Found existing subscription by user ID: ${recordToUpdate.id}`
+        )
+    } else if (existingByCustomerId.length > 0) {
+        // Customer has an existing subscription - update it
+        recordToUpdate = existingByCustomerId[0]
+        console.log(
+            `Found existing subscription by customer ID: ${recordToUpdate.id}`
+        )
+    }
+
+    if (recordToUpdate) {
         // Update existing subscription
+        console.log(
+            `Updating existing subscription record: ${recordToUpdate.id}`
+        )
         await tx
             .update(subscriptions)
             .set(subscriptionData)
-            .where(eq(subscriptions.stripeSubscriptionId, subscription.id))
+            .where(eq(subscriptions.id, recordToUpdate.id))
     } else {
         // Create new subscription
+        console.log(
+            `Creating new subscription record for subscription: ${subscription.id}`
+        )
         await tx.insert(subscriptions).values({
             id: subscription.id,
             ...subscriptionData,

@@ -1,6 +1,7 @@
 'use server'
 
 import { authOptions } from '@/lib/auth'
+import { sanitizeErrorMessage } from '@/lib/secure-error-handling'
 import { stripe } from '@/lib/stripe/stripe-server'
 import { getUserSubscription } from '@/lib/subscription'
 import { z } from 'zod'
@@ -32,17 +33,26 @@ export async function createCheckoutSession(priceId: string) {
         // Validate input
         const validation = createCheckoutSessionSchema.safeParse({ priceId })
         if (!validation.success) {
-            throw new Error('Invalid price ID provided')
+            return {
+                success: false,
+                error: 'Invalid pricing plan selected',
+            }
         }
 
         // Validate price ID against allowed values
         if (!validPriceIds.includes(priceId)) {
-            throw new Error('Invalid price ID')
+            return {
+                success: false,
+                error: 'Invalid pricing plan selected',
+            }
         }
 
         const session = await getServerSession(authOptions)
         if (!session?.user?.id || !session?.user?.email) {
-            throw new Error('User not authenticated')
+            return {
+                success: false,
+                error: 'Please sign in to continue',
+            }
         }
 
         const headersList = await headers()
@@ -50,82 +60,92 @@ export async function createCheckoutSession(priceId: string) {
             headersList.get('origin') || process.env.NEXT_PUBLIC_SITE_URL
 
         if (!origin) {
-            throw new Error('Origin not found')
+            return {
+                success: false,
+                error: 'Service configuration error',
+            }
         }
 
         // Check existing subscription and determine action
-        const existingSubscription = await getUserSubscription(session.user.id)
+        let existingSubscription
+        try {
+            existingSubscription = await getUserSubscription(session.user.id)
+        } catch (error) {
+            console.error('Error fetching subscription:', error)
+            return {
+                success: false,
+                error: 'Error checking subscription status',
+            }
+        }
+
         const subscriptionAction =
             await determineSubscriptionAction(existingSubscription)
 
-        switch (subscriptionAction.action) {
-            case 'billing_portal':
-                // User has active subscription, redirect to billing portal
-                try {
-                    const billingSession =
-                        await stripe.billingPortal.sessions.create({
-                            customer: existingSubscription!.stripeCustomerId!,
-                            return_url: `${origin}/profile?tab=billing`,
-                        })
-                    return { url: billingSession.url }
-                } catch (portalError: any) {
-                    // Fallback to checkout if billing portal fails
-                    console.warn(
-                        'Billing portal failed, creating checkout session:',
-                        portalError.message
-                    )
+        try {
+            switch (subscriptionAction.action) {
+                case 'billing_portal':
+                    // User has active subscription, redirect to billing portal
+                    try {
+                        const billingSession =
+                            await stripe.billingPortal.sessions.create({
+                                customer:
+                                    existingSubscription!.stripeCustomerId!,
+                                return_url: `${origin}/profile?tab=billing`,
+                            })
+                        return { success: true, url: billingSession.url }
+                    } catch (portalError: any) {
+                        // Fallback to checkout if billing portal fails
+                        console.warn(
+                            'Billing portal failed, creating checkout session:',
+                            portalError.message
+                        )
+                        return await createNewCheckoutSession(
+                            priceId,
+                            session.user.email,
+                            origin,
+                            session.user.id,
+                            existingSubscription?.stripeCustomerId
+                        )
+                    }
+
+                case 'checkout_existing_customer':
+                    // User has canceled/expired subscription, create checkout with existing customer
                     return await createNewCheckoutSession(
                         priceId,
                         session.user.email,
                         origin,
                         session.user.id,
-                        existingSubscription?.stripeCustomerId
+                        existingSubscription!.stripeCustomerId
                     )
-                }
 
-            case 'checkout_existing_customer':
-                // User has canceled/expired subscription, create checkout with existing customer
-                return await createNewCheckoutSession(
-                    priceId,
-                    session.user.email,
-                    origin,
-                    session.user.id,
-                    existingSubscription!.stripeCustomerId
-                )
+                case 'checkout_new_customer':
+                    // New user, create checkout with email
+                    return await createNewCheckoutSession(
+                        priceId,
+                        session.user.email,
+                        origin,
+                        session.user.id
+                    )
 
-            case 'checkout_new_customer':
-                // New user, create checkout with email
-                return await createNewCheckoutSession(
-                    priceId,
-                    session.user.email,
-                    origin,
-                    session.user.id
-                )
-
-            default:
-                throw new Error('Unknown subscription action')
+                default:
+                    return {
+                        success: false,
+                        error: 'Unable to process subscription request',
+                    }
+            }
+        } catch (stripeError: any) {
+            console.error('Stripe API error:', stripeError)
+            return {
+                success: false,
+                error: getStripeErrorMessage(stripeError),
+            }
         }
     } catch (error) {
         console.error('Error creating checkout session:', error)
-
-        // Return more specific error messages
-        if (error instanceof Error) {
-            if (error.message.includes('Invalid price ID')) {
-                throw new Error('Invalid pricing plan selected')
-            }
-            if (error.message.includes('not authenticated')) {
-                throw new Error('Please sign in to continue')
-            }
-            if (
-                error.message.includes('billing_portal_configuration_not_found')
-            ) {
-                throw new Error(
-                    'Billing configuration error. Please contact support.'
-                )
-            }
+        return {
+            success: false,
+            error: 'Failed to create checkout session. Please try again.',
         }
-
-        throw new Error('Failed to create checkout session. Please try again.')
     }
 }
 
@@ -217,7 +237,6 @@ async function createNewCheckoutSession(
     }
 
     // Configure customer based on whether we have an existing customer
-    // This is the key fix - only set customer_update when using existing customer
     if (existingCustomerId) {
         sessionConfig.customer = existingCustomerId
         sessionConfig.customer_update = {
@@ -233,32 +252,58 @@ async function createNewCheckoutSession(
         )
     }
 
-    const checkoutSession = await stripe.checkout.sessions.create(sessionConfig)
+    try {
+        const checkoutSession =
+            await stripe.checkout.sessions.create(sessionConfig)
 
-    if (!checkoutSession.url) {
-        throw new Error('Failed to create checkout session URL')
+        if (!checkoutSession.url) {
+            throw new Error('Failed to create checkout session URL')
+        }
+
+        return { success: true, url: checkoutSession.url }
+    } catch (stripeError: any) {
+        console.error('Stripe checkout session creation failed:', stripeError)
+        return {
+            success: false,
+            error: getStripeErrorMessage(stripeError),
+        }
     }
-
-    return { url: checkoutSession.url }
 }
 
 export async function createBillingPortalSession() {
     try {
         const session = await getServerSession(authOptions)
         if (!session?.user?.id) {
-            throw new Error('User not authenticated')
+            return {
+                success: false,
+                error: 'Please sign in to continue',
+            }
         }
 
-        const subscription = await getUserSubscription(session.user.id)
+        let subscription
+        try {
+            subscription = await getUserSubscription(session.user.id)
+        } catch (error) {
+            console.error('Error fetching subscription:', error)
+            return {
+                success: false,
+                error: 'Error checking subscription status',
+            }
+        }
+
         if (!subscription?.stripeCustomerId) {
-            throw new Error('No subscription found')
+            return {
+                success: false,
+                error: 'No subscription found',
+            }
         }
 
         // Check if subscription status allows billing portal access
         if (!ACTIVE_SUBSCRIPTION_STATUSES.includes(subscription.status)) {
-            throw new Error(
-                'Subscription is not active. Please renew your subscription.'
-            )
+            return {
+                success: false,
+                error: 'Subscription is not active. Please renew your subscription.',
+            }
         }
 
         const headersList = await headers()
@@ -266,50 +311,101 @@ export async function createBillingPortalSession() {
             headersList.get('origin') || process.env.NEXT_PUBLIC_SITE_URL
 
         if (!origin) {
-            throw new Error('Origin not found')
+            return {
+                success: false,
+                error: 'Service configuration error',
+            }
         }
 
         // Verify customer exists and is not deleted
-        const customer = await stripe.customers.retrieve(
-            subscription.stripeCustomerId
-        )
-        if (customer.deleted) {
-            throw new Error('Customer account not found')
+        try {
+            const customer = await stripe.customers.retrieve(
+                subscription.stripeCustomerId
+            )
+            if (customer.deleted) {
+                return {
+                    success: false,
+                    error: 'Customer account not found',
+                }
+            }
+        } catch (stripeError: any) {
+            console.error('Error retrieving customer:', stripeError)
+            return {
+                success: false,
+                error: getStripeErrorMessage(stripeError),
+            }
         }
 
         // Create billing portal session
-        const billingSession = await stripe.billingPortal.sessions.create({
-            customer: subscription.stripeCustomerId,
-            return_url: `${origin}/profile?tab=billing`,
-        })
+        try {
+            const billingSession = await stripe.billingPortal.sessions.create({
+                customer: subscription.stripeCustomerId,
+                return_url: `${origin}/profile?tab=billing`,
+            })
 
-        if (!billingSession.url) {
-            throw new Error('Failed to create billing portal session URL')
+            if (!billingSession.url) {
+                throw new Error('Failed to create billing portal session URL')
+            }
+
+            return { success: true, url: billingSession.url }
+        } catch (stripeError: any) {
+            console.error(
+                'Billing portal session creation failed:',
+                stripeError
+            )
+            return {
+                success: false,
+                error: getStripeErrorMessage(stripeError),
+            }
         }
-
-        return { url: billingSession.url }
     } catch (error) {
         console.error('Error creating billing portal session:', error)
-
-        if (error instanceof Error) {
-            if (error.message.includes('not authenticated')) {
-                throw new Error('Please sign in to continue')
-            }
-            if (error.message.includes('No subscription found')) {
-                throw new Error('No active subscription found')
-            }
-            if (error.message.includes('not active')) {
-                throw error // Pass through the specific subscription status error
-            }
-            if (error.message.includes('not configured')) {
-                throw new Error(
-                    'Billing portal is not configured. Please contact support.'
-                )
-            }
+        return {
+            success: false,
+            error: 'Failed to access billing portal. Please try again.',
         }
-
-        throw new Error('Failed to access billing portal. Please try again.')
     }
+}
+
+/**
+ * Convert Stripe errors to user-friendly messages
+ */
+function getStripeErrorMessage(stripeError: any): string {
+    // Don't expose sensitive Stripe error details
+    if (stripeError.type === 'card_error') {
+        return 'Your payment could not be processed. Please try a different payment method.'
+    }
+
+    if (stripeError.type === 'rate_limit_error') {
+        return 'Too many requests. Please try again in a moment.'
+    }
+
+    if (stripeError.type === 'authentication_error') {
+        return 'Payment authentication failed. Please try again.'
+    }
+
+    if (stripeError.code === 'billing_portal_configuration_not_found') {
+        return 'Billing portal is not configured. Please contact support.'
+    }
+
+    if (stripeError.code === 'customer_not_found') {
+        return 'Customer account not found. Please contact support.'
+    }
+
+    // For unknown errors, return a generic message
+    const sanitizedMessage = sanitizeErrorMessage(
+        stripeError.message || 'Unknown error'
+    )
+
+    // If the sanitized message is too generic, provide a helpful fallback
+    if (
+        sanitizedMessage.includes('[REDACTED]') ||
+        sanitizedMessage.length < 10
+    ) {
+        return 'Payment processing failed. Please try again or contact support.'
+    }
+
+    return sanitizedMessage
 }
 
 // Helper functions for checking subscription status

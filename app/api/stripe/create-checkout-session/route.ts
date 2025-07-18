@@ -1,4 +1,12 @@
 import { authOptions } from '@/lib/auth'
+import {
+    ErrorCategory,
+    createAuthErrorResponse,
+    createSecureErrorResponse,
+    createStripeErrorResponse,
+    createValidationErrorResponse,
+} from '@/lib/stripe/secure-error-handling'
+import { checkStripeRateLimit } from '@/lib/stripe/stripe-rate-limit'
 import { stripe } from '@/lib/stripe/stripe-server'
 import { getUserSubscription } from '@/lib/subscription'
 import { absoluteUrl } from '@/lib/utils'
@@ -6,7 +14,7 @@ import { nanoid } from 'nanoid'
 import { z } from 'zod'
 
 import { getServerSession } from 'next-auth'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
 // Request validation schema
 const createCheckoutRequestSchema = z.object({
@@ -40,142 +48,177 @@ const INACTIVE_SUBSCRIPTION_STATUSES = [
     'unpaid',
 ]
 
-export async function POST(req: Request) {
+export async function POST(request: NextRequest) {
     try {
-        // Validate environment
-        validateEnvironment()
+        // Step 1: Check rate limiting
+        const session = await getServerSession(authOptions)
+        const rateLimitResponse = await checkStripeRateLimit(
+            request,
+            'create-checkout-session',
+            session?.user?.id
+        )
+        if (rateLimitResponse) {
+            return rateLimitResponse
+        }
 
-        // Parse and validate request body
-        const body = await req.json()
+        // Step 2: Validate environment
+        try {
+            validateEnvironment()
+        } catch (error) {
+            console.error('Environment validation failed:', error)
+            return createSecureErrorResponse(
+                500,
+                ErrorCategory.SYSTEM,
+                'Service configuration error'
+            )
+        }
+
+        // Step 3: Parse and validate request body
+        let body: any
+        try {
+            body = await request.json()
+        } catch (error) {
+            return createValidationErrorResponse(
+                [{ field: 'body', message: 'Invalid JSON in request body' }],
+                'checkout-session-creation'
+            )
+        }
+
         const validation = createCheckoutRequestSchema.safeParse(body)
 
         if (!validation.success) {
-            return NextResponse.json(
-                {
-                    error: 'Invalid request data',
-                    details: validation.error.issues.map((issue) => ({
-                        field: issue.path.join('.'),
-                        message: issue.message,
-                    })),
-                },
-                { status: 400 }
+            const validationErrors = validation.error.issues.map((issue) => ({
+                field: issue.path.join('.'),
+                message: issue.message,
+            }))
+            return createValidationErrorResponse(
+                validationErrors,
+                'checkout-session-creation'
             )
         }
 
         const { priceId } = validation.data
 
-        // Validate user session
-        const session = await getServerSession(authOptions)
+        // Step 4: Validate user session
         if (!session?.user?.id || !session?.user?.email) {
-            return NextResponse.json(
-                { error: 'Authentication required' },
-                { status: 401 }
-            )
+            return createAuthErrorResponse(401, 'checkout-session-creation')
         }
 
-        // Validate price ID against allowed values
+        // Step 5: Validate price ID against allowed values
         const validPriceIds = [
             process.env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PRICE_ID,
             process.env.NEXT_PUBLIC_STRIPE_PRO_YEARLY_PRICE_ID,
         ].filter(Boolean)
 
         if (!validPriceIds.includes(priceId)) {
-            return NextResponse.json(
-                { error: 'Invalid pricing plan selected' },
-                { status: 400 }
+            return createValidationErrorResponse(
+                [
+                    {
+                        field: 'priceId',
+                        message: 'Invalid pricing plan selected',
+                    },
+                ],
+                'checkout-session-creation'
             )
         }
 
         const billingUrl = absoluteUrl('/profile?tab=billing')
         const pricingUrl = absoluteUrl('/pricing')
 
-        // Check for existing subscription
-        const existingSubscription = await getUserSubscription(session.user.id)
+        // Step 6: Check for existing subscription
+        let existingSubscription
+        try {
+            existingSubscription = await getUserSubscription(session.user.id)
+        } catch (error) {
+            console.error('Error fetching user subscription:', error)
+            return createSecureErrorResponse(
+                500,
+                ErrorCategory.SYSTEM,
+                'Error checking subscription status'
+            )
+        }
 
-        // Determine the best action based on subscription status
+        // Step 7: Determine the best action based on subscription status
         const subscriptionAction =
             await determineSubscriptionAction(existingSubscription)
 
-        switch (subscriptionAction.action) {
-            case 'billing_portal':
-                // User has active subscription, redirect to billing portal
-                try {
-                    const billingSession =
-                        await stripe.billingPortal.sessions.create({
-                            customer: existingSubscription!.stripeCustomerId!,
-                            return_url: billingUrl,
-                        })
-                    return NextResponse.json({ url: billingSession.url })
-                } catch (portalError: any) {
-                    // Fallback to checkout if billing portal fails
-                    console.warn(
-                        'Billing portal failed, creating checkout session:',
-                        portalError.message
-                    )
+        try {
+            switch (subscriptionAction.action) {
+                case 'billing_portal':
+                    // User has active subscription, redirect to billing portal
+                    try {
+                        const billingSession =
+                            await stripe.billingPortal.sessions.create({
+                                customer:
+                                    existingSubscription!.stripeCustomerId!,
+                                return_url: billingUrl,
+                            })
+                        return NextResponse.json({ url: billingSession.url })
+                    } catch (portalError: any) {
+                        // Fallback to checkout if billing portal fails
+                        console.warn(
+                            'Billing portal failed, creating checkout session:',
+                            portalError.message
+                        )
+                        return createCheckoutSession(
+                            priceId,
+                            session.user,
+                            existingSubscription?.stripeCustomerId,
+                            billingUrl,
+                            pricingUrl
+                        )
+                    }
+
+                case 'checkout_existing_customer':
+                    // User has canceled/expired subscription, create checkout with existing customer
                     return createCheckoutSession(
                         priceId,
                         session.user,
-                        existingSubscription?.stripeCustomerId,
+                        existingSubscription!.stripeCustomerId,
                         billingUrl,
                         pricingUrl
                     )
-                }
 
-            case 'checkout_existing_customer':
-                // User has canceled/expired subscription, create checkout with existing customer
-                return createCheckoutSession(
-                    priceId,
-                    session.user,
-                    existingSubscription!.stripeCustomerId,
-                    billingUrl,
-                    pricingUrl
-                )
+                case 'checkout_new_customer':
+                    // New user, create checkout with email
+                    return createCheckoutSession(
+                        priceId,
+                        session.user,
+                        undefined,
+                        billingUrl,
+                        pricingUrl
+                    )
 
-            case 'checkout_new_customer':
-                // New user, create checkout with email
-                return createCheckoutSession(
-                    priceId,
-                    session.user,
-                    undefined,
-                    billingUrl,
-                    pricingUrl
-                )
-
-            default:
-                throw new Error('Unknown subscription action')
+                default:
+                    return createSecureErrorResponse(
+                        500,
+                        ErrorCategory.SYSTEM,
+                        'Unknown subscription action'
+                    )
+            }
+        } catch (stripeError: any) {
+            console.error('Stripe API error:', stripeError)
+            return createStripeErrorResponse(
+                stripeError.statusCode || 500,
+                stripeError,
+                'checkout-session-creation'
+            )
         }
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error creating checkout session:', error)
 
         // Handle specific error types
-        if (error instanceof Error) {
-            if (error.message.includes('Invalid pricing plan')) {
-                return NextResponse.json(
-                    { error: 'Invalid pricing plan selected' },
-                    { status: 400 }
-                )
-            }
-
-            if (error.message.includes('Environment variables')) {
-                return NextResponse.json(
-                    { error: 'Service configuration error' },
-                    { status: 500 }
-                )
-            }
-
-            if (error.message.includes('rate limit')) {
-                return NextResponse.json(
-                    { error: 'Too many requests. Please try again later.' },
-                    { status: 429 }
-                )
-            }
+        if (error.code === 'ECONNREFUSED') {
+            return createSecureErrorResponse(
+                503,
+                ErrorCategory.EXTERNAL_API,
+                'Payment service temporarily unavailable'
+            )
         }
 
-        // Generic error response
-        return NextResponse.json(
-            { error: 'Failed to create checkout session. Please try again.' },
-            { status: 500 }
-        )
+        return createSecureErrorResponse(500, ErrorCategory.SYSTEM, error, {
+            context: 'checkout-session-creation',
+        })
     }
 }
 
@@ -273,7 +316,6 @@ async function createCheckoutSession(
     }
 
     // Configure customer based on whether we have an existing customer
-    // This is the key fix - only set customer_update when using existing customer
     if (existingCustomerId) {
         checkoutConfig.customer = existingCustomerId
         checkoutConfig.customer_update = {
@@ -287,16 +329,21 @@ async function createCheckoutSession(
         console.log(`Creating checkout session for new customer: ${user.email}`)
     }
 
-    const stripeSession = await stripe.checkout.sessions.create(
-        checkoutConfig,
-        { idempotencyKey }
-    )
+    try {
+        const stripeSession = await stripe.checkout.sessions.create(
+            checkoutConfig,
+            { idempotencyKey }
+        )
 
-    if (!stripeSession.url) {
-        throw new Error('Failed to create checkout session URL')
+        if (!stripeSession.url) {
+            throw new Error('Failed to create checkout session URL')
+        }
+
+        return NextResponse.json({ url: stripeSession.url })
+    } catch (stripeError: any) {
+        console.error('Stripe checkout session creation failed:', stripeError)
+        throw stripeError // Re-throw to be handled by the calling function
     }
-
-    return NextResponse.json({ url: stripeSession.url })
 }
 
 // Helper function to check if subscription allows billing portal access
