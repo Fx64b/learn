@@ -1,4 +1,3 @@
-// TODO: move to stripe folder
 import { NextRequest } from 'next/server'
 
 /**
