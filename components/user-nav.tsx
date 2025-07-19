@@ -61,7 +61,7 @@ export function UserNav() {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-                <DropdownMenuLabel className={"flex gap-1"}>
+                <DropdownMenuLabel className={'flex gap-1'}>
                     {session.user?.email || t('auth.myAccount')}
                     {isPro && <Sparkles className="h-3 w-3 text-purple-600" />}
                 </DropdownMenuLabel>

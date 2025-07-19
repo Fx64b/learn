@@ -71,6 +71,13 @@
             "when": 1752854621227,
             "tag": "0009_salty_blue_marvel",
             "breakpoints": true
+        },
+        {
+            "idx": 10,
+            "version": "6",
+            "when": 1752949191777,
+            "tag": "0010_soft_carnage",
+            "breakpoints": true
         }
     ]
 }

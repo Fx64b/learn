@@ -323,26 +323,36 @@
             "aiGenerate": "KI-Generierung"
         },
         "ai": {
-            "title": "KI-Lernkarten Generator",
-            "promptLabel": "Was möchtest du lernen?",
-            "promptPlaceholder": "Z.B. Erstelle Lernkarten über den Wasserkreislauf, Schlüsselkonzepte der Photosynthese oder wichtige Daten des Zweiten Weltkriegs",
+            "proRequired": "KI-Karteikarten-Generierung ist nur für Pro-Nutzer verfügbar.",
+            "rateLimitExceeded": "Sie haben Ihr KI-Generierungslimit erreicht. Upgraden Sie auf Pro für höhere Limits.",
+            "gracePeriodLimited": "KI-Generierung ist während der Zahlungskulanzzeit eingeschränkt. Aktualisieren Sie Ihre Zahlungsmethode, um den vollen Zugang wiederherzustellen.",
+            "paymentLimited": "KI-Generierung ist aufgrund von Zahlungsproblemen eingeschränkt. Bitte aktualisieren Sie Ihre Zahlungsmethode.",
+            "promptRequired": "Bitte geben Sie eine Eingabeaufforderung für die KI-Generierung ein.",
+            "promptTooLong": "Eingabeaufforderung ist zu lang. Maximal {max} Zeichen erlaubt.",
+            "invalidFileType": "Nur PDF-Dateien werden unterstützt.",
+            "fileTooLarge": "Datei ist zu groß. Maximale Größe ist {max}.",
+            "fileContentTooShort": "Dateiinhalt ist zu kurz, um sinnvolle Karteikarten zu generieren.",
+            "fileParseError": "Die hochgeladene Datei konnte nicht gelesen werden. Bitte versuchen Sie eine andere Datei.",
+            "noFlashcardsGenerated": "Aus dem bereitgestellten Inhalt konnten keine Karteikarten generiert werden.",
+            "flashcardsGenerated": "Erfolgreich {count} Karteikarten generiert!",
+            "bulkCreateError": "Karteikarten konnten nicht erstellt werden. Bitte versuchen Sie es erneut.",
+            "aiRateLimitExceeded": "KI-Service-Ratenlimit überschritten. Bitte versuchen Sie es später erneut.",
+            "aiConfigError": "KI-Service-Konfigurationsfehler. Bitte kontaktieren Sie den Support.",
+            "noCardsGenerated": "Karteikarten konnten nicht generiert werden. Bitte versuchen Sie eine andere Eingabeaufforderung.",
+            "aiGenerationError": "KI-Generierung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+            "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+            "title": "KI-Karteikarten-Generierung",
+            "promptLabel": "Beschreiben Sie, was Sie lernen möchten",
+            "promptPlaceholder": "z.B. 'Erstelle Karteikarten über Photosynthese' oder 'Generiere Fragen aus diesem Biologie-Lehrbuchkapitel'",
             "documentLabel": "Dokument hochladen (Optional)",
-            "dropFile": "PDF hier ablegen oder klicken zum Durchsuchen",
-            "maxFileSize": "Nur PDF, max. 10MB",
-            "characters": "Zeichen",
-            "helpText": "Die KI generiert 5-50 hochwertige Lernkarten basierend auf deiner Eingabe. Du kannst auch ein PDF-Dokument hochladen, um Lernkarten aus dessen Inhalt zu erstellen.",
-            "generateButton": "Lernkarten generieren",
+            "dropFile": "PDF-Datei hier hineinziehen oder klicken zum Durchsuchen",
+            "maxFileSize": "Maximale Dateigröße: 10MB",
+            "helpText": "Die KI erstellt personalisierte Karteikarten basierend auf Ihrer Eingabeaufforderung und dem optionalen Dokument. Seien Sie spezifisch für bessere Ergebnisse!",
+            "generateButton": "Karteikarten generieren",
             "generating": "Generiere...",
-            "success": "Lernkarten erfolgreich erstellt!",
-            "error": "Fehler beim Generieren der Lernkarten",
-            "promptRequired": "Bitte beschreibe, was du lernen möchtest",
-            "invalidFileType": "Nur PDF-Dateien werden unterstützt",
-            "fileTooLarge": "Dateigröße muss kleiner als {max} sein",
-            "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuche es erneut.",
-            "flashcardsGenerated": "{count} Lernkarten erfolgreich generiert",
-            "aiGenerationError": "Fehler bei der KI-Generierung der Lernkarten",
-            "noCardsGenerated": "Keine Lernkarten generiert. Bitte versuche es erneut mit einer anderen Eingabe.",
-            "proRequired": "AI-Lernkarten-Generator ist nur für Pro-Nutzer verfügbar"
+            "characters": "Zeichen",
+            "success": "Karteikarten erfolgreich generiert!",
+            "error": "Karteikarten konnten nicht generiert werden. Bitte versuchen Sie es erneut."
         },
         "statistics": {
             "totalCards": "Karten insgesamt",
@@ -353,6 +363,22 @@
         "tabs": {
             "details": "Deck Details",
             "editCards": "Karten bearbeiten"
+        }
+    },
+    "payment": {
+        "recovery": {
+            "grace": {
+                "message": "Zahlungsproblem erkannt ({amount}). Pro-Funktionen sind noch {days} weitere Tage aktiv, während wir Ihre Zahlung wiederholen."
+            },
+            "warning": {
+                "message": "Zahlung steht noch aus ({amount}). Pro-Funktionen werden in {days} Tagen eingeschränkt. Bitte aktualisieren Sie Ihre Zahlungsmethode."
+            },
+            "limited": {
+                "message": "Pro-Funktionen aufgrund von Zahlungsproblemen vorübergehend deaktiviert ({amount}). Aktualisieren Sie Ihre Zahlungsmethode, um den Zugang wiederherzustellen."
+            },
+            "updatePayment": "Zahlung aktualisieren",
+            "updating": "Öffne...",
+            "updateError": "Zahlungseinstellungen konnten nicht geöffnet werden. Bitte versuchen Sie es erneut."
         }
     },
     "learn": {

@@ -216,3 +216,36 @@ export const webhookEvents = sqliteTable(
         ),
     })
 )
+
+export const paymentRecoveryEvents = sqliteTable(
+    'payment_recovery_events',
+    {
+        id: text('id').primaryKey().notNull(),
+        userId: text('user_id')
+            .notNull()
+            .references(() => users.id),
+        stripeInvoiceId: text('stripe_invoice_id').notNull(),
+        stripeCustomerId: text('stripe_customer_id').notNull(),
+        attemptCount: integer('attempt_count').notNull().default(0),
+        status: text('status').notNull().default('grace'), // 'grace', 'warning', 'limited', 'recovered'
+        gracePeriodEnd: integer('grace_period_end', { mode: 'timestamp' }),
+        lastEmailSent: integer('last_email_sent', { mode: 'timestamp' }),
+        recoveredAt: integer('recovered_at', { mode: 'timestamp' }),
+        createdAt: integer('created_at', { mode: 'timestamp' })
+            .default(sql`CURRENT_TIMESTAMP`)
+            .notNull(),
+        updatedAt: integer('updated_at', { mode: 'timestamp' })
+            .default(sql`CURRENT_TIMESTAMP`)
+            .notNull(),
+    },
+    (table) => ({
+        userIdIdx: index('payment_recovery_user_id_idx').on(table.userId),
+        invoiceIdIdx: index('payment_recovery_invoice_id_idx').on(
+            table.stripeInvoiceId
+        ),
+        statusIdx: index('payment_recovery_status_idx').on(table.status),
+        gracePeriodIdx: index('payment_recovery_grace_period_idx').on(
+            table.gracePeriodEnd
+        ),
+    })
+)

@@ -1,8 +1,7 @@
 'use server'
 
+import { checkAIRateLimitWithDetails } from '@/lib/ai-rate-limit'
 import { authOptions } from '@/lib/auth'
-import { checkRateLimit } from '@/lib/rate-limit'
-import { isUserPro } from '@/lib/subscription'
 import { google } from '@ai-sdk/google'
 import { generateObject } from 'ai'
 import { z } from 'zod'
@@ -120,26 +119,20 @@ export async function generateAIFlashcards({
             return { success: false, error: authT('notAuthenticated') }
         }
 
-        const isPro = await isUserPro(session.user.id)
-        if (!isPro) {
-            return {
-                success: false,
-                error: t('proRequired'),
-                requiresPro: true,
-            }
-        }
-
-        // Rate limiting - 5 per hour for AI generation
-        const rateLimitResult = await checkRateLimit(
-            `user:${session.user.email}:ai-generate`,
-            'bulkCreate'
+        // Enhanced rate limiting check
+        const rateLimitResult = await checkAIRateLimitWithDetails(
+            session.user.id,
+            session.user.email!
         )
 
-        if (!rateLimitResult.success) {
+        if (!rateLimitResult.allowed) {
             return {
                 success: false,
-                error: authT('bulkRatelimitExceeded'),
-                rateLimitReset: rateLimitResult.reset,
+                error: rateLimitResult.message,
+                requiresPro: rateLimitResult.upgradeRequired,
+                paymentIssue: rateLimitResult.paymentIssue,
+                tier: rateLimitResult.tier,
+                resetTime: rateLimitResult.resetTime,
             }
         }
 
@@ -277,6 +270,8 @@ Generate between 5 and ${MAX_CARDS_PER_GENERATION - 5} flashcards based on the c
                     success: true,
                     message: t('flashcardsGenerated', { count: successCount }),
                     cardsCreated: successCount,
+                    tier: rateLimitResult.tier,
+                    remaining: rateLimitResult.remaining,
                 }
             } else {
                 return {

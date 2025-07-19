@@ -1,8 +1,15 @@
 import { db } from '@/db'
 import { subscriptions, webhookEvents } from '@/db/schema'
 import {
+    sendPaymentFailedEmail,
+    sendPaymentRecoveredEmail,
+} from '@/lib/email-service'
+import {
+    markPaymentRecovered,
+    startPaymentRecovery,
+} from '@/lib/payment-recovery'
+import {
     ErrorCategory,
-    createRateLimitErrorResponse,
     createSecureErrorResponse,
 } from '@/lib/stripe/secure-error-handling'
 import { checkStripeRateLimit } from '@/lib/stripe/stripe-rate-limit'
@@ -318,14 +325,39 @@ async function handleInvoicePaymentSucceeded(tx: any, event: Stripe.Event) {
     const subscriptionId = invoice.subscription as string
 
     if (!subscriptionId) {
-        console.log('No subscription ID found in invoice')
+        console.log('No subscription ID found in successful invoice')
         return
     }
 
     console.log(
-        `Marking subscription ${subscriptionId} as active due to successful payment`
+        `Payment succeeded for invoice ${invoice.id}, subscription ${subscriptionId}`
     )
 
+    // Mark payment as recovered if there was a recovery process
+    try {
+        await markPaymentRecovered(invoice.id || '')
+        console.log(`Marked invoice ${invoice.id} as recovered`)
+
+        // Send recovery success email
+        const subscription = await tx
+            .select({ userId: subscriptions.userId })
+            .from(subscriptions)
+            .where(eq(subscriptions.stripeSubscriptionId, subscriptionId))
+            .limit(1)
+
+        if (subscription.length > 0) {
+            await sendPaymentRecoveredEmail(subscription[0].userId, {
+                invoiceId: invoice.id || '',
+                amount: invoice.amount_paid,
+                currency: invoice.currency,
+            })
+        }
+    } catch (error) {
+        console.error('Error handling payment recovery:', error)
+        // Don't throw - payment succeeded, recovery is secondary
+    }
+
+    // Update subscription status to active
     await tx
         .update(subscriptions)
         .set({
@@ -338,23 +370,67 @@ async function handleInvoicePaymentSucceeded(tx: any, event: Stripe.Event) {
 async function handleInvoicePaymentFailed(tx: any, event: Stripe.Event) {
     const invoice = event.data.object as Stripe.Invoice
     const subscriptionId = invoice.subscription as string
+    const customerId = invoice.customer as string
 
-    if (!subscriptionId) {
-        console.log('No subscription ID found in invoice')
+    if (!subscriptionId || !customerId) {
+        console.log('No subscription or customer ID found in failed invoice')
         return
     }
 
     console.log(
-        `Marking subscription ${subscriptionId} as past_due due to failed payment`
+        `Payment failed for invoice ${invoice.id}, subscription ${subscriptionId}`
     )
 
-    await tx
-        .update(subscriptions)
-        .set({
-            status: 'past_due',
-            updatedAt: new Date(),
-        })
+    // Get user from subscription
+    const subscription = await tx
+        .select({ userId: subscriptions.userId })
+        .from(subscriptions)
         .where(eq(subscriptions.stripeSubscriptionId, subscriptionId))
+        .limit(1)
+
+    if (!subscription.length) {
+        console.error(
+            'No user found for failed payment subscription:',
+            subscriptionId
+        )
+        return
+    }
+
+    const userId = subscription[0].userId
+
+    try {
+        // Start payment recovery process
+        const recoveryEvent = await startPaymentRecovery(
+            userId,
+            invoice.id,
+            customerId
+        )
+
+        console.log(
+            `Started payment recovery for user ${userId}, recovery ID: ${recoveryEvent.id}`
+        )
+
+        // Send immediate notification email
+        await sendPaymentFailedEmail(userId, {
+            invoiceId: invoice.id || '',
+            amount: invoice.amount_due,
+            currency: invoice.currency,
+            gracePeriodEnd: recoveryEvent.gracePeriodEnd!,
+            retryDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // Stripe retries in 3 days
+        })
+
+        // Update subscription status to indicate payment issue
+        await tx
+            .update(subscriptions)
+            .set({
+                status: 'past_due',
+                updatedAt: new Date(),
+            })
+            .where(eq(subscriptions.stripeSubscriptionId, subscriptionId))
+    } catch (error) {
+        console.error('Error handling payment failure:', error)
+        throw error
+    }
 }
 
 async function handleTrialWillEnd(tx: any, event: Stripe.Event) {
