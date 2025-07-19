@@ -61,7 +61,7 @@ jobs:
                   NEXTAUTH_SECRET: ${{ 'next-auth-secret' }}
                   EMAIL_FROM: ${{ 'noreply@example.com' }}
                   RESEND_API_KEY: ${{ 'resend-api-key' }}
-                  STRIPE_SECRET: ${{ 'stripe-secret' }}
+                  STRIPE_SECRET_KEY: ${{ 'stripe-secret' }}
                   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ 'pk_loremipsum' }}
                   STRIPE_WEBHOOK_SECRET: ${{ 'some-webhook-secret' }}
                   NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PRICE_ID: ${{ 'price_formonthly' }}
