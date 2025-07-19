@@ -40,7 +40,7 @@ export function FooterContent({ version, currentYear }: FooterContentProps) {
                             </li>
                             <li>
                                 <Link
-                                    href="/todo"
+                                    href="/pricing"
                                     className="hover:text-foreground transition-colors"
                                 >
                                     {t('pricing')}
