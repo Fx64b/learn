@@ -61,18 +61,10 @@ export function UserNav() {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-                <DropdownMenuLabel>
+                <DropdownMenuLabel className={"flex gap-1"}>
                     {session.user?.email || t('auth.myAccount')}
+                    {isPro && <Sparkles className="h-3 w-3 text-purple-600" />}
                 </DropdownMenuLabel>
-                {isPro && (
-                    <>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuLabel className="flex items-center gap-2 text-xs">
-                            <Sparkles className="h-3 w-3 text-purple-600" />
-                            Learn Pro
-                        </DropdownMenuLabel>
-                    </>
-                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                     <Link href="/profile">{t('common.profile')}</Link>
