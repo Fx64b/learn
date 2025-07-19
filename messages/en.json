@@ -462,7 +462,8 @@
         "email": "Email",
         "tabs": {
             "settings": "Settings",
-            "statistics": "Learning Statistics"
+            "statistics": "Learning Statistics",
+            "billing": "Billing"
         },
         "settings": {
             "title": "Settings",
@@ -502,6 +503,26 @@
                     "vertical": "Vertical",
                     "description": "Determines the main direction of animations."
                 }
+            }
+        },
+        "billing": {
+            "title": "Plan Management",
+            "description": "Manage your subscription plan and billing settings.",
+            "currentPlan": "Current Plan",
+            "availablePlans": "Available Plans",
+            "noPlan": "No active subscription found.",
+            "loadError": "Failed to load subscription information.",
+            "changeError": "Failed to change plan. Please try again.",
+            "planChanged": "Plan changed successfully!",
+            "changing": "Changing...",
+            "current": "Current",
+            "switchTo": "Switch to this plan",
+            "popular": "Popular",
+            "renewsOn": "Renews on {date}",
+            "cancellingOn": "Cancelling on {date}",
+            "prorationNotice": {
+                "title": "Proration:",
+                "description": "When you change plans, you'll be charged or credited for the difference based on your remaining billing period."
             }
         }
     },

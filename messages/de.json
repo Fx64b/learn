@@ -465,7 +465,8 @@
         "email": "E-Mail",
         "tabs": {
             "settings": "Einstellungen",
-            "statistics": "Lernstatistik"
+            "statistics": "Lernstatistik",
+            "billing": "Abo-Verwaltung"
         },
         "settings": {
             "title": "Einstellungen",
@@ -505,6 +506,26 @@
                     "vertical": "Vertikal",
                     "description": "Bestimmt die Hauptrichtung der Animationen."
                 }
+            }
+        },
+        "billing": {
+            "title": "Abo-Verwaltung",
+            "description": "Verwalten Sie Ihren Abonnement-Plan und Ihre Abrechnungseinstellungen.",
+            "currentPlan": "Aktueller Plan",
+            "availablePlans": "Verfügbare Pläne",
+            "noPlan": "Kein aktives Abonnement gefunden.",
+            "loadError": "Fehler beim Laden der Abonnement-Informationen.",
+            "changeError": "Fehler beim Wechseln des Plans. Bitte versuchen Sie es erneut.",
+            "planChanged": "Plan erfolgreich gewechselt!",
+            "changing": "Wechsle...",
+            "current": "Aktuell",
+            "switchTo": "Zu diesem Plan wechseln",
+            "popular": "Beliebt",
+            "renewsOn": "Verlängert am {date}",
+            "cancellingOn": "Kündigt am {date}",
+            "prorationNotice": {
+                "title": "Anteilige Abrechnung:",
+                "description": "Wenn Sie Pläne wechseln, wird Ihnen die Differenz basierend auf Ihrem verbleibenden Abrechnungszeitraum berechnet oder gutgeschrieben."
             }
         }
     },
