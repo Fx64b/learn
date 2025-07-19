@@ -42,18 +42,6 @@ export function validateStripeWebhookSource(
     const clientIP = getClientIP(request)
     const userAgent = request.headers.get('user-agent')
 
-    // Development mode - allow all
-    if (process.env.NODE_ENV === 'development') {
-        return {
-            isValid: true,
-            reason: 'Development mode - validation skipped',
-            clientIP,
-            userAgent: userAgent || undefined,
-            ipVerified: false,
-            signatureRequired: true,
-        }
-    }
-
     // Production mode - verify what we can, but don't block on IP issues
     let ipVerified = false
     let suspiciousActivity = false
