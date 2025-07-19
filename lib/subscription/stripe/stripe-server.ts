@@ -3,7 +3,7 @@ import Stripe from 'stripe'
 // Validate all required Stripe environment variables at startup
 const requiredEnvVars = [
     'STRIPE_SECRET_KEY',
-    'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY',
+    'STRIPE_PUBLISHABLE_KEY',
     'STRIPE_WEBHOOK_SECRET',
     'NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PRICE_ID',
     'NEXT_PUBLIC_STRIPE_PRO_YEARLY_PRICE_ID',
