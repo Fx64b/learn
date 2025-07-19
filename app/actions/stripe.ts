@@ -1,12 +1,12 @@
 'use server'
 
 import { authOptions } from '@/lib/auth'
-import { sanitizeErrorMessage } from '@/lib/stripe/secure-error-handling'
-import { stripe } from '@/lib/stripe/stripe-server'
+import { sanitizeErrorMessage } from '@/lib/subscription/stripe/secure-error-handling'
+import { stripe } from '@/lib/subscription/stripe/stripe-server'
 import {
     getUserSubscription,
     invalidateSubscriptionCache,
-} from '@/lib/subscription'
+} from '@/lib/subscription/subscription'
 import { z } from 'zod'
 
 import { getServerSession } from 'next-auth'

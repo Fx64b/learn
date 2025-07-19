@@ -1,9 +1,9 @@
-import { sendPaymentReminderEmail } from '@/lib/email-service'
+import { sendPaymentReminderEmail } from '@/lib/subscription/email-service'
 import {
     getRecoveryEventsNeedingEmail,
     markEmailSent,
     updateRecoveryStatuses,
-} from '@/lib/payment-recovery'
+} from '@/lib/subscription/stripe/payment-recovery'
 
 import { NextRequest, NextResponse } from 'next/server'
 

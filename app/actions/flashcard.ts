@@ -2,7 +2,7 @@
 
 import * as dbUtils from '@/db/utils'
 import { authOptions } from '@/lib/auth'
-import { checkRateLimit } from '@/lib/rate-limit'
+import { checkRateLimit } from '@/lib/rate-limit/rate-limit'
 
 import { getServerSession } from 'next-auth'
 import { getTranslations } from 'next-intl/server'

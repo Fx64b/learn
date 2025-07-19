@@ -4,8 +4,8 @@ import {
     createAuthErrorResponse,
     createSecureErrorResponse,
     createValidationErrorResponse,
-} from '@/lib/stripe/secure-error-handling'
-import { checkStripeRateLimit } from '@/lib/stripe/stripe-rate-limit'
+} from '@/lib/subscription/stripe/secure-error-handling'
+import { checkStripeRateLimit } from '@/lib/subscription/stripe/stripe-rate-limit'
 import { z } from 'zod'
 
 import { getServerSession } from 'next-auth'

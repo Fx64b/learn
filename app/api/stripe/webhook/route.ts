@@ -3,21 +3,21 @@ import { subscriptions, webhookEvents } from '@/db/schema'
 import {
     sendPaymentFailedEmail,
     sendPaymentRecoveredEmail,
-} from '@/lib/email-service'
+} from '@/lib/subscription/email-service'
 import {
     markPaymentRecovered,
     startPaymentRecovery,
-} from '@/lib/payment-recovery'
+} from '@/lib/subscription/stripe/payment-recovery'
 import {
     ErrorCategory,
     createSecureErrorResponse,
-} from '@/lib/stripe/secure-error-handling'
-import { checkStripeRateLimit } from '@/lib/stripe/stripe-rate-limit'
-import { stripe } from '@/lib/stripe/stripe-server'
+} from '@/lib/subscription/stripe/secure-error-handling'
+import { checkStripeRateLimit } from '@/lib/subscription/stripe/stripe-rate-limit'
+import { stripe } from '@/lib/subscription/stripe/stripe-server'
 import {
     logWebhookSecurityEvent,
     validateStripeWebhookSource,
-} from '@/lib/stripe/stripe-webhook-security'
+} from '@/lib/subscription/stripe/stripe-webhook-security'
 import { eq } from 'drizzle-orm'
 import Stripe from 'stripe'
 
@@ -592,7 +592,7 @@ async function upsertSubscription(
     // Invalidate cache for this user
     try {
         const { invalidateSubscriptionCache } = await import(
-            '@/lib/subscription'
+            '@/lib/subscription/subscription'
         )
         await invalidateSubscriptionCache(userId)
     } catch (error) {

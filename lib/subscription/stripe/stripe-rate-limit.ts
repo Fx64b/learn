@@ -1,4 +1,4 @@
-import { checkRateLimit } from '@/lib/rate-limit'
+import { checkRateLimit } from '@/lib/rate-limit/rate-limit'
 
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -20,6 +20,11 @@ const STRIPE_RATE_LIMITS: Record<string, RateLimitConfig> = {
         windowMs: 5 * 60 * 1000, // 5 minutes
         maxRequests: 10, // 10 billing portal requests per 5 minutes per user
         message: 'Too many billing portal requests. Please try again later.',
+    },
+    'change-plan': {
+        windowMs: 10 * 60 * 1000, // 10 minutes
+        maxRequests: 3, // 3 plan changes per 10 minutes per user
+        message: 'Too many plan change attempts. Please try again later.',
     },
     webhook: {
         windowMs: 60 * 1000, // 1 minute
@@ -61,25 +66,25 @@ export async function checkStripeRateLimit(
                 reset: result.reset,
             })
 
+            const retryAfter = result.reset
+                ? Math.ceil((result.reset - Date.now()) / 1000)
+                : 900
+
             return NextResponse.json(
                 {
                     error: config.message,
-                    retryAfter: result.reset
-                        ? Math.ceil((result.reset - Date.now()) / 1000)
-                        : 900,
+                    retryAfter,
+                    code: 'RATE_LIMIT_EXCEEDED',
                 },
                 {
                     status: 429,
                     headers: {
-                        'Retry-After': result.reset
-                            ? Math.ceil(
-                                  (result.reset - Date.now()) / 1000
-                              ).toString()
-                            : '900',
+                        'Retry-After': retryAfter.toString(),
                         'X-RateLimit-Limit': result.limit?.toString() || '100',
                         'X-RateLimit-Remaining':
                             result.remaining?.toString() || '0',
                         'X-RateLimit-Reset': result.reset?.toString() || '0',
+                        'X-RateLimit-Policy': `${config.maxRequests} requests per ${config.windowMs / 1000} seconds`,
                     },
                 }
             )
@@ -94,24 +99,41 @@ export async function checkStripeRateLimit(
 }
 
 function getClientIP(request: NextRequest): string {
-    // Try to get the real IP from various headers
-    const xForwardedFor = request.headers.get('x-forwarded-for')
-    const xRealIp = request.headers.get('x-real-ip')
-    const cfConnectingIp = request.headers.get('cf-connecting-ip')
+    // Try to get the real IP from various headers in order of preference
+    const headers = [
+        'x-forwarded-for',
+        'x-real-ip',
+        'cf-connecting-ip', // Cloudflare
+        'x-client-ip',
+        'x-forwarded',
+        'forwarded-for',
+        'forwarded',
+    ]
 
-    if (xForwardedFor) {
-        // x-forwarded-for can contain multiple IPs, take the first one
-        return xForwardedFor.split(',')[0].trim()
+    for (const header of headers) {
+        const value = request.headers.get(header)
+        if (value) {
+            // x-forwarded-for can contain multiple IPs, take the first one
+            const ip = value.split(',')[0].trim()
+            if (isValidIP(ip)) {
+                return ip
+            }
+        }
     }
 
-    if (xRealIp) {
-        return xRealIp
-    }
-
-    if (cfConnectingIp) {
-        return cfConnectingIp
-    }
-
-    // Fallback to a default for serverless environments
     return 'unknown'
+}
+
+function isValidIP(ip: string): boolean {
+    // Basic IP validation for IPv4 and IPv6
+    const ipv4Regex =
+        /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
+    const ipv6Regex = /^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/
+
+    return (
+        ipv4Regex.test(ip) ||
+        ipv6Regex.test(ip) ||
+        ip === '::1' ||
+        ip === 'localhost'
+    )
 }

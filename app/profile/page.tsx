@@ -1,6 +1,6 @@
 import { authOptions } from '@/lib/auth'
 import { getLocale } from '@/lib/locale'
-import { isUserPro } from '@/lib/subscription'
+import { isUserPro } from '@/lib/subscription/subscription'
 import { BarChart2, CreditCard, UserCircle } from 'lucide-react'
 
 import { getServerSession } from 'next-auth'

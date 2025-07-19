@@ -1,8 +1,11 @@
 'use server'
 
-import { isUserInGracePeriod, isUserLimited } from '@/lib/payment-recovery'
-import { checkRateLimit } from '@/lib/rate-limit'
-import { isUserPro } from '@/lib/subscription'
+import { checkRateLimit } from '@/lib/rate-limit/rate-limit'
+import {
+    isUserInGracePeriod,
+    isUserLimited,
+} from '@/lib/subscription/stripe/payment-recovery'
+import { isUserPro } from '@/lib/subscription/subscription'
 
 export interface AIRateLimitConfig {
     windowMs: number

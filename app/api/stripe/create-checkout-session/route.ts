@@ -5,10 +5,10 @@ import {
     createSecureErrorResponse,
     createStripeErrorResponse,
     createValidationErrorResponse,
-} from '@/lib/stripe/secure-error-handling'
-import { checkStripeRateLimit } from '@/lib/stripe/stripe-rate-limit'
-import { stripe } from '@/lib/stripe/stripe-server'
-import { getUserSubscription } from '@/lib/subscription'
+} from '@/lib/subscription/stripe/secure-error-handling'
+import { checkStripeRateLimit } from '@/lib/subscription/stripe/stripe-rate-limit'
+import { stripe } from '@/lib/subscription/stripe/stripe-server'
+import { getUserSubscription } from '@/lib/subscription/subscription'
 import { absoluteUrl } from '@/lib/utils'
 import { nanoid } from 'nanoid'
 import { z } from 'zod'

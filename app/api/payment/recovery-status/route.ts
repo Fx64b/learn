@@ -1,5 +1,5 @@
 import { authOptions } from '@/lib/auth'
-import { getUserRecoveryStatus } from '@/lib/payment-recovery'
+import { getUserRecoveryStatus } from '@/lib/subscription/stripe/payment-recovery'
 
 import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'

@@ -1,5 +1,5 @@
 import { authOptions } from '@/lib/auth'
-import { isUserPro } from '@/lib/subscription'
+import { isUserPro } from '@/lib/subscription/subscription'
 
 import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'

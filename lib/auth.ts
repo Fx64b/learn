@@ -1,5 +1,5 @@
 import { db } from '@/db'
-import { checkRateLimit } from '@/lib/rate-limit'
+import { checkRateLimit } from '@/lib/rate-limit/rate-limit'
 import { DrizzleAdapter } from '@auth/drizzle-adapter'
 import { Resend } from 'resend'
 
