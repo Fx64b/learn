@@ -4,9 +4,12 @@ import { authOptions } from '@/lib/auth'
 import { sanitizeErrorMessage } from '@/lib/subscription/stripe/secure-error-handling'
 import { stripe } from '@/lib/subscription/stripe/stripe-server'
 import {
+    UserSubscription,
     getUserSubscription,
     invalidateSubscriptionCache,
 } from '@/lib/subscription/subscription'
+import { StripeError } from '@stripe/stripe-js'
+import Stripe from 'stripe'
 import { z } from 'zod'
 
 import { getServerSession } from 'next-auth'
@@ -114,11 +117,11 @@ export async function createCheckoutSession(priceId: string) {
                                 return_url: `${origin}/profile?tab=billing`,
                             })
                         return { success: true, url: billingSession.url }
-                    } catch (portalError: any) {
+                    } catch (portalError: unknown) {
                         // Fallback to checkout if billing portal fails
                         console.warn(
                             'Billing portal failed, creating checkout session:',
-                            portalError.message
+                            (portalError as Error).message
                         )
                         return await createNewCheckoutSession(
                             priceId,
@@ -154,11 +157,11 @@ export async function createCheckoutSession(priceId: string) {
                         error: 'Unable to process subscription request',
                     }
             }
-        } catch (stripeError: any) {
+        } catch (stripeError: unknown) {
             console.error('Stripe API error:', stripeError)
             return {
                 success: false,
-                error: getStripeErrorMessage(stripeError),
+                error: getStripeErrorMessage(stripeError as StripeError),
             }
         }
     } catch (error) {
@@ -170,7 +173,9 @@ export async function createCheckoutSession(priceId: string) {
     }
 }
 
-async function determineSubscriptionAction(subscription: any) {
+async function determineSubscriptionAction(
+    subscription: UserSubscription | null
+) {
     if (!subscription) {
         return { action: 'checkout_new_customer' }
     }
@@ -180,7 +185,7 @@ async function determineSubscriptionAction(subscription: any) {
     }
 
     // Check if subscription is active
-    if (ACTIVE_SUBSCRIPTION_STATUSES.includes(subscription.status)) {
+    if (ACTIVE_SUBSCRIPTION_STATUSES.includes(subscription.status || '')) {
         // Verify customer still exists in Stripe
         try {
             const customer = await stripe.customers.retrieve(
@@ -200,7 +205,7 @@ async function determineSubscriptionAction(subscription: any) {
     }
 
     // Subscription is inactive (canceled, expired, etc.)
-    if (INACTIVE_SUBSCRIPTION_STATUSES.includes(subscription.status)) {
+    if (INACTIVE_SUBSCRIPTION_STATUSES.includes(subscription.status || '')) {
         // Verify customer still exists in Stripe
         try {
             const customer = await stripe.customers.retrieve(
@@ -231,7 +236,7 @@ async function createNewCheckoutSession(
     userId: string,
     existingCustomerId?: string
 ) {
-    const sessionConfig: any = {
+    const sessionConfig: Stripe.Checkout.SessionCreateParams = {
         success_url: `${origin}/profile?tab=billing&success=true`,
         cancel_url: `${origin}/pricing`,
         payment_method_types: ['card'],
@@ -282,11 +287,11 @@ async function createNewCheckoutSession(
         }
 
         return { success: true, url: checkoutSession.url }
-    } catch (stripeError: any) {
+    } catch (stripeError: unknown) {
         console.error('Stripe checkout session creation failed:', stripeError)
         return {
             success: false,
-            error: getStripeErrorMessage(stripeError),
+            error: getStripeErrorMessage(stripeError as StripeError),
         }
     }
 }
@@ -349,11 +354,11 @@ export async function createBillingPortalSession() {
                     error: 'Customer account not found',
                 }
             }
-        } catch (stripeError: any) {
+        } catch (stripeError: unknown) {
             console.error('Error retrieving customer:', stripeError)
             return {
                 success: false,
-                error: getStripeErrorMessage(stripeError),
+                error: getStripeErrorMessage(stripeError as StripeError),
             }
         }
 
@@ -369,14 +374,14 @@ export async function createBillingPortalSession() {
             }
 
             return { success: true, url: billingSession.url }
-        } catch (stripeError: any) {
+        } catch (stripeError: unknown) {
             console.error(
                 'Billing portal session creation failed:',
                 stripeError
             )
             return {
                 success: false,
-                error: getStripeErrorMessage(stripeError),
+                error: getStripeErrorMessage(stripeError as StripeError),
             }
         }
     } catch (error) {
@@ -476,7 +481,7 @@ export async function changeSubscriptionPlan(newPriceId: string) {
                 currentPlan?.interval !== newPlan?.interval
 
             // Update the subscription with the new price
-            const updateConfig: any = {
+            const updateConfig: Stripe.SubscriptionUpdateParams = {
                 items: [
                     {
                         id: stripeSubscription.items.data[0].id,
@@ -520,11 +525,11 @@ export async function changeSubscriptionPlan(newPriceId: string) {
                     ),
                 },
             }
-        } catch (stripeError: any) {
+        } catch (stripeError: unknown) {
             console.error('Stripe subscription update error:', stripeError)
             return {
                 success: false,
-                error: getStripeErrorMessage(stripeError),
+                error: getStripeErrorMessage(stripeError as StripeError),
             }
         }
     } catch (error) {
@@ -585,7 +590,7 @@ export async function getCurrentPlan() {
 /**
  * Convert Stripe errors to user-friendly messages
  */
-function getStripeErrorMessage(stripeError: any): string {
+function getStripeErrorMessage(stripeError: StripeError): string {
     // Don't expose sensitive Stripe error details
     if (stripeError.type === 'card_error') {
         return 'Your payment could not be processed. Please try a different payment method.'

@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { checkAIRateLimitWithDetails } from '@/lib/rate-limit/ai-rate-limit'
 import { google } from '@ai-sdk/google'
 import { generateObject } from 'ai'
+import { Output } from 'pdf2json'
 import { z } from 'zod'
 
 import { Session, getServerSession } from 'next-auth'
@@ -64,8 +65,8 @@ interface AIGenerationResult {
 async function parsePDF(buffer: Buffer): Promise<string> {
     try {
         // Try to dynamically import pdf2json
-        const module = await import('pdf2json')
-        const PDFParser = module.default
+        const pdfModule = await import('pdf2json')
+        const PDFParser = pdfModule.default
 
         return new Promise<string>((resolve, reject) => {
             const pdfParser = new PDFParser(null, true)
@@ -85,7 +86,7 @@ async function parsePDF(buffer: Buffer): Promise<string> {
                 reject(new Error('PDF parsing timeout'))
             }, 30000)
 
-            pdfParser.on('pdfParser_dataError', (errData: any) => {
+            pdfParser.on('pdfParser_dataError', (errData) => {
                 cleanup()
                 console.error('PDF parsing error:', errData.parserError)
                 reject(
@@ -93,7 +94,7 @@ async function parsePDF(buffer: Buffer): Promise<string> {
                 )
             })
 
-            pdfParser.on('pdfParser_dataReady', (pdfData: any) => {
+            pdfParser.on('pdfParser_dataReady', (pdfData: Output) => {
                 cleanup()
                 try {
                     let fullText = ''
@@ -106,15 +107,16 @@ async function parsePDF(buffer: Buffer): Promise<string> {
                                         for (const r of text.R) {
                                             if (r.T) {
                                                 try {
-                                                    const decodedText =
+                                                    const decodedText: string =
                                                         decodeURIComponent(r.T)
                                                     fullText +=
                                                         decodedText + ' '
-                                                } catch (decodeError) {
+                                                } catch (decodeError: unknown) {
                                                     // Skip malformed text
                                                     console.warn(
                                                         'Failed to decode text:',
-                                                        r.T
+                                                        r.T,
+                                                        decodeError
                                                     )
                                                 }
                                             }
@@ -146,9 +148,10 @@ async function parsePDF(buffer: Buffer): Promise<string> {
 
             try {
                 pdfParser.parseBuffer(buffer)
-            } catch (parseError) {
+            } catch (parseError: unknown) {
                 cleanup()
                 reject(new Error('Failed to initiate PDF parsing'))
+                console.error(parseError)
             }
         })
     } catch (importError) {
@@ -395,7 +398,10 @@ function removeDuplicateCards(
     })
 }
 
-function handleAIError(error: unknown, t: any): AIGenerationResult {
+function handleAIError(
+    error: unknown,
+    t: Awaited<ReturnType<typeof getTranslations>>
+): AIGenerationResult {
     if (error instanceof Error) {
         const message = error.message.toLowerCase()
 

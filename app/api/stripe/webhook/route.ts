@@ -18,7 +18,9 @@ import {
     logWebhookSecurityEvent,
     validateStripeWebhookSource,
 } from '@/lib/subscription/stripe/stripe-webhook-security'
-import { eq } from 'drizzle-orm'
+import { ResultSet } from '@libsql/client'
+import { ExtractTablesWithRelations, eq } from 'drizzle-orm'
+import { SQLiteTransaction } from 'drizzle-orm/sqlite-core'
 import Stripe from 'stripe'
 
 import { headers } from 'next/headers'
@@ -106,8 +108,11 @@ export async function POST(request: NextRequest) {
                 signature,
                 process.env.STRIPE_WEBHOOK_SECRET
             )
-        } catch (err: any) {
-            console.error('Webhook signature verification failed:', err.message)
+        } catch (err) {
+            console.error(
+                'Webhook signature verification failed:',
+                (err as Error).message
+            )
             return createSecureErrorResponse(
                 400,
                 ErrorCategory.AUTHENTICATION,
@@ -146,7 +151,7 @@ export async function POST(request: NextRequest) {
         )
 
         return NextResponse.json({ received: true })
-    } catch (error: any) {
+    } catch (error) {
         const processingTime = Date.now() - startTime
         console.error(
             `Webhook processing failed in ${processingTime}ms:`,
@@ -160,7 +165,7 @@ export async function POST(request: NextRequest) {
                     .update(webhookEvents)
                     .set({
                         status: 'failed',
-                        error: error.message || 'Unknown error',
+                        error: (error as Error).message || 'Unknown error',
                         retryCount: 1,
                     })
                     .where(eq(webhookEvents.id, eventId))
@@ -170,11 +175,16 @@ export async function POST(request: NextRequest) {
         }
 
         // Return secure error response
-        return createSecureErrorResponse(500, ErrorCategory.SYSTEM, error, {
-            eventId,
-            processingTime,
-            retryable: true,
-        })
+        return createSecureErrorResponse(
+            500,
+            ErrorCategory.SYSTEM,
+            error as Error,
+            {
+                eventId,
+                processingTime,
+                retryable: true,
+            }
+        )
     }
 }
 
@@ -260,7 +270,16 @@ async function updateWebhookStatus(
     }
 }
 
-async function handleCheckoutSessionCompleted(tx: any, event: Stripe.Event) {
+// typescript magic to ensure we have the correct types for SQLiteTransaction (I think.. eslint is silent now)
+async function handleCheckoutSessionCompleted(
+    tx: SQLiteTransaction<
+        'async',
+        ResultSet,
+        typeof import('@/db/schema'),
+        ExtractTablesWithRelations<typeof import('@/db/schema')>
+    >,
+    event: Stripe.Event
+) {
     const session = event.data.object as Stripe.Checkout.Session
 
     if (session.mode !== 'subscription') {
@@ -290,7 +309,16 @@ async function handleCheckoutSessionCompleted(tx: any, event: Stripe.Event) {
     await upsertSubscription(tx, subscription, userId)
 }
 
-async function handleSubscriptionUpsert(tx: any, event: Stripe.Event) {
+// typescript magic to ensure we have the correct types for SQLiteTransaction (I think.. eslint is silent now)
+async function handleSubscriptionUpsert(
+    tx: SQLiteTransaction<
+        'async',
+        ResultSet,
+        typeof import('@/db/schema'),
+        ExtractTablesWithRelations<typeof import('@/db/schema')>
+    >,
+    event: Stripe.Event
+) {
     const subscription = event.data.object as Stripe.Subscription
     const userId = await getUserIdFromSubscription(subscription)
 
@@ -306,7 +334,16 @@ async function handleSubscriptionUpsert(tx: any, event: Stripe.Event) {
     await upsertSubscription(tx, subscription, userId)
 }
 
-async function handleSubscriptionDeleted(tx: any, event: Stripe.Event) {
+// typescript magic to ensure we have the correct types for SQLiteTransaction (I think.. eslint is silent now)
+async function handleSubscriptionDeleted(
+    tx: SQLiteTransaction<
+        'async',
+        ResultSet,
+        typeof import('@/db/schema'),
+        ExtractTablesWithRelations<typeof import('@/db/schema')>
+    >,
+    event: Stripe.Event
+) {
     const subscription = event.data.object as Stripe.Subscription
 
     console.debug(`Marking subscription ${subscription.id} as canceled`)
@@ -320,9 +357,25 @@ async function handleSubscriptionDeleted(tx: any, event: Stripe.Event) {
         .where(eq(subscriptions.stripeSubscriptionId, subscription.id))
 }
 
-async function handleInvoicePaymentSucceeded(tx: any, event: Stripe.Event) {
-    const invoice = event.data.object as Stripe.Invoice
-    const subscriptionId = invoice.subscription as string
+// typescript magic to ensure we have the correct types for SQLiteTransaction (I think.. eslint is silent now)
+async function handleInvoicePaymentSucceeded(
+    tx: SQLiteTransaction<
+        'async',
+        ResultSet,
+        typeof import('@/db/schema'),
+        ExtractTablesWithRelations<typeof import('@/db/schema')>
+    >,
+    event: Stripe.Event
+) {
+    let invoice = event.data.object as Stripe.Invoice
+
+    let subscriptionId
+
+    if ('subscription' in invoice) {
+        subscriptionId = invoice.subscription as string
+    }
+
+    invoice = invoice as Stripe.Invoice
 
     if (!subscriptionId) {
         console.log('No subscription ID found in successful invoice')
@@ -367,18 +420,37 @@ async function handleInvoicePaymentSucceeded(tx: any, event: Stripe.Event) {
         .where(eq(subscriptions.stripeSubscriptionId, subscriptionId))
 }
 
-async function handleInvoicePaymentFailed(tx: any, event: Stripe.Event) {
-    const invoice = event.data.object as Stripe.Invoice
-    const subscriptionId = invoice.subscription as string
-    const customerId = invoice.customer as string
+// typescript magic to ensure we have the correct types for SQLiteTransaction (I think.. eslint is silent now)
+async function handleInvoicePaymentFailed(
+    tx: SQLiteTransaction<
+        'async',
+        ResultSet,
+        typeof import('@/db/schema'),
+        ExtractTablesWithRelations<typeof import('@/db/schema')>
+    >,
+    event: Stripe.Event
+) {
+    let invoice = event.data.object
+
+    let subscriptionId
+    if ('subscription' in invoice) {
+        subscriptionId = invoice.subscription as string
+    }
+    let customerId
+    if ('customer' in invoice) {
+        customerId = invoice.customer as string
+    }
 
     if (!subscriptionId || !customerId) {
         console.log('No subscription or customer ID found in failed invoice')
         return
     }
 
+    // wathever the fuck this is, but it seems to work?
+    const invoiceId: string = 'id' in invoice ? (invoice.id as string) : ''
+
     console.log(
-        `Payment failed for invoice ${invoice.id}, subscription ${subscriptionId}`
+        `Payment failed for invoice ${invoiceId}, subscription ${subscriptionId}`
     )
 
     // Get user from subscription
@@ -402,13 +474,15 @@ async function handleInvoicePaymentFailed(tx: any, event: Stripe.Event) {
         // Start payment recovery process
         const recoveryEvent = await startPaymentRecovery(
             userId,
-            invoice.id,
+            invoiceId,
             customerId
         )
 
         console.log(
             `Started payment recovery for user ${userId}, recovery ID: ${recoveryEvent.id}`
         )
+
+        invoice = invoice as Stripe.Invoice
 
         // Send immediate notification email
         await sendPaymentFailedEmail(userId, {
@@ -433,7 +507,16 @@ async function handleInvoicePaymentFailed(tx: any, event: Stripe.Event) {
     }
 }
 
-async function handleTrialWillEnd(tx: any, event: Stripe.Event) {
+// typescript magic to ensure we have the correct types for SQLiteTransaction (I think.. eslint is silent now)
+async function handleTrialWillEnd(
+    tx: SQLiteTransaction<
+        'async',
+        ResultSet,
+        typeof import('@/db/schema'),
+        ExtractTablesWithRelations<typeof import('@/db/schema')>
+    >,
+    event: Stripe.Event
+) {
     const subscription = event.data.object as Stripe.Subscription
     console.log(`Trial will end for subscription ${subscription.id}`)
 
@@ -477,8 +560,14 @@ async function getUserIdFromSubscription(
     return userId || null
 }
 
+// typescript magic to ensure we have the correct types for SQLiteTransaction (I think.. eslint is silent now)
 async function upsertSubscription(
-    tx: any,
+    tx: SQLiteTransaction<
+        'async',
+        ResultSet,
+        typeof import('@/db/schema'),
+        ExtractTablesWithRelations<typeof import('@/db/schema')>
+    >,
     subscription: Stripe.Subscription,
     userId: string
 ) {

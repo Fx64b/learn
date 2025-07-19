@@ -84,6 +84,7 @@ export function PaymentWarningBanner({
                 toast.error(t('updateError'))
             }
         } catch (error) {
+            console.error('Error updating payment:', error)
             toast.error(t('updateError'))
         } finally {
             setIsUpdatingPayment(false)
@@ -121,6 +122,7 @@ export function PaymentWarningBanner({
                 return null
             }
         } catch (e) {
+            console.error('Error parsing dismissed data:', e)
             // Invalid data, proceed to show banner
         }
     }

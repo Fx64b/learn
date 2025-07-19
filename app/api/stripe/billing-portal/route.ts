@@ -9,6 +9,7 @@ import { checkStripeRateLimit } from '@/lib/subscription/stripe/stripe-rate-limi
 import { stripe } from '@/lib/subscription/stripe/stripe-server'
 import { getUserSubscription } from '@/lib/subscription/subscription'
 import { absoluteUrl } from '@/lib/utils'
+import Stripe from 'stripe'
 
 import { getServerSession } from 'next-auth'
 import { NextRequest, NextResponse } from 'next/server'
@@ -58,7 +59,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Step 5: Check if subscription status allows billing portal access
-        if (!ACTIVE_SUBSCRIPTION_STATUSES.includes(subscription.status)) {
+        if (!ACTIVE_SUBSCRIPTION_STATUSES.includes(subscription.status || '')) {
             return createSecureErrorResponse(
                 403,
                 ErrorCategory.AUTHORIZATION,
@@ -93,11 +94,12 @@ export async function POST(request: NextRequest) {
                     'Customer account not found'
                 )
             }
-        } catch (stripeError: any) {
+        } catch (stripeError: unknown) {
             console.error('Error retrieving Stripe customer:', stripeError)
+
             return createStripeErrorResponse(
-                stripeError.statusCode || 500,
-                stripeError,
+                (stripeError as Stripe.errors.StripeError).statusCode || 500,
+                stripeError as Stripe.errors.StripeError,
                 'billing-portal-customer-retrieval'
             )
         }
@@ -114,14 +116,17 @@ export async function POST(request: NextRequest) {
             }
 
             return NextResponse.json({ url: billingSession.url })
-        } catch (stripeError: any) {
+        } catch (stripeError: unknown) {
             console.error(
                 'Billing portal session creation failed:',
                 stripeError
             )
 
             // Handle specific Stripe errors
-            if (stripeError.code === 'billing_portal_configuration_not_found') {
+            if (
+                (stripeError as Stripe.errors.StripeError).code ===
+                'billing_portal_configuration_not_found'
+            ) {
                 return createSecureErrorResponse(
                     503,
                     ErrorCategory.SYSTEM,
@@ -130,16 +135,16 @@ export async function POST(request: NextRequest) {
             }
 
             return createStripeErrorResponse(
-                stripeError.statusCode || 500,
-                stripeError,
+                (stripeError as Stripe.errors.StripeError).statusCode || 500,
+                stripeError as Stripe.errors.StripeError,
                 'billing-portal-session-creation'
             )
         }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Billing portal error:', error)
 
         // Handle specific error types
-        if (error.code === 'ECONNREFUSED') {
+        if ((error as Stripe.errors.StripeError).code === 'ECONNREFUSED') {
             return createSecureErrorResponse(
                 503,
                 ErrorCategory.EXTERNAL_API,
@@ -147,8 +152,13 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        return createSecureErrorResponse(500, ErrorCategory.SYSTEM, error, {
-            context: 'billing-portal-access',
-        })
+        return createSecureErrorResponse(
+            500,
+            ErrorCategory.SYSTEM,
+            error as Stripe.errors.StripeError,
+            {
+                context: 'billing-portal-access',
+            }
+        )
     }
 }

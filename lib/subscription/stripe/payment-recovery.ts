@@ -1,8 +1,8 @@
 'use server'
 
 import { db } from '@/db'
-import { paymentRecoveryEvents, subscriptions, users } from '@/db/schema'
-import { and, eq, gte, isNull, lte, or } from 'drizzle-orm'
+import { paymentRecoveryEvents, users } from '@/db/schema'
+import { and, eq, isNull, lte, or } from 'drizzle-orm'
 import { nanoid } from 'nanoid'
 
 export type RecoveryStatus = 'grace' | 'warning' | 'limited' | 'recovered'

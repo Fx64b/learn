@@ -1,3 +1,6 @@
+import { StripeError } from '@stripe/stripe-js'
+import Stripe from 'stripe'
+
 import { NextResponse } from 'next/server'
 
 /**
@@ -114,7 +117,7 @@ export function createSecureErrorResponse(
     statusCode: number,
     category: ErrorCategory,
     originalError?: Error | string,
-    additionalDetails?: Record<string, any>
+    additionalDetails?: Record<string, unknown>
 ): NextResponse {
     const requestId = generateRequestId()
 
@@ -143,7 +146,7 @@ export function createSecureErrorResponse(
         category === ErrorCategory.RATE_LIMIT &&
         additionalDetails?.retryAfter
     ) {
-        response.retryAfter = additionalDetails.retryAfter
+        response.retryAfter = additionalDetails.retryAfter as number
     }
 
     return NextResponse.json(response, {
@@ -218,7 +221,7 @@ function logSecureError(errorData: {
     statusCode: number
     category: ErrorCategory
     originalError?: Error | string
-    additionalDetails?: Record<string, any>
+    additionalDetails?: Record<string, unknown>
     timestamp: string
 }) {
     const logEntry = {
@@ -258,7 +261,7 @@ function generateRequestId(): string {
  */
 export function createStripeErrorResponse(
     statusCode: number,
-    stripeError?: any,
+    stripeError?: Stripe.errors.StripeError | StripeError,
     context?: string
 ): NextResponse {
     let category: ErrorCategory
@@ -279,7 +282,7 @@ export function createStripeErrorResponse(
         message = 'Payment processing failed'
     }
 
-    return createSecureErrorResponse(statusCode, category, stripeError, {
+    return createSecureErrorResponse(statusCode, category, message, {
         context,
         stripeErrorType: stripeError?.type,
         stripeErrorCode: stripeError?.code,

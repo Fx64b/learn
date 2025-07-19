@@ -6,6 +6,7 @@ import {
     createValidationErrorResponse,
 } from '@/lib/subscription/stripe/secure-error-handling'
 import { checkStripeRateLimit } from '@/lib/subscription/stripe/stripe-rate-limit'
+import Stripe from 'stripe'
 import { z } from 'zod'
 
 import { getServerSession } from 'next-auth'
@@ -61,10 +62,11 @@ export async function POST(request: NextRequest) {
         }
 
         // Step 3: Parse and validate request body
-        let body: any
+        let body
         try {
             body = await request.json()
-        } catch (error) {
+        } catch (error: unknown) {
+            console.error('Failed to parse request body:', error)
             return createValidationErrorResponse(
                 [{ field: 'body', message: 'Invalid JSON in request body' }],
                 'plan-change'
@@ -155,11 +157,11 @@ export async function POST(request: NextRequest) {
                 result.error || 'Failed to change plan'
             )
         }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Error in plan change API:', error)
 
         // Handle specific error types
-        if (error.code === 'ECONNREFUSED') {
+        if ((error as Stripe.errors.StripeError).code === 'ECONNREFUSED') {
             return createSecureErrorResponse(
                 503,
                 ErrorCategory.EXTERNAL_API,
@@ -167,8 +169,13 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        return createSecureErrorResponse(500, ErrorCategory.SYSTEM, error, {
-            context: 'plan-change',
-        })
+        return createSecureErrorResponse(
+            500,
+            ErrorCategory.SYSTEM,
+            error as Stripe.errors.StripeError,
+            {
+                context: 'plan-change',
+            }
+        )
     }
 }

@@ -8,9 +8,13 @@ import {
 } from '@/lib/subscription/stripe/secure-error-handling'
 import { checkStripeRateLimit } from '@/lib/subscription/stripe/stripe-rate-limit'
 import { stripe } from '@/lib/subscription/stripe/stripe-server'
-import { getUserSubscription } from '@/lib/subscription/subscription'
+import {
+    UserSubscription,
+    getUserSubscription,
+} from '@/lib/subscription/subscription'
 import { absoluteUrl } from '@/lib/utils'
 import { nanoid } from 'nanoid'
+import Stripe from 'stripe'
 import { z } from 'zod'
 
 import { getServerSession } from 'next-auth'
@@ -74,10 +78,11 @@ export async function POST(request: NextRequest) {
         }
 
         // Step 3: Parse and validate request body
-        let body: any
+        let body
         try {
             body = await request.json()
         } catch (error) {
+            console.error('Failed to parse request body:', error)
             return createValidationErrorResponse(
                 [{ field: 'body', message: 'Invalid JSON in request body' }],
                 'checkout-session-creation'
@@ -154,16 +159,16 @@ export async function POST(request: NextRequest) {
                                 return_url: billingUrl,
                             })
                         return NextResponse.json({ url: billingSession.url })
-                    } catch (portalError: any) {
+                    } catch (portalError) {
                         // Fallback to checkout if billing portal fails
                         console.warn(
                             'Billing portal failed, creating checkout session:',
-                            portalError.message
+                            (portalError as Error).message
                         )
                         return createCheckoutSession(
                             priceId,
-                            session.user,
-                            existingSubscription?.stripeCustomerId,
+                            { id: session.user.id, email: session.user.email },
+                            existingSubscription?.stripeCustomerId || undefined,
                             billingUrl,
                             pricingUrl
                         )
@@ -173,8 +178,8 @@ export async function POST(request: NextRequest) {
                     // User has canceled/expired subscription, create checkout with existing customer
                     return createCheckoutSession(
                         priceId,
-                        session.user,
-                        existingSubscription!.stripeCustomerId,
+                        { id: session.user.id, email: session.user.email },
+                        existingSubscription?.stripeCustomerId || undefined,
                         billingUrl,
                         pricingUrl
                     )
@@ -183,7 +188,7 @@ export async function POST(request: NextRequest) {
                     // New user, create checkout with email
                     return createCheckoutSession(
                         priceId,
-                        session.user,
+                        { id: session.user.id, email: session.user.email },
                         undefined,
                         billingUrl,
                         pricingUrl
@@ -196,19 +201,19 @@ export async function POST(request: NextRequest) {
                         'Unknown subscription action'
                     )
             }
-        } catch (stripeError: any) {
+        } catch (stripeError: unknown) {
             console.error('Stripe API error:', stripeError)
             return createStripeErrorResponse(
-                stripeError.statusCode || 500,
-                stripeError,
+                (stripeError as Stripe.errors.StripeError).statusCode || 500,
+                stripeError as Stripe.errors.StripeError,
                 'checkout-session-creation'
             )
         }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Error creating checkout session:', error)
 
         // Handle specific error types
-        if (error.code === 'ECONNREFUSED') {
+        if ((error as Stripe.errors.StripeError).code === 'ECONNREFUSED') {
             return createSecureErrorResponse(
                 503,
                 ErrorCategory.EXTERNAL_API,
@@ -216,13 +221,20 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        return createSecureErrorResponse(500, ErrorCategory.SYSTEM, error, {
-            context: 'checkout-session-creation',
-        })
+        return createSecureErrorResponse(
+            500,
+            ErrorCategory.SYSTEM,
+            error as Stripe.errors.StripeError,
+            {
+                context: 'checkout-session-creation',
+            }
+        )
     }
 }
 
-async function determineSubscriptionAction(subscription: any) {
+async function determineSubscriptionAction(
+    subscription: UserSubscription | null
+) {
     if (!subscription) {
         return { action: 'checkout_new_customer' }
     }
@@ -232,7 +244,7 @@ async function determineSubscriptionAction(subscription: any) {
     }
 
     // Check if subscription is active
-    if (ACTIVE_SUBSCRIPTION_STATUSES.includes(subscription.status)) {
+    if (ACTIVE_SUBSCRIPTION_STATUSES.includes(subscription.status || '')) {
         // Verify customer still exists in Stripe
         try {
             const customer = await stripe.customers.retrieve(
@@ -252,7 +264,7 @@ async function determineSubscriptionAction(subscription: any) {
     }
 
     // Subscription is inactive (canceled, expired, etc.)
-    if (INACTIVE_SUBSCRIPTION_STATUSES.includes(subscription.status)) {
+    if (INACTIVE_SUBSCRIPTION_STATUSES.includes(subscription.status || '')) {
         // Verify customer still exists in Stripe
         try {
             const customer = await stripe.customers.retrieve(
@@ -285,7 +297,7 @@ async function createCheckoutSession(
 ) {
     const idempotencyKey = `checkout_${user.id}_${nanoid()}`
 
-    const checkoutConfig: any = {
+    const checkoutConfig: Stripe.Checkout.SessionCreateParams = {
         success_url: `${billingUrl}?success=true`,
         cancel_url: pricingUrl,
         payment_method_types: ['card'],
@@ -340,18 +352,8 @@ async function createCheckoutSession(
         }
 
         return NextResponse.json({ url: stripeSession.url })
-    } catch (stripeError: any) {
+    } catch (stripeError) {
         console.error('Stripe checkout session creation failed:', stripeError)
         throw stripeError // Re-throw to be handled by the calling function
     }
-}
-
-// Helper function to check if subscription allows billing portal access
-export function canAccessBillingPortal(subscriptionStatus: string): boolean {
-    return ACTIVE_SUBSCRIPTION_STATUSES.includes(subscriptionStatus)
-}
-
-// Helper function to check if subscription is inactive
-export function isSubscriptionInactive(subscriptionStatus: string): boolean {
-    return INACTIVE_SUBSCRIPTION_STATUSES.includes(subscriptionStatus)
 }

@@ -1,5 +1,6 @@
 import { authOptions } from '@/lib/auth'
 import { getUserRecoveryStatus } from '@/lib/subscription/stripe/payment-recovery'
+import { stripe } from '@/lib/subscription/stripe/stripe-server'
 
 import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'
@@ -41,15 +42,27 @@ export async function GET() {
             )
         }
 
-        // TODO: Fetch the actual invoice from Stripe to get the amount and currency
-        // Get amount and currency from Stripe invoice (simplified version)
-        // In a real implementation, you might want to fetch this from Stripe
+        // Fetch actual invoice data from Stripe
+        let amount = 0
+        let currency = 'chf'
+
+        try {
+            const invoice = await stripe.invoices.retrieve(
+                recoveryEvent.stripeInvoiceId
+            )
+            amount = invoice.amount_due
+            currency = invoice.currency
+        } catch (stripeError) {
+            console.error('Failed to fetch invoice from Stripe:', stripeError)
+            // Fallback: keep default values, but this shouldn't happen in production
+        }
+
         const recoveryStatus = {
             status: recoveryEvent.status,
             gracePeriodEnd: recoveryEvent.gracePeriodEnd,
             daysRemaining,
-            amount: 400, // $4.00 in cents - you'd get this from the actual invoice
-            currency: 'usd', // You'd get this from the actual invoice
+            amount,
+            currency,
         }
 
         return NextResponse.json({ recoveryStatus })
