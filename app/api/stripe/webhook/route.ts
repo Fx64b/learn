@@ -172,18 +172,20 @@ export async function POST(request: NextRequest) {
 }
 
 async function processWebhookEvent(event: Stripe.Event) {
-    return db.transaction(async (tx) => {
-        // Record the webhook event
-        await tx.insert(webhookEvents).values({
+    try {
+        await db.insert(webhookEvents).values({
             id: event.id,
             type: event.type,
             status: 'processing',
             processedAt: new Date(),
             retryCount: 0,
         })
+    } catch (insertError) {
+        console.error('Failed to insert webhook event record:', insertError)
+    }
 
-        try {
-            // Handle different event types
+    try {
+        await db.transaction(async (tx) => {
             switch (event.type) {
                 case 'checkout.session.completed':
                     await handleCheckoutSessionCompleted(tx, event)
@@ -211,37 +213,44 @@ async function processWebhookEvent(event: Stripe.Event) {
                     break
 
                 default:
-                    console.log(`Unhandled event type: ${event.type}`)
-                    await tx
-                        .update(webhookEvents)
-                        .set({ status: 'skipped' })
-                        .where(eq(webhookEvents.id, event.id))
+                    console.warn(`Unhandled event type: ${event.type}`)
+                    await updateWebhookStatus(event.id, 'skipped')
                     return
             }
+        })
 
-            // Mark as processed
-            await tx
-                .update(webhookEvents)
-                .set({ status: 'processed' })
-                .where(eq(webhookEvents.id, event.id))
-        } catch (error) {
-            console.error(`Error processing ${event.type}:`, error)
+        await updateWebhookStatus(event.id, 'processed')
+    } catch (error) {
+        console.error(`Error processing ${event.type}:`, error)
 
-            // Mark as failed
-            await tx
-                .update(webhookEvents)
-                .set({
-                    status: 'failed',
-                    error:
-                        error instanceof Error
-                            ? error.message
-                            : 'Unknown error',
-                })
-                .where(eq(webhookEvents.id, event.id))
+        // Mark as failed in a separate operation to ensure it's recorded
+        await updateWebhookStatus(
+            event.id,
+            'failed',
+            error instanceof Error ? error.message : 'Unknown error'
+        )
 
-            throw error
-        }
-    })
+        throw error
+    }
+}
+
+async function updateWebhookStatus(
+    eventId: string,
+    status: string,
+    error?: string
+) {
+    try {
+        await db
+            .update(webhookEvents)
+            .set({
+                status,
+                error,
+                retryCount: error ? 1 : 0,
+            })
+            .where(eq(webhookEvents.id, eventId))
+    } catch (updateError) {
+        console.error('Failed to update webhook status:', updateError)
+    }
 }
 
 async function handleCheckoutSessionCompleted(tx: any, event: Stripe.Event) {
@@ -283,14 +292,17 @@ async function handleSubscriptionUpsert(tx: any, event: Stripe.Event) {
         throw new Error('No userId found for subscription')
     }
 
-    console.log(`Processing subscription ${subscription.id} for user ${userId}`)
+    console.debug(
+        `Processing subscription ${subscription.id} for user ${userId}`
+    )
+
     await upsertSubscription(tx, subscription, userId)
 }
 
 async function handleSubscriptionDeleted(tx: any, event: Stripe.Event) {
     const subscription = event.data.object as Stripe.Subscription
 
-    console.log(`Marking subscription ${subscription.id} as canceled`)
+    console.debug(`Marking subscription ${subscription.id} as canceled`)
 
     await tx
         .update(subscriptions)
@@ -401,15 +413,33 @@ async function upsertSubscription(
         throw new Error('Invalid subscription data')
     }
 
+    let stripeCurrentPeriodEnd: Date
+
+    if (subscription.current_period_end) {
+        stripeCurrentPeriodEnd = new Date(
+            subscription.current_period_end * 1000
+        )
+    } else {
+        // Fallback based on price interval if available
+        const priceInterval =
+            subscription.items.data[0]?.price?.recurring?.interval
+        const fallbackDays = priceInterval === 'year' ? 365 : 30
+        stripeCurrentPeriodEnd = new Date(
+            Date.now() + fallbackDays * 24 * 60 * 60 * 1000
+        )
+
+        console.warn(
+            `Using fallback period end for subscription ${subscription.id}: ${fallbackDays} days`
+        )
+    }
+
     const subscriptionData = {
         userId,
         stripeCustomerId: subscription.customer as string,
         stripeSubscriptionId: subscription.id,
         stripePriceId: subscription.items.data[0]?.price?.id || null,
         status: subscription.status,
-        stripeCurrentPeriodEnd: subscription.current_period_end
-            ? new Date(subscription.current_period_end * 1000)
-            : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Fallback: 30 days from now
+        stripeCurrentPeriodEnd,
         cancelAtPeriodEnd: subscription.cancel_at_period_end || false,
         updatedAt: new Date(),
     }

@@ -58,7 +58,7 @@ export default async function ProfilePage({
         locale: preferencesData?.locale ?? 'en',
     }
 
-    const defaultTab = tab || 'settings'
+    const defaultTab = tab?.split('?')[0] || 'settings'
 
     return (
         <div className="container mx-auto max-w-5xl px-4 py-8 sm:py-12">

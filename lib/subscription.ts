@@ -26,7 +26,8 @@ export async function isUserPro(userId: string): Promise<boolean> {
         ? subscription.stripeCurrentPeriodEnd > new Date()
         : false
 
-    return isActive && isPeriodValid && !subscription.cancelAtPeriodEnd
+    // Allow access if subscription is active AND period is valid
+    return isActive && isPeriodValid
 }
 
 export const getCachedUserSubscription = (userId: string) =>
