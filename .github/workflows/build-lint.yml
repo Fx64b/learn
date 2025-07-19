@@ -55,11 +55,16 @@ jobs:
 
             - name: Build Next.js
               env:
-                  DATABASE_URL: ${{ secrets.DATABASE_URL }}
-                  DATABASE_AUTH_TOKEN: ${{ secrets.DATABASE_AUTH_TOKEN }}
-                  NEXTAUTH_URL: ${{ vars.NEXTAUTH_URL || 'http://localhost:3000' }}
-                  NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
-                  EMAIL_FROM: ${{ vars.EMAIL_FROM || 'noreply@example.com' }}
-                  RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+                  DATABASE_URL: ${{ 'libsql://localhost' }}
+                  DATABASE_AUTH_TOKEN: ${{ 'auth.token.turso' }}
+                  NEXTAUTH_URL: ${{ 'http://localhost:3000' }}
+                  NEXTAUTH_SECRET: ${{ 'next-auth-secret' }}
+                  EMAIL_FROM: ${{ 'noreply@example.com' }}
+                  RESEND_API_KEY: ${{ 'resend-api-key' }}
+                  STRIPE_SECRET_KEY: ${{ 'sk_stripe-secret' }}
+                  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ 'pk_loremipsum' }}
+                  STRIPE_WEBHOOK_SECRET: ${{ 'whsec_some-webhook-secret' }}
+                  NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PRICE_ID: ${{ 'price_formonthly' }}
+                  NEXT_PUBLIC_STRIPE_PRO_YEARLY_PRICE_ID: ${{ 'price_foryearly' }}
               run: |
                   pnpm run build
