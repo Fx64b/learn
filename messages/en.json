@@ -511,18 +511,25 @@
             "currentPlan": "Current Plan",
             "availablePlans": "Available Plans",
             "noPlan": "No active subscription found.",
+            "noSubscription": "You don't have an active subscription.",
+            "upgradePrompt": "Upgrade to Pro to unlock AI-powered flashcard generation and advanced features.",
+            "viewPlans": "View Plans",
             "loadError": "Failed to load subscription information.",
             "changeError": "Failed to change plan. Please try again.",
             "planChanged": "Plan changed successfully!",
             "changing": "Changing...",
+            "loading": "Loading...",
             "current": "Current",
             "switchTo": "Switch to this plan",
             "popular": "Popular",
+            "manageSubscription": "Manage",
+            "billingPortalError": "Failed to open billing portal. Please try again.",
             "renewsOn": "Renews on {date}",
             "cancellingOn": "Cancelling on {date}",
             "prorationNotice": {
                 "title": "Proration:",
-                "description": "When you change plans, you'll be charged or credited for the difference based on your remaining billing period."
+                "description": "When you change plans, you'll be charged or credited for the difference based on your remaining billing period.",
+                "intervalChange": "Switching between monthly and yearly plans starts a new billing cycle immediately."
             }
         }
     },

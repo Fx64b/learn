@@ -1,4 +1,3 @@
-// components/user-nav.tsx
 'use client'
 
 import { Sparkles, User } from 'lucide-react'
@@ -18,30 +17,6 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-
-// components/user-nav.tsx
-
-// components/user-nav.tsx
-
-// components/user-nav.tsx
-
-// components/user-nav.tsx
-
-// components/user-nav.tsx
-
-// components/user-nav.tsx
-
-// components/user-nav.tsx
-
-// components/user-nav.tsx
-
-// components/user-nav.tsx
-
-// components/user-nav.tsx
-
-// components/user-nav.tsx
-
-// components/user-nav.tsx
 
 export function UserNav() {
     const t = useTranslations()

@@ -1,13 +1,24 @@
 'use client'
 
-import { Check, CreditCard, Loader2, Sparkles, Zap } from 'lucide-react'
+import {
+    Check,
+    CreditCard,
+    ExternalLink,
+    Loader2,
+    Settings,
+    Sparkles,
+    Zap,
+} from 'lucide-react'
 import { toast } from 'sonner'
 
 import { useEffect, useState } from 'react'
 
 import { useTranslations } from 'next-intl'
 
-import { getCurrentPlan } from '@/app/actions/stripe'
+import {
+    createBillingPortalSession,
+    getCurrentPlan,
+} from '@/app/actions/stripe'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -62,6 +73,7 @@ export function PlanManagement() {
     const [currentPlan, setCurrentPlan] = useState<PlanInfo | null>(null)
     const [isLoading, setIsLoading] = useState(true)
     const [isChanging, setIsChanging] = useState<string | null>(null)
+    const [isBillingPortalLoading, setIsBillingPortalLoading] = useState(false)
 
     useEffect(() => {
         loadCurrentPlan()
@@ -79,6 +91,23 @@ export function PlanManagement() {
             toast.error(t('loadError'))
         } finally {
             setIsLoading(false)
+        }
+    }
+
+    const handleBillingPortal = async () => {
+        setIsBillingPortalLoading(true)
+        try {
+            const result = await createBillingPortalSession()
+            if (result.success && result.url) {
+                window.location.href = result.url
+            } else {
+                toast.error(result.error || t('billingPortalError'))
+            }
+        } catch (error) {
+            console.error('Error opening billing portal:', error)
+            toast.error(t('billingPortalError'))
+        } finally {
+            setIsBillingPortalLoading(false)
         }
     }
 
@@ -165,7 +194,7 @@ export function PlanManagement() {
                 {/* Current Plan Status */}
                 <div className="bg-muted/50 rounded-lg p-4">
                     <div className="flex items-center justify-between">
-                        <div>
+                        <div className="flex-1">
                             <div className="flex items-center gap-2">
                                 <h3 className="font-medium">
                                     {t('currentPlan')}
@@ -189,8 +218,30 @@ export function PlanManagement() {
                             </p>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Sparkles className="h-4 w-4 text-purple-500" />
-                            <span className="text-sm font-medium">Pro</span>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={handleBillingPortal}
+                                disabled={isBillingPortalLoading}
+                                className="gap-2"
+                            >
+                                {isBillingPortalLoading ? (
+                                    <>
+                                        <Loader2 className="h-3 w-3 animate-spin" />
+                                        {t('loading')}
+                                    </>
+                                ) : (
+                                    <>
+                                        <Settings className="h-3 w-3" />
+                                        {t('manageSubscription')}
+                                        <ExternalLink className="h-3 w-3" />
+                                    </>
+                                )}
+                            </Button>
+                            <div className="flex items-center gap-2">
+                                <Sparkles className="h-4 w-4 text-purple-500" />
+                                <span className="text-sm font-medium">Pro</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -307,6 +358,9 @@ export function PlanManagement() {
                     <p className="text-sm text-blue-800 dark:text-blue-200">
                         <strong>{t('prorationNotice.title')}</strong>{' '}
                         {t('prorationNotice.description')}
+                    </p>
+                    <p className="mt-1 text-xs text-blue-700 dark:text-blue-300">
+                        {t('prorationNotice.intervalChange')}
                     </p>
                 </div>
             </CardContent>
