@@ -6,5 +6,5 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function absoluteUrl(path: string) {
-    return `${process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_SITE_URL}${path}`
+    return `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost'}${path}`
 }
