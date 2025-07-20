@@ -14,15 +14,6 @@ interface SecureErrorResponse {
     requestId?: string
 }
 
-/**
- * Error severity levels
- */
-export enum ErrorSeverity {
-    LOW = 'low',
-    MEDIUM = 'medium',
-    HIGH = 'high',
-    CRITICAL = 'critical',
-}
 
 /**
  * Categories of errors that should be handled differently
@@ -327,21 +318,6 @@ export function createValidationErrorResponse(
                 'Content-Type': 'application/json',
             },
         }
-    )
-}
-
-/**
- * Rate limit error response
- */
-export function createRateLimitErrorResponse(
-    retryAfter: number,
-    context?: string
-): NextResponse {
-    return createSecureErrorResponse(
-        429,
-        ErrorCategory.RATE_LIMIT,
-        `Rate limit exceeded: ${context}`,
-        { retryAfter }
     )
 }
 
