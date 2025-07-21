@@ -45,7 +45,7 @@ export async function sendPaymentFailedEmail(
 
     try {
         await resend.emails.send({
-            from: process.env.EMAIL_FROM || 'noreply@learn.fx64b.dev',
+            from: process.env.EMAIL_FROM || 'learn@fx64b.dev',
             to: user.email,
             subject: 'Payment Issue - Action Required',
             html: `
@@ -107,7 +107,7 @@ export async function sendPaymentRecoveredEmail(
 
     try {
         await resend.emails.send({
-            from: process.env.EMAIL_FROM || 'noreply@learn.fx64b.dev',
+            from: process.env.EMAIL_FROM || 'learn@fx64b.dev',
             to: user.email,
             subject: '🎉 Payment Successful - Welcome Back!',
             html: `
@@ -164,7 +164,7 @@ export async function sendPaymentReminderEmail(
 
     try {
         await resend.emails.send({
-            from: process.env.EMAIL_FROM || 'noreply@learn.fx64b.dev',
+            from: process.env.EMAIL_FROM || 'learn@fx64b.dev',
             to: user.email,
             subject: `⚠️ Payment Reminder - ${data.daysRemaining} days remaining`,
             html: `
