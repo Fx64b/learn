@@ -42,7 +42,7 @@ export async function DeckCard({
             className={`transition-shadow hover:shadow-md ${isPastDue ? 'border-dashed' : ''}`}
         >
             <CardHeader className="pb-2">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center justify-between gap-2">
                     <CardTitle>{deck.title}</CardTitle>
 
                     {isPastDue && (
@@ -106,7 +106,7 @@ export async function DeckCard({
                         {t('common.learn')}
                     </Button>
                 </Link>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" asChild>
                     <Link href={`/deck/${deck.id}/edit`}>
                         <PencilIcon />
                     </Link>

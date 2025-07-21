@@ -10,9 +10,9 @@ import { redirect } from 'next/navigation'
 import { getUserPreferences } from '@/app/actions/preferences'
 import { getLearningProgress } from '@/app/actions/progress'
 
-import { PlanManagement } from '@/components/plan-management'
 import { ProfileSettings } from '@/components/profile-settings'
 import { ProgressDashboard } from '@/components/statistics/progress-dashboard'
+import { PlanManagement } from '@/components/subscription/plan-management'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 function ensureValidDirection(direction: unknown): 'horizontal' | 'vertical' {

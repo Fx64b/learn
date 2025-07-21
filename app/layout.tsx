@@ -12,7 +12,7 @@ import { Header } from '@/components/header'
 import { AuthProvider } from '@/components/misc/auth-provider'
 import { LocaleProvider } from '@/components/misc/locale-provider'
 import { ThemeProvider } from '@/components/misc/theme-provider'
-import { PaymentWarningBanner } from '@/components/payment-warning'
+import { PaymentWarningBanner } from '@/components/subscription/payment-warning'
 
 import './globals.css'
 

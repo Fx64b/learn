@@ -12,7 +12,7 @@ import Link from 'next/link'
 import { reviewCard } from '@/app/actions/flashcard'
 import { saveStudySession } from '@/app/actions/study-session'
 
-import { Flashcard } from '@/components/flashcard'
+import { Flashcard } from '@/components/flashcards/flashcard'
 import { Button } from '@/components/ui/button'
 
 interface LernModusClientProps {

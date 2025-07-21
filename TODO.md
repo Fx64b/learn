@@ -8,7 +8,6 @@ Todos and improvements according to ai.
     - Current keyboard shortcuts aren't discoverable
     - Add a help modal with key commands
     - Show shortcuts overlay during learning
-    - Make shortcuts customizable
 
 ## UX/UI Enhancements:
 

@@ -8,7 +8,7 @@ import { notFound } from 'next/navigation'
 
 import { getFlashcardsByDeckId } from '@/app/actions/flashcard'
 
-import { CreateCardForm } from '@/components/create-card-form'
+import { CreateCardForm } from '@/components/flashcards/create-card-form'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 

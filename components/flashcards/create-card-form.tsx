@@ -13,7 +13,7 @@ import {
     createFlashcardsFromJson,
 } from '@/app/actions/flashcard'
 
-import { AIFlashcardForm } from '@/components/ai-flashcard-form'
+import { AIFlashcardForm } from '@/components/flashcards/ai-flashcard-form'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {

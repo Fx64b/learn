@@ -1,14 +1,17 @@
 'use client'
 
 import { Check, Sparkles } from 'lucide-react'
+import { toast } from 'sonner'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { useSession } from 'next-auth/react'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 
-import { CheckoutButton } from '@/components/checkout-button'
+import { getCurrentPlan } from '@/app/actions/stripe'
+
+import { CheckoutButton } from '@/components/subscription/checkout-button'
 import { Button } from '@/components/ui/button'
 import {
     Card,
@@ -20,6 +23,8 @@ import {
 } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch'
 
+class PlanInfo {}
+
 export default function PricingPage() {
     const t = useTranslations('pricing')
     const { data: session } = useSession()
@@ -28,6 +33,22 @@ export default function PricingPage() {
 
     const handleAuthRequired = () => {
         router.push('/login')
+    }
+
+    useEffect(() => {
+        loadCurrentPlan()
+    }, [])
+
+    const loadCurrentPlan = async () => {
+        try {
+            const result = await getCurrentPlan()
+            if (result.success && result.currentPlan) {
+                router.push('/profile?tab=billing')
+            }
+        } catch (error) {
+            console.error('Error loading current plan:', error)
+            toast.error(t('loadError'))
+        }
     }
 
     return (
@@ -131,12 +152,14 @@ export default function PricingPage() {
                                     {t('pro.features.aiFlashcards')}
                                 </span>
                             </li>
-                            <li className="flex items-center gap-2">
+                            {/*       TODO: WIP
+                                                 <li className="flex items-center gap-2">
                                 <Check className="h-4 w-4 text-green-600" />
                                 <span>
                                     {t('pro.features.advancedAnalytics')}
                                 </span>
                             </li>
+*/}
                             <li className="flex items-center gap-2">
                                 <Check className="h-4 w-4 text-green-600" />
                                 <span>{t('pro.features.prioritySupport')}</span>
