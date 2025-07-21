@@ -47,11 +47,17 @@ export default async function EditDeckPage({
             </div>
 
             <Tabs defaultValue="cards" className="mb-8">
-                <TabsList className="mb-4">
-                    <TabsTrigger value="details">
+                <TabsList className="mb-4 grid h-auto w-full grid-cols-1 gap-1 sm:h-10 sm:grid-cols-2 sm:gap-0">
+                    <TabsTrigger
+                        value="details"
+                        className="w-full py-2 text-sm sm:py-0 sm:text-base"
+                    >
                         {t('tabs.details')}
                     </TabsTrigger>
-                    <TabsTrigger value="cards">
+                    <TabsTrigger
+                        value="cards"
+                        className="w-full py-2 text-sm sm:py-0 sm:text-base"
+                    >
                         {t('tabs.editCards')}
                     </TabsTrigger>
                 </TabsList>

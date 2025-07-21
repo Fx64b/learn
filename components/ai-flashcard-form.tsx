@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation'
 import { generateAIFlashcards } from '@/app/actions/ai-flashcards'
 
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -142,8 +143,10 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
         <Card>
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                    <Sparkles className="h-5 w-5" />
                     {t('title')}
+                    <Badge className="ml-2" variant={'outline'}>
+                        <Sparkles /> Pro
+                    </Badge>
                 </CardTitle>
             </CardHeader>
             <CardContent>

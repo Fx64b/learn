@@ -14,7 +14,6 @@ interface SecureErrorResponse {
     requestId?: string
 }
 
-
 /**
  * Categories of errors that should be handled differently
  */

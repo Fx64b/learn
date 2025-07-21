@@ -36,7 +36,7 @@ export function Header() {
                             {t('howItWorks')}
                         </Link>
                         <Link
-                            href="/todo"
+                            href="/pricing"
                             className="text-muted-foreground hover:text-foreground transition-colors"
                         >
                             {t('pricing')}

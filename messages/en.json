@@ -291,7 +291,7 @@
             "backPlaceholder": "Answer or definition",
             "creating": "Creating...",
             "createCard": "Create Card",
-            "createMultiple": "Multiple Cards (JSON)",
+            "createMultiple": "Multiple Cards",
             "singleCard": "Single Card",
             "creatingMultiple": "Creating cards...",
             "createError": "Error creating card",

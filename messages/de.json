@@ -294,7 +294,7 @@
             "backPlaceholder": "Antwort oder Definition",
             "creating": "Erstelle...",
             "createCard": "Karte erstellen",
-            "createMultiple": "Mehrere Karten (JSON)",
+            "createMultiple": "Mehrere Karten",
             "createError": "Fehler beim Erstellen der Karte",
             "singleCard": "Einzelne Karte",
             "creatingMultiple": "Erstelle Karten...",

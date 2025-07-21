@@ -131,7 +131,9 @@ export function PlanManagement() {
 
             if (response.ok && data.success) {
                 toast.success(data.message || t('planChanged'))
-                setTimeout(async () => { await loadCurrentPlan() }, 1000) // Refresh current plan
+                setTimeout(async () => {
+                    await loadCurrentPlan()
+                }, 1000) // Refresh current plan
             } else {
                 const errorMessage =
                     data.error || data.details?.[0]?.message || t('changeError')
@@ -203,7 +205,9 @@ export function PlanManagement() {
                                     {currentPlan.name}
                                 </Badge>
                             </div>
-                            <p className={`text-sm ${currentPlan.cancelAtPeriodEnd ? 'text-red-500' : 'text-green-500'}`}>
+                            <p
+                                className={`text-sm ${currentPlan.cancelAtPeriodEnd ? 'text-red-500' : 'text-green-500'}`}
+                            >
                                 {currentPlan.cancelAtPeriodEnd
                                     ? t('cancellingOn', {
                                           date:

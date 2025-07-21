@@ -3,6 +3,7 @@
 import { ChevronDown, Copy, Sparkles } from 'lucide-react'
 import { toast } from 'sonner'
 
+import type React from 'react'
 import { useState } from 'react'
 
 import { useLocale, useTranslations } from 'next-intl'
@@ -48,7 +49,6 @@ export function CreateCardForm({ deckId }: { deckId: string }) {
   }
 ]`
         }
-
         return `[
   {
     "front": "What is ...?",
@@ -63,7 +63,6 @@ export function CreateCardForm({ deckId }: { deckId: string }) {
 
     const getAiPrompt = () => {
         const schema = getJsonPlaceholder()
-
         if (locale === 'de') {
             return `Bitte erstelle Lernkarten für das gewünschte Thema im folgenden JSON-Format:
 
@@ -78,7 +77,6 @@ Wichtige Hinweise:
 
 Thema für die Lernkarten:`
         }
-
         return `Please create flashcards for the requested topic in the following JSON format:
 
 ${schema}
@@ -114,7 +112,6 @@ Topic for the flashcards:`
     const handleSingleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsSubmitting(true)
-
         const formData = new FormData()
         formData.append('deckId', deckId)
         formData.append('front', singleCard.front)
@@ -122,14 +119,12 @@ Topic for the flashcards:`
         formData.append('isExamRelevant', 'true')
 
         const result = await createFlashcard(formData)
-
         if (result.success) {
             toast.success(t('cardCreated'))
             setSingleCard({ front: '', back: '' })
         } else {
             toast.error(t('common.error'))
         }
-
         setIsSubmitting(false)
     }
 
@@ -147,7 +142,6 @@ Topic for the flashcards:`
                 result.results?.filter((r) => r.success).length || 0
             const errorCount =
                 result.results?.filter((r) => !r.success).length || 0
-
             const message =
                 errorCount > 0
                     ? t('cardsCreated', {
@@ -155,31 +149,47 @@ Topic for the flashcards:`
                           errors: t('withErrors', { count: errorCount }),
                       })
                     : t('cardsCreated', { success: successCount, errors: '' })
-
             toast.success(message)
             setJsonCards('')
         } else {
             toast.error(result.error || t('common.error'))
         }
-
         setIsSubmitting(false)
     }
 
     return (
         <Tabs defaultValue="single" className="w-full">
-            <TabsList className="grid h-full w-full grid-cols-3">
-                <TabsTrigger value="single">{t('singleCard')}</TabsTrigger>
-                <TabsTrigger value="bulk">{t('createMultiple')}</TabsTrigger>
-                <TabsTrigger value="ai" className="flex items-center gap-1">
-                    <Sparkles className="h-3 w-3" />
-                    {t('aiGenerate')}
+            <TabsList className="grid h-auto w-full grid-cols-3 p-1">
+                <TabsTrigger
+                    value="single"
+                    className="min-w-0 truncate px-2 py-2 text-xs sm:text-sm"
+                >
+                    <span className="truncate">{t('singleCard')}</span>
+                </TabsTrigger>
+                <TabsTrigger
+                    value="bulk"
+                    className="min-w-0 truncate px-2 py-2 text-xs sm:text-sm"
+                >
+                    <span className="truncate">{t('createMultiple')}</span>
+                </TabsTrigger>
+                <TabsTrigger
+                    value="ai"
+                    className="flex min-w-0 items-center justify-center gap-1 px-1 py-2 text-xs sm:px-2 sm:text-sm"
+                >
+                    <Sparkles className="h-3 w-3 flex-shrink-0" />
+                    <span className="hidden truncate sm:inline">
+                        {t('aiGenerate')}
+                    </span>
+                    <span className="truncate sm:hidden">AI</span>
                 </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="single">
+            <TabsContent value="single" className="mt-4">
                 <Card>
                     <CardHeader>
-                        <CardTitle>{t('newCard')}</CardTitle>
+                        <CardTitle className="text-lg sm:text-xl">
+                            {t('newCard')}
+                        </CardTitle>
                     </CardHeader>
                     <CardContent>
                         <form
@@ -200,6 +210,7 @@ Topic for the flashcards:`
                                     }
                                     placeholder={t('frontPlaceholder')}
                                     required
+                                    className="w-full"
                                 />
                             </div>
                             <div>
@@ -215,11 +226,15 @@ Topic for the flashcards:`
                                         }))
                                     }
                                     placeholder={t('backPlaceholder')}
-                                    className="h-56 w-full rounded border p-2"
+                                    className="h-32 w-full resize-none rounded border p-2 sm:h-56"
                                     required
                                 />
                             </div>
-                            <Button type="submit" disabled={isSubmitting}>
+                            <Button
+                                type="submit"
+                                disabled={isSubmitting}
+                                className="w-full sm:w-auto"
+                            >
                                 {isSubmitting ? t('creating') : t('createCard')}
                             </Button>
                         </form>
@@ -227,15 +242,17 @@ Topic for the flashcards:`
                 </Card>
             </TabsContent>
 
-            <TabsContent value="bulk">
+            <TabsContent value="bulk" className="mt-4">
                 <Card>
                     <CardHeader>
-                        <CardTitle>{t('createMultiple')}</CardTitle>
+                        <CardTitle className="text-lg sm:text-xl">
+                            {t('createMultiple')}
+                        </CardTitle>
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={handleBulkSubmit} className="space-y-4">
                             <div>
-                                <div className="mb-2 flex items-center justify-between">
+                                <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                                     <label className="block text-sm font-medium">
                                         JSON Array
                                     </label>
@@ -245,14 +262,19 @@ Topic for the flashcards:`
                                                 variant="outline"
                                                 size="sm"
                                                 type="button"
-                                                className="gap-1"
+                                                className="w-full gap-1 bg-transparent sm:w-auto"
                                             >
                                                 <Copy className="h-3 w-3" />
-                                                {t('copySchema')}
-                                                <ChevronDown className="h-3 w-3" />
+                                                <span className="truncate">
+                                                    {t('copySchema')}
+                                                </span>
+                                                <ChevronDown className="h-3 w-3 flex-shrink-0" />
                                             </Button>
                                         </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
+                                        <DropdownMenuContent
+                                            align="end"
+                                            className="w-56"
+                                        >
                                             <DropdownMenuItem
                                                 onClick={handleCopySchema}
                                             >
@@ -273,12 +295,16 @@ Topic for the flashcards:`
                                     onChange={(e) =>
                                         setJsonCards(e.target.value)
                                     }
-                                    className="h-72 w-full rounded border p-2"
+                                    className="h-48 w-full resize-none rounded border p-2 font-mono text-xs sm:h-72 sm:text-sm"
                                     placeholder={getJsonPlaceholder()}
                                     required
                                 />
                             </div>
-                            <Button type="submit" disabled={isSubmitting}>
+                            <Button
+                                type="submit"
+                                disabled={isSubmitting}
+                                className="w-full sm:w-auto"
+                            >
                                 {isSubmitting
                                     ? t('creatingMultiple')
                                     : t('createFromJson')}
@@ -288,7 +314,7 @@ Topic for the flashcards:`
                 </Card>
             </TabsContent>
 
-            <TabsContent value="ai">
+            <TabsContent value="ai" className="mt-4">
                 <AIFlashcardForm deckId={deckId} />
             </TabsContent>
         </Tabs>
