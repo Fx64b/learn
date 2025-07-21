@@ -2,6 +2,7 @@ import { StripeError } from '@stripe/stripe-js'
 import Stripe from 'stripe'
 
 import { NextResponse } from 'next/server'
+import { nanoid } from 'nanoid'
 
 /**
  * Secure error response types
@@ -243,7 +244,7 @@ function logSecureError(errorData: {
  * Generate a unique request ID for error tracking
  */
 function generateRequestId(): string {
-    return `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    return `req_${Date.now()}_${nanoid()}`
 }
 
 /**
