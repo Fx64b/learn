@@ -23,8 +23,6 @@ import {
 } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch'
 
-class PlanInfo {}
-
 export default function PricingPage() {
     const t = useTranslations('pricing')
     const { data: session } = useSession()

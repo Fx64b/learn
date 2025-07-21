@@ -414,7 +414,7 @@ export function PlanManagement() {
                         <DialogDescription className="text-left">
                             {selectedPlan && currentPlan && (
                                 <>
-                                    You're about to switch from{' '}
+                                    You&#39;re about to switch from{' '}
                                     <span className="font-medium">
                                         {currentPlan.name}
                                     </span>{' '}
@@ -471,7 +471,7 @@ export function PlanManagement() {
                                     </p>
                                     <p className="text-xs text-amber-700 dark:text-amber-300">
                                         Your subscription will be prorated
-                                        automatically. You'll be charged or
+                                        automatically. You&#39;ll be charged or
                                         credited the difference for the
                                         remaining billing period.
                                     </p>
