@@ -4,6 +4,7 @@ import {
     markEmailSent,
     updateRecoveryStatuses,
 } from '@/lib/subscription/stripe/payment-recovery'
+import { stripe } from '@/lib/subscription/stripe/stripe-server'
 
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -26,7 +27,8 @@ export async function GET(request: NextRequest) {
         // Send reminder emails
         for (const event of eventsNeedingEmail) {
             try {
-                if (event.status === 'warning') {
+                if (event.status === 'grace' || event.status === 'warning') {
+                    console.log(event)
                     const daysRemaining = event.gracePeriodEnd
                         ? Math.max(
                               0,
@@ -38,10 +40,27 @@ export async function GET(request: NextRequest) {
                           )
                         : 0
 
+                    let amount = 0
+                    let currency = 'chf'
+
+                    try {
+                        const invoice = await stripe.invoices.retrieve(
+                            event.stripeInvoiceId
+                        )
+                        amount = invoice.amount_due
+                        currency = invoice.currency
+                    } catch (stripeError) {
+                        console.error(
+                            'Failed to fetch invoice from Stripe:',
+                            stripeError
+                        )
+                        // Fallback: keep default values, but this shouldn't happen in production
+                    }
+
                     await sendPaymentReminderEmail(event.userId, {
                         invoiceId: event.stripeInvoiceId,
-                        amount: 400, // You'll need to fetch actual amount from Stripe
-                        currency: 'usd',
+                        amount,
+                        currency,
                         daysRemaining,
                         updatePaymentUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/profile?tab=billing`,
                     })
