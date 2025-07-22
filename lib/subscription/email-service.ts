@@ -166,12 +166,12 @@ export async function sendPaymentReminderEmail(
         await resend.emails.send({
             from: process.env.EMAIL_FROM || 'learn@fx64b.dev',
             to: user.email,
-            subject: `⚠️ Payment Reminder - ${data.daysRemaining} days remaining`,
+            subject: `Payment Reminder - ${data.daysRemaining} days remaining`,
             html: `
                 <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
                     <div style="background: #fffbeb; border: 1px solid #fed7aa; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
-                        <h2 style="color: #ea580c; margin: 0 0 10px 0;">⚠️ Payment Reminder</h2>
-                        <p style="margin: 0; color: #9a3412;">Your Learn Pro subscription needs attention.</p>
+                        <h2 style="margin: 0 0 10px 0;">⚠️ Payment Reminder</h2>
+                        <p style="margin: 0;">Your Learn Pro subscription needs attention.</p>
                     </div>
 
                     <h3>Payment Still Pending</h3>
