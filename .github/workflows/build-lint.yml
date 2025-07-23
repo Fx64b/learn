@@ -1,4 +1,4 @@
-name: Build and Lint
+name: Build, Lint and Test
 
 permissions:
     contents: read
@@ -14,7 +14,7 @@ on:
 jobs:
     build_and_lint_nextjs:
         runs-on: ubuntu-latest
-        name: Build and Lint Next.js App
+        name: Build, Lint and Test Next.js App
         defaults:
             run:
                 working-directory: ./
@@ -52,6 +52,10 @@ jobs:
             - name: Lint Next.js
               run: |
                   pnpm run lint
+
+            - name: Run tests
+              run: |
+                  pnpm run test:run
 
             - name: Build Next.js
               env:
