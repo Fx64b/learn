@@ -199,16 +199,26 @@
             "title": "Warning!",
             "description": "This app is still in development. Data may be lost or not displayed correctly. Please use the app for testing purposes only and not for important data."
         },
+        "quickLearning": {
+            "title": "Ready to Learn",
+            "cardsDue": "cards due today",
+            "activeDecks": "active decks",
+            "reviewNow": "Review Now"
+        },
         "statistics": {
             "title": "Learning Statistics",
+            "overview": "Learning Overview",
             "myProfile": "My Profile",
+            "viewDetails": "View Details",
             "loginPrompt": "Please sign in to see your learning statistics."
         },
         "categories": {
-            "title": "Learning Categories",
+            "title": "Active Learning Decks",
             "newDeck": "New Deck",
             "reviewAll": "Review All Cards",
-            "practiceDifficult": "Practice Difficult Cards"
+            "practiceDifficult": "Practice Difficult Cards",
+            "noDecks": "You don't have any active decks yet.",
+            "createFirst": "Create Your First Deck"
         },
         "completedGoals": {
             "title": "Completed Learning Goals",

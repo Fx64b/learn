@@ -202,16 +202,26 @@
             "title": "Achtung!",
             "description": "Diese App ist noch in der Entwicklungsphase. Es kann gut sein, dass Daten verloren gehen oder nicht korrekt angezeigt werden. Bitte benutze die App nur zu Testzwecken und nicht für wichtige Daten."
         },
+        "quickLearning": {
+            "title": "Bereit zum Lernen",
+            "cardsDue": "Karten heute fällig",
+            "activeDecks": "aktive Decks",
+            "reviewNow": "Jetzt wiederholen"
+        },
         "statistics": {
             "title": "Lernstatistik",
+            "overview": "Lernübersicht",
             "myProfile": "Mein Profil",
+            "viewDetails": "Details anzeigen",
             "loginPrompt": "Bitte melde dich an, um deine Lernstatistiken zu sehen."
         },
         "categories": {
-            "title": "Lernkategorien",
+            "title": "Aktive Lerndecks",
             "newDeck": "Neues Deck",
             "reviewAll": "Alle Karten wiederholen",
-            "practiceDifficult": "Schwierige Karten üben"
+            "practiceDifficult": "Schwierige Karten üben",
+            "noDecks": "Du hast noch keine aktiven Decks.",
+            "createFirst": "Erstelle dein erstes Deck"
         },
         "completedGoals": {
             "title": "Abgeschlossene Lernziele",

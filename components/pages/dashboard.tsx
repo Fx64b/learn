@@ -56,30 +56,116 @@ export default async function Dashboard({ session }: DashboardProps) {
 
     return (
         <div className="px-4 py-6 sm:py-10">
-            <div className="mb-10">
+            {/* Welcome Section - More concise */}
+            <div className="mb-8">
                 <h1 className="mb-2 text-3xl font-bold">
                     {t('dashboard.title')}
                 </h1>
                 <p className="text-muted-foreground">
                     {t('dashboard.subtitle')}
                 </p>
-                <Alert className="my-4 w-full md:w-2/3">
-                    <AlertTriangle className="h-5! w-5! text-amber-500!" />
-                    <AlertTitle>{t('dashboard.betaWarning.title')}</AlertTitle>
-                    <AlertDescription>
-                        {t('dashboard.betaWarning.description')}
-                    </AlertDescription>
-                </Alert>
             </div>
 
+            {/* Quick Learning Actions - PRIORITY 1 */}
+            <div className="mb-8">
+                <h2 className="mb-4 text-xl font-semibold">
+                    {t('dashboard.quickLearning.title')}
+                </h2>
+                <div className="bg-card rounded-lg border p-6">
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                        {/* Cards Due Today */}
+                        <div className="text-center">
+                            <div className="text-3xl font-bold text-orange-500">
+                                {allDueCards.length}
+                            </div>
+                            <p className="text-muted-foreground text-sm">
+                                {t('dashboard.quickLearning.cardsDue')}
+                            </p>
+                            {allDueCards.length > 0 && (
+                                <Link href="/learn/due" className="mt-2 block">
+                                    <Button size="sm" className="w-full">
+                                        {t('dashboard.quickLearning.reviewNow')}
+                                    </Button>
+                                </Link>
+                            )}
+                        </div>
+
+                        {/* Active Decks Count */}
+                        <div className="text-center">
+                            <div className="text-3xl font-bold text-blue-500">
+                                {currentDecks.length}
+                            </div>
+                            <p className="text-muted-foreground text-sm">
+                                {t('dashboard.quickLearning.activeDecks')}
+                            </p>
+                        </div>
+
+                        {/* Quick Actions */}
+                        <div className="flex flex-col gap-2">
+                            <Button variant="outline" size="sm" asChild>
+                                <Link href="/learn/all">
+                                    {t('dashboard.categories.reviewAll')}
+                                </Link>
+                            </Button>
+                            <Button variant="outline" size="sm" asChild>
+                                <Link href="/deck/create">
+                                    <Plus className="mr-2 h-4 w-4" />
+                                    {t('dashboard.categories.newDeck')}
+                                </Link>
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Active Decks - PRIORITY 2 */}
+            <div className="mb-8">
+                <div className="mb-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-0">
+                    <h2 className="text-xl font-semibold">
+                        {t('dashboard.categories.title')}
+                    </h2>
+                    <Button variant="outline" size="sm" asChild>
+                        <Link href="/learn/difficult">
+                            {t('dashboard.categories.practiceDifficult')}
+                        </Link>
+                    </Button>
+                </div>
+
+                {currentDecks.length > 0 ? (
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                        {currentDecks.map(({ deck, totalCards, dueCards }) => (
+                            <DeckCard
+                                key={deck.id}
+                                deck={deck}
+                                totalCards={totalCards}
+                                dueCards={dueCards}
+                            />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="bg-card rounded-lg border p-8 text-center">
+                        <p className="text-muted-foreground mb-4">
+                            {t('dashboard.categories.noDecks')}
+                        </p>
+                        <Button asChild>
+                            <Link href="/deck/create">
+                                <Plus className="mr-2 h-4 w-4" />
+                                {t('dashboard.categories.createFirst')}
+                            </Link>
+                        </Button>
+                    </div>
+                )}
+            </div>
+
+            {/* Statistics Overview - PRIORITY 3 (Compact) */}
             <div className="mb-6">
                 <div className="mb-4 flex items-center justify-between">
-                    <h2 className="text-xl font-semibold">
-                        {t('dashboard.statistics.title')}
+                    <h2 className="text-lg font-medium">
+                        {t('dashboard.statistics.overview')}
                     </h2>
                     <Link href="/profile">
                         <Button variant="ghost" size="sm">
-                            {t('dashboard.statistics.myProfile')}
+                            {t('dashboard.statistics.viewDetails')}
                         </Button>
                     </Link>
                 </div>
@@ -87,50 +173,23 @@ export default async function Dashboard({ session }: DashboardProps) {
                     {progressData ? (
                         <SimpleProgressDashboard data={progressData} />
                     ) : (
-                        <div className="text-muted-foreground py-8 text-center">
+                        <div className="text-muted-foreground py-4 text-center">
                             <p>{t('dashboard.statistics.loginPrompt')}</p>
                         </div>
                     )}
                 </div>
             </div>
 
-            <div className="mb-6">
-                <div className="mb-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-0">
-                    <h2 className="text-xl font-semibold">
-                        {t('dashboard.categories.title')}
-                    </h2>
-                    <div className="flex flex-wrap justify-center gap-2 md:justify-end">
-                        <Button variant="outline" size="default" asChild>
-                            <Link href="/deck/create">
-                                <Plus className="mr-2 h-4 w-4" />
-                                {t('dashboard.categories.newDeck')}
-                            </Link>
-                        </Button>
-                        <Button variant="outline" size="default" asChild>
-                            <Link href="/learn/all">
-                                {t('dashboard.categories.reviewAll')}
-                            </Link>
-                        </Button>
-                        <Button variant="outline" size="default" asChild>
-                            <Link href="/learn/difficult">
-                                {t('dashboard.categories.practiceDifficult')}
-                            </Link>
-                        </Button>
-                    </div>
-                </div>
+            {/* Beta Warning - Moved to bottom, smaller */}
+            <Alert className="mb-4">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertTitle className="text-sm">{t('dashboard.betaWarning.title')}</AlertTitle>
+                <AlertDescription className="text-xs">
+                    {t('dashboard.betaWarning.description')}
+                </AlertDescription>
+            </Alert>
 
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                    {currentDecks.map(({ deck, totalCards, dueCards }) => (
-                        <DeckCard
-                            key={deck.id}
-                            deck={deck}
-                            totalCards={totalCards}
-                            dueCards={dueCards}
-                        />
-                    ))}
-                </div>
-            </div>
-
+            {/* Completed Goals - Keep at bottom */}
             {pastDecks.length > 0 && (
                 <div className="mb-6">
                     <div className="mt-8 mb-8">
@@ -138,7 +197,7 @@ export default async function Dashboard({ session }: DashboardProps) {
                     </div>
 
                     <div className="mb-4">
-                        <h2 className="text-xl font-semibold">
+                        <h2 className="text-lg font-medium">
                             {t('dashboard.completedGoals.title')}
                         </h2>
                         <p className="text-muted-foreground text-sm">
