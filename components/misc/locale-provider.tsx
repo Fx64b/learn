@@ -16,7 +16,11 @@ export function LocaleProvider({
     messages,
 }: LocaleProviderProps) {
     return (
-        <IntlProvider locale={initialLocale} messages={messages[initialLocale]}>
+        <IntlProvider 
+            locale={initialLocale} 
+            messages={messages[initialLocale]}
+            timeZone="Europe/Zurich"
+        >
             {children}
         </IntlProvider>
     )
