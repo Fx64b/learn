@@ -317,7 +317,7 @@
             "copyWithAiPrompt": "Copy with AI Prompt",
             "copiedToClipboard": "Copied to clipboard",
             "copyFailed": "Failed to copy",
-            "aiGenerate": "AI Generate"
+            "aiGenerate": "AI"
         },
         "ai": {
             "proRequired": "AI flashcard generation is available for Pro users only.",
@@ -607,7 +607,7 @@
         "subtitle": "Unlock AI-powered learning features with Learn Pro",
         "monthly": "Monthly",
         "yearly": "Yearly",
-        "save": "Save ${amount}",
+        "save": "Save {amount} CHF",
         "month": "month",
         "year": "year",
         "currentPlan": "Current Plan",

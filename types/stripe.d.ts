@@ -6,3 +6,22 @@ declare module 'stripe' {
         }
     }
 }
+
+export interface PlanInfo {
+    priceId: string
+    name: string
+    interval: 'month' | 'year'
+    status: string
+    cancelAtPeriodEnd: boolean
+    currentPeriodEnd: Date | null
+}
+
+export interface PlanOption {
+    priceId: string
+    name: string
+    interval: 'month' | 'year'
+    price: string
+    savings?: string
+    description: string
+    popular?: boolean
+}

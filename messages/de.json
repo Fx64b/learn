@@ -320,7 +320,7 @@
             "copyWithAiPrompt": "Mit KI-Prompt kopieren",
             "copiedToClipboard": "In Zwischenablage kopiert",
             "copyFailed": "Kopieren fehlgeschlagen",
-            "aiGenerate": "KI-Generierung"
+            "aiGenerate": "KI"
         },
         "ai": {
             "proRequired": "KI-Karteikarten-Generierung ist nur für Pro-Nutzer verfügbar.",
@@ -610,7 +610,7 @@
         "subtitle": "Schalten Sie KI-gestützte Lernfunktionen mit Learn Pro frei",
         "monthly": "Monatlich",
         "yearly": "Jährlich",
-        "save": "${amount} sparen",
+        "save": "{amount} CHF sparen",
         "month": "Monat",
         "year": "Jahr",
         "currentPlan": "Aktueller Plan",

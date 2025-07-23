@@ -1,5 +1,6 @@
 'use client'
 
+import { PlanInfo } from '@/types/stripe'
 import { Check, Sparkles } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -28,6 +29,7 @@ export default function PricingPage() {
     const { data: session } = useSession()
     const router = useRouter()
     const [isYearly, setIsYearly] = useState(false)
+    const [currentPlan, setCurrentPlan] = useState<PlanInfo | null>(null)
 
     const handleAuthRequired = () => {
         router.push('/login')
@@ -41,7 +43,12 @@ export default function PricingPage() {
         try {
             const result = await getCurrentPlan()
             if (result.success && result.currentPlan) {
-                router.push('/profile?tab=billing')
+                setCurrentPlan(result.currentPlan as PlanInfo)
+                if (result.currentPlan.interval === 'year') {
+                    setIsYearly(true)
+                } else if (result.currentPlan.interval === 'month') {
+                    setIsYearly(false)
+                }
             }
         } catch (error) {
             console.error('Error loading current plan:', error)
@@ -88,7 +95,7 @@ export default function PricingPage() {
                             {t('free.description')}
                         </CardDescription>
                         <div className="mt-4 text-3xl font-bold">
-                            $0
+                            0 CHF
                             <span className="text-base font-normal">
                                 /{t('month')}
                             </span>
@@ -132,7 +139,7 @@ export default function PricingPage() {
                             {t('pro.description')}
                         </CardDescription>
                         <div className="mt-4 text-3xl font-bold">
-                            ${isYearly ? 35 : 4}
+                            {isYearly ? 35 : 4} CHF
                             <span className="text-base font-normal">
                                 /{isYearly ? t('year') : t('month')}
                             </span>
@@ -165,7 +172,7 @@ export default function PricingPage() {
                         </ul>
                     </CardContent>
                     <CardFooter>
-                        {session ? (
+                        {session && !currentPlan ? (
                             <CheckoutButton
                                 priceId={
                                     isYearly

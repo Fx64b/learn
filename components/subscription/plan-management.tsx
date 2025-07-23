@@ -1,5 +1,6 @@
 'use client'
 
+import { PlanInfo, PlanOption } from '@/types/stripe'
 import {
     AlertTriangle,
     Check,
@@ -39,39 +40,21 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog'
 
-interface PlanInfo {
-    priceId: string
-    name: string
-    interval: 'month' | 'year'
-    status: string
-    cancelAtPeriodEnd: boolean
-    currentPeriodEnd: Date | null
-}
-
-interface PlanOption {
-    priceId: string
-    name: string
-    interval: 'month' | 'year'
-    price: string
-    savings?: string
-    description: string
-    popular?: boolean
-}
-
+// TODO: translate the plan options
 const PLAN_OPTIONS: PlanOption[] = [
     {
         priceId: process.env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PRICE_ID!,
         name: 'Pro Monthly',
         interval: 'month',
-        price: '$4',
+        price: '4 CHF',
         description: 'Perfect for trying out Pro features',
     },
     {
         priceId: process.env.NEXT_PUBLIC_STRIPE_PRO_YEARLY_PRICE_ID!,
         name: 'Pro Yearly',
         interval: 'year',
-        price: '$35',
-        savings: 'Save $13/year',
+        price: '35 CHF',
+        savings: 'Save 13 CHF/year',
         description: 'Best value for committed learners',
         popular: true,
     },
