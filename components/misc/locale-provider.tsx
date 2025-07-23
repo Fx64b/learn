@@ -16,8 +16,8 @@ export function LocaleProvider({
     messages,
 }: LocaleProviderProps) {
     return (
-        <IntlProvider 
-            locale={initialLocale} 
+        <IntlProvider
+            locale={initialLocale}
             messages={messages[initialLocale]}
             timeZone="Europe/Zurich"
         >

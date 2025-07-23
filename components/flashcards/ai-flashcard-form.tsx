@@ -257,6 +257,15 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
                         )}
                     </Button>
                 </form>
+                <div className={'mt-4 ' + (isGenerating ? 'flex' : 'hidden')}>
+                    <DismissibleWarning
+                        id="aiDisclaimer"
+                        message={t('aiDisclaimer')}
+                        dismissText={t('dismissDisclaimer')}
+                        variant="default"
+                        className="mb-4"
+                    />
+                </div>
             </CardContent>
         </Card>
     )

@@ -354,7 +354,9 @@
             "success": "Karteikarten erfolgreich generiert!",
             "error": "Karteikarten konnten nicht generiert werden. Bitte versuchen Sie es erneut.",
             "largeFileWarning": "Große Dateien können deutlich länger dauern",
-            "dismissWarning": "Warnung schließen"
+            "dismissWarning": "Warnung schließen",
+            "aiDisclaimer": "KI-Antworten befinden sich in frühen Stadien und können Fehler enthalten. Bitte überprüfen Sie alle Informationen vor der Verwendung.",
+            "dismissDisclaimer": "KI-Haftungsausschluss schließen"
         },
         "statistics": {
             "totalCards": "Karten insgesamt",
@@ -579,9 +581,7 @@
         "termsOfService": "Nutzungsbedingungen",
         "license": "Lizenz",
         "madeWith": "Gemacht mit",
-        "by": "von",
-        "aiDisclaimer": "KI-Antworten befinden sich in frühen Stadien und können Fehler enthalten. Bitte überprüfen Sie alle Informationen vor der Verwendung.",
-        "dismissDisclaimer": "KI-Haftungsausschluss schließen"
+        "by": "von"
     },
     "comingSoon": {
         "title": "Demnächst verfügbar",

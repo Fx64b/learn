@@ -1,6 +1,7 @@
 'use client'
 
 import { AlertTriangle, X } from 'lucide-react'
+
 import { useEffect, useState } from 'react'
 
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -21,18 +22,14 @@ export function DismissibleWarning({
     variant = 'default',
     className = '',
 }: DismissibleWarningProps) {
-    const [isVisible, setIsVisible] = useState(false)
+    const [isVisible, setIsVisible] = useState(true)
     const [isClient, setIsClient] = useState(false)
 
     useEffect(() => {
         setIsClient(true)
-        // Check if warning has been dismissed
-        const dismissed = localStorage.getItem(`dismissedWarning_${id}`)
-        setIsVisible(!dismissed)
     }, [id])
 
     const handleDismiss = () => {
-        localStorage.setItem(`dismissedWarning_${id}`, 'true')
         setIsVisible(false)
     }
 
@@ -48,7 +45,7 @@ export function DismissibleWarning({
             <Button
                 variant="ghost"
                 size="sm"
-                className="absolute right-2 top-2 h-6 w-6 p-0"
+                className="absolute top-2 right-2 h-6 w-6 p-0"
                 onClick={handleDismiss}
                 aria-label={dismissText}
             >
