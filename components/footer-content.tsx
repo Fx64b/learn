@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 
 import { Logo } from '@/components/misc/logo'
+import { DismissibleWarning } from '@/components/ui/dismissible-warning'
 import { Separator } from '@/components/ui/separator'
 
 interface FooterContentProps {
@@ -19,6 +20,16 @@ export function FooterContent({ version, currentYear }: FooterContentProps) {
     return (
         <footer className="mt-8 py-6">
             <div className="border-border container mx-auto max-w-5xl border-t px-4">
+                <div className="mt-4">
+                    <DismissibleWarning
+                        id="aiDisclaimer"
+                        message={t('aiDisclaimer')}
+                        dismissText={t('dismissDisclaimer')}
+                        variant="default"
+                        className="mb-4"
+                    />
+                </div>
+                
                 <div className="mt-8 grid gap-8 md:grid-cols-4">
                     <div>
                         <div className="mb-4 flex items-center space-x-2">
