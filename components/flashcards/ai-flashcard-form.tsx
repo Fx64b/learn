@@ -14,6 +14,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { DismissibleWarning } from '@/components/ui/dismissible-warning'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 
@@ -224,6 +225,15 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
                         </div>
                     </div>
 
+                    {file && file.size > 3 * 1024 * 1024 && (
+                        <DismissibleWarning
+                            id="largeFileUpload"
+                            message={t('largeFileWarning')}
+                            dismissText={t('dismissWarning')}
+                            variant="default"
+                        />
+                    )}
+
                     <Alert>
                         <Sparkles className="h-4 w-4" />
                         <AlertDescription>{t('helpText')}</AlertDescription>
@@ -247,6 +257,15 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
                         )}
                     </Button>
                 </form>
+                <div className={'mt-4 ' + (isGenerating ? 'flex' : 'hidden')}>
+                    <DismissibleWarning
+                        id="aiDisclaimer"
+                        message={t('aiDisclaimer')}
+                        dismissText={t('dismissDisclaimer')}
+                        variant="default"
+                        className="mb-4"
+                    />
+                </div>
             </CardContent>
         </Card>
     )

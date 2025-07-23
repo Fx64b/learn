@@ -349,7 +349,11 @@
             "generating": "Generating...",
             "characters": "characters",
             "success": "Flashcards generated successfully!",
-            "error": "Failed to generate flashcards. Please try again."
+            "error": "Failed to generate flashcards. Please try again.",
+            "largeFileWarning": "Large files may take significantly longer to process",
+            "dismissWarning": "Dismiss warning",
+            "aiDisclaimer": "AI responses are in early stages and may contain errors. Please verify all information before use.",
+            "dismissDisclaimer": "Dismiss AI disclaimer"
         },
         "tabs": {
             "details": "Deck Details",
