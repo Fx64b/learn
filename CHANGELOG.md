@@ -1,3 +1,35 @@
+# [1.11.0](https://github.com/Fx64b/learn/compare/v1.10.1...v1.11.0) (2025-07-23)
+
+
+### Bug Fixes
+
+* **email-service:** incorrect fallback email ([28dac1a](https://github.com/Fx64b/learn/commit/28dac1a1dc3c7d8392b916ca61fee2f4a28ac1fd))
+* **email-service:** minor improvements to the payment reminder email ([8df7134](https://github.com/Fx64b/learn/commit/8df71346131c4426d8a3eae6f6f6ef31ac3583ec))
+* **footer:** update link from todo to pricing in footer content ([41b56d8](https://github.com/Fx64b/learn/commit/41b56d81d49291c65bf9d6ee9ed1a8320ad6e27b))
+* replace request ID generation with nanoid for improved uniqueness ([5113fcb](https://github.com/Fx64b/learn/commit/5113fcb95d3f65e82170453e2bd19358f0bdd695))
+* **stripe:** rename environment variable for publishable key ([f273d03](https://github.com/Fx64b/learn/commit/f273d03ff8a4f696fc57bd8b022c2e0c58056d25))
+* update apostrophes to HTML entities for better rendering in plan management ([4b88b92](https://github.com/Fx64b/learn/commit/4b88b92d5c145c98c341cb6eacacebf1f65085f4))
+* **user-nav:** improve pro indicator and fix some translations ([6acca13](https://github.com/Fx64b/learn/commit/6acca132cadbf047ccdbea6af9e29c57e53acdd1))
+* **vercel.json:** only run cronjob once a day instead of twice ([beea450](https://github.com/Fx64b/learn/commit/beea450e932ee0ced35f00b46aa654bcee899c37))
+
+
+### Features
+
+* **ai-flashcards:** enhance AI flashcard generation with improved security and validation ([fa73565](https://github.com/Fx64b/learn/commit/fa73565eaa444cf870ebe8be5897f64223302288))
+* **ai-flashcards:** enhance PDF parsing and input validation for flashcard generation ([d92c256](https://github.com/Fx64b/learn/commit/d92c256176535e60055efb842c65b76ff18a7ec3))
+* **ai:** add AI flashcard generation feature with file upload support ([ff18eb4](https://github.com/Fx64b/learn/commit/ff18eb4d1ddf2b41dbf0e238794e80c625611e8e))
+* **ai:** increase maximum cards per generation and document length limits ([0d742ce](https://github.com/Fx64b/learn/commit/0d742ce7fee998937de892252a0fe3a7e31db1e2))
+* **billing:** enhance subscription management and add billing portal functionality ([7d9a45f](https://github.com/Fx64b/learn/commit/7d9a45f3d6a9a4ad387a15ff5449e2f5af7aa771))
+* **billing:** enhance subscription management and add billing portal functionality ([74ac787](https://github.com/Fx64b/learn/commit/74ac787b877b2409b5e1c49a4af29c9245b79ac9))
+* **deps:** update dependencies and add Stripe.js for payment integration ([b721f3d](https://github.com/Fx64b/learn/commit/b721f3df85b9e8e3b85933bc0f559fcbf5676df5))
+* enhance AI flashcard form with improved UI elements and localization updates ([aeee33d](https://github.com/Fx64b/learn/commit/aeee33d92de550bd576d5f11e6247aa3b016105b))
+* implement payment recovery cron job and fetch invoice details from Stripe ([8f8d785](https://github.com/Fx64b/learn/commit/8f8d7855c4c0f4b6f9ed155e4fb093a5c3a23970))
+* **payment-recovery:** implement payment recovery process and notifications ([caea282](https://github.com/Fx64b/learn/commit/caea282454261494b11f8d6c550522352b9a16d3))
+* **plan-management:** add delay before refreshing current plan and improve status message styling ([9420ae0](https://github.com/Fx64b/learn/commit/9420ae02e3ef114e9dc9da89d2063854bd70d1c8))
+* **pricing:** implement Stripe billing portal and subscription checks ([d05ae1e](https://github.com/Fx64b/learn/commit/d05ae1ee7e587e5735100cd8e04a496f1da5e2a9))
+* **profile:** add billing management tab and plan management component ([97cb393](https://github.com/Fx64b/learn/commit/97cb393df69dd4f030640efa443f3b4d4fee0900))
+* **stripe:** implement rate limiting and webhook security for Stripe integration ([c78a403](https://github.com/Fx64b/learn/commit/c78a403c0882188b960e4478912597e7885bab30))
+
 ## [1.10.1](https://github.com/Fx64b/learn/compare/v1.10.0...v1.10.1) (2025-06-23)
 
 # [1.10.0](https://github.com/Fx64b/learn/compare/v1.9.2...v1.10.0) (2025-06-23)
