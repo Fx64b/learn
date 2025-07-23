@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { checkAIRateLimitWithDetails } from '@/lib/rate-limit/ai-rate-limit'
 import { google } from '@ai-sdk/google'
 import { generateObject } from 'ai'
+import { randomUUID } from 'crypto'
 import { Output } from 'pdf2json'
 import { z } from 'zod'
 
@@ -17,6 +18,13 @@ const ALLOWED_FILE_TYPES = ['application/pdf']
 const MAX_PROMPT_LENGTH = 1000
 const MAX_CARDS_PER_GENERATION = 60
 const MAX_DOCUMENT_LENGTH = 500000 // 500KB
+const PDF_PARSING_TIMEOUT = 10000 // 10 seconds
+const MAX_TEXT_EXTRACTION_LENGTH = 600000 // 600KB
+
+
+// TODO / INFO / KNOWN ISSUES:
+// - Letters for ä, ö, ü, é, etc. are not really working / cut out of the ai response for some reason ( There is a good chance that it is because of the ai-model)
+// - Errors for the user are not very specific
 
 const flashcardSchema = z.object({
     flashcards: z
@@ -59,99 +67,257 @@ interface AIGenerationResult {
     requiresPro?: boolean
     paymentIssue?: boolean
     resetTime?: Date
+    requestId?: string
 }
 
-// Improved PDF parsing with better error handling and fallbacks
-async function parsePDF(buffer: Buffer): Promise<string> {
+interface SecurityEvent {
+    userId: string
+    action: string
+    details: string | undefined
+    severity: 'low' | 'medium' | 'high'
+    requestId: string
+}
+
+// Security logging function
+function logSecurityEvent(event: SecurityEvent): void {
+    console.warn('Security Event:', {
+        timestamp: new Date().toISOString(),
+        userId: event.userId.substring(0, 8) + '...',
+        action: event.action,
+        severity: event.severity,
+        requestId: event.requestId,
+        details:
+            typeof event.details === 'string'
+                ? event.details
+                : '[SANITIZED_OBJECT]',
+    })
+}
+
+function sanitizeInput(input: string): string {
+    if (!input || typeof input !== 'string') {
+        return ''
+    }
+
+    return input
+        .trim()
+        .replace(/[<>'"]/g, '') // Remove HTML/XML dangerous chars only
+        .replace(/javascript:/gi, '') // Remove javascript: protocol
+        .replace(/on\w+\s*=/gi, '') // Remove event handlers
+        .replace(/data:text\/html/gi, '') // Remove data URLs
+        .replace(/[\x00-\x1f\x7f-\x9f]/g, '') // Remove control characters only
+        .substring(0, MAX_PROMPT_LENGTH) // Ensure length limit
+}
+
+function validatePrompt(
+    prompt: string,
+    requestId: string,
+    userId: string
+): { isValid: boolean; error?: string } {
+    const dangerousPatterns = [
+        { pattern: /javascript:/i, name: 'javascript_protocol' },
+        { pattern: /<script/i, name: 'script_tag' },
+        { pattern: /on\w+\s*=/i, name: 'event_handler' },
+        { pattern: /data:text\/html/i, name: 'data_url' },
+        { pattern: /vbscript:/i, name: 'vbscript_protocol' },
+        { pattern: /file:\/\//i, name: 'file_protocol' },
+        { pattern: /@import/i, name: 'css_import' },
+        { pattern: /expression\s*\(/i, name: 'css_expression' },
+    ]
+
+    for (const { pattern, name } of dangerousPatterns) {
+        if (pattern.test(prompt)) {
+            logSecurityEvent({
+                userId,
+                action: 'dangerous_prompt_pattern',
+                details: `Pattern detected: ${name}`,
+                severity: 'high',
+                requestId,
+            })
+            return {
+                isValid: false,
+                error: 'Invalid characters detected in prompt',
+            }
+        }
+    }
+
+    // Check for excessive repetition (potential spam/DoS)
+    const words = prompt.split(/\s+/)
+    const uniqueWords = new Set(words)
+    if (words.length > 50 && uniqueWords.size / words.length < 0.3) {
+        logSecurityEvent({
+            userId,
+            action: 'suspicious_prompt_repetition',
+            details: `Repetition ratio: ${uniqueWords.size / words.length}`,
+            severity: 'medium',
+            requestId,
+        })
+        return { isValid: false, error: 'Prompt contains excessive repetition' }
+    }
+
+    return { isValid: true }
+}
+
+// File type validation using magic bytes
+function validateFileType(
+    buffer: Buffer,
+    declaredType: string
+): { isValid: boolean; error?: string } {
+    if (declaredType !== 'application/pdf') {
+        return { isValid: false, error: 'Only PDF files are supported' }
+    }
+
+    // Check PDF magic bytes (%PDF)
+    if (buffer.length < 4) {
+        return { isValid: false, error: 'File too small to be valid' }
+    }
+
+    const pdfHeader = buffer.subarray(0, 4)
+    const expectedHeader = Buffer.from([0x25, 0x50, 0x44, 0x46]) // %PDF
+
+    if (!pdfHeader.equals(expectedHeader)) {
+        return { isValid: false, error: 'File is not a valid PDF' }
+    }
+
+    // Additional PDF structure validation
+    const fileString = buffer.toString(
+        'ascii',
+        0,
+        Math.min(1024, buffer.length)
+    )
+    if (!fileString.includes('%PDF-')) {
+        return { isValid: false, error: 'Invalid PDF format' }
+    }
+
+    // Check for PDF version (should be 1.0 to 2.0)
+    const versionMatch = fileString.match(/%PDF-(\d+\.\d+)/)
+    if (versionMatch) {
+        const version = parseFloat(versionMatch[1])
+        if (version < 1.0 || version > 2.0) {
+            return { isValid: false, error: 'Unsupported PDF version' }
+        }
+    }
+
+    return { isValid: true }
+}
+
+// Enhanced base64 validation
+function validateBase64(base64String: string): {
+    isValid: boolean
+    error?: string
+} {
+    // Check basic base64 format
+    if (!base64String.match(/^[A-Za-z0-9+/]*={0,2}$/)) {
+        return { isValid: false, error: 'Invalid file encoding format' }
+    }
+
+    // Check length is multiple of 4 (proper base64 padding)
+    if (base64String.length % 4 !== 0) {
+        return { isValid: false, error: 'Invalid file encoding length' }
+    }
+
+    // Basic length check (prevent extremely large payloads)
+    const estimatedSize = (base64String.length * 3) / 4
+    if (estimatedSize > MAX_FILE_SIZE * 1.5) {
+        // Account for base64 overhead
+        return { isValid: false, error: 'File too large' }
+    }
+
+    return { isValid: true }
+}
+
+// Secure PDF parsing with enhanced protection
+async function parsePDFSecurely(
+    buffer: Buffer,
+    requestId: string,
+    userId: string
+): Promise<string> {
     try {
-        // Try to dynamically import pdf2json
         const pdfModule = await import('pdf2json')
         const PDFParser = pdfModule.default
 
         return new Promise<string>((resolve, reject) => {
             const pdfParser = new PDFParser(null, true)
-
-            let timeoutId: NodeJS.Timeout | null = null
+            let isResolved = false
 
             const cleanup = () => {
                 if (timeoutId) {
                     clearTimeout(timeoutId)
-                    timeoutId = null
                 }
             }
 
-            // Set timeout for PDF parsing (30 seconds max)
-            timeoutId = setTimeout(() => {
-                cleanup()
-                reject(new Error('PDF parsing timeout'))
-            }, 30000)
+            // Strict timeout protection
+            const timeoutId = setTimeout(() => {
+                if (!isResolved) {
+                    isResolved = true
+                    cleanup()
+                    logSecurityEvent({
+                        userId,
+                        action: 'pdf_parsing_timeout',
+                        details: `File size: ${buffer.length} bytes`,
+                        severity: 'medium',
+                        requestId,
+                    })
+                    reject(
+                        new Error(
+                            'PDF parsing timeout - file may be corrupted or too complex'
+                        )
+                    )
+                }
+            }, PDF_PARSING_TIMEOUT)
 
             pdfParser.on('pdfParser_dataError', (errData) => {
-                cleanup()
-                console.error('PDF parsing error:', errData.parserError)
-                reject(
-                    new Error('Failed to parse PDF - invalid or corrupted file')
-                )
+                if (!isResolved) {
+                    isResolved = true
+                    cleanup()
+                    logSecurityEvent({
+                        userId,
+                        action: 'pdf_parsing_error',
+                        details: 'Parser error occurred: ' + errData.parserError,
+                        severity: 'medium',
+                        requestId,
+                    })
+                    reject(new Error('Invalid PDF format or corrupted file'))
+                }
             })
 
             pdfParser.on('pdfParser_dataReady', (pdfData: Output) => {
-                cleanup()
-                try {
-                    let fullText = ''
+                if (!isResolved) {
+                    isResolved = true
+                    cleanup()
 
-                    if (pdfData?.Pages) {
-                        for (const page of pdfData.Pages) {
-                            if (page.Texts) {
-                                for (const text of page.Texts) {
-                                    if (text.R) {
-                                        for (const r of text.R) {
-                                            if (r.T) {
-                                                try {
-                                                    const decodedText: string =
-                                                        decodeURIComponent(r.T)
-                                                    fullText +=
-                                                        decodedText + ' '
-                                                } catch (decodeError: unknown) {
-                                                    // Skip malformed text
-                                                    console.warn(
-                                                        'Failed to decode text:',
-                                                        r.T,
-                                                        decodeError
-                                                    )
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                fullText += '\n'
-                            }
-                        }
-                    }
-
-                    const trimmedText = fullText.trim()
-
-                    if (trimmedText.length < 10) {
-                        reject(
-                            new Error(
-                                'PDF appears to be empty or contains no readable text'
+                    try {
+                        const text = extractTextSafely(pdfData)
+                        if (text.length < 10) {
+                            reject(
+                                new Error(
+                                    'PDF contains insufficient readable text'
+                                )
                             )
-                        )
-                        return
+                            return
+                        }
+                        resolve(text)
+                    } catch (extractionError) {
+                        logSecurityEvent({
+                            userId,
+                            action: 'pdf_text_extraction_error',
+                            details: 'Text extraction failed: ' + extractionError,
+                            severity: 'low',
+                            requestId,
+                        })
+                        reject(new Error('Failed to extract text from PDF'))
                     }
-
-                    resolve(trimmedText)
-                } catch (error) {
-                    console.error('Error processing PDF data:', error)
-                    reject(new Error('Failed to extract text from PDF'))
                 }
             })
 
             try {
                 pdfParser.parseBuffer(buffer)
-            } catch (parseError: unknown) {
-                cleanup()
-                reject(new Error('Failed to initiate PDF parsing'))
-                console.error(parseError)
+            } catch (parseError) {
+                if (!isResolved) {
+                    isResolved = true
+                    cleanup()
+                    console.log('PDF parsing error:', parseError)
+                    reject(new Error('Failed to initiate PDF parsing'))
+                }
             }
         })
     } catch (importError) {
@@ -162,13 +328,74 @@ async function parsePDF(buffer: Buffer): Promise<string> {
     }
 }
 
-// Improved input validation
-function validateInput(params: GenerateFlashcardsParams): {
+// Safe text extraction with content filtering
+function extractTextSafely(pdfData: Output): string {
+    let fullText = ''
+
+    if (!pdfData?.Pages) {
+        return ''
+    }
+
+    for (const page of pdfData.Pages) {
+        if (!page.Texts) continue
+
+        for (const text of page.Texts) {
+            if (!text.R) continue
+
+            for (const r of text.R) {
+                if (!r.T) continue
+
+                try {
+                    const decodedText = decodeURIComponent(r.T)
+                    // Remove only dangerous characters while preserving international characters like ä, ö, ü, é, etc.
+                    const cleanText = decodedText
+                        .replace(/[<>{}[\]\\\/\x00-\x1f\x7f-\x9f]/g, ' ') // Remove dangerous chars and control chars
+                        .replace(/\s+/g, ' ') // Normalize whitespace
+                        .trim()
+
+                    if (cleanText.length > 0) {
+                        fullText += cleanText + ' '
+                    }
+
+                    // Prevent memory exhaustion
+                    if (fullText.length > MAX_TEXT_EXTRACTION_LENGTH) {
+                        return (
+                            fullText.substring(0, MAX_TEXT_EXTRACTION_LENGTH) +
+                            '...'
+                        )
+                    }
+                } catch (decodeError) {
+                    console.log("Decode error: " + decodeError?.toString().substring(0, 10) + '...')
+                    // Skip malformed text without logging sensitive data
+                    continue
+                }
+            }
+        }
+        fullText += '\n'
+    }
+
+    return fullText.trim()
+}
+
+// Enhanced input validation
+function validateInputEnhanced(
+    params: GenerateFlashcardsParams,
+    requestId: string,
+    userId: string
+): {
     isValid: boolean
     error?: string
 } {
-    if (!params.deckId || typeof params.deckId !== 'string') {
-        return { isValid: false, error: 'Invalid deck ID' }
+    // Validate deck ID format (alphanumeric, hyphens, underscores only)
+    if (!params.deckId || !params.deckId.match(/^[a-zA-Z0-9_-]+$/)) {
+        logSecurityEvent({
+            userId,
+            action: 'invalid_deck_id',
+            details: 'Invalid deck ID format',
+            severity: 'low',
+            requestId,
+        })
+        return { isValid: false, error: 'Invalid deck ID format' }
     }
 
     if (!params.prompt || typeof params.prompt !== 'string') {
@@ -180,13 +407,26 @@ function validateInput(params: GenerateFlashcardsParams): {
     }
 
     if (params.prompt.length > MAX_PROMPT_LENGTH) {
+        logSecurityEvent({
+            userId,
+            action: 'prompt_too_long',
+            details: `Length: ${params.prompt.length}`,
+            severity: 'low',
+            requestId,
+        })
         return {
             isValid: false,
             error: `Prompt is too long (max ${MAX_PROMPT_LENGTH} characters)`,
         }
     }
 
-    // Validate file parameters if provided
+    // Enhanced prompt validation
+    const promptValidation = validatePrompt(params.prompt, requestId, userId)
+    if (!promptValidation.isValid) {
+        return promptValidation
+    }
+
+    // File validation if provided
     if (params.fileContent || params.fileType) {
         if (!params.fileContent || !params.fileType) {
             return {
@@ -196,39 +436,123 @@ function validateInput(params: GenerateFlashcardsParams): {
         }
 
         if (!ALLOWED_FILE_TYPES.includes(params.fileType)) {
+            logSecurityEvent({
+                userId,
+                action: 'unsupported_file_type',
+                details: params.fileType,
+                severity: 'medium',
+                requestId,
+            })
             return { isValid: false, error: 'Only PDF files are supported' }
+        }
+
+        // Validate base64 encoding
+        const base64Validation = validateBase64(params.fileContent)
+        if (!base64Validation.isValid) {
+            logSecurityEvent({
+                userId,
+                action: 'invalid_file_encoding',
+                details: base64Validation.error?.toString(),
+                severity: 'medium',
+                requestId,
+            })
+            return base64Validation
         }
     }
 
     return { isValid: true }
 }
 
+// Validate AI response content for security
+function validateAIResponse(
+    flashcards: Array<{ front: string; back: string }>,
+    requestId: string,
+    userId: string
+): boolean {
+    for (const card of flashcards) {
+        // Check for potentially malicious content
+        const dangerousPatterns = [
+            /<script/i,
+            /javascript:/i,
+            /on\w+\s*=/i,
+            /data:text\/html/i,
+            /<iframe/i,
+            /<object/i,
+            /<embed/i,
+        ]
+
+        for (const pattern of dangerousPatterns) {
+            if (pattern.test(card.front) || pattern.test(card.back)) {
+                logSecurityEvent({
+                    userId,
+                    action: 'malicious_ai_response',
+                    details: 'Dangerous pattern detected in AI response',
+                    severity: 'high',
+                    requestId,
+                })
+                return false
+            }
+        }
+
+        // Validate length constraints
+        if (card.front.length > 500 || card.back.length > 2000) {
+            logSecurityEvent({
+                userId,
+                action: 'ai_response_length_violation',
+                details: `Front: ${card.front.length}, Back: ${card.back.length}`,
+                severity: 'low',
+                requestId,
+            })
+            return false
+        }
+    }
+    return true
+}
+
 export async function generateAIFlashcards(
     params: GenerateFlashcardsParams
 ): Promise<AIGenerationResult> {
+    const requestId = randomUUID()
     const authT = await getTranslations('auth')
     const t = await getTranslations('deck.ai')
 
     try {
-        // Input validation
-        const validation = validateInput(params)
-        if (!validation.isValid) {
-            return { success: false, error: validation.error }
-        }
-
         // Authentication check
         const session: Session | null = await getServerSession(authOptions)
         if (!session?.user?.id || !session?.user?.email) {
-            return { success: false, error: authT('notAuthenticated') }
+            return {
+                success: false,
+                error: authT('notAuthenticated'),
+                requestId,
+            }
         }
 
-        // Enhanced rate limiting check
+        const userId = session.user.id
+
+        // Enhanced input validation
+        const validation = validateInputEnhanced(params, requestId, userId)
+        if (!validation.isValid) {
+            return {
+                success: false,
+                error: validation.error,
+                requestId,
+            }
+        }
+
+        // Rate limiting check
         const rateLimitResult = await checkAIRateLimitWithDetails(
             session.user.id,
             session.user.email
         )
 
         if (!rateLimitResult.allowed) {
+            logSecurityEvent({
+                userId,
+                action: 'rate_limit_exceeded',
+                details: `Tier: ${rateLimitResult.tier}`,
+                severity: 'medium',
+                requestId,
+            })
             return {
                 success: false,
                 error: rateLimitResult.message,
@@ -236,11 +560,12 @@ export async function generateAIFlashcards(
                 paymentIssue: rateLimitResult.paymentIssue,
                 tier: rateLimitResult.tier,
                 resetTime: rateLimitResult.resetTime,
+                requestId,
             }
         }
 
         // Sanitize prompt
-        const sanitizedPrompt = params.prompt.trim().replace(/[<>]/g, '')
+        const sanitizedPrompt = sanitizeInput(params.prompt)
 
         let documentContent = ''
 
@@ -252,21 +577,54 @@ export async function generateAIFlashcards(
 
                 // Validate file size
                 if (buffer.length > MAX_FILE_SIZE) {
+                    logSecurityEvent({
+                        userId,
+                        action: 'file_too_large',
+                        details: `Size: ${buffer.length} bytes`,
+                        severity: 'low',
+                        requestId,
+                    })
                     return {
                         success: false,
                         error: t('fileTooLarge', { max: '10MB' }),
+                        requestId,
                     }
                 }
 
-                // Parse PDF content
+                // Validate file type using magic bytes
+                const fileTypeValidation = validateFileType(
+                    buffer,
+                    params.fileType
+                )
+                if (!fileTypeValidation.isValid) {
+                    logSecurityEvent({
+                        userId,
+                        action: 'invalid_file_type',
+                        details: fileTypeValidation.error,
+                        severity: 'high',
+                        requestId,
+                    })
+                    return {
+                        success: false,
+                        error: fileTypeValidation.error,
+                        requestId,
+                    }
+                }
+
+                // Parse PDF content securely
                 if (params.fileType === 'application/pdf') {
-                    documentContent = await parsePDF(buffer)
+                    documentContent = await parsePDFSecurely(
+                        buffer,
+                        requestId,
+                        userId
+                    )
 
                     // Content validation
                     if (documentContent.trim().length < 50) {
                         return {
                             success: false,
                             error: t('fileContentTooShort'),
+                            requestId,
                         }
                     }
 
@@ -278,7 +636,15 @@ export async function generateAIFlashcards(
                     }
                 }
             } catch (parseError) {
-                console.error('Error parsing file:', parseError)
+                console.error('Error parsing file:', {
+                    requestId,
+                    userId: userId.substring(0, 8),
+                    error:
+                        parseError instanceof Error
+                            ? parseError.message
+                            : 'Unknown error',
+                })
+
                 const errorMessage =
                     parseError instanceof Error
                         ? parseError.message
@@ -286,13 +652,34 @@ export async function generateAIFlashcards(
 
                 // Provide specific error messages for common issues
                 if (errorMessage.includes('timeout')) {
-                    return { success: false, error: t('fileProcessingTimeout') }
-                } else if (errorMessage.includes('empty')) {
-                    return { success: false, error: t('fileContentEmpty') }
-                } else if (errorMessage.includes('corrupted')) {
-                    return { success: false, error: t('fileCorrupted') }
+                    return {
+                        success: false,
+                        error: t('fileProcessingTimeout'),
+                        requestId,
+                    }
+                } else if (
+                    errorMessage.includes('insufficient readable text')
+                ) {
+                    return {
+                        success: false,
+                        error: t('fileContentEmpty'),
+                        requestId,
+                    }
+                } else if (
+                    errorMessage.includes('corrupted') ||
+                    errorMessage.includes('Invalid PDF')
+                ) {
+                    return {
+                        success: false,
+                        error: t('fileCorrupted'),
+                        requestId,
+                    }
                 } else {
-                    return { success: false, error: t('fileParseError') }
+                    return {
+                        success: false,
+                        error: t('fileParseError'),
+                        requestId,
+                    }
                 }
             }
         }
@@ -313,15 +700,41 @@ export async function generateAIFlashcards(
 
             // Validate generated content
             if (!object.flashcards || object.flashcards.length === 0) {
-                return { success: false, error: t('noFlashcardsGenerated') }
+                return {
+                    success: false,
+                    error: t('noFlashcardsGenerated'),
+                    requestId,
+                }
+            }
+
+            // Security validation of AI response
+            if (!validateAIResponse(object.flashcards, requestId, userId)) {
+                return {
+                    success: false,
+                    error: 'Generated content failed security validation',
+                    requestId,
+                }
             }
 
             // Remove duplicates and validate content
             const uniqueCards = removeDuplicateCards(object.flashcards)
 
             if (uniqueCards.length === 0) {
-                return { success: false, error: t('noDuplicateCards') }
+                return {
+                    success: false,
+                    error: t('noDuplicateCards'),
+                    requestId,
+                }
             }
+
+            // Log successful generation
+            logSecurityEvent({
+                userId,
+                action: 'successful_ai_generation',
+                details: `Generated ${uniqueCards.length} cards`,
+                severity: 'low',
+                requestId,
+            })
 
             // Create flashcards in database
             const result = await createFlashcardsFromJson({
@@ -338,20 +751,36 @@ export async function generateAIFlashcards(
                     cardsCreated: successCount,
                     tier: rateLimitResult.tier,
                     remaining: rateLimitResult.remaining,
+                    requestId,
                 }
             } else {
                 return {
                     success: false,
                     error: result.error || t('bulkCreateError'),
+                    requestId,
                 }
             }
         } catch (aiError) {
-            console.error('AI generation error:', aiError)
-            return handleAIError(aiError, t)
+            console.error('AI generation error:', {
+                requestId,
+                userId: userId.substring(0, 8),
+                error:
+                    aiError instanceof Error
+                        ? aiError.message
+                        : 'Unknown AI error',
+            })
+            return handleAIError(aiError, t, requestId)
         }
     } catch (error) {
-        console.error('Error generating AI flashcards:', error)
-        return { success: false, error: t('unexpectedError') }
+        console.error('Error generating AI flashcards:', {
+            requestId,
+            error: error instanceof Error ? error.message : 'Unknown error',
+        })
+        return {
+            success: false,
+            error: t('unexpectedError'),
+            requestId,
+        }
     }
 }
 
@@ -370,8 +799,11 @@ Your task is to generate high-quality flashcards based on the user's request. Fo
 8. Use active recall principles - questions should require thinking, not just recognition
 9. For complex topics, break them down into multiple simpler cards
 10. Maintain consistent difficulty appropriate to the topic
+11. Do not include any HTML, JavaScript, or other code in the responses
+12. Keep content educational and appropriate
 
 Generate between 5 and ${MAX_CARDS_PER_GENERATION - 5} flashcards based on the content provided. Quality over quantity - better to have fewer excellent cards than many poor ones.`
+    // INFO: The - 5 was added after the ai tended to generate 1-3 cards over the limit.
 }
 
 function buildUserPrompt(prompt: string, documentContent: string): string {
@@ -400,31 +832,56 @@ function removeDuplicateCards(
 
 function handleAIError(
     error: unknown,
-    t: Awaited<ReturnType<typeof getTranslations>>
+    t: Awaited<ReturnType<typeof getTranslations>>,
+    requestId: string
 ): AIGenerationResult {
     if (error instanceof Error) {
         const message = error.message.toLowerCase()
 
         if (message.includes('rate limit') || message.includes('quota')) {
-            return { success: false, error: t('aiRateLimitExceeded') }
+            return {
+                success: false,
+                error: t('aiRateLimitExceeded'),
+                requestId,
+            }
         }
 
         if (message.includes('api key') || message.includes('authentication')) {
-            return { success: false, error: t('aiConfigError') }
+            return {
+                success: false,
+                error: t('aiConfigError'),
+                requestId,
+            }
         }
 
         if (message.includes('model') || message.includes('not found')) {
-            return { success: false, error: t('aiModelError') }
+            return {
+                success: false,
+                error: t('aiModelError'),
+                requestId,
+            }
         }
 
         if (message.includes('timeout')) {
-            return { success: false, error: t('aiTimeoutError') }
+            return {
+                success: false,
+                error: t('aiTimeoutError'),
+                requestId,
+            }
         }
 
         if (message.includes('content policy') || message.includes('safety')) {
-            return { success: false, error: t('aiContentPolicyError') }
+            return {
+                success: false,
+                error: t('aiContentPolicyError'),
+                requestId,
+            }
         }
     }
 
-    return { success: false, error: t('aiGenerationError') }
+    return {
+        success: false,
+        error: t('aiGenerationError'),
+        requestId,
+    }
 }
