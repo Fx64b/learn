@@ -27,7 +27,7 @@ describe('Subscription Service', () => {
     
     mockEq.mockImplementation((field, value) => ({ field, value, type: 'eq' }) as any)
     mockRevalidateTag.mockImplementation(() => {})
-    mockUnstableCache.mockImplementation((fn) => fn)
+    mockUnstableCache.mockImplementation((fn) => () => Promise.resolve(null))
 
     // Mock db operations
     const mockSelect = vi.fn().mockReturnThis()
@@ -403,6 +403,15 @@ describe('Subscription Service', () => {
 
     test('should call unstable_cache with correct function', () => {
       const userId = 'user-1'
+      
+      // Mock the database to prevent actual calls
+      const mockLimit = vi.fn().mockResolvedValue([])
+      const mockWhere = vi.fn().mockReturnValue({ limit: mockLimit })
+      const mockFrom = vi.fn().mockReturnValue({ where: mockWhere })
+      const mockSelect = vi.fn().mockReturnValue({ from: mockFrom })
+      
+      mockDb.select = mockSelect
+      
       getCachedUserSubscription(userId)
 
       expect(mockUnstableCache).toHaveBeenCalledWith(
@@ -419,18 +428,18 @@ describe('Subscription Service', () => {
       const userId = 'user-1'
       const mockSubscription = { id: 'sub-1', userId }
 
-      // Mock the cached function to return our test data immediately (since it calls () at the end)
+      // Mock the database call first
+      const mockLimit = vi.fn().mockResolvedValue([mockSubscription])
+      const mockWhere = vi.fn().mockReturnValue({ limit: mockLimit })
+      const mockFrom = vi.fn().mockReturnValue({ where: mockWhere })
+      const mockSelect = vi.fn().mockReturnValue({ from: mockFrom })
+      
+      mockDb.select = mockSelect
+
+      // Mock the cached function to return the cached result
       mockUnstableCache.mockImplementation((fn) => {
-        return () => {
-          // Mock the database call
-          const mockLimit = vi.fn().mockResolvedValue([mockSubscription])
-          const mockWhere = vi.fn().mockReturnValue({ limit: mockLimit })
-          const mockFrom = vi.fn().mockReturnValue({ where: mockWhere })
-          const mockSelect = vi.fn().mockReturnValue({ from: mockFrom })
-          
-          mockDb.select = mockSelect
-          
-          return fn()
+        return async () => {
+          return await fn()
         }
       })
 
