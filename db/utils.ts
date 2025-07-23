@@ -9,6 +9,7 @@ import {
     flashcards,
     reviewEvents,
     studySessions,
+    subscriptions,
 } from './schema'
 
 export async function getAllDecks(userId: string) {
@@ -464,5 +465,24 @@ export async function deleteDeck(userId: string, deckId: string) {
     } catch (error) {
         console.error('Error deleting deck and related data:', error)
         throw new Error('Failed to delete deck and related content')
+    }
+}
+
+export async function getUserSubscription(userId: string) {
+    if (!userId || typeof userId !== 'string') {
+        throw new Error('Invalid user ID provided')
+    }
+
+    try {
+        const subscription = await db
+            .select()
+            .from(subscriptions)
+            .where(eq(subscriptions.userId, userId))
+            .limit(1)
+
+        return subscription[0] || null
+    } catch (error) {
+        console.error('Error fetching user subscription from db utils:', error)
+        throw error
     }
 }

@@ -291,7 +291,7 @@
             "backPlaceholder": "Answer or definition",
             "creating": "Creating...",
             "createCard": "Create Card",
-            "createMultiple": "Multiple Cards (JSON)",
+            "createMultiple": "Multiple Cards",
             "singleCard": "Single Card",
             "creatingMultiple": "Creating cards...",
             "createError": "Error creating card",
@@ -316,7 +316,40 @@
             "copySchema": "Copy Schema",
             "copyWithAiPrompt": "Copy with AI Prompt",
             "copiedToClipboard": "Copied to clipboard",
-            "copyFailed": "Failed to copy"
+            "copyFailed": "Failed to copy",
+            "aiGenerate": "AI"
+        },
+        "ai": {
+            "proRequired": "AI flashcard generation is available for Pro users only.",
+            "rateLimitExceeded": "You've reached your AI generation limit. Upgrade to Pro for higher limits.",
+            "gracePeriodLimited": "AI generation is limited during payment grace period. Update your payment method to restore full access.",
+            "paymentLimited": "AI generation is restricted due to payment issues. Please update your payment method.",
+            "promptRequired": "Please enter a prompt for AI generation.",
+            "promptTooLong": "Prompt is too long. Maximum {max} characters allowed.",
+            "invalidFileType": "Only PDF files are supported.",
+            "fileTooLarge": "File is too large. Maximum size is {max}.",
+            "fileContentTooShort": "File content is too short to generate meaningful flashcards.",
+            "fileParseError": "Failed to read the uploaded file. Please try a different file.",
+            "noFlashcardsGenerated": "No flashcards could be generated from the provided content.",
+            "flashcardsGenerated": "Successfully generated {count} flashcards!",
+            "bulkCreateError": "Failed to create flashcards. Please try again.",
+            "aiRateLimitExceeded": "AI service rate limit exceeded. Please try again later.",
+            "aiConfigError": "AI service configuration error. Please contact support.",
+            "noCardsGenerated": "Failed to generate flashcards. Please try a different prompt.",
+            "aiGenerationError": "AI generation failed. Please try again.",
+            "unexpectedError": "An unexpected error occurred. Please try again.",
+            "title": "AI Flashcard Generation",
+            "promptLabel": "Describe what you want to learn",
+            "promptPlaceholder": "e.g., 'Create flashcards about photosynthesis' or 'Generate questions from this biology textbook chapter'",
+            "documentLabel": "Upload Document (Optional)",
+            "dropFile": "Drag and drop a PDF file here, or click to browse",
+            "maxFileSize": "Maximum file size: 10MB",
+            "helpText": "AI will create personalized flashcards based on your prompt and optional document. Be specific for better results!",
+            "generateButton": "Generate Flashcards",
+            "generating": "Generating...",
+            "characters": "characters",
+            "success": "Flashcards generated successfully!",
+            "error": "Failed to generate flashcards. Please try again."
         },
         "tabs": {
             "details": "Deck Details",
@@ -327,6 +360,22 @@
             "cardsToReview": "cards to review",
             "wasDueBy": "Was due by:",
             "dueBy": "Due by:"
+        }
+    },
+    "payment": {
+        "recovery": {
+            "grace": {
+                "message": "Payment issue detected ({amount}). Pro features active for {days} more days while we retry your payment."
+            },
+            "warning": {
+                "message": "Payment still pending ({amount}). Pro features will be limited in {days} days. Please update your payment method."
+            },
+            "limited": {
+                "message": "Pro features temporarily disabled due to payment issues ({amount}). Update your payment method to restore access."
+            },
+            "updatePayment": "Update Payment",
+            "updating": "Opening...",
+            "updateError": "Failed to open payment settings. Please try again."
         }
     },
     "learn": {
@@ -439,7 +488,8 @@
         "email": "Email",
         "tabs": {
             "settings": "Settings",
-            "statistics": "Learning Statistics"
+            "statistics": "Statistics",
+            "billing": "Billing"
         },
         "settings": {
             "title": "Settings",
@@ -479,6 +529,33 @@
                     "vertical": "Vertical",
                     "description": "Determines the main direction of animations."
                 }
+            }
+        },
+        "billing": {
+            "title": "Plan Management",
+            "description": "Manage your subscription plan and billing settings.",
+            "currentPlan": "Current Plan",
+            "availablePlans": "Available Plans",
+            "noPlan": "No active subscription found.",
+            "noSubscription": "You don't have an active subscription.",
+            "upgradePrompt": "Upgrade to Pro to unlock AI-powered flashcard generation and advanced features.",
+            "viewPlans": "View Plans",
+            "loadError": "Failed to load subscription information.",
+            "changeError": "Failed to change plan. Please try again.",
+            "planChanged": "Plan changed successfully!",
+            "changing": "Changing...",
+            "loading": "Loading...",
+            "current": "Current",
+            "switchTo": "Switch to this plan",
+            "popular": "Popular",
+            "manageSubscription": "Manage",
+            "billingPortalError": "Failed to open billing portal. Please try again.",
+            "renewsOn": "Renews on {date}",
+            "cancellingOn": "Cancelling on {date}",
+            "prorationNotice": {
+                "title": "Proration:",
+                "description": "When you change plans, you'll be charged or credited for the difference based on your remaining billing period.",
+                "intervalChange": "Switching between monthly and yearly plans starts a new billing cycle immediately."
             }
         }
     },
@@ -523,6 +600,40 @@
             "inProgress": "in progress",
             "planning": "planning",
             "todo": "todo"
+        }
+    },
+    "pricing": {
+        "title": "Choose Your Plan",
+        "subtitle": "Unlock AI-powered learning features with Learn Pro",
+        "monthly": "Monthly",
+        "yearly": "Yearly",
+        "save": "Save {amount} CHF",
+        "month": "month",
+        "year": "year",
+        "currentPlan": "Current Plan",
+        "loading": "Loading...",
+        "subscriptionError": "Failed to start subscription process",
+        "free": {
+            "title": "Free",
+            "description": "Perfect for getting started",
+            "features": {
+                "unlimitedCards": "Unlimited flashcards",
+                "basicStats": "Basic statistics",
+                "spacedRepetition": "Spaced repetition algorithm"
+            }
+        },
+        "pro": {
+            "title": "Learn Pro",
+            "badge": "POPULAR",
+            "description": "Supercharge your learning with AI",
+            "cta": "Upgrade to Pro",
+            "features": {
+                "everything": "Everything in Free",
+                "aiFlashcards": "AI-powered flashcard generation",
+                "advancedAnalytics": "Advanced learning analytics",
+                "unlimitedDecks": "Unlimited decks",
+                "prioritySupport": "Priority support"
+            }
         }
     }
 }

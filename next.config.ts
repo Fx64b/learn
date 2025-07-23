@@ -43,6 +43,11 @@ const nextConfig: NextConfig = {
             },
         ]
     },
+    experimental: {
+        serverActions: {
+            bodySizeLimit: '10mb',
+        },
+    },
 }
 
 const withNextIntl = createNextIntlPlugin('./lib/i18n.ts')

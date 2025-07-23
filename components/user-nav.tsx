@@ -1,6 +1,8 @@
 'use client'
 
-import { User } from 'lucide-react'
+import { Sparkles, User } from 'lucide-react'
+
+import { useEffect, useState } from 'react'
 
 import { signOut, useSession } from 'next-auth/react'
 import { useTranslations } from 'next-intl'
@@ -20,6 +22,18 @@ export function UserNav() {
     const t = useTranslations()
     const { data: session, status } = useSession()
     const loading = status === 'loading'
+    const [isPro, setIsPro] = useState(false)
+
+    useEffect(() => {
+        if (session?.user?.id) {
+            fetch('/api/user/subscription-status')
+                .then((res) => res.json())
+                .then((data) => setIsPro(data.isPro))
+                .catch((err) =>
+                    console.error('Failed to fetch subscription status:', err)
+                )
+        }
+    }, [session])
 
     if (loading) {
         return (
@@ -47,8 +61,9 @@ export function UserNav() {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-                <DropdownMenuLabel>
+                <DropdownMenuLabel className={'flex gap-1'}>
                     {session.user?.email || t('auth.myAccount')}
+                    {isPro && <Sparkles className="h-3 w-3 text-purple-600" />}
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>

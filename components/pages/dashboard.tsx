@@ -13,7 +13,7 @@ import Link from 'next/link'
 import { getAllDecks } from '@/app/actions/deck'
 import { getLearningProgress } from '@/app/actions/progress'
 
-import { DeckCard } from '@/components/deck-card'
+import { DeckCard } from '@/components/flashcards/deck-card'
 import { SimpleProgressDashboard } from '@/components/statistics/simple-progress-dashboard'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'

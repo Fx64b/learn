@@ -12,6 +12,7 @@ import { Header } from '@/components/header'
 import { AuthProvider } from '@/components/misc/auth-provider'
 import { LocaleProvider } from '@/components/misc/locale-provider'
 import { ThemeProvider } from '@/components/misc/theme-provider'
+import { PaymentWarningBanner } from '@/components/subscription/payment-warning'
 
 import './globals.css'
 
@@ -48,6 +49,7 @@ export default async function RootLayout({
                     <LocaleProvider initialLocale={locale} messages={messages}>
                         <ThemeProvider>
                             <Header />
+                            <PaymentWarningBanner className="mx-auto max-w-5xl px-4" />
                             <main className="min-h-screen">{children}</main>
                             <Footer />
                             <Toaster position="top-right" />

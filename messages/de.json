@@ -294,7 +294,7 @@
             "backPlaceholder": "Antwort oder Definition",
             "creating": "Erstelle...",
             "createCard": "Karte erstellen",
-            "createMultiple": "Mehrere Karten (JSON)",
+            "createMultiple": "Mehrere Karten",
             "createError": "Fehler beim Erstellen der Karte",
             "singleCard": "Einzelne Karte",
             "creatingMultiple": "Erstelle Karten...",
@@ -319,7 +319,40 @@
             "copySchema": "Schema kopieren",
             "copyWithAiPrompt": "Mit KI-Prompt kopieren",
             "copiedToClipboard": "In Zwischenablage kopiert",
-            "copyFailed": "Kopieren fehlgeschlagen"
+            "copyFailed": "Kopieren fehlgeschlagen",
+            "aiGenerate": "KI"
+        },
+        "ai": {
+            "proRequired": "KI-Karteikarten-Generierung ist nur für Pro-Nutzer verfügbar.",
+            "rateLimitExceeded": "Sie haben Ihr KI-Generierungslimit erreicht. Upgraden Sie auf Pro für höhere Limits.",
+            "gracePeriodLimited": "KI-Generierung ist während der Zahlungskulanzzeit eingeschränkt. Aktualisieren Sie Ihre Zahlungsmethode, um den vollen Zugang wiederherzustellen.",
+            "paymentLimited": "KI-Generierung ist aufgrund von Zahlungsproblemen eingeschränkt. Bitte aktualisieren Sie Ihre Zahlungsmethode.",
+            "promptRequired": "Bitte geben Sie eine Eingabeaufforderung für die KI-Generierung ein.",
+            "promptTooLong": "Eingabeaufforderung ist zu lang. Maximal {max} Zeichen erlaubt.",
+            "invalidFileType": "Nur PDF-Dateien werden unterstützt.",
+            "fileTooLarge": "Datei ist zu groß. Maximale Größe ist {max}.",
+            "fileContentTooShort": "Dateiinhalt ist zu kurz, um sinnvolle Karteikarten zu generieren.",
+            "fileParseError": "Die hochgeladene Datei konnte nicht gelesen werden. Bitte versuchen Sie eine andere Datei.",
+            "noFlashcardsGenerated": "Aus dem bereitgestellten Inhalt konnten keine Karteikarten generiert werden.",
+            "flashcardsGenerated": "Erfolgreich {count} Karteikarten generiert!",
+            "bulkCreateError": "Karteikarten konnten nicht erstellt werden. Bitte versuchen Sie es erneut.",
+            "aiRateLimitExceeded": "KI-Service-Ratenlimit überschritten. Bitte versuchen Sie es später erneut.",
+            "aiConfigError": "KI-Service-Konfigurationsfehler. Bitte kontaktieren Sie den Support.",
+            "noCardsGenerated": "Karteikarten konnten nicht generiert werden. Bitte versuchen Sie eine andere Eingabeaufforderung.",
+            "aiGenerationError": "KI-Generierung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+            "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+            "title": "KI-Karteikarten-Generierung",
+            "promptLabel": "Beschreiben Sie, was Sie lernen möchten",
+            "promptPlaceholder": "z.B. 'Erstelle Karteikarten über Photosynthese' oder 'Generiere Fragen aus diesem Biologie-Lehrbuchkapitel'",
+            "documentLabel": "Dokument hochladen (Optional)",
+            "dropFile": "PDF-Datei hier hineinziehen oder klicken zum Durchsuchen",
+            "maxFileSize": "Maximale Dateigröße: 10MB",
+            "helpText": "Die KI erstellt personalisierte Karteikarten basierend auf Ihrer Eingabeaufforderung und dem optionalen Dokument. Seien Sie spezifisch für bessere Ergebnisse!",
+            "generateButton": "Karteikarten generieren",
+            "generating": "Generiere...",
+            "characters": "Zeichen",
+            "success": "Karteikarten erfolgreich generiert!",
+            "error": "Karteikarten konnten nicht generiert werden. Bitte versuchen Sie es erneut."
         },
         "statistics": {
             "totalCards": "Karten insgesamt",
@@ -330,6 +363,22 @@
         "tabs": {
             "details": "Deck Details",
             "editCards": "Karten bearbeiten"
+        }
+    },
+    "payment": {
+        "recovery": {
+            "grace": {
+                "message": "Zahlungsproblem erkannt ({amount}). Pro-Funktionen sind noch {days} weitere Tage aktiv, während wir Ihre Zahlung wiederholen."
+            },
+            "warning": {
+                "message": "Zahlung steht noch aus ({amount}). Pro-Funktionen werden in {days} Tagen eingeschränkt. Bitte aktualisieren Sie Ihre Zahlungsmethode."
+            },
+            "limited": {
+                "message": "Pro-Funktionen aufgrund von Zahlungsproblemen vorübergehend deaktiviert ({amount}). Aktualisieren Sie Ihre Zahlungsmethode, um den Zugang wiederherzustellen."
+            },
+            "updatePayment": "Zahlung aktualisieren",
+            "updating": "Öffne...",
+            "updateError": "Zahlungseinstellungen konnten nicht geöffnet werden. Bitte versuchen Sie es erneut."
         }
     },
     "learn": {
@@ -442,7 +491,8 @@
         "email": "E-Mail",
         "tabs": {
             "settings": "Einstellungen",
-            "statistics": "Lernstatistik"
+            "statistics": "Statistiken",
+            "billing": "Abo-Verwaltung"
         },
         "settings": {
             "title": "Einstellungen",
@@ -482,6 +532,33 @@
                     "vertical": "Vertikal",
                     "description": "Bestimmt die Hauptrichtung der Animationen."
                 }
+            }
+        },
+        "billing": {
+            "title": "Abo-Verwaltung",
+            "description": "Verwalten Sie Ihr Abonnement und Ihre Abrechnungseinstellungen.",
+            "currentPlan": "Aktueller Tarif",
+            "availablePlans": "Verfügbare Tarife",
+            "noPlan": "Kein aktives Abonnement gefunden.",
+            "noSubscription": "Sie haben kein aktives Abonnement.",
+            "upgradePrompt": "Upgraden Sie auf Pro, um KI-gestützte Karteikarten-Generierung und erweiterte Funktionen freizuschalten.",
+            "viewPlans": "Tarife anzeigen",
+            "loadError": "Fehler beim Laden der Abonnement-Informationen.",
+            "changeError": "Fehler beim Ändern des Tarifs. Bitte versuchen Sie es erneut.",
+            "planChanged": "Tarif erfolgreich geändert!",
+            "changing": "Wird geändert...",
+            "loading": "Lädt...",
+            "current": "Aktuell",
+            "switchTo": "Zu diesem Tarif wechseln",
+            "popular": "Beliebt",
+            "manageSubscription": "Verwalten",
+            "billingPortalError": "Fehler beim Öffnen des Abrechnungsportals. Bitte versuchen Sie es erneut.",
+            "renewsOn": "Verlängert sich am {date}",
+            "cancellingOn": "Wird gekündigt am {date}",
+            "prorationNotice": {
+                "title": "Anteilige Abrechnung:",
+                "description": "Wenn Sie den Tarif wechseln, wird Ihnen die Differenz basierend auf Ihrem verbleibenden Abrechnungszeitraum berechnet oder gutgeschrieben.",
+                "intervalChange": "Der Wechsel zwischen monatlichen und jährlichen Tarifen startet sofort einen neuen Abrechnungszyklus."
             }
         }
     },
@@ -526,6 +603,40 @@
             "inProgress": "in Bearbeitung",
             "planning": "Planung",
             "todo": "zu erledigen"
+        }
+    },
+    "pricing": {
+        "title": "Plan wählen",
+        "subtitle": "Schalten Sie KI-gestützte Lernfunktionen mit Learn Pro frei",
+        "monthly": "Monatlich",
+        "yearly": "Jährlich",
+        "save": "{amount} CHF sparen",
+        "month": "Monat",
+        "year": "Jahr",
+        "currentPlan": "Aktueller Plan",
+        "loading": "Wird geladen...",
+        "subscriptionError": "Abonnement-Prozess konnte nicht gestartet werden",
+        "free": {
+            "title": "Kostenlos",
+            "description": "Perfekt für den Einstieg",
+            "features": {
+                "unlimitedCards": "Unbegrenzte Lernkarten",
+                "basicStats": "Grundlegende Statistiken",
+                "spacedRepetition": "Spaced-Repetition-Algorithmus"
+            }
+        },
+        "pro": {
+            "title": "Learn Pro",
+            "badge": "BELIEBT",
+            "description": "Verbessern Sie Ihr Lernen mit KI",
+            "cta": "Auf Pro upgraden",
+            "features": {
+                "everything": "Alles aus dem kostenlosen Plan",
+                "aiFlashcards": "KI-gestützte Lernkarten-Erstellung",
+                "advancedAnalytics": "Erweiterte Lernanalysen",
+                "unlimitedDecks": "Unbegrenzte Kartenstapel",
+                "prioritySupport": "Prioritäts-Support"
+            }
         }
     }
 }

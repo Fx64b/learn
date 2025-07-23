@@ -1,0 +1,8 @@
+{
+    "crons": [
+        {
+            "path": "/api/cron/payment-recovery",
+            "schedule": "0 12 * * *"
+        }
+    ]
+}

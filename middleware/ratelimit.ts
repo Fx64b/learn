@@ -1,4 +1,4 @@
-import { checkRateLimit } from '@/lib/rate-limit'
+import { checkRateLimit } from '@/lib/rate-limit/rate-limit'
 
 import { NextRequest, NextResponse } from 'next/server'
 
