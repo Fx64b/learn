@@ -21,7 +21,6 @@ const MAX_DOCUMENT_LENGTH = 500000 // 500KB
 const PDF_PARSING_TIMEOUT = 10000 // 10 seconds
 const MAX_TEXT_EXTRACTION_LENGTH = 600000 // 600KB
 
-
 // TODO / INFO / KNOWN ISSUES:
 // - Letters for ä, ö, ü, é, etc. are not really working / cut out of the ai response for some reason ( There is a good chance that it is because of the ai-model)
 // - Errors for the user are not very specific
@@ -272,7 +271,8 @@ async function parsePDFSecurely(
                     logSecurityEvent({
                         userId,
                         action: 'pdf_parsing_error',
-                        details: 'Parser error occurred: ' + errData.parserError,
+                        details:
+                            'Parser error occurred: ' + errData.parserError,
                         severity: 'medium',
                         requestId,
                     })
@@ -300,7 +300,8 @@ async function parsePDFSecurely(
                         logSecurityEvent({
                             userId,
                             action: 'pdf_text_extraction_error',
-                            details: 'Text extraction failed: ' + extractionError,
+                            details:
+                                'Text extraction failed: ' + extractionError,
                             severity: 'low',
                             requestId,
                         })
@@ -365,7 +366,11 @@ function extractTextSafely(pdfData: Output): string {
                         )
                     }
                 } catch (decodeError) {
-                    console.log("Decode error: " + decodeError?.toString().substring(0, 10) + '...')
+                    console.log(
+                        'Decode error: ' +
+                            decodeError?.toString().substring(0, 10) +
+                            '...'
+                    )
                     // Skip malformed text without logging sensitive data
                     continue
                 }
