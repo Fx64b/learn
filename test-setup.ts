@@ -1,7 +1,9 @@
 import '@testing-library/jest-dom'
+import { vi } from 'vitest'
 
 // Mock environment variables for tests
 process.env.NEXT_PUBLIC_SITE_URL = 'http://localhost:3000'
+// @ts-ignore
 process.env.NODE_ENV = 'test'
 process.env.DATABASE_URL = 'file:test.db'
 process.env.TURSO_DATABASE_URL = 'libsql://test.turso.io'

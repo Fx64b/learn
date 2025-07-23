@@ -117,6 +117,7 @@ describe('Stripe Utilities', () => {
     })
 
     it('should warn when using test keys in production', () => {
+      // @ts-ignore
       process.env.NODE_ENV = 'production'
       process.env.STRIPE_SECRET_KEY = 'sk_test_12345'
       
