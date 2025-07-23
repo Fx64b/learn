@@ -21,7 +21,7 @@ describe('AI Validation Functions', () => {
 
     it('should remove javascript protocols', () => {
       const input = 'javascript:alert("hack")'
-      const sanitized = input.replace(/javascript:/gi, '')
+      const sanitized = input.replace(/(javascript:|data:|vbscript:)/gi, '')
       expect(sanitized).toBe('alert("hack")')
     })
 
