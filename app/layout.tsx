@@ -46,7 +46,11 @@ export default async function RootLayout({
                 className={`${inter.className} bg-background text-foreground antialiased`}
             >
                 <AuthProvider>
-                    <LocaleProvider initialLocale={locale} messages={messages}>
+                    <LocaleProvider 
+                        initialLocale={locale} 
+                        messages={messages}
+                        timeZone="Europe/Zurich"
+                    >
                         <ThemeProvider>
                             <Header />
                             <PaymentWarningBanner className="mx-auto max-w-5xl px-4" />
