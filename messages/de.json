@@ -469,6 +469,33 @@
             "acrossAllTimes": "{count} Karten über alle Zeiten.",
             "cards": "Karten"
         },
+        "velocityChart": {
+            "title": "Lerngeschwindigkeit",
+            "noData": "Noch keine Lerndaten verfügbar.",
+            "currentAccuracy": "Aktuelle Genauigkeit",
+            "bestAccuracy": "Beste Genauigkeit", 
+            "strongImprovement": "Starke Verbesserung",
+            "improving": "Verbesserung",
+            "stable": "Stabil",
+            "declining": "Rückläufig",
+            "needsAttention": "Benötigt Aufmerksamkeit",
+            "improvedBy": "Verbessert um",
+            "decreasedBy": "Verschlechtert um",
+            "sinceStart": "seit der ersten Sitzung"
+        },
+        "consistency": {
+            "title": "Lernskonsistenz",
+            "noData": "Noch keine Lerndaten verfügbar.",
+            "weeklyPattern": "Letzte 7 Tage",
+            "currentStreak": "Aktueller Streak",
+            "activeDays": "Aktive Tage",
+            "consistency": "Konsistenz",
+            "excellent": "Ausgezeichnete Konsistenz!",
+            "good": "Gute Konsistenz",
+            "fair": "Mittelmäßige Konsistenz",
+            "needsImprovement": "Verbesserungsbedarf",
+            "longestGap": "Längste Pause: {days} Tage"
+        },
         "dashboard": {
             "last7Days": "Letzte 7 Tage",
             "cardsReviewed": "Karten wiederholt",
@@ -482,6 +509,7 @@
             "cardsForToday": "Karten für heute",
             "reviewNow": "Jetzt lernen",
             "cardsByDifficulty": "Karten nach Schwierigkeit",
+            "noCardsData": "Noch keine Karten mit Schwierigkeitsdaten. Beginnen Sie zu lernen, um Ihren Fortschritt hier zu sehen.",
             "difficulty": {
                 "again": "Wieder",
                 "hard": "Schwer",
