@@ -3,6 +3,8 @@
 import { ProgressData } from '@/types'
 
 import { StudyTimeAnalysis } from '@/components/statistics/charts/study-time-analysis'
+import { LearningVelocityChart } from '@/components/statistics/charts/learning-velocity-chart'
+import { StudyConsistencyWidget } from '@/components/statistics/charts/study-consistency-widget'
 import { SimpleProgressDashboard } from '@/components/statistics/simple-progress-dashboard'
 
 interface ProgressDashboardProps {
@@ -51,6 +53,13 @@ export function ProgressDashboard({ data }: ProgressDashboardProps) {
     return (
         <div className="space-y-6">
             <SimpleProgressDashboard data={data} />
+            
+            {/* New statistics row */}
+            <div className="flex w-full flex-col gap-4 lg:flex-row">
+                <LearningVelocityChart data={data.dailyProgress} />
+                <StudyConsistencyWidget data={data.dailyProgress} streak={data.streak} />
+            </div>
+            
             <StudyTimeAnalysis rawData={data.timeOfDay.rawData} />
         </div>
     )

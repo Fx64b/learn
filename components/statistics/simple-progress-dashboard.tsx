@@ -96,14 +96,15 @@ export function SimpleProgressDashboard({
     return (
         <div className="space-y-6">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-                <Card>
+                <Card className="hover:shadow-md transition-shadow">
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium">
+                        <CardTitle className="text-sm font-medium flex items-center gap-2">
+                            <Calendar className="h-4 w-4 text-blue-500" />
                             {t('last7Days')}
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">
+                        <div className="text-2xl font-bold text-blue-600">
                             {cardsLearned7Days}
                         </div>
                         <p className="text-muted-foreground text-xs">
@@ -112,18 +113,18 @@ export function SimpleProgressDashboard({
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="hover:shadow-md transition-shadow">
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium">
+                        <CardTitle className="text-sm font-medium flex items-center gap-2">
+                            <TrendingUp className="h-4 w-4 text-green-500" />
                             {t('successRate')}
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="flex items-center">
-                            <div className="text-2xl font-bold">
+                        <div className="flex items-center gap-2">
+                            <div className="text-2xl font-bold text-green-600">
                                 {successRate}%
                             </div>
-                            <TrendingUp className="ml-2 h-4 w-4 text-green-500" />
                         </div>
                         <p className="text-muted-foreground text-xs">
                             {t('percentCorrect')}
@@ -131,18 +132,18 @@ export function SimpleProgressDashboard({
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="hover:shadow-md transition-shadow">
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium">
+                        <CardTitle className="text-sm font-medium flex items-center gap-2">
+                            <Calendar className="h-4 w-4 text-blue-500" />
                             {t('learningStreak')}
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="flex items-center">
-                            <div className="text-2xl font-bold">
+                        <div className="flex items-center gap-2">
+                            <div className="text-2xl font-bold text-blue-600">
                                 {data.streak}
                             </div>
-                            <Calendar className="ml-2 h-4 w-4 text-blue-500" />
                         </div>
                         <p className="text-muted-foreground text-xs">
                             {data.streak === 1 ? t('day') : t('days')}{' '}
@@ -151,25 +152,25 @@ export function SimpleProgressDashboard({
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="hover:shadow-md transition-shadow">
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium">
+                        <CardTitle className="text-sm font-medium flex items-center gap-2">
+                            <Clock className="h-4 w-4 text-orange-500" />
                             {t('toReview')}
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="flex items-center">
-                            <div className="text-2xl font-bold">
+                        <div className="flex items-center gap-2">
+                            <div className="text-2xl font-bold text-orange-600">
                                 {data.needsReview.length}
                             </div>
-                            <Clock className="ml-2 h-4 w-4 text-orange-500" />
                         </div>
                         <p className="text-muted-foreground mb-2 text-xs">
                             {t('cardsForToday')}
                         </p>
                         {data.needsReview.length > 0 && (
                             <Link href="/learn/due">
-                                <Button size="sm" variant="outline">
+                                <Button size="sm" variant="outline" className="hover:bg-orange-50">
                                     {t('reviewNow')}
                                 </Button>
                             </Link>
@@ -186,56 +187,62 @@ export function SimpleProgressDashboard({
                         <CardTitle>{t('cardsByDifficulty')}</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="space-y-2">
-                            {data.cardsByDifficulty.map((item) => (
-                                <div
-                                    key={item.difficultyCategory}
-                                    className="flex items-center justify-between"
-                                >
-                                    <span className="text-sm font-medium">
-                                        {difficultyLabels[
-                                            item.difficultyCategory
-                                        ] || `Level ${item.difficultyCategory}`}
-                                    </span>
-                                    <div className="flex items-center gap-2">
-                                        <div className="bg-secondary h-2 w-32 overflow-hidden rounded-full">
-                                            <div
-                                                className={`h-full ${
-                                                    item.difficultyCategory ===
-                                                    1
-                                                        ? 'bg-red-500'
-                                                        : item.difficultyCategory ===
-                                                            2
-                                                          ? 'bg-yellow-500'
-                                                          : item.difficultyCategory ===
-                                                              3
-                                                            ? 'bg-blue-500'
-                                                            : 'bg-green-500'
-                                                }`}
-                                                style={{
-                                                    width: `${
-                                                        data.cardsByDifficulty
-                                                            .length > 0
-                                                            ? (item.count /
-                                                                  Math.max(
-                                                                      ...data.cardsByDifficulty.map(
-                                                                          (d) =>
-                                                                              d.count
-                                                                      )
-                                                                  )) *
-                                                              100
-                                                            : 0
-                                                    }%`,
-                                                }}
-                                            />
-                                        </div>
-                                        <span className="text-muted-foreground w-8 text-right text-sm">
-                                            {item.count}
+                        {data.cardsByDifficulty.length === 0 ? (
+                            <div className="text-muted-foreground text-sm">
+                                <p>{t('noCardsData')}</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-2">
+                                {data.cardsByDifficulty.map((item) => (
+                                    <div
+                                        key={item.difficultyCategory}
+                                        className="flex items-center justify-between"
+                                    >
+                                        <span className="text-sm font-medium">
+                                            {difficultyLabels[
+                                                item.difficultyCategory
+                                            ] || `Level ${item.difficultyCategory}`}
                                         </span>
+                                        <div className="flex items-center gap-2">
+                                            <div className="bg-secondary h-2 w-32 overflow-hidden rounded-full">
+                                                <div
+                                                    className={`h-full ${
+                                                        item.difficultyCategory ===
+                                                        1
+                                                            ? 'bg-red-500'
+                                                            : item.difficultyCategory ===
+                                                                2
+                                                              ? 'bg-yellow-500'
+                                                              : item.difficultyCategory ===
+                                                                  3
+                                                                ? 'bg-blue-500'
+                                                                : 'bg-green-500'
+                                                    }`}
+                                                    style={{
+                                                        width: `${
+                                                            data.cardsByDifficulty
+                                                                .length > 0
+                                                                ? (item.count /
+                                                                      Math.max(
+                                                                          ...data.cardsByDifficulty.map(
+                                                                              (d) =>
+                                                                                  d.count
+                                                                          )
+                                                                      )) *
+                                                                  100
+                                                                : 0
+                                                        }%`,
+                                                    }}
+                                                />
+                                            </div>
+                                            <span className="text-muted-foreground w-8 text-right text-sm">
+                                                {item.count}
+                                            </span>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
-                        </div>
+                                ))}
+                            </div>
+                        )}
                     </CardContent>
                 </Card>
             </div>

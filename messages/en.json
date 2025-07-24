@@ -466,6 +466,33 @@
             "acrossAllTimes": "{count} cards across all times.",
             "cards": "cards"
         },
+        "velocityChart": {
+            "title": "Learning Velocity",
+            "noData": "No learning data available yet.",
+            "currentAccuracy": "Current Accuracy",
+            "bestAccuracy": "Best Accuracy", 
+            "strongImprovement": "Strong Improvement",
+            "improving": "Improving",
+            "stable": "Stable",
+            "declining": "Declining",
+            "needsAttention": "Needs Attention",
+            "improvedBy": "Improved by",
+            "decreasedBy": "Decreased by",
+            "sinceStart": "since first session"
+        },
+        "consistency": {
+            "title": "Study Consistency",
+            "noData": "No study data available yet.",
+            "weeklyPattern": "Last 7 Days",
+            "currentStreak": "Current Streak",
+            "activeDays": "Active Days",
+            "consistency": "Consistency",
+            "excellent": "Excellent Consistency!",
+            "good": "Good Consistency",
+            "fair": "Fair Consistency",
+            "needsImprovement": "Needs Improvement",
+            "longestGap": "Longest gap: {days} days"
+        },
         "dashboard": {
             "last7Days": "Last 7 Days",
             "cardsReviewed": "Cards reviewed",
@@ -478,6 +505,8 @@
             "toReview": "To review",
             "cardsForToday": "Cards for today",
             "reviewNow": "Review now",
+            "cardsByDifficulty": "Cards by Difficulty",
+            "noCardsData": "No cards with difficulty data yet. Start learning to see your progress here.",
             "cardsByDifficulty": "Cards by Difficulty",
             "difficulty": {
                 "again": "Again",

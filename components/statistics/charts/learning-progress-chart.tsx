@@ -52,7 +52,10 @@ export function LearningProgressChart({ data }: LearningProgressChartProps) {
             (sum, day) => sum + day.cardsReviewed,
             0
         )
-        const avgCards = totalCards / chartData.length
+        
+        // Only count days where learning actually happened
+        const activeDays = chartData.filter(day => day.cardsReviewed > 0).length
+        const avgCards = activeDays > 0 ? totalCards / activeDays : 0
 
         const bestDay = chartData.reduce(
             (best, current) =>
@@ -60,9 +63,11 @@ export function LearningProgressChart({ data }: LearningProgressChartProps) {
             chartData[0]
         )
 
-        const avgAccuracy =
-            chartData.reduce((sum, day) => sum + day.correctPercentage, 0) /
-            chartData.length
+        // Only calculate accuracy for days with activity
+        const activeDaysData = chartData.filter(day => day.cardsReviewed > 0)
+        const avgAccuracy = activeDaysData.length > 0 
+            ? activeDaysData.reduce((sum, day) => sum + day.correctPercentage, 0) / activeDaysData.length
+            : 0
 
         return { totalCards, avgCards, bestDay, avgAccuracy }
     }, [chartData])
