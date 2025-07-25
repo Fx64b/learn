@@ -579,6 +579,7 @@
         "legal": "Rechtliches",
         "privacyPolicy": "Datenschutz",
         "termsOfService": "Nutzungsbedingungen",
+        "imprint": "Impressum",
         "license": "Lizenz",
         "madeWith": "Gemacht mit",
         "by": "von"
@@ -641,6 +642,247 @@
                 "unlimitedDecks": "Unbegrenzte Kartenstapel",
                 "prioritySupport": "Prioritäts-Support"
             }
+        }
+    },
+    "privacy": {
+        "title": "Datenschutzerklärung",
+        "description": "Erfahren Sie, wie wir Ihre persönlichen Daten sammeln, verwenden und schützen.",
+        "lastUpdated": "Zuletzt aktualisiert: Januar 2025",
+        "introduction": {
+            "title": "Einführung",
+            "description": "Diese Datenschutzerklärung beschreibt, wie Learn (betrieben von Fx64b) Ihre persönlichen Daten sammelt, verwendet und teilt, wenn Sie unseren Lernkarten-Service nutzen.",
+            "contact": "Wenn Sie Fragen zu dieser Datenschutzerklärung haben, kontaktieren Sie uns bitte unter den unten angegebenen Informationen."
+        },
+        "dataCollection": {
+            "title": "Informationen, die wir sammeln",
+            "personalInfo": {
+                "title": "Persönliche Informationen",
+                "email": "E-Mail-Adresse (für Kontenerstellung und Authentifizierung)",
+                "name": "Anzeigename (optional)",
+                "preferences": "Benutzereinstellungen und -präferenzen"
+            },
+            "usageData": {
+                "title": "Nutzungsdaten",
+                "studyStats": "Lernsitzungsdaten und Lernfortschritt",
+                "deckData": "Lernkartenstapel und Inhalte, die Sie erstellen",
+                "analytics": "Anonyme Nutzungsanalysen über Vercel Analytics"
+            }
+        },
+        "thirdParty": {
+            "title": "Drittanbieter-Services",
+            "vercel": {
+                "title": "Vercel (Hosting und Analytics)",
+                "description": "Unser Service wird auf Vercels Plattform gehostet, die bestimmte technische Informationen sammeln kann. Vercel Analytics sammelt anonyme Nutzungsdaten, um uns bei der Verbesserung unseres Services zu helfen. Keine persönlichen Informationen werden mit Vercel Analytics geteilt."
+            },
+            "stripe": {
+                "title": "Stripe (Zahlungsabwicklung)",
+                "description": "Für Premium-Abonnements verwenden wir Stripe zur Zahlungsabwicklung. Stripe kann Zahlungsinformationen gemäß ihrer Datenschutzrichtlinie sammeln. Wir speichern keine Zahlungsinformationen auf unseren Servern."
+            },
+            "ai": {
+                "title": "KI-Services (Google AI)",
+                "description": "Wenn Sie KI-gestützte Funktionen verwenden, können Ihre Lernkarteninhalte von Googles KI-Services verarbeitet werden. Diese Daten werden ausschließlich zur Generierung von Lernkarteninhalten verwendet und nicht vom KI-Anbieter gespeichert."
+            }
+        },
+        "dataUse": {
+            "title": "Wie wir Ihre Informationen verwenden",
+            "serviceProvision": "Um unseren Lernservice bereitzustellen und zu warten",
+            "improvement": "Um Ihre Lernerfahrung zu verbessern und zu personalisieren",
+            "communication": "Um mit Ihnen über Ihr Konto und Service-Updates zu kommunizieren",
+            "legal": "Um rechtlichen Verpflichtungen nachzukommen und unsere Rechte zu schützen"
+        },
+        "userRights": {
+            "title": "Ihre Rechte",
+            "access": "Zugang: Sie können Zugang zu Ihren persönlichen Daten anfordern",
+            "rectification": "Berichtigung: Sie können die Korrektur ungenauer Daten anfordern",
+            "erasure": "Löschung: Sie können die Löschung Ihrer Daten anfordern",
+            "portability": "Datenportabilität: Sie können Ihre Lernkartendaten exportieren",
+            "objection": "Widerspruch: Sie können bestimmten Datenverarbeitungen widersprechen"
+        },
+        "dataSecurity": {
+            "title": "Datensicherheit",
+            "description": "Wir implementieren angemessene Sicherheitsmaßnahmen zum Schutz Ihrer Daten vor unbefugtem Zugriff, Änderung, Offenlegung oder Zerstörung. Jedoch ist keine Internet-Übertragung vollständig sicher."
+        },
+        "dataRetention": {
+            "title": "Datenspeicherung",
+            "description": "Wir bewahren Ihre Daten so lange auf, wie es für die Bereitstellung unserer Services und die Erfüllung rechtlicher Verpflichtungen erforderlich ist. Sie können Ihr Konto jederzeit löschen, wodurch Ihre persönlichen Daten entfernt werden."
+        },
+        "cookies": {
+            "title": "Cookies und Tracking",
+            "description": "Wir verwenden wesentliche Cookies für Authentifizierung und Benutzereinstellungen. Vercel Analytics kann Cookies für anonymes Nutzungstracking verwenden. Sie können Cookie-Einstellungen in Ihrem Browser kontrollieren."
+        },
+        "changes": {
+            "title": "Änderungen an dieser Richtlinie",
+            "description": "Wir können diese Datenschutzerklärung von Zeit zu Zeit aktualisieren. Wir werden Sie über bedeutende Änderungen benachrichtigen, indem wir die neue Richtlinie auf dieser Seite veröffentlichen und das Datum der letzten Änderung aktualisieren."
+        },
+        "contact": {
+            "title": "Kontaktinformationen",
+            "description": "Wenn Sie Fragen zu dieser Datenschutzerklärung oder unseren Datenpraktiken haben, kontaktieren Sie uns bitte:",
+            "email": "E-Mail:",
+            "emailAddress": "support@fx64b.dev",
+            "address": "Adresse:",
+            "developer": "Fx64b (Entwickler)",
+            "location": "Schweiz"
+        }
+    },
+    "terms": {
+        "title": "Nutzungsbedingungen",
+        "description": "Geschäftsbedingungen für die Nutzung unseres Lernkarten-Services.",
+        "lastUpdated": "Zuletzt aktualisiert: Januar 2025",
+        "acceptance": {
+            "title": "Annahme der Bedingungen",
+            "description": "Durch den Zugriff auf und die Nutzung von Learn akzeptieren Sie diese Bedingungen und Bestimmungen. Wenn Sie nicht mit den oben genannten Punkten einverstanden sind, verwenden Sie diesen Service bitte nicht."
+        },
+        "serviceDescription": {
+            "title": "Service-Beschreibung",
+            "description": "Learn ist eine digitale Lernkarten-Anwendung, die Spaced-Repetition-Algorithmen verwendet, um Benutzern beim effektiven Lernen und Memorieren von Informationen zu helfen. Unser Service umfasst:",
+            "features": {
+                "flashcards": "Erstellung und Verwaltung digitaler Lernkarten",
+                "spacedRepetition": "Spaced-Repetition-Lernalgorithmen",
+                "aiGeneration": "KI-gestützte Lernkarten-Generierung (Pro-Feature)",
+                "analytics": "Lernfortschritt-Tracking und Analytics"
+            }
+        },
+        "userAccounts": {
+            "title": "Benutzerkonten",
+            "description": "Um bestimmte Funktionen unseres Services zu nutzen, müssen Sie ein Konto erstellen. Sie sind verantwortlich für:",
+            "responsibilities": {
+                "accurate": "Die Bereitstellung genauer und vollständiger Informationen",
+                "security": "Die Aufrechterhaltung der Sicherheit Ihrer Konto-Anmeldedaten",
+                "activities": "Alle Aktivitäten, die unter Ihrem Konto auftreten"
+            }
+        },
+        "payment": {
+            "title": "Zahlungsbedingungen",
+            "description": "Unser Premium-Service (Learn Pro) erfordert die Zahlung von Abonnementgebühren. Alle Zahlungen werden sicher über Stripe abgewickelt.",
+            "billing": {
+                "title": "Abrechnung",
+                "description": "Abonnementgebühren werden im Voraus monatlich oder jährlich abgerechnet. Preise sind in Schweizer Franken (CHF) und enthalten anwendbare Steuern."
+            },
+            "refunds": {
+                "title": "Rückerstattungen",
+                "description": "Rückerstattungen können nach unserem Ermessen gewährt werden. Kontaktieren Sie den Support für Rückerstattungsanfragen innerhalb von 14 Tagen nach der Zahlung."
+            }
+        },
+        "aiServices": {
+            "title": "KI-gestützte Funktionen",
+            "description": "Unsere KI-gestützten Funktionen verwenden Googles KI-Services zur Generierung von Lernkarteninhalten. Durch die Nutzung dieser Funktionen erkennen Sie an:",
+            "limitations": {
+                "accuracy": "KI-generierte Inhalte sind möglicherweise nicht immer genau oder angemessen",
+                "availability": "KI-Funktionen können vorübergehend nicht verfügbar sein",
+                "content": "Sie sind verantwortlich für die Überprüfung und Bearbeitung KI-generierter Inhalte"
+            }
+        },
+        "userContent": {
+            "title": "Benutzerinhalte",
+            "description": "Sie behalten das Eigentum an Inhalten, die Sie erstellen, einschließlich Lernkarten und Lernmaterialien. Durch die Nutzung unseres Services gewähren Sie uns eine Lizenz zur Speicherung und Verarbeitung Ihrer Inhalte, um unsere Services bereitzustellen.",
+            "ownership": {
+                "title": "Inhaltseigentum",
+                "description": "Sie behalten alle Rechte an Ihren ursprünglichen Inhalten. Wir beanspruchen kein Eigentum an Ihren Lernkarten oder Lernmaterialien."
+            },
+            "prohibited": {
+                "title": "Verbotene Inhalte",
+                "illegal": "Inhalte, die gegen geltende Gesetze verstoßen",
+                "harmful": "Inhalte, die schädlich, bedrohlich oder belästigend sind",
+                "infringement": "Inhalte, die geistige Eigentumsrechte verletzen",
+                "spam": "Spam, Werbung oder Werbeinhalte"
+            }
+        },
+        "thirdPartyServices": {
+            "title": "Drittanbieter-Services",
+            "description": "Unser Service integriert sich mit Drittanbietern. Ihre Nutzung dieser Services unterliegt deren jeweiligen Bedingungen:",
+            "stripe": {
+                "title": "Stripe (Zahlungsabwicklung)",
+                "description": "Die Zahlungsabwicklung wird von Stripe durchgeführt, unterliegt Stripes Nutzungsbedingungen und Datenschutzrichtlinie."
+            },
+            "vercel": {
+                "title": "Vercel (Hosting)",
+                "description": "Unser Service wird auf Vercels Plattform gehostet, unterliegt Vercels Nutzungsbedingungen."
+            }
+        },
+        "disclaimers": {
+            "title": "Haftungsausschlüsse",
+            "description": "Unser Service wird 'wie besehen' ohne jegliche Garantien bereitgestellt. Wir garantieren keinen ununterbrochenen Zugang oder fehlerfreien Betrieb."
+        },
+        "limitation": {
+            "title": "Haftungsbeschränkung",
+            "description": "Soweit gesetzlich zulässig, haften wir nicht für indirekte, zufällige, besondere oder Folgeschäden."
+        },
+        "termination": {
+            "title": "Kündigung",
+            "description": "Wir können Ihr Konto nach unserem Ermessen mit oder ohne Vorankündigung wegen Verstößen gegen diese Bedingungen oder anderen angemessenen Gründen kündigen oder sperren."
+        },
+        "governing": {
+            "title": "Anwendbares Recht",
+            "description": "Diese Bedingungen unterliegen schweizerischem Recht. Streitigkeiten werden vor schweizer Gerichten gelöst, vorbehaltlich anwendbarer internationaler Abkommen."
+        },
+        "changes": {
+            "title": "Änderungen der Bedingungen",
+            "description": "Wir behalten uns das Recht vor, diese Bedingungen jederzeit zu ändern. Wir werden Benutzer über bedeutende Änderungen durch Veröffentlichung von Updates auf unserer Website benachrichtigen."
+        },
+        "contact": {
+            "title": "Kontaktinformationen",
+            "description": "Für Fragen zu diesen Nutzungsbedingungen kontaktieren Sie uns bitte:",
+            "email": "E-Mail:",
+            "emailAddress": "support@fx64b.dev",
+            "address": "Adresse:",
+            "developer": "Fx64b (Entwickler)",
+            "location": "Schweiz"
+        }
+    },
+    "imprint": {
+        "title": "Impressum",
+        "description": "Rechtliche Informationen über Learn und verantwortliche Parteien.",
+        "lastUpdated": "Zuletzt aktualisiert: Januar 2025",
+        "responsible": {
+            "title": "Angaben gemäß schweizerischem Recht",
+            "name": "Verantwortlich für den Inhalt:",
+            "nameValue": "Fx64b",
+            "address": "Adresse:",
+            "addressValue": "Schweiz",
+            "email": "E-Mail:",
+            "emailValue": "support@fx64b.dev",
+            "website": "Website:"
+        },
+        "purpose": {
+            "title": "Zweck der Website",
+            "description": "Learn ist eine digitale Lernplattform, die lernkartenbasierte Lernservices anbietet. Unsere Services umfassen:",
+            "services": {
+                "flashcards": "Digitale Lernkarten-Erstellung und -Verwaltung",
+                "learning": "Spaced-Repetition-Lernalgorithmen",
+                "ai": "KI-gestützte Inhaltsgenerierung",
+                "analytics": "Lernfortschritt-Tracking"
+            }
+        },
+        "hosting": {
+            "title": "Hosting-Anbieter",
+            "description": "Diese Website wird gehostet von:"
+        },
+        "thirdParty": {
+            "title": "Drittanbieter-Service-Provider",
+            "stripe": {
+                "title": "Zahlungsabwicklung (Stripe)"
+            },
+            "google": {
+                "title": "KI-Services (Google)"
+            }
+        },
+        "jurisdiction": {
+            "title": "Anwendbares Recht und Gerichtsstand",
+            "description": "Diese Website und ihr Inhalt unterliegen schweizerischem Recht. Gerichtsstand ist die Schweiz."
+        },
+        "disclaimer": {
+            "title": "Haftungsausschluss",
+            "description": "Die Informationen auf dieser Website wurden sorgfältig zusammengestellt. Dennoch können wir nicht garantieren, dass die Informationen vollständig, genau oder aktuell sind."
+        },
+        "copyright": {
+            "title": "Urheberrecht",
+            "description": "Die Inhalte und Werke auf dieser Website unterliegen dem Urheberrecht. Das Kopieren, Bearbeiten, Verbreiten oder jede Form der Kommerzialisierung bedarf der schriftlichen Genehmigung."
+        },
+        "contact": {
+            "title": "Kontakt",
+            "description": "Für Fragen oder Anliegen bezüglich dieses Impressums kontaktieren Sie uns bitte:",
+            "email": "E-Mail:",
+            "emailAddress": "support@fx64b.dev"
         }
     }
 }

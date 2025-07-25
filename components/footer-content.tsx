@@ -92,7 +92,7 @@ export function FooterContent({ version, currentYear }: FooterContentProps) {
                         <ul className="text-muted-foreground space-y-2">
                             <li>
                                 <Link
-                                    href="/todo"
+                                    href="/privacy"
                                     className="hover:text-foreground transition-colors"
                                 >
                                     {t('privacyPolicy')}
@@ -100,10 +100,18 @@ export function FooterContent({ version, currentYear }: FooterContentProps) {
                             </li>
                             <li>
                                 <Link
-                                    href="/todo"
+                                    href="/terms"
                                     className="hover:text-foreground transition-colors"
                                 >
                                     {t('termsOfService')}
+                                </Link>
+                            </li>
+                            <li>
+                                <Link
+                                    href="/imprint"
+                                    className="hover:text-foreground transition-colors"
+                                >
+                                    {t('imprint')}
                                 </Link>
                             </li>
                             <li>
