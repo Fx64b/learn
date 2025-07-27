@@ -606,6 +606,131 @@
             "todo": "todo"
         }
     },
+    "roadmap": {
+        "title": "Product Roadmap",
+        "subtitle": "Our vision for the future of Learn",
+        "description": "Here's what we're working on to make your learning experience even better. Each quarter brings new features and improvements.",
+        "quarters": {
+            "q1_2025": "Q1 2025",
+            "q2_2025": "Q2 2025", 
+            "q1_2026": "Q1 2026",
+            "future": "Future"
+        },
+        "categories": {
+            "ui": "UI/UX",
+            "learning": "Learning Features",
+            "integration": "Integrations",
+            "performance": "Performance",
+            "mobile": "Mobile",
+            "ai": "AI Features"
+        },
+        "priority": {
+            "high": "High Priority",
+            "medium": "Medium Priority",
+            "low": "Low Priority"
+        },
+        "status": {
+            "planning": "Planning",
+            "inProgress": "In Progress",
+            "testing": "Testing"
+        },
+        "features": {
+            "q1_2025": [
+                {
+                    "title": "Enhanced User Interface",
+                    "description": "Improve usability and accessibility of the learning interface",
+                    "category": "ui",
+                    "priority": "high",
+                    "status": "inProgress"
+                },
+                {
+                    "title": "Advanced Dashboard Analytics",
+                    "description": "Comprehensive learning statistics and performance insights",
+                    "category": "learning",
+                    "priority": "medium",
+                    "status": "inProgress"
+                },
+                {
+                    "title": "Mobile App Optimization",
+                    "description": "Better mobile experience and responsive design improvements",
+                    "category": "mobile",
+                    "priority": "high",
+                    "status": "planning"
+                }
+            ],
+            "q2_2025": [
+                {
+                    "title": "AI-Powered Learning Mode",
+                    "description": "Custom input validation and intelligent feedback using AI",
+                    "category": "ai",
+                    "priority": "medium",
+                    "status": "planning"
+                },
+                {
+                    "title": "Gamification Features",
+                    "description": "Achievement badges, streaks, and experience points system",
+                    "category": "learning",
+                    "priority": "medium",
+                    "status": "planning"
+                },
+                {
+                    "title": "Social Learning Features",
+                    "description": "Share decks, collaborate with friends, and join study groups",
+                    "category": "integration",
+                    "priority": "low",
+                    "status": "planning"
+                }
+            ],
+            "q1_2026": [
+                {
+                    "title": "Advanced Search & Filtering",
+                    "description": "Powerful search across all content with smart filtering options",
+                    "category": "ui",
+                    "priority": "medium",
+                    "status": "planning"
+                },
+                {
+                    "title": "Multi-language Support",
+                    "description": "Support for multiple languages and pronunciation features",
+                    "category": "learning",
+                    "priority": "medium",
+                    "status": "planning"
+                },
+                {
+                    "title": "Performance Optimization",
+                    "description": "Faster loading times and improved app responsiveness",
+                    "category": "performance",
+                    "priority": "high",
+                    "status": "planning"
+                }
+            ],
+            "future": [
+                {
+                    "title": "API Integration Platform",
+                    "description": "Connect with external learning platforms and tools",
+                    "category": "integration",
+                    "priority": "low",
+                    "status": "planning"
+                },
+                {
+                    "title": "Advanced AI Tutoring",
+                    "description": "Personalized AI tutor with conversational learning support",
+                    "category": "ai",
+                    "priority": "medium",
+                    "status": "planning"
+                },
+                {
+                    "title": "Offline Learning Mode",
+                    "description": "Full functionality without internet connection",
+                    "category": "mobile",
+                    "priority": "medium",
+                    "status": "planning"
+                }
+            ]
+        },
+        "disclaimer": "Roadmap items and timelines are subject to change based on user feedback and development priorities.",
+        "feedback": "Have suggestions for our roadmap? We'd love to hear your ideas!"
+    },
     "pricing": {
         "title": "Choose Your Plan",
         "subtitle": "Unlock AI-powered learning features with Learn Pro",

@@ -48,7 +48,7 @@ export function FooterContent({ version, currentYear }: FooterContentProps) {
                             </li>
                             <li>
                                 <Link
-                                    href="/todo"
+                                    href="/roadmap"
                                     className="hover:text-foreground transition-colors"
                                 >
                                     {t('roadmap')}

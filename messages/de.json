@@ -609,6 +609,131 @@
             "todo": "zu erledigen"
         }
     },
+    "roadmap": {
+        "title": "Produkt-Roadmap",
+        "subtitle": "Unsere Vision für die Zukunft von Learn",
+        "description": "Hier ist, woran wir arbeiten, um Ihre Lernerfahrung noch besser zu machen. Jedes Quartal bringt neue Funktionen und Verbesserungen.",
+        "quarters": {
+            "q1_2025": "Q1 2025",
+            "q2_2025": "Q2 2025", 
+            "q1_2026": "Q1 2026",
+            "future": "Zukunft"
+        },
+        "categories": {
+            "ui": "UI/UX",
+            "learning": "Lernfunktionen",
+            "integration": "Integrationen",
+            "performance": "Leistung",
+            "mobile": "Mobil",
+            "ai": "KI-Funktionen"
+        },
+        "priority": {
+            "high": "Hohe Priorität",
+            "medium": "Mittlere Priorität",
+            "low": "Niedrige Priorität"
+        },
+        "status": {
+            "planning": "Planung",
+            "inProgress": "In Bearbeitung",
+            "testing": "Testing"
+        },
+        "features": {
+            "q1_2025": [
+                {
+                    "title": "Verbesserte Benutzeroberfläche",
+                    "description": "Verbesserung der Benutzerfreundlichkeit und Zugänglichkeit der Lernoberfläche",
+                    "category": "ui",
+                    "priority": "high",
+                    "status": "inProgress"
+                },
+                {
+                    "title": "Erweiterte Dashboard-Analytik",
+                    "description": "Umfassende Lernstatistiken und Leistungseinblicke",
+                    "category": "learning",
+                    "priority": "medium",
+                    "status": "inProgress"
+                },
+                {
+                    "title": "Mobile App-Optimierung",
+                    "description": "Bessere mobile Erfahrung und responsive Design-Verbesserungen",
+                    "category": "mobile",
+                    "priority": "high",
+                    "status": "planning"
+                }
+            ],
+            "q2_2025": [
+                {
+                    "title": "KI-gestützter Lernmodus",
+                    "description": "Benutzerdefinierte Eingabevalidierung und intelligentes Feedback mit KI",
+                    "category": "ai",
+                    "priority": "medium",
+                    "status": "planning"
+                },
+                {
+                    "title": "Gamification-Funktionen",
+                    "description": "Erfolgs-Abzeichen, Streaks und Erfahrungspunkte-System",
+                    "category": "learning",
+                    "priority": "medium",
+                    "status": "planning"
+                },
+                {
+                    "title": "Soziale Lernfunktionen",
+                    "description": "Kartenstapel teilen, mit Freunden zusammenarbeiten und Lerngruppen beitreten",
+                    "category": "integration",
+                    "priority": "low",
+                    "status": "planning"
+                }
+            ],
+            "q1_2026": [
+                {
+                    "title": "Erweiterte Suche & Filterung",
+                    "description": "Leistungsstarke Suche über alle Inhalte mit intelligenten Filteroptionen",
+                    "category": "ui",
+                    "priority": "medium",
+                    "status": "planning"
+                },
+                {
+                    "title": "Mehrsprachige Unterstützung",
+                    "description": "Unterstützung für mehrere Sprachen und Aussprachefunktionen",
+                    "category": "learning",
+                    "priority": "medium",
+                    "status": "planning"
+                },
+                {
+                    "title": "Leistungsoptimierung",
+                    "description": "Schnellere Ladezeiten und verbesserte App-Reaktionsfähigkeit",
+                    "category": "performance",
+                    "priority": "high",
+                    "status": "planning"
+                }
+            ],
+            "future": [
+                {
+                    "title": "API-Integrationsplattform",
+                    "description": "Verbindung mit externen Lernplattformen und Tools",
+                    "category": "integration",
+                    "priority": "low",
+                    "status": "planning"
+                },
+                {
+                    "title": "Erweiterte KI-Nachhilfe",
+                    "description": "Personalisierter KI-Tutor mit konversationeller Lernunterstützung",
+                    "category": "ai",
+                    "priority": "medium",
+                    "status": "planning"
+                },
+                {
+                    "title": "Offline-Lernmodus",
+                    "description": "Vollständige Funktionalität ohne Internetverbindung",
+                    "category": "mobile",
+                    "priority": "medium",
+                    "status": "planning"
+                }
+            ]
+        },
+        "disclaimer": "Roadmap-Elemente und Zeitpläne können sich basierend auf Nutzerfeedback und Entwicklungsprioritäten ändern.",
+        "feedback": "Haben Sie Vorschläge für unsere Roadmap? Wir würden gerne Ihre Ideen hören!"
+    },
     "pricing": {
         "title": "Plan wählen",
         "subtitle": "Schalten Sie KI-gestützte Lernfunktionen mit Learn Pro frei",
