@@ -60,7 +60,58 @@ export default function RoadmapPage() {
         }
     }
 
-    const renderQuarterSection = (quarter: string) => {
+    const quarters = ['q1_2025', 'q2_2025', 'q1_2026', 'future']
+
+    const renderFeatureCard = (feature: {
+        title: string
+        description: string
+        category: string
+        priority: string
+        status: string
+    }, index: number) => (
+        <div
+            key={index}
+            className="flex flex-col gap-3 rounded-lg border p-4 transition-all duration-200 hover:shadow-md bg-background"
+        >
+            <div className="flex items-start justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="flex-shrink-0">
+                            {getStatusIcon(feature.status)}
+                        </div>
+                        <h3 className="font-medium text-base leading-tight">
+                            {feature.title}
+                        </h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground leading-relaxed ml-7">
+                        {feature.description}
+                    </p>
+                </div>
+            </div>
+            <div className="flex flex-wrap gap-2 ml-7">
+                <Badge
+                    variant="outline"
+                    className={`text-xs font-medium ${getCategoryColor(feature.category)}`}
+                >
+                    {t(`categories.${feature.category}`)}
+                </Badge>
+                <Badge
+                    variant="outline"
+                    className={`text-xs font-medium ${getPriorityColor(feature.priority)}`}
+                >
+                    {t(`priority.${feature.priority}`)}
+                </Badge>
+                <Badge
+                    variant="secondary"
+                    className="text-xs font-medium capitalize"
+                >
+                    {t(`status.${feature.status}`)}
+                </Badge>
+            </div>
+        </div>
+    )
+
+    const renderTimelineItem = (quarter: string, index: number) => {
         const features = t.raw(`features.${quarter}`) as Array<{
             title: string
             description: string
@@ -69,65 +120,103 @@ export default function RoadmapPage() {
             status: string
         }>
         
+        const isEven = index % 2 === 0
+        const isLast = index === quarters.length - 1
+
         return (
-            <Card key={quarter} className="border-0 shadow-lg">
-                <CardHeader className="pb-4">
-                    <CardTitle className="flex items-center gap-2 text-xl font-semibold">
-                        <Calendar className="h-5 w-5 text-primary" />
-                        {t(`quarters.${quarter}`)}
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="px-4 sm:px-6">
-                    <div className="space-y-4">
-                        {features.map((feature, index) => (
-                            <div
-                                key={index}
-                                className="flex flex-col gap-3 rounded-lg border p-4 transition-all duration-200 hover:shadow-md"
-                            >
-                                <div className="flex items-start justify-between gap-3">
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex items-start gap-3 mb-2">
-                                            {getStatusIcon(feature.status)}
-                                            <h3 className="font-medium text-base leading-tight">
-                                                {feature.title}
-                                            </h3>
-                                        </div>
-                                        <p className="text-sm text-muted-foreground leading-relaxed ml-7">
-                                            {feature.description}
-                                        </p>
+            <div key={quarter} className="relative">
+                {/* Desktop Layout */}
+                <div className="hidden lg:flex items-center">
+                    {/* Left side content (odd indexes) */}
+                    <div className={`w-5/12 ${isEven ? 'pr-8' : 'pl-8 order-3'}`}>
+                        {isEven && (
+                            <Card className="border-0 shadow-lg">
+                                <CardHeader className="pb-4">
+                                    <CardTitle className="flex items-center gap-2 text-xl font-semibold">
+                                        <Calendar className="h-5 w-5 text-primary" />
+                                        {t(`quarters.${quarter}`)}
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="px-4 sm:px-6">
+                                    <div className="space-y-4">
+                                        {features.map((feature, featureIndex) => 
+                                            renderFeatureCard(feature, featureIndex)
+                                        )}
                                     </div>
-                                </div>
-                                <div className="flex flex-wrap gap-2 ml-7">
-                                    <Badge
-                                        variant="outline"
-                                        className={`text-xs font-medium ${getCategoryColor(feature.category)}`}
-                                    >
-                                        {t(`categories.${feature.category}`)}
-                                    </Badge>
-                                    <Badge
-                                        variant="outline"
-                                        className={`text-xs font-medium ${getPriorityColor(feature.priority)}`}
-                                    >
-                                        {t(`priority.${feature.priority}`)}
-                                    </Badge>
-                                    <Badge
-                                        variant="secondary"
-                                        className="text-xs font-medium capitalize"
-                                    >
-                                        {t(`status.${feature.status}`)}
-                                    </Badge>
-                                </div>
-                            </div>
-                        ))}
+                                </CardContent>
+                            </Card>
+                        )}
                     </div>
-                </CardContent>
-            </Card>
+
+                    {/* Center timeline */}
+                    <div className="flex flex-col items-center w-2/12">
+                        <div className="w-4 h-4 bg-primary rounded-full border-4 border-background shadow-lg z-10"></div>
+                        {!isLast && (
+                            <div className="w-0.5 h-32 bg-border mt-2"></div>
+                        )}
+                    </div>
+
+                    {/* Right side content (even indexes) */}
+                    <div className={`w-5/12 ${isEven ? 'pl-8 order-3' : 'pr-8'}`}>
+                        {!isEven && (
+                            <Card className="border-0 shadow-lg">
+                                <CardHeader className="pb-4">
+                                    <CardTitle className="flex items-center gap-2 text-xl font-semibold">
+                                        <Calendar className="h-5 w-5 text-primary" />
+                                        {t(`quarters.${quarter}`)}
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="px-4 sm:px-6">
+                                    <div className="space-y-4">
+                                        {features.map((feature, featureIndex) => 
+                                            renderFeatureCard(feature, featureIndex)
+                                        )}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        )}
+                    </div>
+                </div>
+
+                {/* Mobile Layout */}
+                <div className="lg:hidden flex">
+                    {/* Content */}
+                    <div className="flex-1 pr-6">
+                        <Card className="border-0 shadow-lg">
+                            <CardHeader className="pb-4">
+                                <CardTitle className="flex items-center gap-2 text-xl font-semibold">
+                                    <Calendar className="h-5 w-5 text-primary" />
+                                    {t(`quarters.${quarter}`)}
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="px-4 sm:px-6">
+                                <div className="space-y-4">
+                                    {features.map((feature, featureIndex) => 
+                                        renderFeatureCard(feature, featureIndex)
+                                    )}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    {/* Right side timeline */}
+                    <div className="flex flex-col items-center w-6">
+                        <div className="w-4 h-4 bg-primary rounded-full border-4 border-background shadow-lg z-10"></div>
+                        {!isLast && (
+                            <div className="w-0.5 h-32 bg-border mt-2 flex-1 min-h-[8rem]"></div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Spacing between items */}
+                {!isLast && <div className="h-8"></div>}
+            </div>
         )
     }
 
     return (
         <div className="min-h-screen">
-            <div className="container mx-auto max-w-6xl px-4 py-12">
+            <div className="container mx-auto max-w-7xl px-4 py-12">
                 {/* Header Section */}
                 <div className="mb-12 text-center">
                     <h1 className="mb-4 text-4xl font-bold">
@@ -140,12 +229,9 @@ export default function RoadmapPage() {
                     <p className="mx-auto max-w-3xl text-muted-foreground">{t('description')}</p>
                 </div>
 
-                {/* Roadmap Grid */}
-                <div className="grid gap-8 md:grid-cols-2">
-                    {renderQuarterSection('q1_2025')}
-                    {renderQuarterSection('q2_2025')}
-                    {renderQuarterSection('q1_2026')}
-                    {renderQuarterSection('future')}
+                {/* Timeline */}
+                <div className="max-w-6xl mx-auto">
+                    {quarters.map((quarter, index) => renderTimelineItem(quarter, index))}
                 </div>
 
                 {/* Footer Section */}

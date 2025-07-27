@@ -640,22 +640,22 @@
         "features": {
             "q1_2025": [
                 {
-                    "title": "Verbesserte Benutzeroberfläche",
-                    "description": "Verbesserung der Benutzerfreundlichkeit und Zugänglichkeit der Lernoberfläche",
-                    "category": "ui",
+                    "title": "Quantum-Verschlüsselungsmatrix",
+                    "description": "Einsatz quantenresistenter Algorithmen der nächsten Generation zur Sicherung neuraler Pfade gegen Dark-Web-Infiltration",
+                    "category": "ai",
                     "priority": "high",
                     "status": "inProgress"
                 },
                 {
-                    "title": "Erweiterte Dashboard-Analytik",
-                    "description": "Umfassende Lernstatistiken und Leistungseinblicke",
+                    "title": "Neuro-Interface Dashboard",
+                    "description": "Echtzeit-biometrische Analytik mit Deep-Learning-Mustererkennung für Bedrohungsbewertung",
                     "category": "learning",
                     "priority": "medium",
                     "status": "inProgress"
                 },
                 {
-                    "title": "Mobile App-Optimierung",
-                    "description": "Bessere mobile Erfahrung und responsive Design-Verbesserungen",
+                    "title": "Mobile Kommandozentrale",
+                    "description": "Taktischer mobiler Einsatz mit verschlüsselter Satellitenverbindung und Ghost-Protokoll-Aktivierung",
                     "category": "mobile",
                     "priority": "high",
                     "status": "planning"
@@ -663,22 +663,22 @@
             ],
             "q2_2025": [
                 {
-                    "title": "KI-gestützter Lernmodus",
-                    "description": "Benutzerdefinierte Eingabevalidierung und intelligentes Feedback mit KI",
+                    "title": "KI-Sentinel-Protokoll",
+                    "description": "Autonome Bedrohungserkennung mit Machine-Learning-Verhaltensanalyse und prädiktiven Gegenmaßnahmen",
                     "category": "ai",
                     "priority": "medium",
                     "status": "planning"
                 },
                 {
-                    "title": "Gamification-Funktionen",
-                    "description": "Erfolgs-Abzeichen, Streaks und Erfahrungspunkte-System",
+                    "title": "Cyber-Achievement-System",
+                    "description": "Gamifizierte Hacking-Herausforderungen mit Reputation-Scoring und Underground-Netzwerk-Zugangsstufen",
                     "category": "learning",
                     "priority": "medium",
                     "status": "planning"
                 },
                 {
-                    "title": "Soziale Lernfunktionen",
-                    "description": "Kartenstapel teilen, mit Freunden zusammenarbeiten und Lerngruppen beitreten",
+                    "title": "Shadow-Netzwerk-Protokoll",
+                    "description": "Verschlüsselte Peer-to-Peer-Kollaboration mit Zero-Knowledge-Proof-Authentifizierung",
                     "category": "integration",
                     "priority": "low",
                     "status": "planning"
@@ -686,22 +686,22 @@
             ],
             "q1_2026": [
                 {
-                    "title": "Erweiterte Suche & Filterung",
-                    "description": "Leistungsstarke Suche über alle Inhalte mit intelligenten Filteroptionen",
+                    "title": "Omniszienter Suchmotor",
+                    "description": "Deep-Web-Crawling mit semantischer Analyse über verschlüsselte Datenbanken und versteckte Netzwerke",
                     "category": "ui",
                     "priority": "medium",
                     "status": "planning"
                 },
                 {
-                    "title": "Mehrsprachige Unterstützung",
-                    "description": "Unterstützung für mehrere Sprachen und Aussprachefunktionen",
+                    "title": "Polyglott-Verschlüsselungssystem",
+                    "description": "Mehrsprachige Verschlüsselung mit Stimmmodulation und steganographischen Messaging-Protokollen",
                     "category": "learning",
                     "priority": "medium",
                     "status": "planning"
                 },
                 {
-                    "title": "Leistungsoptimierung",
-                    "description": "Schnellere Ladezeiten und verbesserte App-Reaktionsfähigkeit",
+                    "title": "Hyperdrive-Kern-Engine",
+                    "description": "Quantenprozessor-Beschleunigung mit Null-Latenz-Datenübertragung durch Subraum-Kanäle",
                     "category": "performance",
                     "priority": "high",
                     "status": "planning"
@@ -709,22 +709,22 @@
             ],
             "future": [
                 {
-                    "title": "API-Integrationsplattform",
-                    "description": "Verbindung mit externen Lernplattformen und Tools",
+                    "title": "Nexus-Integrationsmatrix",
+                    "description": "Universelles API-Gateway zur Verbindung mit globalen Geheimdienst-Netzwerken und klassifizierten Datenrepositorien",
                     "category": "integration",
                     "priority": "low",
                     "status": "planning"
                 },
                 {
-                    "title": "Erweiterte KI-Nachhilfe",
-                    "description": "Personalisierter KI-Tutor mit konversationeller Lernunterstützung",
+                    "title": "Oracle-KI-Bewusstsein",
+                    "description": "Empfindungsfähiger KI-Mentor mit Zugang zu klassifizierten Wissensbasen und prädiktiver Bedrohungsmodellierung",
                     "category": "ai",
                     "priority": "medium",
                     "status": "planning"
                 },
                 {
-                    "title": "Offline-Lernmodus",
-                    "description": "Vollständige Funktionalität ohne Internetverbindung",
+                    "title": "Ghost-Modus-Operationen",
+                    "description": "Vollständige Offline-Funktionalität mit elektromagnetischer Abschirmung und luftgekoppelten Sicherheitsprotokollen",
                     "category": "mobile",
                     "priority": "medium",
                     "status": "planning"
