@@ -3,7 +3,7 @@ import deMessages from '@/messages/de.json'
 import enMessages from '@/messages/en.json'
 import { Toaster } from 'sonner'
 
-import { Inter } from 'next/font/google'
+// import { Inter } from 'next/font/google'
 
 import { Analytics } from '@vercel/analytics/react'
 
@@ -16,7 +16,7 @@ import { PaymentWarningBanner } from '@/components/subscription/payment-warning'
 
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
+// const inter = Inter({ subsets: ['latin'] })
 
 export async function generateMetadata() {
     const locale = await getLocale()
@@ -43,7 +43,7 @@ export default async function RootLayout({
     return (
         <html lang={locale} suppressHydrationWarning>
             <body
-                className={`${inter.className} bg-background text-foreground antialiased`}
+                className="font-sans bg-background text-foreground antialiased"
             >
                 <AuthProvider>
                     <LocaleProvider initialLocale={locale} messages={messages}>
