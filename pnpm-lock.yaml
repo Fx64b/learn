@@ -13,7 +13,7 @@ importers:
         version: 1.2.22(zod@3.25.76)
       '@auth/drizzle-adapter':
         specifier: ^1.10.0
-        version: 1.10.0(nodemailer@6.10.1)
+        version: 1.10.0(nodemailer@7.0.5)
       '@libsql/client':
         specifier: ^0.15.10
         version: 0.15.10
@@ -67,13 +67,16 @@ importers:
         version: 15.4.3(@opentelemetry/api@1.9.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       next-auth:
         specifier: ^4.24.11
-        version: 4.24.11(next@15.4.3(@opentelemetry/api@1.9.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(nodemailer@6.10.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 4.24.11(next@15.4.3(@opentelemetry/api@1.9.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(nodemailer@7.0.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       next-intl:
         specifier: ^4.3.4
         version: 4.3.4(next@15.4.3(@opentelemetry/api@1.9.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)(typescript@5.8.3)
       next-themes:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      nodemailer:
+        specifier: ^7.0.5
+        version: 7.0.5
       pdf2json:
         specifier: ^3.1.6
         version: 3.1.6
@@ -4061,8 +4064,8 @@ packages:
     resolution: {integrity: sha512-dRB78srN/l6gqWulah9SrxeYnxeddIG30+GOqK/9OlLVyLg3HPnr6SqOWTWOXKRwC2eGYCkZ59NNuSgvSrpgOA==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
-  nodemailer@6.10.1:
-    resolution: {integrity: sha512-Z+iLaBGVaSjbIzQ4pX6XV41HrooLsQ10ZWPUehGmuantvzWoDVBnmsdUcOIDM1t+yPor5pDhVlDESgOMEGxhHA==}
+  nodemailer@7.0.5:
+    resolution: {integrity: sha512-nsrh2lO3j4GkLLXoeEksAMgAOqxOv6QumNRVQTJwKH4nuiww6iC2y7GyANs9kRAxCexg3+lTWM3PZ91iLlVjfg==}
     engines: {node: '>=6.0.0'}
 
   normalize-package-data@6.0.2:
@@ -5387,7 +5390,7 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.12
       '@jridgewell/trace-mapping': 0.3.29
 
-  '@auth/core@0.40.0(nodemailer@6.10.1)':
+  '@auth/core@0.40.0(nodemailer@7.0.5)':
     dependencies:
       '@panva/hkdf': 1.2.1
       jose: 6.0.12
@@ -5395,11 +5398,11 @@ snapshots:
       preact: 10.24.3
       preact-render-to-string: 6.5.11(preact@10.24.3)
     optionalDependencies:
-      nodemailer: 6.10.1
+      nodemailer: 7.0.5
 
-  '@auth/drizzle-adapter@1.10.0(nodemailer@6.10.1)':
+  '@auth/drizzle-adapter@1.10.0(nodemailer@7.0.5)':
     dependencies:
-      '@auth/core': 0.40.0(nodemailer@6.10.1)
+      '@auth/core': 0.40.0(nodemailer@7.0.5)
     transitivePeerDependencies:
       - '@simplewebauthn/browser'
       - '@simplewebauthn/server'
@@ -9132,7 +9135,7 @@ snapshots:
 
   nerf-dart@1.0.0: {}
 
-  next-auth@4.24.11(next@15.4.3(@opentelemetry/api@1.9.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(nodemailer@6.10.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+  next-auth@4.24.11(next@15.4.3(@opentelemetry/api@1.9.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(nodemailer@7.0.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
     dependencies:
       '@babel/runtime': 7.27.6
       '@panva/hkdf': 1.2.1
@@ -9147,7 +9150,7 @@ snapshots:
       react-dom: 19.1.0(react@19.1.0)
       uuid: 8.3.2
     optionalDependencies:
-      nodemailer: 6.10.1
+      nodemailer: 7.0.5
 
   next-intl@4.3.4(next@15.4.3(@opentelemetry/api@1.9.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)(typescript@5.8.3):
     dependencies:
@@ -9203,8 +9206,7 @@ snapshots:
       fetch-blob: 3.2.0
       formdata-polyfill: 4.0.10
 
-  nodemailer@6.10.1:
-    optional: true
+  nodemailer@7.0.5: {}
 
   normalize-package-data@6.0.2:
     dependencies:
