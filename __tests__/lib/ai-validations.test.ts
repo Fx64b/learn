@@ -30,7 +30,12 @@ describe('AI Validation Functions', () => {
 
         it('should remove event handlers', () => {
             const input = 'onclick=malicious() onload=hack()'
-            const sanitized = input.replace(/on\w+\s*=/gi, '')
+            let sanitized = input
+            let previous
+            do {
+                previous = sanitized
+                sanitized = sanitized.replace(/on\w+\s*=/gi, '')
+            } while (sanitized !== previous)
             expect(sanitized).toBe('malicious() hack()')
         })
 
