@@ -1,6 +1,6 @@
 'use client'
 
-import { FileText, Loader2, Sparkles, Upload, X } from 'lucide-react'
+import { FileText, Loader2, Sparkles, Upload, X, XCircle } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { useCallback, useState } from 'react'
@@ -8,7 +8,7 @@ import { useCallback, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 
-import { generateAIFlashcards } from '@/app/actions/ai-flashcards'
+import { useAIFlashcards } from '@/lib/hooks/use-ai-flashcards'
 
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { DismissibleWarning } from '@/components/ui/dismissible-warning'
 import { Label } from '@/components/ui/label'
+import { Progress } from '@/components/ui/progress'
 import { Textarea } from '@/components/ui/textarea'
 
 interface AIFlashcardFormProps {
@@ -27,8 +28,9 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
     const router = useRouter()
     const [prompt, setPrompt] = useState('')
     const [file, setFile] = useState<File | null>(null)
-    const [isGenerating, setIsGenerating] = useState(false)
     const [dragActive, setDragActive] = useState(false)
+    
+    const { isGenerating, progress, generateFlashcards, cancelGeneration } = useAIFlashcards()
 
     const handleDrag = useCallback((e: React.DragEvent) => {
         e.preventDefault()
@@ -91,8 +93,6 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
             return
         }
 
-        setIsGenerating(true)
-
         try {
             let fileContent: string | undefined
             let fileType: string | undefined
@@ -101,7 +101,6 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
                 // Validate file size (10MB limit)
                 if (file.size > 10 * 1024 * 1024) {
                     toast.error(t('fileTooLarge', { max: '10MB' }))
-                    setIsGenerating(false)
                     return
                 }
 
@@ -109,7 +108,7 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
                 fileType = file.type
             }
 
-            const result = await generateAIFlashcards({
+            const result = await generateFlashcards({
                 deckId,
                 prompt: prompt.trim(),
                 fileContent,
@@ -132,11 +131,24 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
             } else {
                 toast.error(result.error || t('error'))
             }
-        } catch (error) {
+        } catch (error: unknown) {
             console.error('Error generating flashcards:', error)
-            toast.error(t('unexpectedError'))
-        } finally {
-            setIsGenerating(false)
+            
+            if (error && typeof error === 'object' && 'type' in error) {
+                const typedError = error as { type: string; error?: string; data?: { requiresPro?: boolean } }
+                if (typedError.type === 'rate_limit') {
+                    if (typedError.data?.requiresPro) {
+                        toast.error(typedError.error || t('proRequired'))
+                        router.push('/pricing')
+                    } else {
+                        toast.error(typedError.error || t('rateLimitExceeded'))
+                    }
+                } else {
+                    toast.error(typedError.error || t('unexpectedError'))
+                }
+            } else {
+                toast.error(t('unexpectedError'))
+            }
         }
     }
 
@@ -232,6 +244,31 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
                             dismissText={t('dismissWarning')}
                             variant="default"
                         />
+                    )}
+
+                    {progress && (
+                        <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                                <Label className="text-sm font-medium">
+                                    {progress.message}
+                                </Label>
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={cancelGeneration}
+                                    className="h-8 w-8 p-0"
+                                >
+                                    <XCircle className="h-4 w-4" />
+                                </Button>
+                            </div>
+                            <div className="space-y-2">
+                                <Progress value={progress.percentage} className="h-2" />
+                                <p className="text-xs text-muted-foreground">
+                                    {progress.step} - {progress.percentage}% complete
+                                </p>
+                            </div>
+                        </div>
                     )}
 
                     <Alert>
