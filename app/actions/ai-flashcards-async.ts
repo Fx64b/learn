@@ -806,7 +806,8 @@ export async function generateAIFlashcardsAsync(
             }
 
             // Security validation of AI response
-            if (!validateAIResponse(object.flashcards, requestId, userId)) {
+            const typedFlashcards = object.flashcards as Array<{ front: string; back: string }>
+            if (!validateAIResponse(typedFlashcards, requestId, userId)) {
                 return {
                     success: false,
                     error: 'Generated content failed security validation',
@@ -815,7 +816,7 @@ export async function generateAIFlashcardsAsync(
             }
 
             // Remove duplicates and validate content
-            const uniqueCards = removeDuplicateCards(object.flashcards)
+            const uniqueCards = removeDuplicateCards(typedFlashcards)
 
             if (uniqueCards.length === 0) {
                 return {

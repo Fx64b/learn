@@ -71,7 +71,18 @@ export function useAIFlashcards(): UseAIFlashcardsResult {
         prompt: string
         fileContent?: string
         fileType?: string
-    }) => {
+    }): Promise<{
+        success?: boolean
+        message?: string
+        cardsCreated?: number
+        tier?: string
+        remaining?: number
+        requiresPro?: boolean
+        paymentIssue?: boolean
+        resetTime?: Date
+        requestId?: string
+        error?: string
+    }> => {
         return new Promise((resolve, reject) => {
             try {
                 // Cancel any existing generation
@@ -151,7 +162,7 @@ export function useAIFlashcards(): UseAIFlashcardsResult {
                                                         percentage: 100,
                                                         message: 'Flashcards generated successfully!'
                                                     })
-                                                    resolve(message.data)
+                                                    resolve(message.data || {})
                                                     return
                                                 
                                                 case 'error':
