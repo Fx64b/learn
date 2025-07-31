@@ -38,13 +38,11 @@ describe('Study Session Actions', () => {
                 ({
                     template,
                     type: 'sql',
-                    as: vi
-                        .fn()
-                        .mockReturnValue({
-                            template,
-                            type: 'sql',
-                            alias: 'test',
-                        }),
+                    as: vi.fn().mockReturnValue({
+                        template,
+                        type: 'sql',
+                        alias: 'test',
+                    }),
                 }) as any
         )
         mockNanoid.mockReturnValue('test-session-id')

@@ -643,224 +643,371 @@
     },
     "privacy": {
         "title": "Privacy Policy",
-        "description": "Learn how we collect, use, and protect your personal information.",
-        "lastUpdated": "Last updated: January 2025",
+        "description": "Learn Privacy Policy - How we collect, use, and protect your personal data in compliance with GDPR, Swiss nDSG, and US privacy laws.",
+        "lastUpdated": "Last updated: July 2025",
         "introduction": {
             "title": "Introduction",
-            "description": "This Privacy Policy describes how Learn (operated by Fx64b) collects, uses, and shares your personal information when you use our flashcard learning service.",
-            "contact": "If you have any questions about this Privacy Policy, please contact us at the information provided below."
+            "description": "At Learn, we are committed to protecting your privacy and ensuring the security of your personal data. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our flashcard learning service.",
+            "contact": "For questions about this Privacy Policy, contact us at contact@fx64b.dev"
+        },
+        "legalBasis": {
+            "title": "Legal Basis for Processing",
+            "description": "Under GDPR Article 6 and Swiss nDSG, we process your personal data based on the following legal grounds:",
+            "purposes": {
+                "serviceProvision": "Performance of contract (Art. 6(1)(b) GDPR) - to provide our learning service and manage your account",
+                "legitimateInterests": "Legitimate interests (Art. 6(1)(f) GDPR) - for service analytics, fraud prevention, and service improvement",
+                "consent": "Consent (Art. 6(1)(a) GDPR) - for marketing communications, non-essential cookies, and AI-powered features",
+                "legal": "Legal obligation (Art. 6(1)(c) GDPR) - for tax compliance and regulatory requirements"
+            }
         },
         "dataCollection": {
             "title": "Information We Collect",
+            "description": "We collect information you provide directly to us and information automatically collected when you use our service.",
             "personalInfo": {
                 "title": "Personal Information",
-                "email": "Email address (for account creation and authentication)",
-                "name": "Display name (optional)",
-                "preferences": "User preferences and settings"
+                "email": "Email address (required for account creation and authentication)",
+                "name": "Name or display name (optional, for personalization) [Not implemented as of July 2025]",
+                "preferences": "Learning preferences and settings (language, difficulty preferences, study goals)",
+                "avatar": "Profile picture (optional, stored on our servers if uploaded) [Not implemented as of July 2025]"
             },
             "usageData": {
                 "title": "Usage Data",
-                "studyStats": "Study session data and learning progress",
-                "deckData": "Flashcard decks and content you create",
-                "analytics": "Anonymous usage analytics via Vercel Analytics"
+                "studyStats": "Learning progress data (cards studied, accuracy rates, study sessions, time spent)",
+                "deckData": "Flashcard content you create or import (questions, answers, notes, tags)",
+                "analytics": "Usage analytics (pages visited, features used, session duration - collected via Vercel Analytics)",
+                "technical": "Technical data (IP address, browser type, device information, operating system - collected via Vercel Analytics)",
+                "logs": "Server logs (for security, debugging, and service improvement - retained for 90 days maximum)"
             }
         },
         "thirdParty": {
             "title": "Third-Party Services",
+            "description": "We use trusted third-party services to provide our functionality. Each service has its own privacy policy and data handling practices.",
             "vercel": {
-                "title": "Vercel (Hosting and Analytics)",
-                "description": "Our service is hosted on Vercel's platform, which may collect certain technical information. Vercel Analytics collects anonymous usage data to help us improve our service. No personal information is shared with Vercel Analytics."
+                "title": "Hosting and Analytics (Vercel)",
+                "description": "Our application is hosted on Vercel. Vercel Analytics collects anonymous usage statistics to help us improve our service. This includes page views, user interactions, and performance metrics. No personal data is shared with Vercel Analytics beyond what's necessary for hosting our service. Data transfers to Vercel (US) are protected by the EU-US Data Privacy Framework adequacy decision."
             },
             "stripe": {
-                "title": "Stripe (Payment Processing)",
-                "description": "For premium subscriptions, we use Stripe to process payments. Stripe may collect payment information according to their privacy policy. We do not store payment information on our servers."
+                "title": "Payment Processing (Stripe)",
+                "description": "For paid subscriptions, we use Stripe for secure payment processing. Stripe collects and processes payment information according to their privacy policy and PCI DSS standards. We do not store complete payment information on our servers - only payment status and subscription metadata. Data transfers to Stripe (US) are protected by Standard Contractual Clauses and additional safeguards."
             },
             "ai": {
                 "title": "AI Services (Google AI)",
-                "description": "When you use AI-powered features, your flashcard content may be processed by Google's AI services. This data is used solely to generate flashcard content and is not stored by the AI provider."
+                "description": "When you use AI-powered flashcard generation features, your flashcard content (questions, answers, and context) is processed by Google's AI services (Gemini). This data is transmitted securely and used solely to generate flashcard content. Google may temporarily process this data. We recommend not including sensitive personal information in content sent to AI services."
             }
         },
         "dataUse": {
             "title": "How We Use Your Information",
-            "serviceProvision": "To provide and maintain our learning service",
-            "improvement": "To improve and personalize your learning experience",
-            "communication": "To communicate with you about your account and service updates",
-            "legal": "To comply with legal obligations and protect our rights"
+            "description": "We use your information for the following purposes, based on the legal grounds outlined above:",
+            "serviceProvision": "To provide, maintain, and improve our learning service and user experience",
+            "improvement": "To analyze usage patterns and improve our algorithms and features",
+            "communication": "To communicate with you about your account, service updates, and respond to support requests",
+            "legal": "To comply with legal obligations, protect our rights, and ensure service security",
+            "marketing": "To send promotional materials and product updates (only with your explicit consent, easily withdrawable)"
+        },
+        "internationalTransfers": {
+            "title": "International Data Transfers",
+            "description": "Some of our service providers are located outside the EU/EEA. We ensure appropriate safeguards are in place:",
+            "safeguards": "Data transfers to the US are protected by: (1) EU-US Data Privacy Framework adequacy decision for Vercel, (2) Standard Contractual Clauses with Google AI and Stripe, (3) Additional technical and organizational safeguards including encryption in transit and at rest, access controls, and regular security assessments"
         },
         "userRights": {
-            "title": "Your Rights",
-            "access": "Access: You can request access to your personal data",
-            "rectification": "Rectification: You can request correction of inaccurate data",
-            "erasure": "Erasure: You can request deletion of your data",
-            "portability": "Data Portability: You can export your flashcard data",
-            "objection": "Objection: You can object to certain data processing"
+            "title": "Your Privacy Rights",
+            "description": "Under GDPR, Swiss nDSG, and applicable US state privacy laws, you have the following rights:",
+            "access": "Access: Request access to your personal data and information about how it's processed",
+            "rectification": "Rectification: Request correction of inaccurate or incomplete personal data",
+            "erasure": "Erasure: Request deletion of your personal data (subject to legal retention requirements)",
+            "portability": "Data Portability: Export your flashcard data in a structured, machine-readable format",
+            "objection": "Objection: Object to processing based on legitimate interests or for direct marketing",
+            "restriction": "Restriction: Request restriction of processing under certain circumstances",
+            "withdraw": "Withdraw Consent: Withdraw consent for processing based on consent (without affecting lawfulness of past processing)"
+        },
+        "rightsImplementation": {
+            "title": "How to Exercise Your Rights",
+            "process": "Submit requests via email to contact@fx64b.dev or through your account settings",
+            "timeframe": "We respond within 30 days for EU/Swiss users, or 45 days for US users (with possible 30-day extension for complex requests)",
+            "verification": "Identity verification may be required for sensitive requests to protect your privacy",
+            "appeals": "You have the right to appeal any denials within 30 days of our response",
+            "authority": "You have the right to lodge a complaint with your local data protection authority if you believe your rights have been violated"
+        },
+        "childrensPrivacy": {
+            "title": "Children's Privacy Protection",
+            "description": "Our service is not intended for children under 13.",
+            "parental": "If you believe a child under 13 has provided personal data, please contact us immediately at contact@fx64b.dev"
         },
         "dataSecurity": {
             "title": "Data Security",
-            "description": "We implement appropriate security measures to protect your data against unauthorized access, alteration, disclosure, or destruction. However, no internet transmission is completely secure."
+            "description": "We implement comprehensive security measures to protect your data against unauthorized access, alteration, disclosure, or destruction:",
+            "measures": [
+                "Encryption in transit (TLS 1.3) and at rest (AES-256)",
+                "Regular security assessments and penetration testing",
+                "Access controls and employee security training",
+                "Secure authentication mechanisms and session management",
+                "Regular security updates and vulnerability management",
+                "Data backup and disaster recovery procedures"
+            ],
+            "limitation": "However, no internet transmission or storage system is completely secure. We cannot guarantee absolute security."
         },
         "dataRetention": {
-            "title": "Data Retention",
-            "description": "We retain your data for as long as necessary to provide our services and comply with legal obligations. You can delete your account at any time, which will remove your personal data."
+            "title": "Data Retention Periods",
+            "description": "We retain personal data only as long as necessary for the purposes outlined in this policy:",
+            "periods": {
+                "accountData": "Account data: Retained while your account is active + 3 years after account deletion (for legal compliance)",
+                "studyData": "Learning progress and flashcard data: Retained while account is active + 1 year after deletion (for potential account recovery)",
+                "paymentData": "Payment data: 7 years for tax and regulatory compliance (stored by Stripe, not on our servers)",
+                "logs": "Server logs and technical data: Maximum 90 days",
+                "marketing": "Marketing consent and communications: Until consent is withdrawn + 30 days for processing"
+            },
+            "deletion": "You can delete your account at any time, which will initiate the deletion process according to these retention periods"
+        },
+        "privacyByDesign": {
+            "title": "Privacy by Design Implementation",
+            "description": "We implement Privacy by Design and Privacy by Default principles throughout our service:",
+            "measures": [
+                "Default privacy-protective settings for new accounts (minimal data collection, restricted sharing)",
+                "Data minimization in AI processing pipelines (only necessary content is processed)",
+                "Pseudonymization of analytics data to prevent direct identification",
+                "Regular privacy impact assessments for new features and integrations",
+                "Built-in user controls for data sharing and processing preferences",
+                "Automatic data deletion and retention management systems"
+            ]
+        },
+        "dataProtectionAssessment": {
+            "title": "Data Protection Impact Assessment",
+            "description": "We have conducted Data Protection Impact Assessments (DPIA) for our AI-powered features and data processing activities to ensure minimal privacy impact and appropriate safeguards. These assessments are regularly reviewed and updated as our service evolves."
+        },
+        "aiProcessing": {
+            "title": "AI and Automated Decision-Making",
+            "description": "Our AI features for flashcard generation involve the following processing activities:",
+            "processing": [
+                "Content analysis of your flashcard text for educational relevance and quality improvement",
+                "Generation of new flashcard content based on your existing materials",
+                "No profiling or automated decisions that significantly affect your legal rights or interests",
+                "Human oversight and review mechanisms for AI-generated content",
+                "Your right to review, edit, and delete all AI-generated outputs before saving"
+            ],
+            "dataMinimization": "Only essential content data (questions, answers, and minimal context) is processed by AI services. No personal identifiers or sensitive data are included in AI processing.",
+            "transparency": "You are always informed when AI processing occurs, and you maintain full control over AI-generated content"
         },
         "cookies": {
-            "title": "Cookies and Tracking",
-            "description": "We use essential cookies for authentication and user preferences. Vercel Analytics may use cookies for anonymous usage tracking. You can control cookie settings in your browser."
+            "title": "Cookies and Tracking Technologies",
+            "description": "We use cookies and similar technologies for essential functionality and service improvement:",
+            "essential": {
+                "title": "Essential Cookies",
+                "description": "Required for authentication, security, and basic functionality. These cannot be disabled without affecting service operation.",
+                "types": "Session cookies, authentication tokens, security tokens, user preference settings"
+            },
+            "analytics": {
+                "title": "Analytics Cookies",
+                "description": "While Vercel Analytics is used, no analytics cookies are stored.",
+                "control": "You can control analytics cookies through your browser settings or by opting out of analytics tracking"
+            },
+            "control": "You can control cookie settings in your browser. Disabling essential cookies may limit service functionality."
         },
         "changes": {
-            "title": "Changes to This Policy",
-            "description": "We may update this Privacy Policy from time to time. We will notify you of any significant changes by posting the new policy on this page and updating the last modified date."
+            "title": "Changes to This Privacy Policy",
+            "description": "We may update this Privacy Policy to reflect changes in our practices, legal requirements, or service features. We will notify you of significant changes by:",
+            "notification": [
+                "Posting the updated policy on this page with a new effective date",
+                "Sending email notifications for material changes that affect your rights",
+                "Providing in-app notifications for changes requiring new consent",
+                "Maintaining a changelog of significant updates for transparency"
+            ],
+            "consent": "Continued use of our service after changes constitute acceptance of the updated policy, unless new consent is required by law."
         },
         "contact": {
             "title": "Contact Information",
-            "description": "If you have any questions about this Privacy Policy or our data practices, please contact us:",
+            "description": "For questions about this Privacy Policy, to exercise your rights, or to report privacy concerns, contact us:",
             "email": "Email:",
-            "emailAddress": "support@fx64b.dev",
+            "emailAddress": "contact@fx64b.dev",
             "address": "Address:",
-            "developer": "Fx64b (Developer)",
-            "location": "Switzerland"
+            "developer": "Fabio Maffucci (Developer)",
+            "location": "Wiesenstrasse 5, 8586 Erlen, Thurgau Switzerland",
+            "response": "We aim to respond to all privacy inquiries within 5 business days."
         }
     },
     "terms": {
         "title": "Terms of Service",
-        "description": "Terms and conditions for using our flashcard learning service.",
-        "lastUpdated": "Last updated: January 2025",
+        "description": "Terms of Service for Learn - The legal agreement governing your use of our flashcard learning platform.",
+        "lastUpdated": "Last updated: July 2025",
         "acceptance": {
             "title": "Acceptance of Terms",
-            "description": "By accessing and using Learn, you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service."
+            "description": "By accessing or using Learn, you agree to be bound by these Terms of Service and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using or accessing this service."
         },
         "serviceDescription": {
             "title": "Service Description",
-            "description": "Learn is a digital flashcard application that uses spaced repetition algorithms to help users learn and memorize information effectively. Our service includes:",
+            "description": "Learn is a digital flashcard learning platform that provides spaced repetition learning algorithms, AI-powered content generation, and progress tracking to help users improve their learning outcomes.",
             "features": {
-                "flashcards": "Creation and management of digital flashcards",
-                "spacedRepetition": "Spaced repetition learning algorithms",
-                "aiGeneration": "AI-powered flashcard generation (Pro feature)",
-                "analytics": "Learning progress tracking and analytics"
+                "flashcards": "Digital flashcard creation, editing, and management",
+                "learning": "Spaced repetition algorithms for optimized learning",
+                "ai": "AI-assisted flashcard content generation",
+                "analytics": "Learning progress tracking and analytics",
+                "sync": "Cross-device synchronization of learning data"
             }
         },
         "userAccounts": {
-            "title": "User Accounts",
-            "description": "To use certain features of our service, you must create an account. You are responsible for:",
+            "title": "User Accounts and Responsibilities",
+            "description": "To use our service, you must create an account with accurate and complete information. You are responsible for:",
             "responsibilities": {
-                "accurate": "Providing accurate and complete information",
-                "security": "Maintaining the security of your account credentials",
-                "activities": "All activities that occur under your account"
-            }
+                "accurate": "Providing accurate and complete registration information",
+                "security": "Maintaining the security of your account credentials and password",
+                "activities": "All activities that occur under your account",
+                "compliance": "Complying with all applicable laws and these Terms of Service",
+                "notification": "Notifying us immediately of any unauthorized account access"
+            },
+            "age": "You must be at least 13 years old to create an account. Users under 18 should have parental guidance when using our service."
         },
         "payment": {
             "title": "Payment Terms",
             "description": "Our premium service (Learn Pro) requires payment of subscription fees. All payments are processed securely through Stripe.",
             "billing": {
-                "title": "Billing",
-                "description": "Subscription fees are billed in advance on a monthly or yearly basis. Prices are in Swiss Francs (CHF) and include applicable taxes."
+                "title": "Billing and Pricing",
+                "description": "Subscription fees are billed in advance on a monthly or yearly basis. Prices are displayed in Swiss Francs (CHF). Pricing is subject to change with 30 days' notice."
             },
             "refunds": {
-                "title": "Refunds",
-                "description": "Refunds may be provided at our discretion. Contact support for refund requests within 14 days of payment."
+                "title": "Refunds and Cancellations",
+                "description": "You may cancel your subscription at any time. Refunds may be granted at our discretion. Contact support for refund requests within 14 days of payment. Cancelled subscriptions remain active until the end of the current billing period."
+            },
+            "disputes": {
+                "title": "Payment Disputes",
+                "description": "Payment disputes should be addressed with us first before contacting your payment provider. We will work to resolve billing issues promptly and fairly."
             }
         },
         "aiServices": {
             "title": "AI-Powered Features",
-            "description": "Our AI-powered features use Google's AI services to generate flashcard content. By using these features, you acknowledge:",
+            "description": "Our AI-powered features use Google's AI services to generate flashcard content. By using these features, you acknowledge and agree that:",
             "limitations": {
-                "accuracy": "AI-generated content may not always be accurate or appropriate",
-                "availability": "AI features may be temporarily unavailable",
-                "content": "You are responsible for reviewing and editing AI-generated content"
-            }
+                "accuracy": "AI-generated content may not always be accurate, complete, or appropriate for your specific needs",
+                "availability": "AI features may be temporarily unavailable due to technical issues or service provider limitations",
+                "content": "You are responsible for reviewing, editing, and verifying all AI-generated content before use",
+                "liability": "We are not liable for any inaccuracies or issues arising from AI-generated content",
+                "data": "Your content may be processed by third-party AI services as described in our Privacy Policy"
+            },
+            "usage": "AI features are provided for educational purposes and should not be used for creating harmful, illegal, or inappropriate content."
         },
         "userContent": {
-            "title": "User Content",
-            "description": "You retain ownership of content you create, including flashcards and study materials. By using our service, you grant us a license to store and process your content to provide our services.",
+            "title": "User Content and Intellectual Property",
+            "description": "You retain ownership of content you create, including flashcards and learning materials. By using our service, you grant us a limited license to store, process, and display your content to provide our services.",
             "ownership": {
                 "title": "Content Ownership",
-                "description": "You retain all rights to your original content. We do not claim ownership of your flashcards or study materials."
+                "description": "You retain all rights to your original content. We claim no ownership over your flashcards, notes, or learning materials. You can export or delete your content at any time."
+            },
+            "license": {
+                "title": "License to Us",
+                "description": "You grant Learn a non-exclusive, worldwide, royalty-free license to use, store, process, and display your content solely for the purpose of providing our services. This license terminates when you delete your content or account."
             },
             "prohibited": {
                 "title": "Prohibited Content",
-                "illegal": "Content that violates applicable laws",
-                "harmful": "Content that is harmful, threatening, or harassing",
-                "infringement": "Content that infringes on intellectual property rights",
-                "spam": "Spam, advertisements, or promotional content"
+                "description": "You may not create, upload, or share content that is:",
+                "illegal": "Illegal, harmful, threatening, abusive, harassing, or discriminatory",
+                "infringement": "Infringing on intellectual property rights, including copyrighted material without permission",
+                "privacy": "Violating others' privacy or containing personal information of third parties without consent",
+                "spam": "Spam, advertising, or commercial content unrelated to learning",
+                "malicious": "Containing malware, viruses, or other harmful code"
             }
+        },
+        "dmca": {
+            "title": "Digital Millennium Copyright Act (DMCA)",
+            "description": "We respect intellectual property rights and comply with the DMCA. If you believe content on our platform infringes your copyright, please submit a DMCA notice to contact@fx64b.dev with the following information:",
+            "requirements": [
+                "Your contact information (name, address, phone number, email)",
+                "Identification of the copyrighted work you claim has been infringed",
+                "Identification of the infringing material and its location on our platform",
+                "A statement that you have a good faith belief that the use is not authorized",
+                "A statement that the information in your notice is accurate and you are authorized to act on behalf of the copyright owner",
+                "Your physical or electronic signature"
+            ],
+            "counter": "If you believe your content was wrongly removed due to a DMCA notice, you may submit a counter-notification following the same process."
         },
         "thirdPartyServices": {
             "title": "Third-Party Services",
-            "description": "Our service integrates with third-party providers. Your use of these services is subject to their respective terms:",
-            "stripe": {
-                "title": "Stripe (Payment Processing)",
-                "description": "Payment processing is handled by Stripe, subject to Stripe's Terms of Service and Privacy Policy."
+            "description": "Our service integrates with third-party providers. Your use of these services is subject to their respective terms and privacy policies:",
+            "services": {
+                "vercel": "Vercel (hosting and analytics) - https://vercel.com/legal/terms",
+                "stripe": "Stripe (payment processing) - https://stripe.com/legal/ssa",
+                "google": "Google AI (content generation) - https://cloud.google.com/terms"
             },
-            "vercel": {
-                "title": "Vercel (Hosting)",
-                "description": "Our service is hosted on Vercel's platform, subject to Vercel's Terms of Service."
-            }
+            "disclaimer": "We are not responsible for the availability, content, or practices of third-party services."
         },
-        "disclaimers": {
-            "title": "Disclaimers",
-            "description": "Our service is provided 'as is' without warranties of any kind. We do not guarantee uninterrupted access or error-free operation."
+        "serviceAvailability": {
+            "title": "Service Availability and Modifications",
+            "description": "We strive to provide reliable service but cannot guarantee uninterrupted availability. We reserve the right to:",
+            "rights": [
+                "Modify, suspend, or discontinue any part of our service with reasonable notice",
+                "Perform maintenance and updates that may temporarily affect service availability",
+                "Change features, functionality, or pricing with appropriate notice to users",
+                "Terminate or restrict access for violations of these terms"
+            ],
+            "maintenance": "Scheduled maintenance will be announced in advance when possible. Emergency maintenance may occur without prior notice."
         },
         "limitation": {
             "title": "Limitation of Liability",
-            "description": "To the maximum extent permitted by law, we shall not be liable for any indirect, incidental, special, or consequential damages."
+            "description": "To the maximum extent permitted by law, Learn and its developers shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to loss of data, profits, or business interruption, arising from your use of our service."
         },
         "termination": {
-            "title": "Termination",
-            "description": "We may terminate or suspend your account at our discretion, with or without notice, for violations of these terms or other reasonable grounds."
+            "title": "Account Termination",
+            "description": "Either party may terminate this agreement at any time. We may suspend or terminate your account for violations of these terms, illegal activity, or other reasons that may harm our service or other users. Upon termination, your right to use the service ceases immediately, and we may delete your account and data according to our data retention policy."
         },
         "governing": {
-            "title": "Governing Law",
-            "description": "These terms are governed by Swiss law. Any disputes will be resolved in Swiss courts, subject to applicable international agreements."
+            "title": "Governing Law and Jurisdiction",
+            "description": "These Terms of Service are governed by Swiss law. Any disputes arising from these terms or your use of our service shall be subject to the exclusive jurisdiction of Swiss courts. If any provision of these terms is found to be unenforceable, the remaining provisions shall remain in full force and effect."
         },
         "changes": {
             "title": "Changes to Terms",
-            "description": "We reserve the right to modify these terms at any time. We will notify users of significant changes by posting updates on our website."
+            "description": "We may update these Terms of Service from time to time to reflect changes in our service, legal requirements, or business practices. We will notify users of significant changes via email or in-app notifications. Continued use of our service after changes constitutes acceptance of the updated terms."
         },
         "contact": {
             "title": "Contact Information",
-            "description": "For questions about these Terms of Service, please contact us:",
+            "description": "For questions about these Terms of Service or to report violations, please contact us:",
             "email": "Email:",
-            "emailAddress": "support@fx64b.dev",
+            "emailAddress": "contact@fx64b.dev",
             "address": "Address:",
-            "developer": "Fx64b (Developer)",
-            "location": "Switzerland"
+            "developer": "Fabio Maffucci (Developer)",
+            "location": "Wiesenstrasse 5, 8586 Erlen, Thurgau Switzerland"
         }
     },
     "imprint": {
         "title": "Imprint",
-        "description": "Legal information about Learn and responsible parties.",
-        "lastUpdated": "Last updated: January 2025",
+        "description": "Legal information about Learn and responsible parties according to Swiss law.",
+        "lastUpdated": "Last updated: July 2025",
         "responsible": {
-            "title": "Information according to Swiss law",
             "name": "Responsible for content:",
             "nameValue": "Fx64b",
             "address": "Address:",
-            "addressValue": "Switzerland",
+            "addressValue": "Wiesenstrasse 5, 8586 Erlen, Thurgau Switzerland",
             "email": "Email:",
-            "emailValue": "support@fx64b.dev",
-            "website": "Website:"
+            "emailValue": "contact@fx64b.dev",
+            "website": "Website:",
+            "websiteValue": "https://fx64b.dev"
         },
         "purpose": {
-            "title": "Purpose of the Website",
-            "description": "Learn is a digital learning platform that provides flashcard-based learning services. Our services include:",
+            "title": "Purpose of Website",
+            "description": "Learn is a digital learning platform providing flashcard-based learning services. Our services include:",
             "services": {
                 "flashcards": "Digital flashcard creation and management",
                 "learning": "Spaced repetition learning algorithms",
                 "ai": "AI-powered content generation",
-                "analytics": "Learning progress tracking"
+                "analytics": "Learning progress tracking and analytics"
             }
         },
         "hosting": {
             "title": "Hosting Provider",
-            "description": "This website is hosted by:"
+            "description": "This website is hosted by:",
+            "vercel": {
+                "name": "Vercel Inc.",
+                "website": "https://vercel.com"
+            }
         },
         "thirdParty": {
             "title": "Third-Party Service Providers",
+            "description": "We use the following third-party services:",
             "stripe": {
-                "title": "Payment Processing (Stripe)"
+                "title": "Payment Processing (Stripe)",
+                "name": "Stripe, Inc.",
+                "website": "https://stripe.com"
             },
             "google": {
-                "title": "AI Services (Google)"
+                "title": "AI Services (Google)",
+                "name": "Google LLC",
+                "website": "https://cloud.google.com"
             }
         },
         "jurisdiction": {
@@ -869,17 +1016,17 @@
         },
         "disclaimer": {
             "title": "Disclaimer",
-            "description": "The information on this website has been compiled with care. However, we cannot guarantee that the information is complete, accurate, or up-to-date."
+            "description": "The information on this website has been carefully compiled. However, we cannot guarantee that the information is complete, accurate, or current. We reserve the right to make changes to the content without prior notice. We are not liable for any damages arising from the use of this website or its content."
         },
         "copyright": {
             "title": "Copyright",
-            "description": "The content and works on this website are subject to copyright law. Copying, processing, distribution, or any form of commercialization requires written permission."
+            "description": "The content and works on this website are subject to copyright law. Copying, editing, distributing, or any form of commercialization requires written permission from the copyright holder. This does not apply to user-generated content, which remains owned by the respective users. \n See License for open source code License information."
         },
         "contact": {
             "title": "Contact",
-            "description": "For questions or concerns regarding this imprint, please contact us:",
+            "description": "For questions or concerns regarding this imprint or our website, please contact us:",
             "email": "Email:",
-            "emailAddress": "support@fx64b.dev"
+            "emailAddress": "contact@fx64b.dev"
         }
     }
 }

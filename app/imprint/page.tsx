@@ -23,31 +23,22 @@ export default async function ImprintPage() {
                 <p className="text-muted-foreground mb-8">{t('lastUpdated')}</p>
 
                 <section className="mb-8">
-                    <h2 className="mb-4 text-2xl font-semibold">
-                        {t('responsible.title')}
-                    </h2>
+                    <h2 className="mb-4 text-2xl font-semibold"></h2>
                     <p className="mb-2">
                         <strong>{t('responsible.name')}</strong>{' '}
                         {t('responsible.nameValue')}
                     </p>
                     <p className="mb-2">
-                        <strong>{t('responsible.address')}</strong>
+                        <strong>{t('responsible.address')}</strong>{' '}
+                        {t('responsible.addressValue')}
                     </p>
-                    <p className="mb-2">{t('responsible.addressValue')}</p>
                     <p className="mb-2">
                         <strong>{t('responsible.email')}</strong>{' '}
                         {t('responsible.emailValue')}
                     </p>
                     <p className="mb-2">
-                        <strong>{t('responsible.website')}</strong>
-                        <a
-                            href="https://fx64b.dev"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="ml-2 text-blue-600 hover:underline"
-                        >
-                            https://fx64b.dev
-                        </a>
+                        <strong>{t('responsible.website')}</strong>{' '}
+                        {t('responsible.websiteValue')}
                     </p>
                 </section>
 
@@ -70,43 +61,32 @@ export default async function ImprintPage() {
                     </h2>
                     <p className="mb-4">{t('hosting.description')}</p>
                     <p className="mb-2">
-                        <strong>Vercel Inc.</strong>
+                        <strong>{t('hosting.vercel.name')}</strong>
                     </p>
-                    <p className="mb-2">340 S Lemon Ave #4133</p>
-                    <p className="mb-2">Walnut, CA 91789</p>
-                    <p className="mb-2">United States</p>
-                    <p className="mb-4">
-                        <a
-                            href="https://vercel.com"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 hover:underline"
-                        >
-                            https://vercel.com
-                        </a>
-                    </p>
+                    <p className="mb-2">{t('hosting.vercel.website')}</p>
                 </section>
 
                 <section className="mb-8">
                     <h2 className="mb-4 text-2xl font-semibold">
                         {t('thirdParty.title')}
                     </h2>
+                    <p className="mb-4">{t('thirdParty.description')}</p>
 
                     <h3 className="mb-3 text-xl font-medium">
                         {t('thirdParty.stripe.title')}
                     </h3>
-                    <p className="mb-2">Stripe, Inc.</p>
-                    <p className="mb-2">510 Townsend Street</p>
-                    <p className="mb-2">San Francisco, CA 94103</p>
-                    <p className="mb-4">United States</p>
+                    <p className="mb-2">
+                        <strong>{t('thirdParty.stripe.name')}</strong>
+                    </p>
+                    <p className="mb-4">{t('thirdParty.stripe.website')}</p>
 
                     <h3 className="mb-3 text-xl font-medium">
                         {t('thirdParty.google.title')}
                     </h3>
-                    <p className="mb-2">Google LLC</p>
-                    <p className="mb-2">1600 Amphitheatre Parkway</p>
-                    <p className="mb-2">Mountain View, CA 94043</p>
-                    <p className="mb-4">United States</p>
+                    <p className="mb-2">
+                        <strong>{t('thirdParty.google.name')}</strong>
+                    </p>
+                    <p className="mb-4">{t('thirdParty.google.website')}</p>
                 </section>
 
                 <section className="mb-8">

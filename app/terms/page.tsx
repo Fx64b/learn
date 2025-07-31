@@ -38,11 +38,10 @@ export default async function TermsPage() {
                     </p>
                     <ul className="mb-4 list-inside list-disc space-y-2">
                         <li>{t('serviceDescription.features.flashcards')}</li>
-                        <li>
-                            {t('serviceDescription.features.spacedRepetition')}
-                        </li>
-                        <li>{t('serviceDescription.features.aiGeneration')}</li>
+                        <li>{t('serviceDescription.features.learning')}</li>
+                        <li>{t('serviceDescription.features.ai')}</li>
                         <li>{t('serviceDescription.features.analytics')}</li>
+                        <li>{t('serviceDescription.features.sync')}</li>
                     </ul>
                 </section>
 
@@ -55,7 +54,12 @@ export default async function TermsPage() {
                         <li>{t('userAccounts.responsibilities.accurate')}</li>
                         <li>{t('userAccounts.responsibilities.security')}</li>
                         <li>{t('userAccounts.responsibilities.activities')}</li>
+                        <li>{t('userAccounts.responsibilities.compliance')}</li>
+                        <li>
+                            {t('userAccounts.responsibilities.notification')}
+                        </li>
                     </ul>
+                    <p className="mb-4">{t('userAccounts.age')}</p>
                 </section>
 
                 <section className="mb-8">
@@ -63,14 +67,21 @@ export default async function TermsPage() {
                         {t('payment.title')}
                     </h2>
                     <p className="mb-4">{t('payment.description')}</p>
+
                     <h3 className="mb-3 text-xl font-medium">
                         {t('payment.billing.title')}
                     </h3>
                     <p className="mb-4">{t('payment.billing.description')}</p>
+
                     <h3 className="mb-3 text-xl font-medium">
                         {t('payment.refunds.title')}
                     </h3>
                     <p className="mb-4">{t('payment.refunds.description')}</p>
+
+                    <h3 className="mb-3 text-xl font-medium">
+                        {t('payment.disputes.title')}
+                    </h3>
+                    <p className="mb-4">{t('payment.disputes.description')}</p>
                 </section>
 
                 <section className="mb-8">
@@ -82,7 +93,10 @@ export default async function TermsPage() {
                         <li>{t('aiServices.limitations.accuracy')}</li>
                         <li>{t('aiServices.limitations.availability')}</li>
                         <li>{t('aiServices.limitations.content')}</li>
+                        <li>{t('aiServices.limitations.liability')}</li>
+                        <li>{t('aiServices.limitations.data')}</li>
                     </ul>
+                    <p className="mb-4">{t('aiServices.usage')}</p>
                 </section>
 
                 <section className="mb-8">
@@ -90,21 +104,50 @@ export default async function TermsPage() {
                         {t('userContent.title')}
                     </h2>
                     <p className="mb-4">{t('userContent.description')}</p>
+
                     <h3 className="mb-3 text-xl font-medium">
                         {t('userContent.ownership.title')}
                     </h3>
                     <p className="mb-4">
                         {t('userContent.ownership.description')}
                     </p>
+
+                    <h3 className="mb-3 text-xl font-medium">
+                        {t('userContent.license.title')}
+                    </h3>
+                    <p className="mb-4">
+                        {t('userContent.license.description')}
+                    </p>
+
                     <h3 className="mb-3 text-xl font-medium">
                         {t('userContent.prohibited.title')}
                     </h3>
+                    <p className="mb-4">
+                        {t('userContent.prohibited.description')}
+                    </p>
                     <ul className="mb-4 list-inside list-disc space-y-2">
                         <li>{t('userContent.prohibited.illegal')}</li>
-                        <li>{t('userContent.prohibited.harmful')}</li>
                         <li>{t('userContent.prohibited.infringement')}</li>
+                        <li>{t('userContent.prohibited.privacy')}</li>
                         <li>{t('userContent.prohibited.spam')}</li>
+                        <li>{t('userContent.prohibited.malicious')}</li>
                     </ul>
+                </section>
+
+                <section className="mb-8">
+                    <h2 className="mb-4 text-2xl font-semibold">
+                        {t('dmca.title')}
+                    </h2>
+                    <p className="mb-4">{t('dmca.description')}</p>
+                    <ul className="mb-4 list-inside list-disc space-y-2">
+                        <li>{t('dmca.requirements.0')}</li>
+                        <li>{t('dmca.requirements.1')}</li>
+                        <li>{t('dmca.requirements.2')}</li>
+                        <li>{t('dmca.requirements.3')}</li>
+                        <li>{t('dmca.requirements.4')}</li>
+                        <li>{t('dmca.requirements.5')}</li>
+                    </ul>
+                    <p className="mb-4">{t('dmca.counter')}</p>
                 </section>
 
                 <section className="mb-8">
@@ -114,25 +157,30 @@ export default async function TermsPage() {
                     <p className="mb-4">
                         {t('thirdPartyServices.description')}
                     </p>
-                    <h3 className="mb-3 text-xl font-medium">
-                        {t('thirdPartyServices.stripe.title')}
-                    </h3>
-                    <p className="mb-4">
-                        {t('thirdPartyServices.stripe.description')}
-                    </p>
-                    <h3 className="mb-3 text-xl font-medium">
-                        {t('thirdPartyServices.vercel.title')}
-                    </h3>
-                    <p className="mb-4">
-                        {t('thirdPartyServices.vercel.description')}
-                    </p>
+                    <ul className="mb-4 list-inside list-disc space-y-2">
+                        <li>{t('thirdPartyServices.services.vercel')}</li>
+                        <li>{t('thirdPartyServices.services.stripe')}</li>
+                        <li>{t('thirdPartyServices.services.google')}</li>
+                    </ul>
+                    <p className="mb-4">{t('thirdPartyServices.disclaimer')}</p>
                 </section>
 
                 <section className="mb-8">
                     <h2 className="mb-4 text-2xl font-semibold">
-                        {t('disclaimers.title')}
+                        {t('serviceAvailability.title')}
                     </h2>
-                    <p className="mb-4">{t('disclaimers.description')}</p>
+                    <p className="mb-4">
+                        {t('serviceAvailability.description')}
+                    </p>
+                    <ul className="mb-4 list-inside list-disc space-y-2">
+                        <li>{t('serviceAvailability.rights.0')}</li>
+                        <li>{t('serviceAvailability.rights.1')}</li>
+                        <li>{t('serviceAvailability.rights.2')}</li>
+                        <li>{t('serviceAvailability.rights.3')}</li>
+                    </ul>
+                    <p className="mb-4">
+                        {t('serviceAvailability.maintenance')}
+                    </p>
                 </section>
 
                 <section className="mb-8">
