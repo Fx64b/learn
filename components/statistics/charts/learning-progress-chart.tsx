@@ -52,7 +52,10 @@ export function LearningProgressChart({ data }: LearningProgressChartProps) {
             (sum, day) => sum + day.cardsReviewed,
             0
         )
-        const avgCards = totalCards / chartData.length
+        const activeDays = chartData.filter(
+            (day) => day.cardsReviewed > 0
+        ).length
+        const avgCards = activeDays > 0 ? totalCards / activeDays : 0
 
         const bestDay = chartData.reduce(
             (best, current) =>

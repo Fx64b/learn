@@ -1,3 +1,18 @@
+# [1.12.0](https://github.com/Fx64b/learn/compare/v1.11.0...v1.12.0) (2025-07-31)
+
+
+### Bug Fixes
+
+* **learning-progress-chart:** calculate average cards based on active days instead of all days ([7b92590](https://github.com/Fx64b/learn/commit/7b9259061585a6b78fea74edb65d4b4b4aad518b))
+* **test-setup:** setting NODE_ENV in setup causes build error ([cf7600c](https://github.com/Fx64b/learn/commit/cf7600ca1d7da0e50f79aca90c8e14bb3ad86abe))
+* update privacy policy and terms of service for compliance with GDPR and US laws ([7e7e2c5](https://github.com/Fx64b/learn/commit/7e7e2c56e6eab59b42d4d9c62205f1cab1062349))
+
+
+### Features
+
+* add test execution to GitHub Actions workflow ([084f068](https://github.com/Fx64b/learn/commit/084f06888250553f0ac5b66d14e343d84e4cc3dd))
+* **ai-flashcards:** add AI disclaimer with dismissible warning ([c898088](https://github.com/Fx64b/learn/commit/c898088d2e8b750370c3e232260d0393551ebdbd))
+
 # [1.11.0](https://github.com/Fx64b/learn/compare/v1.10.1...v1.11.0) (2025-07-23)
 
 
