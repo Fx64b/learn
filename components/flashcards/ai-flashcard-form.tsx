@@ -195,12 +195,12 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
                         >
                             {file ? (
                                 <div className="bg-muted flex items-center justify-between rounded-md p-3">
-                                    <div className="flex items-center gap-2">
-                                        <FileText className="h-4 w-4" />
-                                        <span className="text-sm font-medium">
+                                    <div className="flex min-w-0 flex-1 items-center gap-2">
+                                        <FileText className="h-4 w-4 flex-shrink-0" />
+                                        <span className="truncate text-sm font-medium">
                                             {file.name}
                                         </span>
-                                        <span className="text-muted-foreground text-xs">
+                                        <span className="text-muted-foreground flex-shrink-0 text-xs">
                                             (
                                             {(file.size / 1024 / 1024).toFixed(
                                                 2
@@ -213,6 +213,7 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
                                         variant="ghost"
                                         size="sm"
                                         onClick={removeFile}
+                                        className="z-10 flex-shrink-0 p-5 hover:bg-muted-foreground/10"
                                     >
                                         <X className="h-4 w-4" />
                                     </Button>
