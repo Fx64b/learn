@@ -1,8 +1,14 @@
 import { authOptions } from '@/lib/auth'
 import { checkAIRateLimitWithDetails } from '@/lib/rate-limit/ai-rate-limit'
+
 import { getServerSession } from 'next-auth'
 import { NextRequest } from 'next/server'
+
 import { generateAIFlashcardsAsync } from '../../../actions/ai-flashcards-async'
+
+// Configure the route for larger payloads
+export const maxDuration = 300 // 5 minutes
+export const dynamic = 'force-dynamic'
 
 // Type definitions for SSE messages
 interface SSEMessage {
@@ -37,46 +43,53 @@ export async function POST(request: NextRequest) {
 
         // Parse request body
         const body = await request.json()
-        
+
         // Rate limit check
         const rateLimitResult = await checkAIRateLimitWithDetails(
             session.user.id,
             session.user.email!
         )
-        
+
         if (!rateLimitResult.allowed) {
-            return Response.json({
-                type: 'rate_limit',
-                error: rateLimitResult.message,
-                data: {
-                    requiresPro: rateLimitResult.upgradeRequired,
-                    paymentIssue: rateLimitResult.paymentIssue,
-                    tier: rateLimitResult.tier,
-                    resetTime: rateLimitResult.resetTime
-                }
-            }, { status: 429 })
+            return Response.json(
+                {
+                    type: 'rate_limit',
+                    error: rateLimitResult.message,
+                    data: {
+                        requiresPro: rateLimitResult.upgradeRequired,
+                        paymentIssue: rateLimitResult.paymentIssue,
+                        tier: rateLimitResult.tier,
+                        resetTime: rateLimitResult.resetTime,
+                    },
+                },
+                { status: 429 }
+            )
         }
 
         // Create a readable stream for Server-Sent Events
         const stream = new ReadableStream({
             start(controller) {
                 // Progress callback function
-                const onProgress = (step: string, percentage: number, message: string) => {
+                const onProgress = (
+                    step: string,
+                    percentage: number,
+                    message: string
+                ) => {
                     const progressMessage: SSEMessage = {
                         type: 'progress',
-                        progress: { step, percentage, message }
+                        progress: { step, percentage, message },
                     }
                     const data = `data: ${JSON.stringify(progressMessage)}\n\n`
                     controller.enqueue(new TextEncoder().encode(data))
                 }
-                
+
                 // Start async processing
                 generateAIFlashcardsAsync(body, onProgress)
                     .then((result) => {
                         if (result.success) {
                             const successMessage: SSEMessage = {
                                 type: 'success',
-                                data: result
+                                data: result,
                             }
                             const data = `data: ${JSON.stringify(successMessage)}\n\n`
                             controller.enqueue(new TextEncoder().encode(data))
@@ -84,7 +97,7 @@ export async function POST(request: NextRequest) {
                             const errorMessage: SSEMessage = {
                                 type: 'error',
                                 error: result.error,
-                                data: result
+                                data: result,
                             }
                             const data = `data: ${JSON.stringify(errorMessage)}\n\n`
                             controller.enqueue(new TextEncoder().encode(data))
@@ -95,26 +108,25 @@ export async function POST(request: NextRequest) {
                         console.error('Error in flashcard generation:', error)
                         const errorMessage: SSEMessage = {
                             type: 'error',
-                            error: 'An unexpected error occurred during generation'
+                            error: 'An unexpected error occurred during generation',
                         }
                         const data = `data: ${JSON.stringify(errorMessage)}\n\n`
                         controller.enqueue(new TextEncoder().encode(data))
                         controller.close()
                     })
-            }
+            },
         })
 
         return new Response(stream, {
             headers: {
                 'Content-Type': 'text/event-stream',
                 'Cache-Control': 'no-cache',
-                'Connection': 'keep-alive',
+                Connection: 'keep-alive',
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'POST',
-                'Access-Control-Allow-Headers': 'Content-Type'
-            }
+                'Access-Control-Allow-Headers': 'Content-Type',
+            },
         })
-        
     } catch (error) {
         console.error('SSE endpoint error:', error)
         return new Response('Internal Server Error', { status: 500 })

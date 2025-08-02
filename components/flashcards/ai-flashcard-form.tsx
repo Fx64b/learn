@@ -1,5 +1,6 @@
 'use client'
 
+import { useAIFlashcards } from '@/lib/hooks/use-ai-flashcards'
 import { FileText, Loader2, Sparkles, Upload, X, XCircle } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -7,8 +8,6 @@ import { useCallback, useState } from 'react'
 
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
-
-import { useAIFlashcards } from '@/lib/hooks/use-ai-flashcards'
 
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
@@ -29,8 +28,9 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
     const [prompt, setPrompt] = useState('')
     const [file, setFile] = useState<File | null>(null)
     const [dragActive, setDragActive] = useState(false)
-    
-    const { isGenerating, progress, generateFlashcards, cancelGeneration } = useAIFlashcards()
+
+    const { isGenerating, progress, generateFlashcards, cancelGeneration } =
+        useAIFlashcards()
 
     const handleDrag = useCallback((e: React.DragEvent) => {
         e.preventDefault()
@@ -133,9 +133,13 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
             }
         } catch (error: unknown) {
             console.error('Error generating flashcards:', error)
-            
+
             if (error && typeof error === 'object' && 'type' in error) {
-                const typedError = error as { type: string; error?: string; data?: { requiresPro?: boolean } }
+                const typedError = error as {
+                    type: string
+                    error?: string
+                    data?: { requiresPro?: boolean }
+                }
                 if (typedError.type === 'rate_limit') {
                     if (typedError.data?.requiresPro) {
                         toast.error(typedError.error || t('proRequired'))
@@ -213,7 +217,7 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
                                         variant="ghost"
                                         size="sm"
                                         onClick={removeFile}
-                                        className="z-10 flex-shrink-0 p-5 hover:bg-muted-foreground/10"
+                                        className="hover:bg-muted-foreground/10 z-10 flex-shrink-0 p-5"
                                     >
                                         <X className="h-4 w-4" />
                                     </Button>
@@ -264,9 +268,13 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
                                 </Button>
                             </div>
                             <div className="space-y-2">
-                                <Progress value={progress.percentage} className="h-2" />
-                                <p className="text-xs text-muted-foreground">
-                                    {progress.step} - {progress.percentage}% complete
+                                <Progress
+                                    value={progress.percentage}
+                                    className="h-2"
+                                />
+                                <p className="text-muted-foreground text-xs">
+                                    {progress.step} - {progress.percentage}%
+                                    complete
                                 </p>
                             </div>
                         </div>

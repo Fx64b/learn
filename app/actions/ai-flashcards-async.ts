@@ -73,7 +73,11 @@ interface SecurityEvent {
 }
 
 // Progress callback type
-type ProgressCallback = (step: string, percentage: number, message: string) => void
+type ProgressCallback = (
+    step: string,
+    percentage: number,
+    message: string
+) => void
 
 // Security logging function
 function logSecurityEvent(event: SecurityEvent): void {
@@ -233,7 +237,7 @@ async function parsePDFSecurely(
 ): Promise<string> {
     try {
         onProgress('pdf_parsing', 20, 'Parsing PDF document...')
-        
+
         const pdfModule = await import('pdf2json')
         const PDFParser = pdfModule.default
 
@@ -289,7 +293,11 @@ async function parsePDFSecurely(
                     cleanup()
 
                     try {
-                        onProgress('text_extraction', 40, 'Extracting text from PDF...')
+                        onProgress(
+                            'text_extraction',
+                            40,
+                            'Extracting text from PDF...'
+                        )
                         const text = extractTextSafely(pdfData)
                         if (text.length < 10) {
                             reject(
@@ -796,7 +804,11 @@ export async function generateAIFlashcardsAsync(
                 maxTokens: 4000,
             })
 
-            onProgress('validation_response', 80, 'Validating generated flashcards...')
+            onProgress(
+                'validation_response',
+                80,
+                'Validating generated flashcards...'
+            )
 
             // Validate generated content
             if (!object.flashcards || object.flashcards.length === 0) {
@@ -808,7 +820,10 @@ export async function generateAIFlashcardsAsync(
             }
 
             // Security validation of AI response
-            const typedFlashcards = object.flashcards as Array<{ front: string; back: string }>
+            const typedFlashcards = object.flashcards as Array<{
+                front: string
+                back: string
+            }>
             if (!validateAIResponse(typedFlashcards, requestId, userId)) {
                 return {
                     success: false,
@@ -848,9 +863,13 @@ export async function generateAIFlashcardsAsync(
             if (result.success) {
                 const successCount =
                     result.results?.filter((r) => r.success).length || 0
-                
-                onProgress('complete', 100, `Successfully generated ${successCount} flashcards!`)
-                
+
+                onProgress(
+                    'complete',
+                    100,
+                    `Successfully generated ${successCount} flashcards!`
+                )
+
                 return {
                     success: true,
                     message: t('flashcardsGenerated', { count: successCount }),
