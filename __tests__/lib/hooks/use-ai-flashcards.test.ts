@@ -1,6 +1,6 @@
-import { renderHook, act } from '@testing-library/react'
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { useAIFlashcards } from '@/lib/hooks/use-ai-flashcards'
+import { act, renderHook } from '@testing-library/react'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Mock fetch
 global.fetch = vi.fn()
@@ -37,8 +37,8 @@ describe('useAIFlashcards', () => {
             json: vi.fn().mockResolvedValue({
                 type: 'rate_limit',
                 error: 'Rate limit exceeded',
-                data: { requiresPro: true }
-            })
+                data: { requiresPro: true },
+            }),
         }
 
         vi.mocked(fetch).mockResolvedValue(mockResponse as any)
@@ -49,7 +49,7 @@ describe('useAIFlashcards', () => {
             try {
                 await result.current.generateFlashcards({
                     deckId: 'test-deck',
-                    prompt: 'Test prompt'
+                    prompt: 'Test prompt',
                 })
             } catch (error: any) {
                 expect(error.type).toBe('rate_limit')
@@ -71,7 +71,7 @@ describe('useAIFlashcards', () => {
             try {
                 await result.current.generateFlashcards({
                     deckId: 'test-deck',
-                    prompt: 'Test prompt'
+                    prompt: 'Test prompt',
                 })
             } catch (error: any) {
                 expect(error.type).toBe('error')
@@ -88,7 +88,9 @@ describe('useAIFlashcards', () => {
             ok: true,
             body: {
                 getReader: vi.fn().mockReturnValue({
-                    read: vi.fn().mockResolvedValue({ done: true, value: undefined }),
+                    read: vi
+                        .fn()
+                        .mockResolvedValue({ done: true, value: undefined }),
                 }),
             },
         }
@@ -100,7 +102,7 @@ describe('useAIFlashcards', () => {
         act(() => {
             result.current.generateFlashcards({
                 deckId: 'test-deck',
-                prompt: 'Test prompt'
+                prompt: 'Test prompt',
             })
         })
 
@@ -108,7 +110,7 @@ describe('useAIFlashcards', () => {
         expect(result.current.progress).toEqual({
             step: 'starting',
             percentage: 0,
-            message: 'Initializing AI flashcard generation...'
+            message: 'Initializing AI flashcard generation...',
         })
     })
 
@@ -130,7 +132,7 @@ describe('useAIFlashcards', () => {
             try {
                 await result.current.generateFlashcards({
                     deckId: '',
-                    prompt: 'Test prompt'
+                    prompt: 'Test prompt',
                 })
             } catch (error) {
                 expect(error).toBeDefined()
