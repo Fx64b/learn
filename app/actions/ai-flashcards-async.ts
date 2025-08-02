@@ -99,6 +99,8 @@ function sanitizeInput(input: string): string {
         .trim()
         .replace(/[<>'"]/g, '') // Remove HTML/XML dangerous chars only
         .replace(/javascript:/gi, '') // Remove javascript: protocol
+        .replace(/data:/gi, '') // Remove data: protocol
+        .replace(/vbscript:/gi, '') // Remove vbscript: protocol
         .replace(/on\w+\s*=/gi, '') // Remove event handlers
         .replace(/data:text\/html/gi, '') // Remove data URLs
         .replace(/[\x00-\x1f\x7f-\x9f]/g, '') // Remove control characters only
