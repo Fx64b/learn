@@ -1,8 +1,9 @@
 import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://learn.fx64b.dev'
-    
+    const baseUrl =
+        process.env.NEXT_PUBLIC_SITE_URL || 'https://learn.fx64b.dev'
+
     // Define static routes that should be included in the sitemap
     // Excluding deck routes and auth-required pages as requested
     const staticRoutes = [
