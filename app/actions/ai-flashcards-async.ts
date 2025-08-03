@@ -4,8 +4,11 @@ import { authOptions } from '@/lib/auth'
 import { google } from '@ai-sdk/google'
 import { generateObject } from 'ai'
 import { randomUUID } from 'crypto'
+import { readFile, unlink } from 'fs/promises'
 import { Output } from 'pdf2json'
 import { z } from 'zod'
+import { join } from 'path'
+import { tmpdir } from 'os'
 
 import { Session, getServerSession } from 'next-auth'
 import { getTranslations } from 'next-intl/server'
@@ -47,7 +50,7 @@ const flashcardSchema = z.object({
 interface GenerateFlashcardsParams {
     deckId: string
     prompt: string
-    fileContent?: string
+    fileId?: string
     fileType?: string
 }
 
@@ -198,31 +201,6 @@ function validateFileType(
         if (version < 1.0 || version > 2.0) {
             return { isValid: false, error: 'Unsupported PDF version' }
         }
-    }
-
-    return { isValid: true }
-}
-
-// Enhanced base64 validation
-function validateBase64(base64String: string): {
-    isValid: boolean
-    error?: string
-} {
-    // Check basic base64 format
-    if (!base64String.match(/^[A-Za-z0-9+/]*={0,2}$/)) {
-        return { isValid: false, error: 'Invalid file encoding format' }
-    }
-
-    // Check length is multiple of 4 (proper base64 padding)
-    if (base64String.length % 4 !== 0) {
-        return { isValid: false, error: 'Invalid file encoding length' }
-    }
-
-    // Basic length check (prevent extremely large payloads)
-    const estimatedSize = (base64String.length * 3) / 4
-    if (estimatedSize > MAX_FILE_SIZE * 1.5) {
-        // Account for base64 overhead
-        return { isValid: false, error: 'File too large' }
     }
 
     return { isValid: true }
@@ -444,11 +422,11 @@ function validateInputEnhanced(
     }
 
     // File validation if provided
-    if (params.fileContent || params.fileType) {
-        if (!params.fileContent || !params.fileType) {
+    if (params.fileId || params.fileType) {
+        if (!params.fileId || !params.fileType) {
             return {
                 isValid: false,
-                error: 'Both file content and type must be provided',
+                error: 'Both file ID and type must be provided',
             }
         }
 
@@ -461,19 +439,6 @@ function validateInputEnhanced(
                 requestId,
             })
             return { isValid: false, error: 'Only PDF files are supported' }
-        }
-
-        // Validate base64 encoding
-        const base64Validation = validateBase64(params.fileContent)
-        if (!base64Validation.isValid) {
-            logSecurityEvent({
-                userId,
-                action: 'invalid_file_encoding',
-                details: base64Validation.error?.toString(),
-                severity: 'medium',
-                requestId,
-            })
-            return base64Validation
         }
     }
 
@@ -671,12 +636,24 @@ export async function generateAIFlashcardsAsync(
         let documentContent = ''
 
         // Handle file upload if provided
-        if (params.fileContent && params.fileType) {
+        if (params.fileId && params.fileType) {
             try {
                 onProgress('file_processing', 15, 'Processing uploaded file...')
 
-                // Decode base64 file content
-                const buffer = Buffer.from(params.fileContent, 'base64')
+                // Read file from temporary location
+                const tempDir = join(tmpdir(), 'ai-flashcards')
+                const tempFilePath = join(tempDir, `${params.fileId}.pdf`)
+                
+                let buffer: Buffer
+                try {
+                    buffer = await readFile(tempFilePath)
+                } catch (readError) {
+                    return {
+                        success: false,
+                        error: 'Uploaded file not found or expired',
+                        requestId,
+                    }
+                }
 
                 // Validate file size
                 if (buffer.length > MAX_FILE_SIZE) {
@@ -687,6 +664,14 @@ export async function generateAIFlashcardsAsync(
                         severity: 'low',
                         requestId,
                     })
+                    
+                    // Clean up temp file
+                    try {
+                        await unlink(tempFilePath)
+                    } catch (unlinkError) {
+                        console.log('Failed to cleanup temp file:', unlinkError)
+                    }
+                    
                     return {
                         success: false,
                         error: t('fileTooLarge', { max: '10MB' }),
@@ -707,6 +692,14 @@ export async function generateAIFlashcardsAsync(
                         severity: 'high',
                         requestId,
                     })
+                    
+                    // Clean up temp file
+                    try {
+                        await unlink(tempFilePath)
+                    } catch (unlinkError) {
+                        console.log('Failed to cleanup temp file:', unlinkError)
+                    }
+                    
                     return {
                         success: false,
                         error: fileTypeValidation.error,
@@ -716,27 +709,36 @@ export async function generateAIFlashcardsAsync(
 
                 // Parse PDF content securely
                 if (params.fileType === 'application/pdf') {
-                    documentContent = await parsePDFSecurely(
-                        buffer,
-                        requestId,
-                        userId,
-                        onProgress
-                    )
-
-                    // Content validation
-                    if (documentContent.trim().length < 50) {
-                        return {
-                            success: false,
-                            error: t('fileContentTooShort'),
+                    try {
+                        documentContent = await parsePDFSecurely(
+                            buffer,
                             requestId,
-                        }
-                    }
+                            userId,
+                            onProgress
+                        )
 
-                    // Truncate if too long
-                    if (documentContent.length > MAX_DOCUMENT_LENGTH) {
-                        documentContent =
-                            documentContent.substring(0, MAX_DOCUMENT_LENGTH) +
-                            '...'
+                        // Content validation
+                        if (documentContent.trim().length < 50) {
+                            return {
+                                success: false,
+                                error: t('fileContentTooShort'),
+                                requestId,
+                            }
+                        }
+
+                        // Truncate if too long
+                        if (documentContent.length > MAX_DOCUMENT_LENGTH) {
+                            documentContent =
+                                documentContent.substring(0, MAX_DOCUMENT_LENGTH) +
+                                '...'
+                        }
+                    } finally {
+                        // Always clean up temp file after processing
+                        try {
+                            await unlink(tempFilePath)
+                        } catch (unlinkError) {
+                            console.log('Failed to cleanup temp file:', unlinkError)
+                        }
                     }
                 }
             } catch (parseError) {

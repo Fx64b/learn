@@ -8,9 +8,9 @@
     "functions": {
         "app/api/ai-flashcards/sse/route.ts": {
             "maxDuration": 300
+        },
+        "app/api/ai-flashcards/upload/route.ts": {
+            "maxDuration": 300
         }
-    },
-    "limits": {
-        "bodySize": "10mb"
     }
 }

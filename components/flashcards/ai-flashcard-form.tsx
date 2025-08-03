@@ -71,20 +71,6 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
         setFile(null)
     }
 
-    const fileToBase64 = (file: File): Promise<string> => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader()
-            reader.readAsDataURL(file)
-            reader.onload = () => {
-                const base64 = reader.result as string
-                // Remove data URL prefix to get pure base64
-                const base64Content = base64.split(',')[1]
-                resolve(base64Content)
-            }
-            reader.onerror = (error) => reject(error)
-        })
-    }
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
 
@@ -94,25 +80,16 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
         }
 
         try {
-            let fileContent: string | undefined
-            let fileType: string | undefined
-
-            if (file) {
-                // Validate file size (10MB limit)
-                if (file.size > 10 * 1024 * 1024) {
-                    toast.error(t('fileTooLarge', { max: '10MB' }))
-                    return
-                }
-
-                fileContent = await fileToBase64(file)
-                fileType = file.type
+            // Validate file size if present
+            if (file && file.size > 10 * 1024 * 1024) {
+                toast.error(t('fileTooLarge', { max: '10MB' }))
+                return
             }
 
             const result = await generateFlashcards({
                 deckId,
                 prompt: prompt.trim(),
-                fileContent,
-                fileType,
+                file: file || undefined,
             })
 
             if (result.requiresPro) {
