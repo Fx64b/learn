@@ -12,6 +12,20 @@ interface Progress {
     message: string
 }
 
+interface AIGenerationResult {
+    success: boolean
+    error?: string
+    message?: string
+    cardsCreated?: number
+    tier?: string
+    remaining?: number
+    requiresPro?: boolean
+    paymentIssue?: boolean
+    resetTime?: Date
+    requestId: string
+    flashcards?: Array<{ front: string; back: string }>
+}
+
 export function useAIFlashcards() {
     const [isGenerating, setIsGenerating] = useState(false)
     const [progress, setProgress] = useState<Progress | null>(null)
@@ -36,11 +50,11 @@ export function useAIFlashcards() {
     }, [])
 
     const generateFlashcards = useCallback(
-        async (params: GenerateParams) => {
+        async (params: GenerateParams): Promise<AIGenerationResult> => {
             // Cleanup any existing operations
             cleanup()
 
-            return new Promise((resolve, reject) => {
+            return new Promise<AIGenerationResult>((resolve) => {
                 try {
                     setIsGenerating(true)
                     setProgress({
@@ -133,21 +147,32 @@ export function useAIFlashcards() {
                                                     data.type === 'error'
                                                 ) {
                                                     cleanup()
-                                                    reject({
-                                                        type: 'error',
-                                                        error: data.error,
-                                                        data: data.data,
-                                                    })
+                                                    resolve(
+                                                        data.data || {
+                                                            success: false,
+                                                            error:
+                                                                data.error ||
+                                                                'Unknown error',
+                                                            requestId:
+                                                                crypto.randomUUID(),
+                                                        }
+                                                    )
                                                     return
                                                 } else if (
                                                     data.type === 'rate_limit'
                                                 ) {
                                                     cleanup()
-                                                    reject({
-                                                        type: 'rate_limit',
-                                                        error: data.error,
-                                                        data: data.data,
-                                                    })
+                                                    resolve(
+                                                        data.data || {
+                                                            success: false,
+                                                            error:
+                                                                data.error ||
+                                                                'Rate limit exceeded',
+                                                            requiresPro: true,
+                                                            requestId:
+                                                                crypto.randomUUID(),
+                                                        }
+                                                    )
                                                     return
                                                 }
                                             } catch (parseError) {
@@ -169,25 +194,28 @@ export function useAIFlashcards() {
                             cleanup()
 
                             if (error.name === 'AbortError') {
-                                reject({
-                                    type: 'error',
+                                resolve({
+                                    success: false,
                                     error: 'Generation cancelled',
+                                    requestId: crypto.randomUUID(),
                                 })
                             } else {
-                                reject({
-                                    type: 'error',
+                                resolve({
+                                    success: false,
                                     error: error.message || 'Network error',
+                                    requestId: crypto.randomUUID(),
                                 })
                             }
                         })
                 } catch (error) {
                     cleanup()
-                    reject({
-                        type: 'error',
+                    resolve({
+                        success: false,
                         error:
                             error instanceof Error
                                 ? error.message
                                 : 'Unknown error',
+                        requestId: crypto.randomUUID(),
                     })
                 }
             })
