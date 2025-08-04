@@ -22,7 +22,7 @@ const aiFlashcardsSchema = z.object({
 
 interface SSEMessage {
     type: 'progress' | 'success' | 'error' | 'rate_limit'
-    data?: any
+    data?: unknown
     error?: string
     progress?: {
         step: string
@@ -147,6 +147,7 @@ function createSSEResponse(
                     try {
                         controller.close()
                     } catch (e) {
+                        console.warn('Stream close error:', e)
                         // Stream might already be closed
                     }
                 }
@@ -157,6 +158,7 @@ function createSSEResponse(
             try {
                 controller?.close()
             } catch (e) {
+                console.warn('Stream cancel error:', e)
                 // Stream might already be closed
             }
         },
@@ -196,6 +198,7 @@ async function processAIRequest(
                     )
                 )
             } catch (e) {
+                console.warn('Progress send error:', e)
                 // Client might have disconnected
             }
         }
@@ -236,6 +239,7 @@ async function processAIRequest(
                 encoder.encode(`data: ${JSON.stringify(errorMessage)}\n\n`)
             )
         } catch (e) {
+            console.warn('Error send error:', e)
             // Client might have disconnected
         }
     }
