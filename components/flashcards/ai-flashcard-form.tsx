@@ -250,8 +250,7 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
                                     className="h-2"
                                 />
                                 <p className="text-muted-foreground text-xs">
-                                    {progress.percentage}%
-                                    complete
+                                    {progress.percentage}% complete
                                 </p>
                             </div>
                         </div>

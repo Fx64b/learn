@@ -1,329 +1,213 @@
-import { useCallback, useRef, useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
 
-interface ProgressData {
+interface GenerateParams {
+    prompt: string
+    deckId: string
+    file?: File
+}
+
+interface Progress {
     step: string
     percentage: number
     message: string
 }
 
-interface SSEMessage {
-    type: 'progress' | 'success' | 'error' | 'rate_limit'
-    data?: {
-        success?: boolean
-        message?: string
-        cardsCreated?: number
-        tier?: string
-        remaining?: number
-        requiresPro?: boolean
-        paymentIssue?: boolean
-        resetTime?: Date
-        requestId?: string
-        error?: string
-    }
-    error?: string
-    progress?: ProgressData
-}
-
-interface UseAIFlashcardsResult {
-    isGenerating: boolean
-    progress: ProgressData | null
-    generateFlashcards: (params: {
-        deckId: string
-        prompt: string
-        file?: File
-    }) => Promise<{
-        success?: boolean
-        message?: string
-        cardsCreated?: number
-        tier?: string
-        remaining?: number
-        requiresPro?: boolean
-        paymentIssue?: boolean
-        resetTime?: Date
-        requestId?: string
-        error?: string
-    }>
-    cancelGeneration: () => void
-}
-
-export function useAIFlashcards(): UseAIFlashcardsResult {
+export function useAIFlashcards() {
     const [isGenerating, setIsGenerating] = useState(false)
-    const [progress, setProgress] = useState<ProgressData | null>(null)
+    const [progress, setProgress] = useState<Progress | null>(null)
     const eventSourceRef = useRef<EventSource | null>(null)
     const abortControllerRef = useRef<AbortController | null>(null)
 
-    const cancelGeneration = useCallback(() => {
+    const cleanup = useCallback(() => {
+        // Close SSE connection
         if (eventSourceRef.current) {
             eventSourceRef.current.close()
             eventSourceRef.current = null
         }
+
+        // Abort any pending requests
         if (abortControllerRef.current) {
             abortControllerRef.current.abort()
             abortControllerRef.current = null
         }
+
         setIsGenerating(false)
         setProgress(null)
     }, [])
 
     const generateFlashcards = useCallback(
-        async (params: {
-            deckId: string
-            prompt: string
-            file?: File
-        }): Promise<{
-            success?: boolean
-            message?: string
-            cardsCreated?: number
-            tier?: string
-            remaining?: number
-            requiresPro?: boolean
-            paymentIssue?: boolean
-            resetTime?: Date
-            requestId?: string
-            error?: string
-        }> => {
+        async (params: GenerateParams) => {
+            // Cleanup any existing operations
+            cleanup()
+
             return new Promise((resolve, reject) => {
-                const processGeneration = async () => {
-                    try {
-                        // Cancel any existing generation
-                        cancelGeneration()
+                try {
+                    setIsGenerating(true)
+                    setProgress({
+                        step: 'initializing',
+                        percentage: 0,
+                        message: 'Initializing AI generation...',
+                    })
 
-                        setIsGenerating(true)
-                        setProgress({
-                            step: 'starting',
-                            percentage: 0,
-                            message: 'Initializing AI flashcard generation...',
-                        })
+                    // Create FormData for file upload
+                    const formData = new FormData()
+                    formData.append('prompt', params.prompt)
+                    formData.append('deckId', params.deckId)
+                    if (params.file) {
+                        formData.append('file', params.file)
+                    }
 
-                        let fileId: string | undefined
-                        let fileType: string | undefined
+                    // Create abort controller
+                    const abortController = new AbortController()
+                    abortControllerRef.current = abortController
 
-                        // Handle file upload if provided
-                        if (params.file) {
-                            setProgress({
-                                step: 'file_upload',
-                                percentage: 5,
-                                message: 'Uploading file...',
-                            })
+                    // Use SSE for real-time progress updates
+                    const url = new URL(
+                        '/api/ai-flashcards',
+                        window.location.origin
+                    )
 
-                            try {
-                                const formData = new FormData()
-                                formData.append('file', params.file)
+                    // First, send the request to trigger processing
+                    fetch(url, {
+                        method: 'POST',
+                        body: formData,
+                        signal: abortController.signal,
+                        headers: {
+                            Accept: 'text/event-stream',
+                        },
+                    })
+                        .then((response) => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP ${response.status}`)
+                            }
 
-                                const uploadResponse = await fetch('/api/ai-flashcards/upload', {
-                                    method: 'POST',
-                                    body: formData,
+                            if (!response.body) {
+                                throw new Error('No response body')
+                            }
+
+                            // Handle SSE stream
+                            const reader = response.body.getReader()
+                            const decoder = new TextDecoder()
+
+                            function readStream(): Promise<void> {
+                                return reader.read().then(({ done, value }) => {
+                                    if (done) {
+                                        cleanup()
+                                        return
+                                    }
+
+                                    const chunk = decoder.decode(value, {
+                                        stream: true,
+                                    })
+                                    const lines = chunk.split('\n')
+
+                                    for (const line of lines) {
+                                        if (line.startsWith('data: ')) {
+                                            try {
+                                                const data = JSON.parse(
+                                                    line.slice(6)
+                                                )
+
+                                                if (data.type === 'progress') {
+                                                    setProgress({
+                                                        step:
+                                                            data.progress
+                                                                ?.step ||
+                                                            'processing',
+                                                        percentage:
+                                                            data.progress
+                                                                ?.percentage ||
+                                                            0,
+                                                        message:
+                                                            data.progress
+                                                                ?.message ||
+                                                            'Processing...',
+                                                    })
+                                                } else if (
+                                                    data.type === 'success'
+                                                ) {
+                                                    cleanup()
+                                                    resolve(data.data)
+                                                    return
+                                                } else if (
+                                                    data.type === 'error'
+                                                ) {
+                                                    cleanup()
+                                                    reject({
+                                                        type: 'error',
+                                                        error: data.error,
+                                                        data: data.data,
+                                                    })
+                                                    return
+                                                } else if (
+                                                    data.type === 'rate_limit'
+                                                ) {
+                                                    cleanup()
+                                                    reject({
+                                                        type: 'rate_limit',
+                                                        error: data.error,
+                                                        data: data.data,
+                                                    })
+                                                    return
+                                                }
+                                            } catch (parseError) {
+                                                console.error(
+                                                    'Failed to parse SSE message:',
+                                                    parseError
+                                                )
+                                            }
+                                        }
+                                    }
+
+                                    return readStream()
                                 })
+                            }
 
-                                if (!uploadResponse.ok) {
-                                    const errorData = await uploadResponse.json()
-                                    throw new Error(errorData.error || 'File upload failed')
-                                }
+                            return readStream()
+                        })
+                        .catch((error) => {
+                            cleanup()
 
-                                const uploadResult = await uploadResponse.json()
-                                fileId = uploadResult.fileId
-                                fileType = uploadResult.fileType
-                            } catch (uploadError) {
-                                setIsGenerating(false)
-                                setProgress(null)
+                            if (error.name === 'AbortError') {
                                 reject({
                                     type: 'error',
-                                    error: uploadError instanceof Error 
-                                        ? uploadError.message 
-                                        : 'File upload failed',
+                                    error: 'Generation cancelled',
                                 })
-                                return
+                            } else {
+                                reject({
+                                    type: 'error',
+                                    error: error.message || 'Network error',
+                                })
                             }
-                        }
-
-                        // Create abort controller for the fetch request
-                        abortControllerRef.current = new AbortController()
-
-                        // Prepare SSE request body
-                        const sseBody = {
-                            deckId: params.deckId,
-                            prompt: params.prompt,
-                            ...(fileId && fileType ? { fileId, fileType } : {}),
-                        }
-
-                        // Start the SSE request
-                        fetch('/api/ai-flashcards/sse', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify(sseBody),
-                            signal: abortControllerRef.current.signal,
                         })
-                            .then((response) => {
-                                if (!response.ok) {
-                                    if (response.status === 429) {
-                                        // Handle rate limiting
-                                        return response.json().then((data) => {
-                                            setIsGenerating(false)
-                                            setProgress(null)
-                                            reject({
-                                                type: 'rate_limit',
-                                                ...data,
-                                            })
-                                        })
-                                    }
-                                    throw new Error(
-                                        `HTTP ${response.status}: ${response.statusText}`
-                                    )
-                                }
-
-                                if (!response.body) {
-                                    throw new Error('No response body')
-                                }
-
-                                const reader = response.body.getReader()
-                                const decoder = new TextDecoder()
-
-                                const readStream = () => {
-                                    reader
-                                        .read()
-                                        .then(({ done, value }) => {
-                                            if (done) {
-                                                setIsGenerating(false)
-                                                setProgress(null)
-                                                return
-                                            }
-
-                                            const chunk = decoder.decode(value)
-                                            const lines = chunk.split('\n')
-
-                                            for (const line of lines) {
-                                                if (line.startsWith('data: ')) {
-                                                    try {
-                                                        const messageData =
-                                                            line.slice(6)
-                                                        if (messageData.trim()) {
-                                                            const message: SSEMessage =
-                                                                JSON.parse(
-                                                                    messageData
-                                                                )
-
-                                                            switch (message.type) {
-                                                                case 'progress':
-                                                                    if (
-                                                                        message.progress
-                                                                    ) {
-                                                                        setProgress(
-                                                                            message.progress
-                                                                        )
-                                                                    }
-                                                                    break
-
-                                                                case 'success':
-                                                                    setIsGenerating(
-                                                                        false
-                                                                    )
-                                                                    setProgress({
-                                                                        step: 'complete',
-                                                                        percentage: 100,
-                                                                        message:
-                                                                            'Flashcards generated successfully!',
-                                                                    })
-                                                                    resolve(
-                                                                        message.data ||
-                                                                            {}
-                                                                    )
-                                                                    return
-
-                                                                case 'error':
-                                                                    setIsGenerating(
-                                                                        false
-                                                                    )
-                                                                    setProgress(
-                                                                        null
-                                                                    )
-                                                                    reject({
-                                                                        type: 'error',
-                                                                        error: message.error,
-                                                                        data: message.data,
-                                                                    })
-                                                                    return
-
-                                                                case 'rate_limit':
-                                                                    setIsGenerating(
-                                                                        false
-                                                                    )
-                                                                    setProgress(
-                                                                        null
-                                                                    )
-                                                                    reject({
-                                                                        type: 'rate_limit',
-                                                                        error: message.error,
-                                                                        data: message.data,
-                                                                    })
-                                                                    return
-                                                            }
-                                                        }
-                                                    } catch (parseError) {
-                                                        console.error(
-                                                            'Error parsing SSE message:',
-                                                            parseError
-                                                        )
-                                                    }
-                                                }
-                                            }
-
-                                            readStream()
-                                        })
-                                        .catch((error) => {
-                                            if (
-                                                !abortControllerRef.current?.signal
-                                                    .aborted
-                                            ) {
-                                                setIsGenerating(false)
-                                                setProgress(null)
-                                                reject({
-                                                    type: 'error',
-                                                    error:
-                                                        'Stream reading error: ' +
-                                                        error.message,
-                                                })
-                                            }
-                                        })
-                                }
-
-                                readStream()
-                            })
-                            .catch((error) => {
-                                if (!abortControllerRef.current?.signal.aborted) {
-                                    setIsGenerating(false)
-                                    setProgress(null)
-                                    reject({
-                                        type: 'error',
-                                        error: 'Network error: ' + error.message,
-                                    })
-                                }
-                            })
-                    } catch (error) {
-                        setIsGenerating(false)
-                        setProgress(null)
-                        reject({
-                            type: 'error',
-                            error:
-                                'Unexpected error: ' +
-                                (error instanceof Error
-                                    ? error.message
-                                    : 'Unknown error'),
-                        })
-                    }
+                } catch (error) {
+                    cleanup()
+                    reject({
+                        type: 'error',
+                        error:
+                            error instanceof Error
+                                ? error.message
+                                : 'Unknown error',
+                    })
                 }
-
-                processGeneration()
             })
         },
-        [cancelGeneration]
+        [cleanup]
     )
 
+    const cancelGeneration = useCallback(() => {
+        cleanup()
+    }, [cleanup])
+
+    // Cleanup on unmount
+    React.useEffect(() => {
+        return cleanup
+    }, [cleanup])
+
     return {
-        isGenerating,
-        progress,
         generateFlashcards,
         cancelGeneration,
+        isGenerating,
+        progress,
     }
 }

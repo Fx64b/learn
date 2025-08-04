@@ -23,9 +23,17 @@ export async function middleware(req: NextRequest) {
         pathname.startsWith(path)
     )
 
+    const aiApiPaths = ['/api/ai-flashcards']
+    const isAIApiPath = aiApiPaths.some((path) => pathname.startsWith(path))
+
     // Auth routes
     const authRoutes = ['/login', '/verify-request']
     const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route))
+
+    // Block AI API access without authentication
+    if (isAIApiPath && !session) {
+        return new Response('Unauthorized', { status: 401 })
+    }
 
     // If logged in and on auth route
     if (session && isAuthRoute) {
@@ -41,5 +49,8 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-    matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+    matcher: [
+        '/((?!api|_next/static|_next/image|favicon.ico).*)',
+        '/api/ai-flashcards/:path*',
+    ],
 }
