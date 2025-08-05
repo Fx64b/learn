@@ -1,3 +1,21 @@
+## [1.12.1](https://github.com/Fx64b/learn/compare/v1.12.0...v1.12.1) (2025-08-05)
+
+
+### Bug Fixes
+
+* **ai-flashcard-form:** add TODO for potential client-side file content extraction to optimize API requests ([5eabbae](https://github.com/Fx64b/learn/commit/5eabbaea5809473c3279969f32112d9fbfe9a084))
+* **ai-flashcard-form:** enhance progress display and implement authentication for AI API access ([37b235a](https://github.com/Fx64b/learn/commit/37b235a916d3f14c1cd0b9b4d1774cac5e8cc301))
+* **ai-flashcard-form:** improve type safety and error handling in PDF processing ([b807a51](https://github.com/Fx64b/learn/commit/b807a5140f34bc7b24eb1c279230867fd7e29449))
+* **ai-flashcard-form:** simplify progress display by removing step information ([d7691cf](https://github.com/Fx64b/learn/commit/d7691cf2482b9a6096feccda7e29c921ea298e7c))
+* **ai-flashcard-form:** update progress display to remove step information ([b9197b9](https://github.com/Fx64b/learn/commit/b9197b9d8035ca5635fc8eefd39e0bfd8718fba1))
+* **ai-flashcard-form:** X icon to remove file was not clickable ([2af97ac](https://github.com/Fx64b/learn/commit/2af97acddde4ae896456b5ac3ad461e3405304c3))
+* **ai-flashcard-test:** tests failed after changing step name and messages ([461a835](https://github.com/Fx64b/learn/commit/461a83520fce7a6a00df6e80e190e5ce5e4c22ff))
+* **ai-flashcards:** improve code formatting and clean up unused imports ([c846aa2](https://github.com/Fx64b/learn/commit/c846aa2ed3aa416316ff1d006033840948fe1eeb))
+* **ai:** reduce max file size to 5mb for now ([701d57e](https://github.com/Fx64b/learn/commit/701d57ed94f025e3332e43146e6152a48d4e4e3a))
+* **use-ai-flashcards:** enhance error handling and return type for flashcard generation ([f69f591](https://github.com/Fx64b/learn/commit/f69f591eae16af9e22861acdbe59d8f0a1ecd62e))
+* **vercel.json:** add schema definition for Vercel configuration ([ebbed73](https://github.com/Fx64b/learn/commit/ebbed7340f08122bfc629674ac1d751d735c50a2))
+* **vercel.json:** remove unused configurations ([b58295c](https://github.com/Fx64b/learn/commit/b58295ca7b5b464f04a0879c1ee937b57132e4ee))
+
 # [1.12.0](https://github.com/Fx64b/learn/compare/v1.11.0...v1.12.0) (2025-07-31)
 
 
