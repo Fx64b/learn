@@ -108,9 +108,9 @@ describe('useAIFlashcards', () => {
 
         expect(result.current.isGenerating).toBe(true)
         expect(result.current.progress).toEqual({
-            step: 'starting',
+            step: 'initializing',
             percentage: 0,
-            message: 'Initializing AI flashcard generation...',
+            message: 'Initializing AI generation...',
         })
     })
 
