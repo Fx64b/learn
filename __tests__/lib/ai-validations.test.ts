@@ -163,7 +163,7 @@ describe('AI Validation Functions', () => {
             it('should estimate file size from base64', () => {
                 const base64String = 'SGVsbG8gV29ybGQ=' // "Hello World" in base64
                 const estimatedSize = (base64String.length * 3) / 4
-                const maxFileSize = 10 * 1024 * 1024 // 10MB
+                const maxFileSize = 5 * 1024 * 1024 // 5MB
 
                 expect(estimatedSize).toBeLessThan(maxFileSize)
             })
@@ -268,14 +268,14 @@ describe('AI Validation Functions', () => {
 
     describe('Constants and Limits', () => {
         it('should have appropriate file size limits', () => {
-            const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
+            const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
             const MAX_PROMPT_LENGTH = 1000
             const MAX_CARDS_PER_GENERATION = 60
             const MAX_DOCUMENT_LENGTH = 500000 // 500KB
             const PDF_PARSING_TIMEOUT = 10000 // 10 seconds
             const MAX_TEXT_EXTRACTION_LENGTH = 600000 // 600KB
 
-            expect(MAX_FILE_SIZE).toBe(10485760)
+            expect(MAX_FILE_SIZE).toBe(5242880)
             expect(MAX_PROMPT_LENGTH).toBe(1000)
             expect(MAX_CARDS_PER_GENERATION).toBe(60)
             expect(MAX_DOCUMENT_LENGTH).toBe(500000)

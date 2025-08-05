@@ -1,6 +1,7 @@
 'use client'
 
-import { FileText, Loader2, Sparkles, Upload, X } from 'lucide-react'
+import { useAIFlashcards } from '@/lib/hooks/use-ai-flashcards'
+import { FileText, Loader2, Sparkles, Upload, X, XCircle } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { useCallback, useState } from 'react'
@@ -8,27 +9,31 @@ import { useCallback, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 
-import { generateAIFlashcards } from '@/app/actions/ai-flashcards'
-
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { DismissibleWarning } from '@/components/ui/dismissible-warning'
 import { Label } from '@/components/ui/label'
+import { Progress } from '@/components/ui/progress'
 import { Textarea } from '@/components/ui/textarea'
 
 interface AIFlashcardFormProps {
     deckId: string
 }
 
+// TODO: evaluate if it make sense to extract file content client side and just send the text to the api to save request time, bandwitdh and cost
+// For now only consider this if timeout issues persist or if cpu time explodes
+
 export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
     const t = useTranslations('deck.ai')
     const router = useRouter()
     const [prompt, setPrompt] = useState('')
     const [file, setFile] = useState<File | null>(null)
-    const [isGenerating, setIsGenerating] = useState(false)
     const [dragActive, setDragActive] = useState(false)
+
+    const { isGenerating, progress, generateFlashcards, cancelGeneration } =
+        useAIFlashcards()
 
     const handleDrag = useCallback((e: React.DragEvent) => {
         e.preventDefault()
@@ -69,20 +74,6 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
         setFile(null)
     }
 
-    const fileToBase64 = (file: File): Promise<string> => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader()
-            reader.readAsDataURL(file)
-            reader.onload = () => {
-                const base64 = reader.result as string
-                // Remove data URL prefix to get pure base64
-                const base64Content = base64.split(',')[1]
-                resolve(base64Content)
-            }
-            reader.onerror = (error) => reject(error)
-        })
-    }
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
 
@@ -91,29 +82,17 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
             return
         }
 
-        setIsGenerating(true)
-
         try {
-            let fileContent: string | undefined
-            let fileType: string | undefined
-
-            if (file) {
-                // Validate file size (10MB limit)
-                if (file.size > 10 * 1024 * 1024) {
-                    toast.error(t('fileTooLarge', { max: '10MB' }))
-                    setIsGenerating(false)
-                    return
-                }
-
-                fileContent = await fileToBase64(file)
-                fileType = file.type
+            // Validate file size if present
+            if (file && file.size > 5 * 1024 * 1024) {
+                toast.error(t('fileTooLarge', { max: '5MB' }))
+                return
             }
 
-            const result = await generateAIFlashcards({
+            const result = await generateFlashcards({
                 deckId,
                 prompt: prompt.trim(),
-                fileContent,
-                fileType,
+                file: file || undefined,
             })
 
             if (result.requiresPro) {
@@ -132,11 +111,28 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
             } else {
                 toast.error(result.error || t('error'))
             }
-        } catch (error) {
+        } catch (error: unknown) {
             console.error('Error generating flashcards:', error)
-            toast.error(t('unexpectedError'))
-        } finally {
-            setIsGenerating(false)
+
+            if (error && typeof error === 'object' && 'type' in error) {
+                const typedError = error as {
+                    type: string
+                    error?: string
+                    data?: { requiresPro?: boolean }
+                }
+                if (typedError.type === 'rate_limit') {
+                    if (typedError.data?.requiresPro) {
+                        toast.error(typedError.error || t('proRequired'))
+                        router.push('/pricing')
+                    } else {
+                        toast.error(typedError.error || t('rateLimitExceeded'))
+                    }
+                } else {
+                    toast.error(typedError.error || t('unexpectedError'))
+                }
+            } else {
+                toast.error(t('unexpectedError'))
+            }
         }
     }
 
@@ -201,7 +197,7 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
                                         variant="ghost"
                                         size="sm"
                                         onClick={removeFile}
-                                        className="z-10 flex-shrink-0 p-5 hover:bg-muted-foreground/10"
+                                        className="hover:bg-muted-foreground/10 z-10 flex-shrink-0 p-5"
                                     >
                                         <X className="h-4 w-4" />
                                     </Button>
@@ -226,13 +222,41 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
                         </div>
                     </div>
 
-                    {file && file.size > 3 * 1024 * 1024 && (
+                    {file && file.size > 2 * 1024 * 1024 && (
                         <DismissibleWarning
                             id="largeFileUpload"
                             message={t('largeFileWarning')}
                             dismissText={t('dismissWarning')}
                             variant="default"
                         />
+                    )}
+
+                    {progress && (
+                        <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                                <Label className="text-sm font-medium">
+                                    {progress.message}
+                                </Label>
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={cancelGeneration}
+                                    className="h-8 w-8 p-0"
+                                >
+                                    <XCircle className="h-4 w-4" />
+                                </Button>
+                            </div>
+                            <div className="space-y-2">
+                                <Progress
+                                    value={progress.percentage}
+                                    className="h-2"
+                                />
+                                <p className="text-muted-foreground text-xs">
+                                    {progress.percentage}% complete
+                                </p>
+                            </div>
+                        </div>
                     )}
 
                     <Alert>

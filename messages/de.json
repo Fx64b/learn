@@ -346,7 +346,7 @@
             "promptPlaceholder": "z.B. 'Erstelle Karteikarten über Photosynthese' oder 'Generiere Fragen aus diesem Biologie-Lehrbuchkapitel'",
             "documentLabel": "Dokument hochladen (Optional)",
             "dropFile": "PDF-Datei hier hineinziehen oder klicken zum Durchsuchen",
-            "maxFileSize": "Maximale Dateigröße: 10MB",
+            "maxFileSize": "Maximale Dateigröße: 5MB",
             "helpText": "Die KI erstellt personalisierte Karteikarten basierend auf Ihrer Eingabeaufforderung und dem optionalen Dokument. Seien Sie spezifisch für bessere Ergebnisse!",
             "generateButton": "Karteikarten generieren",
             "generating": "Generiere...",

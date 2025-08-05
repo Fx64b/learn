@@ -343,7 +343,7 @@
             "promptPlaceholder": "e.g., 'Create flashcards about photosynthesis' or 'Generate questions from this biology textbook chapter'",
             "documentLabel": "Upload Document (Optional)",
             "dropFile": "Drag and drop a PDF file here, or click to browse",
-            "maxFileSize": "Maximum file size: 10MB",
+            "maxFileSize": "Maximum file size: 5MB",
             "helpText": "AI will create personalized flashcards based on your prompt and optional document. Be specific for better results!",
             "generateButton": "Generate Flashcards",
             "generating": "Generating...",
