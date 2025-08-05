@@ -5,13 +5,5 @@
             "path": "/api/cron/payment-recovery",
             "schedule": "0 12 * * *"
         }
-    ],
-    "functions": {
-        "app/api/ai-flashcards/sse/route.ts": {
-            "maxDuration": 300
-        },
-        "app/api/ai-flashcards/upload/route.ts": {
-            "maxDuration": 300
-        }
-    }
+    ]
 }
