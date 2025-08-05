@@ -22,7 +22,6 @@ interface AIFlashcardFormProps {
     deckId: string
 }
 
-
 // TODO: evaluate if it make sense to extract file content client side and just send the text to the api to save request time, bandwitdh and cost
 // For now only consider this if timeout issues persist or if cpu time explodes
 
@@ -85,8 +84,8 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
 
         try {
             // Validate file size if present
-            if (file && file.size > 10 * 1024 * 1024) {
-                toast.error(t('fileTooLarge', { max: '10MB' }))
+            if (file && file.size > 5 * 1024 * 1024) {
+                toast.error(t('fileTooLarge', { max: '5MB' }))
                 return
             }
 
@@ -223,7 +222,7 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
                         </div>
                     </div>
 
-                    {file && file.size > 3 * 1024 * 1024 && (
+                    {file && file.size > 2 * 1024 * 1024 && (
                         <DismissibleWarning
                             id="largeFileUpload"
                             message={t('largeFileWarning')}

@@ -14,7 +14,7 @@ import { getTranslations } from 'next-intl/server'
 import { createFlashcardsFromJson } from './flashcard'
 
 // Constants
-const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
+const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 const ALLOWED_FILE_TYPES = ['application/pdf']
 const MAX_PROMPT_LENGTH = 1000
 const MAX_CARDS_PER_GENERATION = 55
