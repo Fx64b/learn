@@ -5,13 +5,13 @@ import { checkAIRateLimitWithDetails } from '@/lib/rate-limit/ai-rate-limit'
 import { google } from '@ai-sdk/google'
 import { generateObject } from 'ai'
 import { randomUUID } from 'crypto'
+import { Output } from 'pdf2json'
 import { z } from 'zod'
 
 import { Session, getServerSession } from 'next-auth'
 import { getTranslations } from 'next-intl/server'
 
 import { createFlashcardsFromJson } from './flashcard'
-import { Output } from 'pdf2json'
 
 // Constants
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
@@ -28,7 +28,7 @@ const flashcardSchema = z.object({
             z.object({
                 front: z.string().min(1).max(500),
                 back: z.string().min(1).max(2000),
-            }),
+            })
         )
         .min(1)
         .max(MAX_CARDS_PER_GENERATION + 5), // Allow a few extra for safety to avoid rejection
@@ -58,7 +58,7 @@ interface AIGenerationResult {
 type ProgressCallback = (
     step: string,
     percentage: number,
-    message: string,
+    message: string
 ) => void
 
 // Security logging
@@ -95,7 +95,7 @@ function sanitizeInput(input: string): string {
 // File validation using magic bytes
 function validateFileType(
     buffer: Buffer,
-    declaredType: string,
+    declaredType: string
 ): { isValid: boolean; error?: string } {
     if (declaredType !== 'application/pdf') {
         return { isValid: false, error: 'Only PDF files are supported' }
@@ -117,7 +117,7 @@ function validateFileType(
     const fileString = buffer.toString(
         'ascii',
         0,
-        Math.min(1024, buffer.length),
+        Math.min(1024, buffer.length)
     )
     if (!fileString.includes('%PDF-')) {
         return { isValid: false, error: 'Invalid PDF format' }
@@ -131,7 +131,7 @@ async function parsePDFSecurely(
     buffer: Buffer,
     requestId: string,
     userId: string,
-    onProgress?: ProgressCallback,
+    onProgress?: ProgressCallback
 ): Promise<string> {
     return new Promise(async (resolve, reject) => {
         const timeoutId = setTimeout(() => {
@@ -144,8 +144,8 @@ async function parsePDFSecurely(
             })
             reject(
                 new Error(
-                    'PDF parsing timeout - file may be corrupted or too complex',
-                ),
+                    'PDF parsing timeout - file may be corrupted or too complex'
+                )
             )
         }, PDF_PARSING_TIMEOUT)
 
@@ -178,7 +178,7 @@ async function parsePDFSecurely(
                     const text = extractTextSafely(pdfData)
                     if (text.length < 10) {
                         reject(
-                            new Error('PDF contains insufficient readable text'),
+                            new Error('PDF contains insufficient readable text')
                         )
                         return
                     }
