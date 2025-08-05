@@ -22,6 +22,10 @@ interface AIFlashcardFormProps {
     deckId: string
 }
 
+
+// TODO: evaluate if it make sense to extract file content client side and just send the text to the api to save request time, bandwitdh and cost
+// For now only consider this if timeout issues persist or if cpu time explodes
+
 export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
     const t = useTranslations('deck.ai')
     const router = useRouter()
