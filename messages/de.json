@@ -205,7 +205,11 @@
         "statistics": {
             "title": "Lernstatistik",
             "myProfile": "Mein Profil",
-            "loginPrompt": "Bitte melde dich an, um deine Lernstatistiken zu sehen."
+            "loginPrompt": "Bitte melde dich an, um deine Lernstatistiken zu sehen.",
+            "dueToday": "Heute fällig",
+            "successRate": "Erfolgsquote",
+            "dayStreak": "Tage-Streak",
+            "detailedStats": "Detaillierte Statistiken"
         },
         "categories": {
             "title": "Lernkategorien",
@@ -216,6 +220,12 @@
         "completedGoals": {
             "title": "Abgeschlossene Lernziele",
             "description": "Diese Decks haben ihr Lernzieldatum bereits erreicht"
+        },
+        "quickActions": {
+            "reviewCards": "{count} Karten wiederholen",
+            "noDecksYet": "Noch keine Decks vorhanden",
+            "createFirstDeck": "Erstelle dein erstes Deck um zu beginnen",
+            "createFirstDeckButton": "Erstes Deck erstellen"
         }
     },
     "deck": {
