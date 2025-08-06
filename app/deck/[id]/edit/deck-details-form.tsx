@@ -188,7 +188,7 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
     }
 
     return (
-        <div className="flex w-full max-w-3xl flex-col gap-6">
+        <div className="flex w-full flex-col gap-6">
             <Card className="w-full shadow-md">
                 <CardHeader>
                     <CardTitle className="text-xl md:text-2xl">
