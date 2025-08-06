@@ -83,7 +83,7 @@ export default async function Dashboard({ session }: DashboardProps) {
 
                         {/* Quick Stats - Compact and Essential Only */}
                         {session && progressData && (
-                            <div className="flex flex-wrap justify-between md:justify-start gap-6">
+                            <div className="flex flex-wrap justify-between gap-6 md:justify-start">
                                 <div className="text-center">
                                     <div className="flex items-center gap-1">
                                         <Clock className="h-4 w-4 text-orange-500" />
@@ -117,7 +117,11 @@ export default async function Dashboard({ session }: DashboardProps) {
                                         {t('dashboard.statistics.dayStreak')}
                                     </p>
                                 </div>
-                                <Button className={"ml-auto md:ml-0"} variant="ghost" asChild>
+                                <Button
+                                    className="ml-auto md:ml-0"
+                                    variant="ghost"
+                                    asChild
+                                >
                                     <Link
                                         href="/profile?tab=stats"
                                         className="flex items-center gap-1"
@@ -147,7 +151,11 @@ export default async function Dashboard({ session }: DashboardProps) {
                 {/* Quick Actions */}
                 <div className="mb-8 flex flex-wrap gap-3">
                     {totalDueCards > 0 && (
-                        <Button size="lg" asChild className="shadow-sm w-full sm:w-auto">
+                        <Button
+                            size="lg"
+                            asChild
+                            className="w-full shadow-sm sm:w-auto"
+                        >
                             <Link href="/learn/due">
                                 <Clock className="mr-2 h-4 w-4" />
                                 {t('dashboard.quickActions.reviewCards', {
@@ -156,17 +164,32 @@ export default async function Dashboard({ session }: DashboardProps) {
                             </Link>
                         </Button>
                     )}
-                    <Button variant="outline" size="lg" asChild className="w-full sm:w-auto">
+                    <Button
+                        variant="outline"
+                        size="lg"
+                        asChild
+                        className="w-full sm:w-auto"
+                    >
                         <Link href="/learn/all">
                             {t('dashboard.categories.reviewAll')}
                         </Link>
                     </Button>
-                    <Button variant="outline" size="lg" asChild className="w-full sm:w-auto">
+                    <Button
+                        variant="outline"
+                        size="lg"
+                        asChild
+                        className="w-full sm:w-auto"
+                    >
                         <Link href="/learn/difficult">
                             {t('dashboard.categories.practiceDifficult')}
                         </Link>
                     </Button>
-                    <Button variant="outline" size="lg" asChild className="mt-2 mx-auto sm:mx-0 sm:mt-0">
+                    <Button
+                        variant="outline"
+                        size="lg"
+                        asChild
+                        className="mx-auto mt-2 sm:mx-0 sm:mt-0"
+                    >
                         <Link href="/deck/create">
                             <Plus className="mr-2 h-4 w-4" />
                             {t('dashboard.categories.newDeck')}
