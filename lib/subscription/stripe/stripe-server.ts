@@ -41,16 +41,7 @@ if (isProduction && isTestMode) {
 }
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: '2025-06-30.basil',
+    apiVersion: '2025-07-30.basil',
     typescript: true,
     telemetry: false,
 })
-
-export const stripeConfig = {
-    isTestMode,
-    webhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
-    priceIds: {
-        proMonthly: process.env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PRICE_ID!,
-        proYearly: process.env.NEXT_PUBLIC_STRIPE_PRO_YEARLY_PRICE_ID!,
-    },
-} as const
