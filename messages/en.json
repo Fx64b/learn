@@ -202,7 +202,11 @@
         "statistics": {
             "title": "Learning Statistics",
             "myProfile": "My Profile",
-            "loginPrompt": "Please sign in to see your learning statistics."
+            "loginPrompt": "Please sign in to see your learning statistics.",
+            "dueToday": "Due today",
+            "successRate": "Success rate",
+            "dayStreak": "Day streak",
+            "detailedStats": "Detailed stats"
         },
         "categories": {
             "title": "Learning Categories",
@@ -213,6 +217,12 @@
         "completedGoals": {
             "title": "Completed Learning Goals",
             "description": "These decks have already reached their target date"
+        },
+        "quickActions": {
+            "reviewCards": "Review {count} cards",
+            "noDecksYet": "No decks yet",
+            "createFirstDeck": "Create your first deck to start learning",
+            "createFirstDeckButton": "Create your first deck"
         }
     },
     "deck": {

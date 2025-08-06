@@ -88,7 +88,7 @@ export default async function ProfilePage({
                         <span>{t('tabs.billing')}</span>
                     </TabsTrigger>
                     <TabsTrigger
-                        value="progress"
+                        value="stats"
                         className="flex items-center gap-2"
                     >
                         <BarChart2 className="h-4 w-4" />
@@ -126,7 +126,7 @@ export default async function ProfilePage({
                     )}
                 </TabsContent>
 
-                <TabsContent value="progress" className="space-y-4">
+                <TabsContent value="stats" className="space-y-4">
                     <div className="bg-card rounded-lg border p-6 shadow-sm">
                         {progressData ? (
                             <ProgressDashboard data={progressData} />
