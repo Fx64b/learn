@@ -1,3 +1,16 @@
+# [1.13.0](https://github.com/Fx64b/learn/compare/v1.12.1...v1.13.0) (2025-08-14)
+
+
+### Bug Fixes
+
+* **dashboard:** improve mobile layout and prevent overflow ([f905acb](https://github.com/Fx64b/learn/commit/f905acb068d4ca81120857f9709d62d3d1d8419d))
+* **deck-details:** remove max-width constraint for improved layout ([0cde585](https://github.com/Fx64b/learn/commit/0cde585e15dd97210f1e298cc7128cc73e1cef7c))
+
+
+### Features
+
+* **dashboard:** redesign layout and add quick stats for improved user experience ([58f13b5](https://github.com/Fx64b/learn/commit/58f13b5c04189f04a43a0828893c5f634c08b405))
+
 ## [1.12.1](https://github.com/Fx64b/learn/compare/v1.12.0...v1.12.1) (2025-08-05)
 
 
