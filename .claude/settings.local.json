@@ -1,0 +1,6 @@
+{
+    "permissions": {
+        "allow": ["Bash(npm run lint)", "Bash(npm run build:*)", "Bash(rg:*)"],
+        "deny": []
+    }
+}
