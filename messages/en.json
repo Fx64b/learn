@@ -124,12 +124,21 @@
             "orWriteAnEmail": "\nor write us an email at"
         },
         "email": {
-            "subject": "Sign in to Flashcard App",
-            "title": "Flashcard App",
-            "message": "Click the following link to sign in:",
-            "button": "Sign in",
-            "ignore": "If you didn't request this email, you can safely ignore it.",
-            "textVersion": "Sign in to Flashcard App by clicking this link: {url}"
+            "textVersion": "Sign in to Learn by clicking this link: {url}",
+            "welcome": {
+                "subject": "Welcome to Learn - Verify your email",
+                "heading": "Welcome to Learn!",
+                "message": "Thank you for signing up! We're excited to have you on board. Click the button below to verify your email address and start creating your first flashcard deck.",
+                "button": "Verify Email & Get Started",
+                "footer": "If you didn't create an account with Learn, you can safely ignore this email."
+            },
+            "login": {
+                "subject": "Sign in to Learn",
+                "heading": "Welcome back!",
+                "message": "Click the button below to securely sign in to your Learn account. This link will expire in 24 hours for your security.",
+                "button": "Sign In to Your Account",
+                "footer": "If you didn't request this login link, you can safely ignore this email."
+            }
         }
     },
     "landing": {
