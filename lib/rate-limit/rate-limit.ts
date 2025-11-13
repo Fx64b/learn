@@ -27,11 +27,59 @@ export const limits = redis
               limiter: Ratelimit.slidingWindow(100, '1h'), // 100 general requests per hour
               analytics: true,
           }),
+          studyReview: new Ratelimit({
+              redis: redis,
+              limiter: Ratelimit.slidingWindow(900, '1h'), // 900 reviews per hour (~15 per minute)
+              analytics: true,
+          }),
+          studySession: new Ratelimit({
+              redis: redis,
+              limiter: Ratelimit.slidingWindow(200, '1h'), // 200 study session saves per hour
+              analytics: true,
+          }),
+          deckMutation: new Ratelimit({
+              redis: redis,
+              limiter: Ratelimit.slidingWindow(100, '1h'), // 100 deck mutations per hour
+              analytics: true,
+          }),
+          cardMutation: new Ratelimit({
+              redis: redis,
+              limiter: Ratelimit.slidingWindow(100, '1h'), // 100 card mutations per hour
+              analytics: true,
+          }),
+          dataRetrieval: new Ratelimit({
+              redis: redis,
+              limiter: Ratelimit.slidingWindow(500, '1h'), // 500 data retrievals per hour (anti-scraping)
+              analytics: true,
+          }),
+          export: new Ratelimit({
+              redis: redis,
+              limiter: Ratelimit.slidingWindow(20, '1h'), // 20 exports per hour (resource intensive)
+              analytics: true,
+          }),
+          preferences: new Ratelimit({
+              redis: redis,
+              limiter: Ratelimit.slidingWindow(50, '1h'), // 50 preference updates per hour
+              analytics: true,
+          }),
+          paymentStatus: new Ratelimit({
+              redis: redis,
+              limiter: Ratelimit.slidingWindow(100, '1h'), // 100 payment status checks per hour
+              analytics: true,
+          }),
       }
     : {
           email: null,
           bulkCreate: null,
           general: null,
+          studyReview: null,
+          studySession: null,
+          deckMutation: null,
+          cardMutation: null,
+          dataRetrieval: null,
+          export: null,
+          preferences: null,
+          paymentStatus: null,
       }
 
 export async function checkRateLimit(

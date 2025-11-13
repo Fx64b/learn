@@ -3,6 +3,7 @@
 import { db } from '@/db'
 import { studySessions } from '@/db/schema'
 import { authOptions } from '@/lib/auth'
+import { checkRateLimit } from '@/lib/rate-limit/rate-limit'
 import { eq, sql } from 'drizzle-orm'
 import { nanoid } from 'nanoid'
 
@@ -25,6 +26,18 @@ export async function saveStudySession(data: {
         const session = await getServerSession(authOptions)
         if (!session?.user?.id) {
             return { success: false, error: authT('notAuthenticated') }
+        }
+
+        const rateLimitResult = await checkRateLimit(
+            `user:${session.user.id}:study-session`,
+            'studySession'
+        )
+
+        if (!rateLimitResult.success) {
+            return {
+                success: false,
+                error: authT('ratelimitExceeded'),
+            }
         }
 
         const id = data.id || nanoid()
@@ -70,6 +83,15 @@ export async function getTimeOfDayAnalysis() {
         const session = await getServerSession(authOptions)
         if (!session?.user?.id) {
             return { success: false, data: [], mostProductiveHour: null }
+        }
+
+        const rateLimitResult = await checkRateLimit(
+            `user:${session.user.id}:data-retrieval`,
+            'dataRetrieval'
+        )
+
+        if (!rateLimitResult.success) {
+            return { success: false, data: [], rawData: [] }
         }
 
         const hourlyData = await db

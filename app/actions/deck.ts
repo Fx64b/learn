@@ -2,6 +2,7 @@
 
 import * as dbUtils from '@/db/utils'
 import { authOptions } from '@/lib/auth'
+import { checkRateLimit } from '@/lib/rate-limit/rate-limit'
 import { DeckType } from '@/types'
 
 import { getServerSession } from 'next-auth'
@@ -10,11 +11,24 @@ import { revalidatePath } from 'next/cache'
 
 export async function createDeck(formData: FormData) {
     const t = await getTranslations('deck.create')
+    const authT = await getTranslations('auth')
 
     try {
         const session = await getServerSession(authOptions)
         if (!session?.user?.id) {
-            return { success: false, error: 'Not authenticated' }
+            return { success: false, error: authT('notAuthenticated') }
+        }
+
+        const rateLimitResult = await checkRateLimit(
+            `user:${session.user.id}:deck-create`,
+            'deckMutation'
+        )
+
+        if (!rateLimitResult.success) {
+            return {
+                success: false,
+                error: authT('ratelimitExceeded'),
+            }
         }
 
         const title = formData.get('title') as string
@@ -47,6 +61,15 @@ export async function getAllDecks(): Promise<DeckType[]> {
             return []
         }
 
+        const rateLimitResult = await checkRateLimit(
+            `user:${session.user.id}:data-retrieval`,
+            'dataRetrieval'
+        )
+
+        if (!rateLimitResult.success) {
+            return []
+        }
+
         return await dbUtils.getAllDecks(session.user.id)
     } catch (error) {
         console.error('Error loading decks:', error)
@@ -62,6 +85,18 @@ export async function updateDeck(formData: FormData) {
         const session = await getServerSession(authOptions)
         if (!session?.user?.id) {
             return { success: false, error: authT('notAuthenticated') }
+        }
+
+        const rateLimitResult = await checkRateLimit(
+            `user:${session.user.id}:deck-update`,
+            'deckMutation'
+        )
+
+        if (!rateLimitResult.success) {
+            return {
+                success: false,
+                error: authT('ratelimitExceeded'),
+            }
         }
 
         const id = formData.get('id') as string
@@ -104,6 +139,18 @@ export async function resetDeckProgress(deckId: string) {
             return { success: false, error: authT('notAuthenticated') }
         }
 
+        const rateLimitResult = await checkRateLimit(
+            `user:${session.user.id}:deck-reset`,
+            'deckMutation'
+        )
+
+        if (!rateLimitResult.success) {
+            return {
+                success: false,
+                error: authT('ratelimitExceeded'),
+            }
+        }
+
         const existingDeck = await dbUtils.getDeckById(deckId, session.user.id)
         if (!existingDeck) {
             return { success: false, error: t('edit.notFound') }
@@ -131,6 +178,18 @@ export async function deleteDeck(deckId: string) {
         const session = await getServerSession(authOptions)
         if (!session?.user?.id) {
             return { success: false, error: authT('notAuthenticated') }
+        }
+
+        const rateLimitResult = await checkRateLimit(
+            `user:${session.user.id}:deck-delete`,
+            'deckMutation'
+        )
+
+        if (!rateLimitResult.success) {
+            return {
+                success: false,
+                error: authT('ratelimitExceeded'),
+            }
         }
 
         const existingDeck = await dbUtils.getDeckById(deckId, session.user.id)
