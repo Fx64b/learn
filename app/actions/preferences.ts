@@ -3,6 +3,7 @@
 import { db } from '@/db'
 import { userPreferences } from '@/db/schema'
 import { authOptions } from '@/lib/auth'
+import { checkRateLimit } from '@/lib/rate-limit/rate-limit'
 import { eq } from 'drizzle-orm'
 
 import { getServerSession } from 'next-auth'
@@ -12,6 +13,15 @@ import { revalidatePath } from 'next/cache'
 export async function getUserPreferences() {
     const session = await getServerSession(authOptions)
     if (!session?.user?.id) {
+        return null
+    }
+
+    const rateLimitResult = await checkRateLimit(
+        `user:${session.user.id}:data-retrieval`,
+        'dataRetrieval'
+    )
+
+    if (!rateLimitResult.success) {
         return null
     }
 
@@ -45,6 +55,18 @@ export async function updateUserPreferences(data: {
         const session = await getServerSession(authOptions)
         if (!session?.user?.id) {
             return { success: false, error: authT('notAuthenticated') }
+        }
+
+        const rateLimitResult = await checkRateLimit(
+            `user:${session.user.id}:preferences`,
+            'preferences'
+        )
+
+        if (!rateLimitResult.success) {
+            return {
+                success: false,
+                error: authT('ratelimitExceeded'),
+            }
         }
 
         const existing = await db

@@ -1,4 +1,5 @@
 import { authOptions } from '@/lib/auth'
+import { checkRateLimit } from '@/lib/rate-limit/rate-limit'
 import { getUserRecoveryStatus } from '@/lib/subscription/stripe/payment-recovery'
 import { stripe } from '@/lib/subscription/stripe/stripe-server'
 
@@ -11,6 +12,18 @@ export async function GET() {
 
         if (!session?.user?.id) {
             return NextResponse.json({ recoveryStatus: null })
+        }
+
+        const rateLimitResult = await checkRateLimit(
+            `user:${session.user.id}:payment-status`,
+            'paymentStatus'
+        )
+
+        if (!rateLimitResult.success) {
+            return NextResponse.json(
+                { error: 'Rate limit exceeded' },
+                { status: 429 }
+            )
         }
 
         const recoveryEvent = await getUserRecoveryStatus(session.user.id)

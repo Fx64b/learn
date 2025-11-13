@@ -3,6 +3,7 @@
 import { db } from '@/db'
 import { cardReviews, decks, flashcards, reviewEvents } from '@/db/schema'
 import { authOptions } from '@/lib/auth'
+import { checkRateLimit } from '@/lib/rate-limit/rate-limit'
 import { and, desc, eq, gte, isNull, lte, or, sql } from 'drizzle-orm'
 
 import { getServerSession } from 'next-auth'
@@ -12,6 +13,15 @@ import { getTimeOfDayAnalysis } from '@/app/actions/study-session'
 export async function getLearningProgress() {
     const session = await getServerSession(authOptions)
     if (!session?.user?.id) return null
+
+    const rateLimitResult = await checkRateLimit(
+        `user:${session.user.id}:data-retrieval`,
+        'dataRetrieval'
+    )
+
+    if (!rateLimitResult.success) {
+        return null
+    }
 
     const userId = session.user.id
     const now = new Date()

@@ -63,7 +63,8 @@ export async function createFlashcardsFromJson(data: {
         }
 
         const rateLimitResult = await checkRateLimit(
-            `user:${session.user.id}:bulk-create`
+            `user:${session.user.id}:bulk-create`,
+            'bulkCreate'
         )
 
         if (!rateLimitResult.success) {
@@ -121,6 +122,15 @@ export async function getFlashcardsByDeckId(deckId: string) {
             return []
         }
 
+        const rateLimitResult = await checkRateLimit(
+            `user:${session.user.id}:data-retrieval`,
+            'dataRetrieval'
+        )
+
+        if (!rateLimitResult.success) {
+            return []
+        }
+
         return await dbUtils.getFlashcardsByDeckId(deckId, session.user.id)
     } catch (error) {
         console.error('Error loading flashcards:', error)
@@ -136,6 +146,18 @@ export async function reviewCard(flashcardId: string, rating: number) {
         const session = await getServerSession(authOptions)
         if (!session?.user?.id) {
             return { success: false, error: authT('notAuthenticated') }
+        }
+
+        const rateLimitResult = await checkRateLimit(
+            `user:${session.user.id}:review`,
+            'studyReview'
+        )
+
+        if (!rateLimitResult.success) {
+            return {
+                success: false,
+                error: authT('ratelimitExceeded'),
+            }
         }
 
         const result = await dbUtils.reviewCard({
@@ -165,6 +187,18 @@ export async function updateFlashcard(data: {
         const session = await getServerSession(authOptions)
         if (!session?.user?.id) {
             return { success: false, error: authT('notAuthenticated') }
+        }
+
+        const rateLimitResult = await checkRateLimit(
+            `user:${session.user.id}:card-update`,
+            'cardMutation'
+        )
+
+        if (!rateLimitResult.success) {
+            return {
+                success: false,
+                error: authT('ratelimitExceeded'),
+            }
         }
 
         const flashcard = await dbUtils.getFlashcardById(data.id)
@@ -205,6 +239,18 @@ export async function deleteFlashcard(id: string) {
         const session = await getServerSession(authOptions)
         if (!session?.user?.id) {
             return { success: false, error: authT('notAuthenticated') }
+        }
+
+        const rateLimitResult = await checkRateLimit(
+            `user:${session.user.id}:card-delete`,
+            'cardMutation'
+        )
+
+        if (!rateLimitResult.success) {
+            return {
+                success: false,
+                error: authT('ratelimitExceeded'),
+            }
         }
 
         const flashcard = await dbUtils.getFlashcardById(id)

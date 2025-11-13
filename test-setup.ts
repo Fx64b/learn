@@ -112,6 +112,29 @@ vi.mock('drizzle-orm', () => ({
     sql: vi.fn(),
 }))
 
+// Mock rate limiting
+vi.mock('@/lib/rate-limit/rate-limit', () => ({
+    checkRateLimit: vi.fn().mockResolvedValue({
+        success: true,
+        limit: 100,
+        reset: Date.now() + 3600000,
+        remaining: 99,
+    }),
+    limits: {
+        email: null,
+        bulkCreate: null,
+        general: null,
+        studyReview: null,
+        studySession: null,
+        deckMutation: null,
+        cardMutation: null,
+        dataRetrieval: null,
+        export: null,
+        preferences: null,
+        paymentStatus: null,
+    },
+}))
+
 // Mock crypto module for nanoid
 Object.defineProperty(global, 'crypto', {
     value: {
