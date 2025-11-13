@@ -124,12 +124,21 @@
             "orWriteAnEmail": "\noder schreibe uns eine E-Mail an"
         },
         "email": {
-            "subject": "Anmeldung bei Flashcard App",
-            "title": "Flashcard App",
-            "message": "Klicke auf den folgenden Link, um dich anzumelden:",
-            "button": "Einloggen",
-            "ignore": "Wenn du diese E-Mail nicht angefordert hast, kannst du sie ignorieren.",
-            "textVersion": "Melde dich bei der Flashcard App an, indem du auf diesen Link klickst: {url}"
+            "textVersion": "Melde dich bei Learn an, indem du auf diesen Link klickst: {url}",
+            "welcome": {
+                "subject": "Willkommen bei Learn - Bestätige deine E-Mail",
+                "heading": "Willkommen bei Learn!",
+                "message": "Vielen Dank für deine Anmeldung! Wir freuen uns, dich dabei zu haben. Klicke auf die Schaltfläche unten, um deine E-Mail-Adresse zu bestätigen und dein erstes Kartendeck zu erstellen.",
+                "button": "E-Mail bestätigen & Loslegen",
+                "footer": "Wenn du kein Konto bei Learn erstellt hast, kannst du diese E-Mail ignorieren."
+            },
+            "login": {
+                "subject": "Anmeldung bei Learn",
+                "heading": "Willkommen zurück!",
+                "message": "Klicke auf die Schaltfläche unten, um dich sicher bei deinem Learn-Konto anzumelden. Dieser Link läuft aus Sicherheitsgründen nach 24 Stunden ab.",
+                "button": "Bei deinem Konto anmelden",
+                "footer": "Wenn du diesen Anmeldelink nicht angefordert hast, kannst du diese E-Mail ignorieren."
+            }
         }
     },
     "landing": {

@@ -1,6 +1,9 @@
 import { db } from '@/db'
+import { users } from '@/db/auth-schema'
+import { generateLoginEmail, generateWelcomeEmail } from '@/lib/email-templates'
 import { checkRateLimit } from '@/lib/rate-limit/rate-limit'
 import { DrizzleAdapter } from '@auth/drizzle-adapter'
+import { eq } from 'drizzle-orm'
 import { Resend } from 'resend'
 
 import { NextAuthOptions } from 'next-auth'
@@ -35,30 +38,63 @@ export const authOptions: NextAuthOptions = {
                 }
 
                 try {
+                    // Check if user exists to determine if this is a signup or login
+                    const existingUser = await db
+                        .select()
+                        .from(users)
+                        .where(eq(users.email, email))
+                        .limit(1)
+
+                    const isNewUser = existingUser.length === 0
+                    const logoUrl = 'https://learn.fx64b.dev/logo-dark.png'
+                    const siteName = 'Learn'
+
+                    let htmlContent: string
+                    let subject: string
+
+                    if (isNewUser) {
+                        // Welcome email for new users
+                        subject = t('email.welcome.subject')
+                        htmlContent = generateWelcomeEmail({
+                            url,
+                            siteName,
+                            logoUrl,
+                            title: subject,
+                            heading: t('email.welcome.heading'),
+                            message: t('email.welcome.message'),
+                            buttonText: t('email.welcome.button'),
+                            footerText: t('email.welcome.footer'),
+                        })
+                    } else {
+                        // Login email for returning users
+                        subject = t('email.login.subject')
+                        htmlContent = generateLoginEmail({
+                            url,
+                            siteName,
+                            logoUrl,
+                            title: subject,
+                            heading: t('email.login.heading'),
+                            message: t('email.login.message'),
+                            buttonText: t('email.login.button'),
+                            footerText: t('email.login.footer'),
+                        })
+                    }
+
                     const result = await resend.emails.send({
                         from,
                         to: email,
-                        subject: t('email.subject'),
-                        html: `
-              <div style="font-family: sans-serif; padding: 24px;">
-                <h1>${t('email.title')}</h1>
-                <p>${t('email.message')}</p>
-                <a href="${url}" style="display: inline-block; padding: 12px 24px; background-color: #4F46E5; color: white; text-decoration: none; border-radius: 4px;">
-                  ${t('email.button')}
-                </a>
-                <p style="margin-top: 24px; color: #666;">
-                  ${t('email.ignore')}
-                </p>
-              </div>
-            `,
-                        text: `${t('email.textVersion', { url: url })}`, // wtf,... FIXME
+                        subject,
+                        html: htmlContent,
+                        text: `${t('email.textVersion', { url })}`,
                     })
 
                     if (result.error) {
                         throw new Error(result.error.message)
                     }
 
-                    console.log(`Verification email sent to ${email}`)
+                    console.log(
+                        `${isNewUser ? 'Welcome' : 'Login'} email sent to ${email}`
+                    )
                 } catch (error) {
                     console.error('Error sending verification email', error)
                     throw new Error(
