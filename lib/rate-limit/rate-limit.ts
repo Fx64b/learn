@@ -29,17 +29,17 @@ export const limits = redis
           }),
           studyReview: new Ratelimit({
               redis: redis,
-              limiter: Ratelimit.slidingWindow(300, '1h'), // 300 reviews per hour (~5 per minute)
+              limiter: Ratelimit.slidingWindow(900, '1h'), // 900 reviews per hour (~15 per minute)
               analytics: true,
           }),
           studySession: new Ratelimit({
               redis: redis,
-              limiter: Ratelimit.slidingWindow(100, '1h'), // 100 study session saves per hour
+              limiter: Ratelimit.slidingWindow(200, '1h'), // 200 study session saves per hour
               analytics: true,
           }),
           deckMutation: new Ratelimit({
               redis: redis,
-              limiter: Ratelimit.slidingWindow(50, '1h'), // 50 deck mutations per hour
+              limiter: Ratelimit.slidingWindow(100, '1h'), // 100 deck mutations per hour
               analytics: true,
           }),
           cardMutation: new Ratelimit({

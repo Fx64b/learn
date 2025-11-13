@@ -1,8 +1,9 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 
+import { getServerSession } from 'next-auth'
+
 import { getExportableFlashcards } from '@/app/actions/export'
 import * as flashcardActions from '@/app/actions/flashcard'
-import { getServerSession } from 'next-auth'
 
 // Mock dependencies
 vi.mock('@/app/actions/flashcard')
