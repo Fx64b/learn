@@ -1,3 +1,16 @@
+# [1.14.0](https://github.com/Fx64b/learn/compare/v1.13.0...v1.14.0) (2025-11-17)
+
+
+### Bug Fixes
+
+* **auth:** use correct email rate limit instead of general limit ([0af2993](https://github.com/Fx64b/learn/commit/0af29932bc33a4495f7e76585dd12be503ce8cb8))
+
+
+### Features
+
+* add comprehensive rate limiting to all critical application features ([6408000](https://github.com/Fx64b/learn/commit/64080004db796f3be84e7ce888987a6266e734fe))
+* **auth:** improve signup email by differentiating between first time signup or login and improving design ([74f31f1](https://github.com/Fx64b/learn/commit/74f31f154891a4cde5d13034f2a1392e7b6b0771))
+
 # [1.13.0](https://github.com/Fx64b/learn/compare/v1.12.1...v1.13.0) (2025-08-14)
 
 
