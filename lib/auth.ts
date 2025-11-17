@@ -31,7 +31,10 @@ export const authOptions: NextAuthOptions = {
             }) => {
                 const t = await getTranslations('auth')
 
-                const rateLimitResult = await checkRateLimit(`email:${email}`)
+                const rateLimitResult = await checkRateLimit(
+                    `email:${email}`,
+                    'email'
+                )
 
                 if (!rateLimitResult.success) {
                     throw new Error(t('ratelimitExceeded'))
