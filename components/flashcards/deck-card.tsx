@@ -1,3 +1,4 @@
+import { parseCategoryToTags } from '@/lib/category-parser'
 import { fromUTCDateOnly } from '@/lib/date'
 import { DeckType } from '@/types'
 import { format } from 'date-fns'
@@ -38,17 +39,7 @@ export async function DeckCard({
 }: DeckCardProps) {
     const t = await getTranslations()
 
-    // Parse tags from category field (supports both JSON array and legacy single string)
-    const parseTags = (category: string): string[] => {
-        try {
-            const parsed = JSON.parse(category)
-            return Array.isArray(parsed) ? parsed : [category]
-        } catch {
-            return [category]
-        }
-    }
-
-    const tags = parseTags(deck.category)
+    const tags = parseCategoryToTags(deck.category)
 
     return (
         <Card

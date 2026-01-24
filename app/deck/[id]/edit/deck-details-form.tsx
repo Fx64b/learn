@@ -1,5 +1,6 @@
 'use client'
 
+import { parseCategoryToTags } from '@/lib/category-parser'
 import { fromUTCDateOnly, toUTCDateOnly } from '@/lib/date'
 import { cn } from '@/lib/utils'
 import type { DeckType } from '@/types'
@@ -80,21 +81,11 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
     const [isExportDialogOpen, setIsExportDialogOpen] = useState(false)
     const [isCopied, setIsCopied] = useState(false)
     const [isLoadingExport, setIsLoadingExport] = useState(false)
-    // Parse category from JSON string to array, fallback to single value for backward compatibility
-    const parseTags = (category: string): string[] => {
-        try {
-            const parsed = JSON.parse(category)
-            return Array.isArray(parsed) ? parsed : [category]
-        } catch {
-            return [category]
-        }
-    }
-
     const [formData, setFormData] = useState({
         id: deck.id,
         title: deck.title,
         description: deck.description || '',
-        tags: parseTags(deck.category),
+        tags: parseCategoryToTags(deck.category),
         activeUntil: fromUTCDateOnly(deck.activeUntil),
     })
 
