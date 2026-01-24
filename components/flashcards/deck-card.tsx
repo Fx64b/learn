@@ -6,6 +6,7 @@ import { AlertTriangle, PencilIcon } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
     Card,
@@ -36,6 +37,18 @@ export async function DeckCard({
     isPastDue = false,
 }: DeckCardProps) {
     const t = await getTranslations()
+
+    // Parse tags from category field (supports both JSON array and legacy single string)
+    const parseTags = (category: string): string[] => {
+        try {
+            const parsed = JSON.parse(category)
+            return Array.isArray(parsed) ? parsed : [category]
+        } catch {
+            return [category]
+        }
+    }
+
+    const tags = parseTags(deck.category)
 
     return (
         <Card
@@ -86,6 +99,15 @@ export async function DeckCard({
                         </div>
                     )}
                 </CardDescription>
+                {tags.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-1">
+                        {tags.map((tag) => (
+                            <Badge key={tag} variant="secondary">
+                                {tag}
+                            </Badge>
+                        ))}
+                    </div>
+                )}
             </CardHeader>
             <CardContent className="mt-auto pb-2">
                 <div className="space-y-1">
