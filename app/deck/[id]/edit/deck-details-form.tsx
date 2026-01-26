@@ -1,5 +1,6 @@
 'use client'
 
+import { parseCategoryToTags } from '@/lib/category-parser'
 import { fromUTCDateOnly, toUTCDateOnly } from '@/lib/date'
 import { cn } from '@/lib/utils'
 import type { DeckType } from '@/types'
@@ -56,6 +57,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover'
+import { TagInput } from '@/components/ui/tag-input'
 import { Textarea } from '@/components/ui/textarea'
 
 interface DeckDetailsFormProps {
@@ -83,7 +85,7 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
         id: deck.id,
         title: deck.title,
         description: deck.description || '',
-        category: deck.category,
+        tags: parseCategoryToTags(deck.category),
         activeUntil: fromUTCDateOnly(deck.activeUntil),
     })
 
@@ -97,7 +99,8 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
         formDataToSend.append('id', formData.id)
         formDataToSend.append('title', formData.title)
         formDataToSend.append('description', formData.description)
-        formDataToSend.append('category', formData.category)
+        // Store tags as JSON array in category field
+        formDataToSend.append('category', JSON.stringify(formData.tags))
 
         if (formData.activeUntil) {
             // Convert to UTC date-only before sending
@@ -250,18 +253,17 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
                                     {t('categoryRequired')}{' '}
                                     <span className="text-red-500">*</span>
                                 </Label>
-                                <Input
+                                <TagInput
                                     id="category"
-                                    value={formData.category}
-                                    onChange={(e) =>
+                                    tags={formData.tags}
+                                    onChange={(tags) =>
                                         setFormData((prev) => ({
                                             ...prev,
-                                            category: e.target.value,
+                                            tags,
                                         }))
                                     }
                                     placeholder={t('categoryPlaceholder')}
                                     required
-                                    className="transition-all focus-visible:ring-offset-2"
                                 />
                             </div>
 

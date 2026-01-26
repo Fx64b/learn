@@ -24,6 +24,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover'
+import { TagInput } from '@/components/ui/tag-input'
 
 export default function CreateDeckPage() {
     const router = useRouter()
@@ -34,7 +35,7 @@ export default function CreateDeckPage() {
     const [formData, setFormData] = useState({
         title: '',
         description: '',
-        category: '',
+        tags: [] as string[],
         activeUntil: null as Date | null,
     })
 
@@ -45,7 +46,8 @@ export default function CreateDeckPage() {
         const formDataToSend = new FormData()
         formDataToSend.append('title', formData.title)
         formDataToSend.append('description', formData.description)
-        formDataToSend.append('category', formData.category)
+        // Store tags as JSON array in category field
+        formDataToSend.append('category', JSON.stringify(formData.tags))
 
         if (formData.activeUntil) {
             const utcDate = toUTCDateOnly(formData.activeUntil)
@@ -123,13 +125,13 @@ export default function CreateDeckPage() {
                             <Label htmlFor="category">
                                 {t('categoryLabel')}
                             </Label>
-                            <Input
+                            <TagInput
                                 id="category"
-                                value={formData.category}
-                                onChange={(e) =>
+                                tags={formData.tags}
+                                onChange={(tags) =>
                                     setFormData((prev) => ({
                                         ...prev,
-                                        category: e.target.value,
+                                        tags,
                                     }))
                                 }
                                 placeholder={t('categoryPlaceholder')}
