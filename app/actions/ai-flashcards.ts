@@ -21,6 +21,13 @@ const MAX_CARDS_PER_GENERATION = 55
 const MAX_DOCUMENT_LENGTH = 50000
 const PDF_PARSING_TIMEOUT = 30000
 
+// Gemini 3.1 Flash-Lite: cheapest generally-available model that still supports
+// structured output. Defaults to `minimal` thinking, so latency/cost stay low.
+const AI_MODEL = 'gemini-3.1-flash-lite'
+// Thinking tokens count against the output budget, so leave headroom above the
+// ~4k tokens a full generation of cards actually needs.
+const AI_MAX_OUTPUT_TOKENS = 8192
+
 // Schemas
 const flashcardSchema = z.object({
     flashcards: z
@@ -507,12 +514,13 @@ export async function generateAIFlashcardsUnified(
 
         try {
             const { object } = await generateObject({
-                model: google('gemini-1.5-flash'),
+                model: google(AI_MODEL),
                 schema: flashcardSchema,
                 system: buildSystemPrompt(),
                 prompt: buildUserPrompt(sanitizedPrompt, documentContent),
-                temperature: 0.7,
-                maxTokens: 4000,
+                // Gemini 3 models are tuned for their default temperature of 1;
+                // lowering it degrades output, so it is intentionally not set.
+                maxTokens: AI_MAX_OUTPUT_TOKENS,
             })
 
             onProgress?.(
