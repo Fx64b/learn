@@ -4,9 +4,12 @@ This document provides essential context for Claude Code instances working on th
 
 ## Project Overview
 
-**Learn** is a modern flashcard application built with Next.js 15 that implements spaced repetition learning (SuperMemo-2 algorithm). It features:
+**Learn** is a learning app built with Next.js 15 that mixes Duolingo-style exercises with Quizlet-style decks on top of spaced repetition (SuperMemo-2). It features:
 
-- AI-powered flashcard generation from text/PDFs (using Google AI/Gemini)
+- Nine item types (Q&A, choice, cloze, passage, list, sequence, number, pairs, diagram) that are turned into varied exercises
+- Learn sessions, classic flashcards, a timed match game and practice tests
+- Light gamification: XP, daily goal, streak with freeze, mastery stages, achievements
+- AI-powered generation of mixed item types from text/PDFs (using Google AI/Gemini)
 - Stripe-based Pro subscription system with automatic payment recovery
 - Multi-language support (English/German) via next-intl
 - Comprehensive spaced repetition system with progress tracking
@@ -50,12 +53,16 @@ This document provides essential context for Claude Code instances working on th
 
 - `users` - NextAuth.js user accounts
 - `decks` - Flashcard collections with user ownership
-- `flashcards` - Individual cards with difficulty tracking
+- `flashcards` - Items: `type` + `content` (JSON) + `front` (prompt) / `back` (plain-text answer summary)
 - `cardReviews` - Latest SRS state per user/card
 - `reviewEvents` - Historical review data for analytics
 - `studySessions` - Learning session tracking
 - `subscriptions` - Stripe subscription management
 - `paymentRecoveryEvents` - Automated payment recovery system
+- `userStats` - XP total, streak, streak freezes, timezone
+- `dailyActivity` - XP / exercises per user and local date (streak, daily goal, heatmap)
+- `userAchievements` - Unlocked achievements (definitions in `lib/gamification/achievements.ts`)
+- `deckRecords` - Personal bests for match game and practice test
 
 ### Authentication & Authorization
 
@@ -70,6 +77,17 @@ This document provides essential context for Claude Code instances working on th
 - Grades: 1=Again, 2=Hard, 3=Good, 4=Easy
 - Intervals capped at 365 days
 - Reviews tracked in `cardReviews` (current state) and `reviewEvents` (history)
+- `db/learn.ts` `applyReview` is the only place that writes SRS state
+
+### Items and Learning Engine
+
+- `lib/items/` - zod schemas for all item types (single source of truth for editor, import, AI), plus `toItemRow` / `parseItemRow`
+- `lib/learn/` - pure, tested logic: `mastery.ts` (stage from SRS state), `planner.ts` (exercise per item type and stage), `session.ts` (session queue, retries, tests, match game), `grading.ts` (outcome to SM-2 grade), `xp.ts`
+- `lib/gamification/` - streak with freeze (timezone-aware dates), achievements
+- `components/learn/` - exercise components (ported from the design kit); `components/learn/session/` - session runner, end screen, match game
+- `app/actions/learn.ts` - load sessions/tests/match games, `submitExerciseResult`, `completeSession`, `completeMatchGame`, `completeTest`
+- Only the first attempt of an item per session writes SRS; retries, practice-ahead and tests never do
+- Views with shuffled content render after mount (`lib/hooks/use-mounted.ts`) to avoid hydration mismatches
 
 ## Development Commands
 
@@ -121,6 +139,7 @@ STRIPE_SECRET_KEY="your-stripe-secret"             # For subscriptions
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="your-stripe-pub"
 STRIPE_WEBHOOK_SECRET="your-webhook-secret"
 REDIS_URL="your-redis-url"                         # For rate limiting
+BLOB_READ_WRITE_TOKEN="your-blob-token"            # For diagram image uploads
 ```
 
 ## Code Standards & Guidelines
@@ -156,9 +175,10 @@ REDIS_URL="your-redis-url"                         # For rate limiting
 
 ## Key Business Logic
 
-### AI Flashcard Generation
+### AI Item Generation
 
 - Located in `/app/actions/ai-flashcards.ts` and `/app/api/ai-flashcards/route.ts`
+- The model returns a flat item object (`lib/items/ai.ts`); items that fail the strict schema are dropped
 - Supports text prompts and PDF file upload
 - Streaming responses with progress tracking
 - Rate limited for free users, unlimited for Pro subscribers
@@ -269,4 +289,4 @@ pnpm dlx shadcn@latest add button  # Example: adding button component
 
 ---
 
-Built with ❤️ by [Fx64b](https://fx64b.dev) | Last updated: 2025-08-04
+Built with ❤️ by [Fx64b](https://fx64b.dev) | Last updated: 2026-10-05
