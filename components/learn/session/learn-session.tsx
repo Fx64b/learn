@@ -1,5 +1,6 @@
 'use client'
 
+import { useMounted } from '@/lib/hooks/use-mounted'
 import {
     type ExerciseDescriptor,
     type ExerciseOutcome,
@@ -27,6 +28,7 @@ import {
 } from '@/app/actions/learn'
 
 import { ExerciseRenderer, exerciseLabel } from './exercise-renderer'
+import { SessionSkeleton } from './session-skeleton'
 import { SessionSummary, type SummaryData } from './session-summary'
 import { SessionTopBar } from './session-top-bar'
 import { useResultQueue } from './use-result-queue'
@@ -61,6 +63,7 @@ export function LearnSession({
     const t = useTranslations('session')
     const router = useRouter()
     const soundEnabled = useUserPreferences((s) => s.soundEnabled)
+    const mounted = useMounted()
 
     const [run, setRun] = useState(0)
     const [queue, setQueue] = useState(initialExercises)
@@ -176,6 +179,8 @@ export function LearnSession({
             ...base,
             xp: finalXp + (reward?.bonusXp ?? 0),
             reward,
+            // Read again: exercise results may have arrived meanwhile.
+            streakExtended: s.streakExtended,
             streak: reward?.streak ?? s.streak,
             loading: false,
         })
@@ -331,6 +336,7 @@ export function LearnSession({
 
     const exercise = queue[index]
     if (!exercise) return null
+    if (!mounted) return <SessionSkeleton />
 
     return (
         <div ref={container} className="flex flex-col gap-6">

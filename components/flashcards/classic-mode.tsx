@@ -1,5 +1,6 @@
 'use client'
 
+import { useMounted } from '@/lib/hooks/use-mounted'
 import { exerciseXp } from '@/lib/learn'
 import { playSound } from '@/lib/learn/sound'
 import { useUserPreferences } from '@/store/userPreferences'
@@ -15,6 +16,7 @@ import { useRouter } from 'next/navigation'
 import { completeSession, submitExerciseResult } from '@/app/actions/learn'
 
 import { Flashcard } from '@/components/flashcards/flashcard'
+import { SessionSkeleton } from '@/components/learn/session/session-skeleton'
 import {
     SessionSummary,
     type SummaryData,
@@ -52,6 +54,7 @@ export function ClassicMode({ deckId, cards, backHref }: ClassicModeProps) {
     const ts = useTranslations('session')
     const router = useRouter()
     const soundEnabled = useUserPreferences((s) => s.soundEnabled)
+    const mounted = useMounted()
     const [order, setOrder] = useState(() => shuffled(cards))
     const [index, setIndex] = useState(0)
     const [combo, setCombo] = useState(0)
@@ -170,6 +173,7 @@ export function ClassicMode({ deckId, cards, backHref }: ClassicModeProps) {
 
     const card = order[index]
     if (!card) return null
+    if (!mounted) return <SessionSkeleton />
 
     return (
         <div className="flex flex-col gap-6">

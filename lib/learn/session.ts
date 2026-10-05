@@ -6,7 +6,10 @@ import { exerciseId, shuffleWith } from './random'
 import type { ExerciseDescriptor, Rng, StudyItem } from './types'
 
 export const SESSION_SIZE = 12
-export const MAX_NEW_PER_SESSION = 5
+/** Upper limit of new items in one session. */
+export const MAX_NEW_PER_SESSION = 10
+/** New items that are always included, even when many reviews are due. */
+const MIN_NEW_PER_SESSION = 2
 /** A missed exercise comes back at most this often in one session. */
 export const MAX_RETRIES = 2
 const MIN_MATCH_BATCH = 4
@@ -32,7 +35,7 @@ function daysOverdue(entry: StudyItem, now: Date) {
 
 /**
  * Picks the items for a learn session: due reviews first (most overdue
- * first), then a few new items. When nothing is due, it practises the items
+ * first), then new items to fill the session. When nothing is due, it practises the items
  * that come up next, without changing their schedule.
  */
 export function selectSessionItems(
@@ -48,10 +51,13 @@ export function selectSessionItems(
         .sort((a, b) => daysOverdue(b, now) - daysOverdue(a, now))
     const fresh = items.filter((e) => !e.review)
 
+    // Fill the session with new items, but keep room for a few even when
+    // many reviews are due so that learning moves forward.
+    const room = size - due.length
     const newCount = Math.min(
         fresh.length,
         maxNew,
-        Math.max(size - due.length, Math.min(2, maxNew))
+        Math.max(MIN_NEW_PER_SESSION, room)
     )
     const reviews = due.slice(0, size - newCount)
     const selected = [...reviews, ...fresh.slice(0, newCount)]

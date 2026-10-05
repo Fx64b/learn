@@ -1,6 +1,7 @@
 'use client'
 
 import { ACHIEVEMENTS } from '@/lib/gamification'
+import { useMounted } from '@/lib/hooks/use-mounted'
 import { playSound } from '@/lib/learn/sound'
 import { cn } from '@/lib/utils'
 import { useUserPreferences } from '@/store/userPreferences'
@@ -16,6 +17,8 @@ import { completeMatchGame, loadMatchGame } from '@/app/actions/learn'
 
 import { AchievementBadge } from '@/components/gamification/achievement-badge'
 import { ActionButton, Tile, type TileState, shuffle } from '@/components/learn'
+
+import { SessionSkeleton } from './session-skeleton'
 
 /** Seconds added for every wrong pairing. */
 const PENALTY_MS = 1000
@@ -55,6 +58,7 @@ export function MatchGame({
 }: MatchGameProps) {
     const t = useTranslations('match')
     const soundEnabled = useUserPreferences((s) => s.soundEnabled)
+    const mounted = useMounted()
     const [pairs, setPairs] = useState(initialPairs)
     const [cards, setCards] = useState(() => deal(initialPairs))
     const [selected, setSelected] = useState<number | null>(null)
@@ -206,6 +210,8 @@ export function MatchGame({
             </div>
         )
     }
+
+    if (!mounted) return <SessionSkeleton />
 
     return (
         <div className="flex flex-col gap-6">
