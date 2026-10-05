@@ -430,7 +430,8 @@
         "keyboardHint": "Press spacebar to flip",
         "ratingHint": "Rate with 1 to 4 or click the buttons",
         "loginRequired": "Please login to view this page",
-        "help": "Help"
+        "help": "Help",
+        "shuffle": "Shuffle"
     },
     "statistics": {
         "last7Days": "Last 7 Days",
@@ -1121,6 +1122,154 @@
             "notFound": "Deck or item not found",
             "invalid": "Invalid data",
             "save": "Your progress could not be saved. Please try again."
+        },
+        "close": "Close session",
+        "combo": "{count} in a row",
+        "xpEarned": "{xp} XP earned",
+        "retryHint": "Let's try this one again",
+        "goalReached": "Daily goal reached!",
+        "testTitle": "Practice test",
+        "scopes": {
+            "due": "Due reviews",
+            "all": "All decks",
+            "difficult": "Difficult items"
+        },
+        "empty": {
+            "noItemsTitle": "This deck is empty",
+            "noItems": "Add a few items first, then come back to learn them.",
+            "addItems": "Add items",
+            "doneTitle": "All caught up!",
+            "done": "Nothing is due right now. Come back later or add new items."
+        },
+        "summary": {
+            "title": "Session complete!",
+            "perfectTitle": "Perfect session!",
+            "testTitle": "You scored {score}%",
+            "newBest": "New personal best!",
+            "xp": "XP",
+            "accuracy": "Accuracy",
+            "time": "Time",
+            "bestCombo": "Best combo",
+            "dailyGoal": "Daily goal",
+            "goalProgress": "{xp} / {goal} XP today",
+            "streak": "{count, plural, one {# day streak} other {# day streak}}",
+            "streakExtended": "Streak extended. See you tomorrow!",
+            "streakKept": "Your streak is safe for today.",
+            "achievements": "New achievements",
+            "reviewThese": "Worth another look",
+            "allDone": "You're all caught up for now.",
+            "done": "Done",
+            "keepGoing": "Keep learning",
+            "newTest": "New test"
+        }
+    },
+    "match": {
+        "title": "Match",
+        "hint": "Tap two matching tiles. The timer starts with your first tap.",
+        "penalty": "Wrong pairs add one second.",
+        "finished": "Cleared in {time}s",
+        "newBest": "New personal best!",
+        "best": "Best: {time}s",
+        "done": "Done",
+        "playAgain": "Play again",
+        "notEnoughTitle": "Not enough pairs",
+        "notEnough": "Match needs at least {min} short question and answer items or a pairs item.",
+        "addItems": "Add items"
+    },
+    "deckPage": {
+        "back": "Back to overview",
+        "edit": "Edit",
+        "progress": "Your progress",
+        "itemCount": "{count, plural, one {# item} other {# items}}",
+        "dueCount": "{count} due for review",
+        "newCount": "{count} new to learn",
+        "bestTime": "Best time {time}s",
+        "bestScore": "Best score {score}%",
+        "items": "Items",
+        "manageItems": "Manage items",
+        "noItems": "No items yet. Add some to start learning.",
+        "modes": {
+            "learn": "Learn",
+            "learnDescription": "Adaptive mix of exercises. Mistakes come back until you get them right.",
+            "flashcards": "Flashcards",
+            "flashcardsDescription": "Classic flip cards. Rate how well you knew each one.",
+            "match": "Match",
+            "matchDescription": "Pair terms against the clock.",
+            "test": "Practice test",
+            "testDescription": "Check yourself with 20 questions. Does not change your schedule."
+        }
+    },
+    "mastery": {
+        "new": "New",
+        "learning": "Learning",
+        "familiar": "Familiar",
+        "mastered": "Mastered"
+    },
+    "items": {
+        "types": {
+            "basic": "Q & A",
+            "choice": "Multiple choice",
+            "cloze": "Cloze",
+            "passage": "Passage",
+            "list": "List",
+            "sequence": "Sequence",
+            "number": "Number",
+            "pairs": "Pairs",
+            "diagram": "Diagram"
+        }
+    },
+    "achievements": {
+        "first-session": {
+            "title": "First steps",
+            "description": "Finish your first learning session."
+        },
+        "goal-getter": {
+            "title": "Goal getter",
+            "description": "Reach your daily XP goal."
+        },
+        "perfect-session": {
+            "title": "Flawless",
+            "description": "Finish a session without a single mistake."
+        },
+        "streak-3": {
+            "title": "Warming up",
+            "description": "Learn 3 days in a row."
+        },
+        "streak-7": {
+            "title": "One week strong",
+            "description": "Learn 7 days in a row."
+        },
+        "streak-30": {
+            "title": "Habit formed",
+            "description": "Learn 30 days in a row."
+        },
+        "xp-500": {
+            "title": "Getting started",
+            "description": "Earn 500 XP."
+        },
+        "xp-5000": {
+            "title": "Knowledge seeker",
+            "description": "Earn 5,000 XP."
+        },
+        "mastered-50": {
+            "title": "Memory builder",
+            "description": "Master 50 items."
+        },
+        "mastered-250": {
+            "title": "Walking library",
+            "description": "Master 250 items."
+        },
+        "speed-matcher": {
+            "title": "Speed matcher",
+            "description": "Clear a match game in 20 seconds or less."
+        },
+        "top-of-class": {
+            "title": "Top of the class",
+            "description": "Score 100% on a practice test with 10+ questions."
+        },
+        "all-rounder": {
+            "title": "All-rounder",
+            "description": "Use 5 different item types."
         }
     }
 }

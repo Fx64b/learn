@@ -433,7 +433,8 @@
         "keyboardHint": "Drücke die Leertaste zum Umdrehen",
         "ratingHint": "Bewerte mit 1 bis 4 oder klicke auf die Schaltflächen",
         "loginRequired": "Bitte melden Sie sich an, um diese Seite zu sehen",
-        "help": "Hilfe"
+        "help": "Hilfe",
+        "shuffle": "Mischen"
     },
     "statistics": {
         "last7Days": "Letzte 7 Tage",
@@ -1124,6 +1125,154 @@
             "notFound": "Stapel oder Element nicht gefunden",
             "invalid": "Ungültige Daten",
             "save": "Dein Fortschritt konnte nicht gespeichert werden. Bitte versuche es erneut."
+        },
+        "close": "Sitzung schliessen",
+        "combo": "{count} in Folge",
+        "xpEarned": "{xp} XP verdient",
+        "retryHint": "Versuchen wir das nochmal",
+        "goalReached": "Tagesziel erreicht!",
+        "testTitle": "Übungstest",
+        "scopes": {
+            "due": "Fällige Wiederholungen",
+            "all": "Alle Stapel",
+            "difficult": "Schwierige Elemente"
+        },
+        "empty": {
+            "noItemsTitle": "Dieser Stapel ist leer",
+            "noItems": "Füge zuerst ein paar Elemente hinzu und lerne sie dann.",
+            "addItems": "Elemente hinzufügen",
+            "doneTitle": "Alles erledigt!",
+            "done": "Gerade ist nichts fällig. Komm später wieder oder füge neue Elemente hinzu."
+        },
+        "summary": {
+            "title": "Sitzung abgeschlossen!",
+            "perfectTitle": "Perfekte Sitzung!",
+            "testTitle": "Du hast {score}% erreicht",
+            "newBest": "Neue persönliche Bestleistung!",
+            "xp": "XP",
+            "accuracy": "Genauigkeit",
+            "time": "Zeit",
+            "bestCombo": "Beste Serie",
+            "dailyGoal": "Tagesziel",
+            "goalProgress": "{xp} / {goal} XP heute",
+            "streak": "{count, plural, one {# Tag Serie} other {# Tage Serie}}",
+            "streakExtended": "Serie verlängert. Bis morgen!",
+            "streakKept": "Deine Serie ist für heute sicher.",
+            "achievements": "Neue Erfolge",
+            "reviewThese": "Nochmal anschauen",
+            "allDone": "Für den Moment ist alles erledigt.",
+            "done": "Fertig",
+            "keepGoing": "Weiterlernen",
+            "newTest": "Neuer Test"
+        }
+    },
+    "match": {
+        "title": "Zuordnen",
+        "hint": "Tippe auf zwei passende Kacheln. Die Zeit startet beim ersten Tippen.",
+        "penalty": "Falsche Paare kosten eine Sekunde.",
+        "finished": "Geschafft in {time}s",
+        "newBest": "Neue persönliche Bestleistung!",
+        "best": "Bestzeit: {time}s",
+        "done": "Fertig",
+        "playAgain": "Nochmal spielen",
+        "notEnoughTitle": "Zu wenige Paare",
+        "notEnough": "Zuordnen braucht mindestens {min} kurze Frage-Antwort-Elemente oder ein Paare-Element.",
+        "addItems": "Elemente hinzufügen"
+    },
+    "deckPage": {
+        "back": "Zurück zur Übersicht",
+        "edit": "Bearbeiten",
+        "progress": "Dein Fortschritt",
+        "itemCount": "{count, plural, one {# Element} other {# Elemente}}",
+        "dueCount": "{count} zur Wiederholung fällig",
+        "newCount": "{count} neu zu lernen",
+        "bestTime": "Bestzeit {time}s",
+        "bestScore": "Bestwert {score}%",
+        "items": "Elemente",
+        "manageItems": "Elemente verwalten",
+        "noItems": "Noch keine Elemente. Füge welche hinzu, um zu lernen.",
+        "modes": {
+            "learn": "Lernen",
+            "learnDescription": "Abwechslungsreiche Übungen. Fehler kommen zurück, bis du sie richtig hast.",
+            "flashcards": "Karteikarten",
+            "flashcardsDescription": "Klassische Karten zum Umdrehen. Bewerte, wie gut du sie wusstest.",
+            "match": "Zuordnen",
+            "matchDescription": "Ordne Begriffe gegen die Uhr zu.",
+            "test": "Übungstest",
+            "testDescription": "Prüfe dich mit 20 Fragen. Ändert deinen Lernplan nicht."
+        }
+    },
+    "mastery": {
+        "new": "Neu",
+        "learning": "Am Lernen",
+        "familiar": "Vertraut",
+        "mastered": "Gemeistert"
+    },
+    "items": {
+        "types": {
+            "basic": "Frage & Antwort",
+            "choice": "Auswahl",
+            "cloze": "Lückentext",
+            "passage": "Textpassage",
+            "list": "Liste",
+            "sequence": "Reihenfolge",
+            "number": "Zahl",
+            "pairs": "Paare",
+            "diagram": "Diagramm"
+        }
+    },
+    "achievements": {
+        "first-session": {
+            "title": "Erste Schritte",
+            "description": "Schliesse deine erste Lernsitzung ab."
+        },
+        "goal-getter": {
+            "title": "Zielstrebig",
+            "description": "Erreiche dein tägliches XP-Ziel."
+        },
+        "perfect-session": {
+            "title": "Fehlerfrei",
+            "description": "Schliesse eine Sitzung ohne Fehler ab."
+        },
+        "streak-3": {
+            "title": "Warmgelaufen",
+            "description": "Lerne 3 Tage in Folge."
+        },
+        "streak-7": {
+            "title": "Eine starke Woche",
+            "description": "Lerne 7 Tage in Folge."
+        },
+        "streak-30": {
+            "title": "Gewohnheit",
+            "description": "Lerne 30 Tage in Folge."
+        },
+        "xp-500": {
+            "title": "Guter Start",
+            "description": "Sammle 500 XP."
+        },
+        "xp-5000": {
+            "title": "Wissensdurst",
+            "description": "Sammle 5'000 XP."
+        },
+        "mastered-50": {
+            "title": "Gedächtnisbauer",
+            "description": "Meistere 50 Elemente."
+        },
+        "mastered-250": {
+            "title": "Wandelnde Bibliothek",
+            "description": "Meistere 250 Elemente."
+        },
+        "speed-matcher": {
+            "title": "Blitzschnell",
+            "description": "Schaffe ein Zuordnen-Spiel in 20 Sekunden oder weniger."
+        },
+        "top-of-class": {
+            "title": "Klassenbester",
+            "description": "Erreiche 100% in einem Übungstest mit 10+ Fragen."
+        },
+        "all-rounder": {
+            "title": "Allrounder",
+            "description": "Nutze 5 verschiedene Elementtypen."
         }
     }
 }

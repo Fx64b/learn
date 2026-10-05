@@ -94,6 +94,7 @@ export function ExerciseShell({
                                 tone="primary"
                                 disabled={!canCheck}
                                 onClick={onCheck}
+                                data-action="check"
                                 className="sm:ml-auto"
                             >
                                 {checkLabel ?? t('check')}
@@ -115,6 +116,7 @@ export function ExerciseShell({
                                     status === 'correct' ? 'primary' : 'danger'
                                 }
                                 onClick={onContinue ?? onRetry}
+                                data-action="continue"
                                 autoFocus
                             >
                                 {onContinue ? t('continue') : t('tryAgain')}
