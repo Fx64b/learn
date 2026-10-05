@@ -386,7 +386,9 @@
             "largeFileWarning": "Large files may take significantly longer to process",
             "dismissWarning": "Dismiss warning",
             "aiDisclaimer": "AI responses are in early stages and may contain errors. Please verify all information before use.",
-            "dismissDisclaimer": "Dismiss AI disclaimer"
+            "dismissDisclaimer": "Dismiss AI disclaimer",
+            "typesLabel": "Item types",
+            "typesHint": "The AI picks the best fitting type for each fact from the selected ones. Diagrams need an image and are added by hand."
         },
         "tabs": {
             "details": "Deck Details",

@@ -1,6 +1,8 @@
 'use client'
 
 import { useAIFlashcards } from '@/lib/hooks/use-ai-flashcards'
+import { AI_ITEM_TYPES, type AiItemType } from '@/lib/items'
+import { cn } from '@/lib/utils'
 import { FileText, Loader2, Sparkles, Upload, X, XCircle } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -9,6 +11,7 @@ import { useCallback, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 
+import { ITEM_TYPE_ICONS } from '@/components/items/item-type-badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -27,6 +30,8 @@ interface AIFlashcardFormProps {
 
 export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
     const t = useTranslations('deck.ai')
+    const ti = useTranslations('items.types')
+    const [types, setTypes] = useState<AiItemType[]>([...AI_ITEM_TYPES])
     const router = useRouter()
     const [prompt, setPrompt] = useState('')
     const [file, setFile] = useState<File | null>(null)
@@ -93,6 +98,8 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
                 deckId,
                 prompt: prompt.trim(),
                 file: file || undefined,
+                types:
+                    types.length === AI_ITEM_TYPES.length ? undefined : types,
             })
 
             if (result.requiresPro) {
@@ -161,6 +168,49 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
                         />
                         <p className="text-muted-foreground text-xs">
                             {prompt.length}/1000 {t('characters')}
+                        </p>
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label>{t('typesLabel')}</Label>
+                        <div className="flex flex-wrap gap-2">
+                            {AI_ITEM_TYPES.map((type) => {
+                                const Icon = ITEM_TYPE_ICONS[type]
+                                const active = types.includes(type)
+                                return (
+                                    <button
+                                        key={type}
+                                        type="button"
+                                        aria-pressed={active}
+                                        onClick={() =>
+                                            setTypes((prev) =>
+                                                active
+                                                    ? prev.length > 1
+                                                        ? prev.filter(
+                                                              (t) => t !== type
+                                                          )
+                                                        : prev
+                                                    : [...prev, type]
+                                            )
+                                        }
+                                        className={cn(
+                                            'focus-visible:ring-ring/50 inline-flex items-center gap-1.5 rounded-full border-2 px-3 py-1 text-xs font-medium transition-colors outline-none focus-visible:ring-[3px]',
+                                            active
+                                                ? 'border-sky-500 bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-300'
+                                                : 'text-muted-foreground hover:bg-accent'
+                                        )}
+                                    >
+                                        <Icon
+                                            className="size-3.5"
+                                            aria-hidden
+                                        />
+                                        {ti(type)}
+                                    </button>
+                                )
+                            })}
+                        </div>
+                        <p className="text-muted-foreground text-xs">
+                            {t('typesHint')}
                         </p>
                     </div>
 

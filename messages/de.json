@@ -389,7 +389,9 @@
             "largeFileWarning": "Große Dateien können deutlich länger dauern",
             "dismissWarning": "Warnung schließen",
             "aiDisclaimer": "KI-Antworten befinden sich in frühen Stadien und können Fehler enthalten. Bitte überprüfen Sie alle Informationen vor der Verwendung.",
-            "dismissDisclaimer": "KI-Haftungsausschluss schließen"
+            "dismissDisclaimer": "KI-Haftungsausschluss schließen",
+            "typesLabel": "Elementtypen",
+            "typesHint": "Die KI wählt für jeden Inhalt den passendsten der ausgewählten Typen. Diagramme brauchen ein Bild und werden von Hand erstellt."
         },
         "statistics": {
             "totalCards": "Karten insgesamt",

@@ -4,6 +4,8 @@ interface GenerateParams {
     prompt: string
     deckId: string
     file?: File
+    /** Item types to generate; all when empty. */
+    types?: string[]
 }
 
 interface Progress {
@@ -23,7 +25,7 @@ interface AIGenerationResult {
     paymentIssue?: boolean
     resetTime?: Date
     requestId: string
-    flashcards?: Array<{ front: string; back: string }>
+    items?: Array<{ type: string; front: string }>
 }
 
 export function useAIFlashcards() {
@@ -67,6 +69,9 @@ export function useAIFlashcards() {
                     const formData = new FormData()
                     formData.append('prompt', params.prompt)
                     formData.append('deckId', params.deckId)
+                    if (params.types?.length) {
+                        formData.append('types', params.types.join(','))
+                    }
                     if (params.file) {
                         formData.append('file', params.file)
                     }

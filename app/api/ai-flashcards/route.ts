@@ -18,6 +18,7 @@ const aiFlashcardsSchema = z.object({
     prompt: z.string().min(1).max(1000),
     deckId: z.string().nanoid(),
     file: z.instanceof(File).optional(),
+    types: z.array(z.string().max(20)).max(10).optional(),
 })
 
 interface SSEMessage {
@@ -68,12 +69,17 @@ export async function POST(request: NextRequest) {
         const prompt = formData.get('prompt') as string
         const deckId = formData.get('deckId') as string
         const file = formData.get('file') as File | null
+        const types = String(formData.get('types') ?? '')
+            .split(',')
+            .map((t) => t.trim())
+            .filter(Boolean)
 
         // Validate input
         const validation = aiFlashcardsSchema.safeParse({
             prompt,
             deckId,
             file: file || undefined,
+            types: types.length ? types : undefined,
         })
 
         if (!validation.success) {
@@ -100,6 +106,7 @@ export async function POST(request: NextRequest) {
                 prompt: validation.data.prompt,
                 deckId: validation.data.deckId,
                 file: validation.data.file,
+                types: validation.data.types,
             })
 
             return NextResponse.json(result)
@@ -208,6 +215,7 @@ async function processAIRequest(
                 prompt: data.prompt,
                 deckId: data.deckId,
                 file: data.file,
+                types: data.types,
             },
             sendProgress
         )

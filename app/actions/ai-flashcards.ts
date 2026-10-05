@@ -1,6 +1,16 @@
 'use server'
 
 import { authOptions } from '@/lib/auth'
+import {
+    AI_ITEM_TYPES,
+    type AiItem,
+    type AiItemType,
+    aiItemSchema,
+    aiItemStrings,
+    aiItemToInput,
+    isAiItemType,
+    itemInputSchema,
+} from '@/lib/items'
 import { checkAIRateLimitWithDetails } from '@/lib/rate-limit/ai-rate-limit'
 import { google } from '@ai-sdk/google'
 import { generateObject } from 'ai'
@@ -29,14 +39,9 @@ const AI_MODEL = 'gemini-3.1-flash-lite'
 const AI_MAX_OUTPUT_TOKENS = 8192
 
 // Schemas
-const flashcardSchema = z.object({
-    flashcards: z
-        .array(
-            z.object({
-                front: z.string().min(1).max(500),
-                back: z.string().min(1).max(2000),
-            })
-        )
+const aiOutputSchema = z.object({
+    items: z
+        .array(aiItemSchema)
         .min(1)
         .max(MAX_CARDS_PER_GENERATION + 5), // Allow a few extra for safety to avoid rejection
 })
@@ -46,6 +51,8 @@ interface GenerateFlashcardsParams {
     prompt: string
     file?: File
     documentContent?: string // For when content is already extracted
+    /** Item types to generate; all AI types when empty. */
+    types?: string[]
 }
 
 interface AIGenerationResult {
@@ -59,7 +66,8 @@ interface AIGenerationResult {
     paymentIssue?: boolean
     resetTime?: Date
     requestId: string
-    flashcards?: Array<{ front: string; back: string }> // Add this for validation
+    /** Created items (type and prompt), for the result view. */
+    items?: Array<{ type: string; front: string }>
 }
 
 type ProgressCallback = (
@@ -240,11 +248,12 @@ function extractTextSafely(pdfData: Output): string {
 
 // Validate AI response for security
 function validateAIResponse(
-    flashcards: Array<{ front: string; back: string }>,
+    items: AiItem[],
     requestId: string,
     userId: string
 ): boolean {
-    for (const card of flashcards) {
+    for (const item of items) {
+        const strings = aiItemStrings(item)
         // Check for dangerous patterns
         const dangerousPatterns = [
             /<script/i,
@@ -257,7 +266,7 @@ function validateAIResponse(
         ]
 
         for (const pattern of dangerousPatterns) {
-            if (pattern.test(card.front) || pattern.test(card.back)) {
+            if (strings.some((text) => pattern.test(text))) {
                 logSecurityEvent({
                     userId,
                     action: 'malicious_ai_response',
@@ -268,29 +277,15 @@ function validateAIResponse(
                 return false
             }
         }
-
-        // Validate length constraints
-        if (card.front.length > 500 || card.back.length > 2000) {
-            logSecurityEvent({
-                userId,
-                action: 'ai_response_length_violation',
-                details: `Front: ${card.front.length}, Back: ${card.back.length}`,
-                severity: 'low',
-                requestId,
-            })
-            return false
-        }
     }
     return true
 }
 
 // Remove duplicates
-function removeDuplicateCards(
-    cards: Array<{ front: string; back: string }>
-): Array<{ front: string; back: string }> {
+function removeDuplicateCards(items: AiItem[]): AiItem[] {
     const seen = new Set<string>()
-    return cards.filter((card) => {
-        const key = card.front.toLowerCase().trim()
+    return items.filter((item) => {
+        const key = `${item.type}:${item.front.toLowerCase().trim()}`
         if (seen.has(key)) return false
         seen.add(key)
         return true
@@ -298,30 +293,41 @@ function removeDuplicateCards(
 }
 
 // AI prompts
-function buildSystemPrompt(): string {
-    return `You are an expert educational content creator specializing in creating effective flashcards for learning and memorization.
+const TYPE_GUIDE: Record<AiItemType, string> = {
+    basic: 'basic: a question in "front" and a short answer in "back". The default for facts and definitions.',
+    choice: 'choice: a question with 3-5 "options" and the "correct" ones copied exactly. Use for common confusions.',
+    cloze: 'cloze: a key sentence in "text" with ___ for 1-3 important words and those words in "answers", in order.',
+    passage:
+        'passage: a short text that must be known word for word (quote, law, definition) in "text", max ~40 words.',
+    list: 'list: a closed set the learner names in any order (e.g. the noble gases) in "items", 3-12 entries; aliases as "A / B".',
+    sequence:
+        'sequence: steps, stages or events in the correct order in "items", 3-8 entries.',
+    number: 'number: a key figure or year in "value", with "unit" and a sensible "tolerance" if exactness is not needed.',
+    pairs: 'pairs: 3-6 term/definition or term/translation "pairs".',
+}
 
-Your task is to generate high-quality flashcards based on the user's request. Follow these guidelines:
+function buildSystemPrompt(types: readonly AiItemType[]): string {
+    return `You are an expert educational content creator. You turn material into learning items for a spaced repetition app with varied exercises.
 
-1. Create clear, concise questions on the front of each card
-2. Provide comprehensive but digestible answers on the back
-3. Focus on key concepts, definitions, and important facts
-4. Use various question types: definitions, explanations, comparisons, examples
-5. Ensure each flashcard tests a single concept or piece of information
-6. Make questions specific enough to have a clear answer
-7. Avoid yes/no questions unless absolutely necessary
-8. Use active recall principles - questions should require thinking, not just recognition
-9. For complex topics, break them down into multiple simpler cards
-10. Maintain consistent difficulty appropriate to the topic
-11. Do not include any HTML, JavaScript, or other code in the responses
-12. Generate 5-${MAX_CARDS_PER_GENERATION} flashcards. Quality over quantity.`
+Choose the item type that fits each piece of knowledge best:
+${types.map((type) => `- ${TYPE_GUIDE[type]}`).join('\n')}
+
+Guidelines:
+1. Each item tests one concept. Break complex topics into several items.
+2. Questions are specific enough to have one clear answer. Avoid yes/no questions.
+3. Answers are short: typed answers should be a few words, not sentences.
+4. Use a mix of types where the material allows it${types.includes('basic') ? ', but basic items should usually be the largest share' : ''}.
+5. Only fill the fields of the chosen type.
+6. Write in the language of the user's request or document.
+7. Do not include HTML, JavaScript or other code.
+8. Generate 5-${MAX_CARDS_PER_GENERATION} items. Quality over quantity.`
 }
 
 function buildUserPrompt(prompt: string, documentContent?: string): string {
-    let userPrompt = `Create flashcards for: ${prompt}`
+    let userPrompt = `Create learning items for: ${prompt}`
 
     if (documentContent) {
-        userPrompt += `\n\nBase the flashcards on this document content:\n\n${documentContent}`
+        userPrompt += `\n\nBase the items on this document content:\n\n${documentContent}`
     }
 
     return userPrompt
@@ -382,6 +388,10 @@ export async function generateAIFlashcardsUnified(
 
         // Input validation
         const sanitizedPrompt = sanitizeInput(params.prompt)
+        const requestedTypes = (params.types ?? []).filter(isAiItemType)
+        const allowedTypes: readonly AiItemType[] = requestedTypes.length
+            ? requestedTypes
+            : AI_ITEM_TYPES
         if (!sanitizedPrompt) {
             return {
                 success: false,
@@ -515,8 +525,8 @@ export async function generateAIFlashcardsUnified(
         try {
             const { object } = await generateObject({
                 model: google(AI_MODEL),
-                schema: flashcardSchema,
-                system: buildSystemPrompt(),
+                schema: aiOutputSchema,
+                system: buildSystemPrompt(allowedTypes),
                 prompt: buildUserPrompt(sanitizedPrompt, documentContent),
                 // Gemini 3 models are tuned for their default temperature of 1;
                 // lowering it degrades output, so it is intentionally not set.
@@ -529,7 +539,7 @@ export async function generateAIFlashcardsUnified(
                 'Validating generated flashcards...'
             )
 
-            if (!object.flashcards || object.flashcards.length === 0) {
+            if (!object.items || object.items.length === 0) {
                 return {
                     success: false,
                     error: t('noFlashcardsGenerated'),
@@ -538,7 +548,7 @@ export async function generateAIFlashcardsUnified(
             }
 
             // Security validation
-            if (!validateAIResponse(object.flashcards, requestId, userId)) {
+            if (!validateAIResponse(object.items, requestId, userId)) {
                 return {
                     success: false,
                     error: 'Generated content failed security validation',
@@ -547,7 +557,15 @@ export async function generateAIFlashcardsUnified(
             }
 
             // Remove duplicates
-            const uniqueCards = removeDuplicateCards(object.flashcards)
+            // Map to the strict item schema; drop items the model got wrong.
+            const uniqueCards = removeDuplicateCards(
+                object.items.filter((item) => allowedTypes.includes(item.type))
+            )
+                .map(aiItemToInput)
+                .flatMap((input) => {
+                    const parsed = itemInputSchema.safeParse(input)
+                    return parsed.success ? [parsed.data] : []
+                })
             if (uniqueCards.length === 0) {
                 return {
                     success: false,
@@ -562,7 +580,7 @@ export async function generateAIFlashcardsUnified(
             logSecurityEvent({
                 userId,
                 action: 'successful_ai_generation',
-                details: `Generated ${uniqueCards.length} cards`,
+                details: `Generated ${uniqueCards.length} items`,
                 severity: 'low',
                 requestId,
             })
@@ -588,7 +606,10 @@ export async function generateAIFlashcardsUnified(
                     tier: rateLimitResult.tier,
                     remaining: rateLimitResult.remaining,
                     requestId,
-                    flashcards: uniqueCards,
+                    items: uniqueCards.map((item) => ({
+                        type: item.type,
+                        front: item.front ?? '',
+                    })),
                 }
             } else {
                 return {
