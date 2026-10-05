@@ -1,6 +1,7 @@
 'use client'
 
-import { ChevronDown, Copy, Sparkles } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { Braces, ChevronDown, Copy, PenLine, Sparkles } from 'lucide-react'
 import { toast } from 'sonner'
 
 import type React from 'react'
@@ -13,17 +14,24 @@ import { createItem, createItemsFromJson } from '@/app/actions/flashcard'
 import { AIFlashcardForm } from '@/components/flashcards/ai-flashcard-form'
 import { ItemEditor } from '@/components/items/item-editor'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
 
-export function CreateCardForm({ deckId }: { deckId: string }) {
+export type AddItemsMode = 'single' | 'bulk' | 'ai'
+
+export function CreateCardForm({
+    deckId,
+    initialMode = 'single',
+}: {
+    deckId: string
+    initialMode?: AddItemsMode
+}) {
+    const [mode, setMode] = useState<AddItemsMode>(initialMode)
     const t = useTranslations('deck.cards')
     const locale = useLocale()
     const [jsonCards, setJsonCards] = useState('')
@@ -163,135 +171,122 @@ Topic for the flashcards:`
         setIsSubmitting(false)
     }
 
+    const modes = [
+        { key: 'single', icon: PenLine, label: t('singleCard') },
+        { key: 'bulk', icon: Braces, label: t('createMultiple') },
+        { key: 'ai', icon: Sparkles, label: t('aiGenerate') },
+    ] as const
+
     return (
-        <Tabs defaultValue="single" className="w-full">
-            <TabsList className="grid h-auto w-full grid-cols-3 p-1">
-                <TabsTrigger
-                    value="single"
-                    className="min-w-0 truncate px-2 py-2 text-xs sm:text-sm"
-                >
-                    <span className="truncate">{t('singleCard')}</span>
-                </TabsTrigger>
-                <TabsTrigger
-                    value="bulk"
-                    className="min-w-0 truncate px-2 py-2 text-xs sm:text-sm"
-                >
-                    <span className="truncate">{t('createMultiple')}</span>
-                </TabsTrigger>
-                <TabsTrigger
-                    value="ai"
-                    className="flex min-w-0 items-center justify-center gap-1 px-1 py-2 text-xs sm:px-2 sm:text-sm"
-                >
-                    <Sparkles className="h-3 w-3 flex-shrink-0" />
-                    <span className="hidden truncate sm:inline">
-                        {t('aiGenerate')}
-                    </span>
-                    <span className="truncate sm:hidden">AI</span>
-                </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="single" className="mt-4">
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-lg sm:text-xl">
-                            {t('newCard')}
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <ItemEditor
-                            submitLabel={t('createCard')}
-                            onSubmit={async (item) => {
-                                const result = await createItem({
-                                    deckId,
-                                    item,
-                                })
-                                if (result.success) {
-                                    toast.success(t('cardCreated'))
-                                    return true
-                                }
-                                toast.error(result.error || t('createError'))
-                                return false
-                            }}
+        <div className="bg-card overflow-hidden rounded-2xl border-2 border-b-4">
+            <div
+                role="tablist"
+                aria-label={t('addItems')}
+                className="bg-muted/40 grid grid-cols-3 gap-1 border-b-2 p-1.5"
+            >
+                {modes.map(({ key, icon: Icon, label }) => (
+                    <button
+                        key={key}
+                        type="button"
+                        role="tab"
+                        aria-selected={mode === key}
+                        onClick={() => setMode(key)}
+                        className={cn(
+                            'focus-visible:ring-ring/50 flex min-w-0 items-center justify-center gap-2 rounded-xl px-2 py-2 text-sm font-semibold transition-colors outline-none focus-visible:ring-[3px]',
+                            mode === key
+                                ? 'bg-background text-foreground shadow-sm'
+                                : 'text-muted-foreground hover:text-foreground'
+                        )}
+                    >
+                        <Icon
+                            className={cn(
+                                'size-4 shrink-0',
+                                key === 'ai' && 'text-violet-500'
+                            )}
+                            aria-hidden
                         />
-                    </CardContent>
-                </Card>
-            </TabsContent>
+                        <span className="truncate">{label}</span>
+                    </button>
+                ))}
+            </div>
 
-            <TabsContent value="bulk" className="mt-4">
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-lg sm:text-xl">
-                            {t('createMultiple')}
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <form onSubmit={handleBulkSubmit} className="space-y-4">
-                            <div>
-                                <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                                    <label className="block text-sm font-medium">
-                                        JSON Array
-                                    </label>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                type="button"
-                                                className="w-full gap-1 bg-transparent sm:w-auto"
-                                            >
-                                                <Copy className="h-3 w-3" />
-                                                <span className="truncate">
-                                                    {t('copySchema')}
-                                                </span>
-                                                <ChevronDown className="h-3 w-3 flex-shrink-0" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent
-                                            align="end"
-                                            className="w-56"
+            <div className="p-4 sm:p-6" role="tabpanel">
+                {mode === 'single' && (
+                    <ItemEditor
+                        submitLabel={t('createCard')}
+                        onSubmit={async (item) => {
+                            const result = await createItem({ deckId, item })
+                            if (result.success) {
+                                toast.success(t('cardCreated'))
+                                return true
+                            }
+                            toast.error(result.error || t('createError'))
+                            return false
+                        }}
+                    />
+                )}
+                {mode === 'bulk' && (
+                    <form onSubmit={handleBulkSubmit} className="space-y-4">
+                        <div>
+                            <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                                <label className="block text-sm font-medium">
+                                    JSON Array
+                                </label>
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            type="button"
+                                            className="w-full gap-1 bg-transparent sm:w-auto"
                                         >
-                                            <DropdownMenuItem
-                                                onClick={handleCopySchema}
-                                            >
-                                                <Copy className="mr-2 h-4 w-4" />
+                                            <Copy className="h-3 w-3" />
+                                            <span className="truncate">
                                                 {t('copySchema')}
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem
-                                                onClick={handleCopyWithAiPrompt}
-                                            >
-                                                <Copy className="mr-2 h-4 w-4" />
-                                                {t('copyWithAiPrompt')}
-                                            </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </div>
-                                <Textarea
-                                    value={jsonCards}
-                                    onChange={(e) =>
-                                        setJsonCards(e.target.value)
-                                    }
-                                    className="h-48 w-full resize-none rounded border p-2 font-mono text-xs sm:h-72 sm:text-sm"
-                                    placeholder={getJsonPlaceholder()}
-                                    required
-                                />
+                                            </span>
+                                            <ChevronDown className="h-3 w-3 flex-shrink-0" />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent
+                                        align="end"
+                                        className="w-56"
+                                    >
+                                        <DropdownMenuItem
+                                            onClick={handleCopySchema}
+                                        >
+                                            <Copy className="mr-2 h-4 w-4" />
+                                            {t('copySchema')}
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            onClick={handleCopyWithAiPrompt}
+                                        >
+                                            <Copy className="mr-2 h-4 w-4" />
+                                            {t('copyWithAiPrompt')}
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
                             </div>
-                            <Button
-                                type="submit"
-                                disabled={isSubmitting}
-                                className="w-full sm:w-auto"
-                            >
-                                {isSubmitting
-                                    ? t('creatingMultiple')
-                                    : t('createFromJson')}
-                            </Button>
-                        </form>
-                    </CardContent>
-                </Card>
-            </TabsContent>
-
-            <TabsContent value="ai" className="mt-4">
-                <AIFlashcardForm deckId={deckId} />
-            </TabsContent>
-        </Tabs>
+                            <Textarea
+                                value={jsonCards}
+                                onChange={(e) => setJsonCards(e.target.value)}
+                                className="h-48 w-full resize-none rounded border p-2 font-mono text-xs sm:h-72 sm:text-sm"
+                                placeholder={getJsonPlaceholder()}
+                                required
+                            />
+                        </div>
+                        <Button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="w-full sm:w-auto"
+                        >
+                            {isSubmitting
+                                ? t('creatingMultiple')
+                                : t('createFromJson')}
+                        </Button>
+                    </form>
+                )}
+                {mode === 'ai' && <AIFlashcardForm deckId={deckId} />}
+            </div>
+        </div>
     )
 }

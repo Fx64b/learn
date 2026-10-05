@@ -1,10 +1,11 @@
 import { getDeckById } from '@/db/utils'
 import { authOptions } from '@/lib/auth'
+import { ArrowLeft, ListPlus, Play, Settings2 } from 'lucide-react'
 
 import { getServerSession } from 'next-auth'
 import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 
 import { getFlashcardsByDeckId } from '@/app/actions/flashcard'
 
@@ -17,73 +18,113 @@ import DeckDetailsForm from './deck-details-form'
 
 export default async function EditDeckPage({
     params,
+    searchParams,
 }: {
     params: Promise<{ id: string }>
+    searchParams: Promise<{ tab?: string; new?: string }>
 }) {
     const { id } = await params
+    const { tab, new: isNew } = await searchParams
     const session = await getServerSession(authOptions)
-    const t = await getTranslations('deck')
-    const common = await getTranslations('common')
-
-    if (!session?.user?.id) {
-        notFound()
-    }
+    if (!session?.user?.id) redirect('/login')
 
     const deck = await getDeckById(id, session.user.id)
+    if (!deck) notFound()
 
-    if (!deck) {
-        notFound()
-    }
-
-    const flashcards = await getFlashcardsByDeckId(id)
+    const [t, flashcards] = await Promise.all([
+        getTranslations('decks.edit'),
+        getFlashcardsByDeckId(id),
+    ])
+    const count = flashcards.length
 
     return (
-        <div className="container mx-auto max-w-4xl px-4 py-8">
-            <div className="mb-8 flex items-center justify-between">
-                <h1 className="text-2xl font-bold">{deck.title}</h1>
-                <Button variant="outline" asChild>
-                    <Link href="/">{common('back')}</Link>
+        <div className="container mx-auto max-w-5xl space-y-6 px-4 py-6 sm:py-8">
+            <header className="flex flex-wrap items-start gap-3">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    asChild
+                    aria-label={t('back')}
+                >
+                    <Link href={`/deck/${deck.id}`}>
+                        <ArrowLeft className="size-5" />
+                    </Link>
                 </Button>
-            </div>
+                <div className="min-w-0 flex-1">
+                    <p className="text-muted-foreground text-sm font-semibold">
+                        {t('eyebrow')}
+                    </p>
+                    <h1 className="text-2xl font-extrabold tracking-tight break-words sm:text-3xl">
+                        {deck.title}
+                    </h1>
+                </div>
+                <div className="flex gap-2">
+                    <Button variant="outline" asChild>
+                        <Link href={`/deck/${deck.id}`}>{t('openDeck')}</Link>
+                    </Button>
+                    {count > 0 && (
+                        <Button
+                            asChild
+                            className="bg-emerald-500 font-bold text-white hover:bg-emerald-500/90"
+                        >
+                            <Link href={`/learn/${deck.id}`}>
+                                <Play className="fill-current" />
+                                {t('learn')}
+                            </Link>
+                        </Button>
+                    )}
+                </div>
+            </header>
 
-            <Tabs defaultValue="cards" className="mb-8">
-                <TabsList className="mb-4 grid h-auto w-full grid-cols-1 gap-1 sm:h-10 sm:grid-cols-2 sm:gap-0">
+            <Tabs
+                defaultValue={tab === 'settings' ? 'settings' : 'items'}
+                className="space-y-6"
+            >
+                <TabsList className="h-auto rounded-xl p-1">
                     <TabsTrigger
-                        value="details"
-                        className="w-full py-2 text-sm sm:py-0 sm:text-base"
+                        value="items"
+                        className="gap-2 rounded-lg px-4 py-2"
                     >
-                        {t('tabs.details')}
+                        <ListPlus className="size-4" />
+                        {t('tabs.items')}
+                        <span className="bg-muted rounded-full px-2 text-xs tabular-nums">
+                            {count}
+                        </span>
                     </TabsTrigger>
                     <TabsTrigger
-                        value="cards"
-                        className="w-full py-2 text-sm sm:py-0 sm:text-base"
+                        value="settings"
+                        className="gap-2 rounded-lg px-4 py-2"
                     >
-                        {t('tabs.editCards')}
+                        <Settings2 className="size-4" />
+                        {t('tabs.settings')}
                     </TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="details">
-                    <DeckDetailsForm deck={deck} />
+                <TabsContent value="items" className="space-y-8">
+                    {isNew && count === 0 && (
+                        <div className="rounded-2xl border-2 border-b-4 border-emerald-500 bg-emerald-50 p-5 dark:bg-emerald-950/40">
+                            <h2 className="text-lg font-bold text-emerald-700 dark:text-emerald-300">
+                                {t('welcomeTitle')}
+                            </h2>
+                            <p className="text-muted-foreground text-sm">
+                                {t('welcomeText')}
+                            </p>
+                        </div>
+                    )}
+                    <section className="space-y-3">
+                        <h2 className="text-lg font-bold">{t('addItems')}</h2>
+                        <CreateCardForm deckId={deck.id} />
+                    </section>
+                    <section className="space-y-3">
+                        <h2 className="text-lg font-bold">
+                            {t('allItems', { count })}
+                        </h2>
+                        <CardList flashcards={flashcards} />
+                    </section>
                 </TabsContent>
 
-                <TabsContent value="cards">
-                    <div className="grid gap-8 md:grid-cols-2">
-                        <div>
-                            <h2 className="mb-4 text-lg font-semibold">
-                                {t('cards.createCard')}
-                            </h2>
-                            <CreateCardForm deckId={deck.id} />
-                        </div>
-
-                        <div>
-                            <h2 className="mb-4 text-lg font-semibold">
-                                {t('cards.allCards', {
-                                    count: flashcards.length,
-                                })}
-                            </h2>
-                            <CardList flashcards={flashcards} />
-                        </div>
-                    </div>
+                <TabsContent value="settings">
+                    <DeckDetailsForm deck={deck} itemCount={count} />
                 </TabsContent>
             </Tabs>
         </div>

@@ -143,62 +143,240 @@
     },
     "landing": {
         "hero": {
-            "badge": "Now in Early Development",
-            "title": "Master Any Subject with",
-            "titleHighlight": "Smart Flashcards",
-            "description": "Learn faster and remember longer with our intelligent spaced repetition system. Create, study, and track your progress with beautifully designed flashcards.",
-            "startLearning": "Start Learning for Free",
-            "viewDemo": "View Demo"
-        },
-        "features": {
-            "title": "Everything you need to learn effectively",
-            "description": "Our app combines proven learning techniques with modern technology to help you achieve your learning goals.",
-            "spacedRepetition": {
-                "title": "Spaced Repetition",
-                "description": "Intelligent algorithm that shows you cards just before you forget them, maximizing retention and minimizing study time."
+            "badge": "New: 9 item types and 12 kinds of exercises",
+            "titleStart": "Learning that sticks,",
+            "titleHighlight": "and feels like play.",
+            "description": "Learn turns your notes into short, varied exercises: pick, type, match, order and label. Spaced repetition brings each item back right before you would forget it.",
+            "startLearning": "Start learning for free",
+            "tryIt": "Try an exercise",
+            "trust": ["Free to start", "No credit card", "English and German"],
+            "chips": {
+                "streak": "12 day streak",
+                "goal": "Daily goal reached",
+                "achievement": "Flawless unlocked"
             },
-            "progressTracking": {
-                "title": "Progress Tracking",
-                "description": "Monitor your learning streaks, success rates, and daily progress with detailed analytics and insights."
-            },
-            "responsiveDesign": {
-                "title": "Responsive Design",
-                "description": "Study anywhere, anytime. Our app works perfectly on desktop, tablet, and mobile devices."
-            },
-            "keyboardShortcuts": {
-                "title": "Keyboard Shortcuts",
-                "description": "Learn faster with intuitive keyboard navigation. Flip cards and rate them without touching your mouse."
-            },
-            "deckManagement": {
-                "title": "Deck Management",
-                "description": "Organize your flashcards into decks by category. Import cards in bulk or create them one by one."
-            },
-            "studySessions": {
-                "title": "Study Sessions",
-                "description": "Track your study time and analyze your most productive hours to optimize your learning schedule."
+            "demo": {
+                "doneTitle": "Lesson complete!",
+                "doneText": "You earned {xp} XP. This is how every session feels.",
+                "again": "Play again"
             }
+        },
+        "stats": {
+            "types": {
+                "value": "9",
+                "label": "item types"
+            },
+            "exercises": {
+                "value": "12",
+                "label": "exercise kinds"
+            },
+            "srs": {
+                "value": "SM-2",
+                "label": "spaced repetition"
+            },
+            "languages": {
+                "value": "2",
+                "label": "languages"
+            }
+        },
+        "showcase": {
+            "eyebrow": "Try it",
+            "title": "Every exercise, right here",
+            "description": "These are the real exercises from the app. Pick one and play. Nothing is saved.",
+            "tabsLabel": "Exercise kinds",
+            "kinds": {
+                "multipleChoice": {
+                    "name": "Multiple choice",
+                    "description": "Recognise the right answer. Used first for new items, also with several correct options."
+                },
+                "typeAnswer": {
+                    "name": "Type the answer",
+                    "description": "Recall it yourself. Small typos are forgiven, and you can mark an answer as right if it was."
+                },
+                "matchPairs": {
+                    "name": "Match pairs",
+                    "description": "Tap terms and their partners. A quick way to meet several new items at once."
+                },
+                "fillBlank": {
+                    "name": "Fill the blanks",
+                    "description": "Complete key sentences from a word bank. Later you type the missing word."
+                },
+                "orderSequence": {
+                    "name": "Put in order",
+                    "description": "Timelines, process steps, rankings. Drag the items or use the arrows."
+                },
+                "listRecall": {
+                    "name": "Name them all",
+                    "description": "Recall every member of a set in any order, like a Sporcle quiz."
+                },
+                "numberAnswer": {
+                    "name": "Numbers",
+                    "description": "Dates and figures with a tolerance, plus higher or lower hints."
+                },
+                "labelDiagram": {
+                    "name": "Label a diagram",
+                    "description": "Put the right names on maps, charts and diagrams."
+                },
+                "locateOnImage": {
+                    "name": "Find the spot",
+                    "description": "Tap the right place on an image. The closer, the better."
+                },
+                "firstLetter": {
+                    "name": "First letters",
+                    "description": "Learn passages word for word by typing only the first letter of each word."
+                },
+                "buildSentence": {
+                    "name": "Build the sentence",
+                    "description": "Rebuild a sentence from word tiles. Watch out for the extra words."
+                },
+                "flashcard": {
+                    "name": "Flashcard",
+                    "description": "The classic. Flip the card and rate how well you knew it."
+                }
+            }
+        },
+        "itemTypes": {
+            "eyebrow": "Any kind of knowledge",
+            "title": "Bring your material. We pick the exercise.",
+            "description": "Not everything is a question and an answer. Each item type turns into exercises that fit it.",
+            "becomes": "Becomes"
+        },
+        "mastery": {
+            "eyebrow": "Adaptive learning",
+            "title": "Recognition first, recall later",
+            "description": "Every item climbs through four stages. The exercises get harder as you get better, and the schedule adapts to you.",
+            "stages": {
+                "new": {
+                    "title": "New",
+                    "text": "You meet the item with multiple choice or a match game."
+                },
+                "learning": {
+                    "title": "Learning",
+                    "text": "You type the answer or fill the gap yourself."
+                },
+                "familiar": {
+                    "title": "Familiar",
+                    "text": "Fewer hints and longer gaps between reviews."
+                },
+                "mastered": {
+                    "title": "Mastered",
+                    "text": "Recalled from memory, checked every few weeks."
+                }
+            },
+            "points": {
+                "mistakes": {
+                    "title": "Mistakes come back",
+                    "text": "Miss something and it returns a few exercises later in the same session."
+                },
+                "srs": {
+                    "title": "Spaced repetition",
+                    "text": "SuperMemo-2 schedules each item right before you would forget it."
+                },
+                "mixed": {
+                    "title": "Always mixed",
+                    "text": "Reviews and new items are mixed, so sessions never feel the same."
+                }
+            }
+        },
+        "motivation": {
+            "eyebrow": "Motivation",
+            "title": "Motivating, never nagging",
+            "description": "Just enough game to keep you coming back. No hearts, no ads, no pressure.",
+            "points": {
+                "xp": {
+                    "title": "XP and combos",
+                    "text": "Earn XP for every exercise. Get several right in a row for a bonus."
+                },
+                "goal": {
+                    "title": "Your daily goal",
+                    "text": "Pick a goal from casual to intense and fill your ring."
+                },
+                "streak": {
+                    "title": "Streak with a safety net",
+                    "text": "A streak freeze saves you when life gets in the way."
+                },
+                "achievements": {
+                    "title": "Achievements",
+                    "text": "Milestones for streaks, mastered items, perfect sessions and more."
+                }
+            },
+            "mock": {
+                "xp": "XP",
+                "accuracy": "Accuracy",
+                "combo": "Best combo",
+                "goal": "Daily goal",
+                "goalValue": "30 / 30 XP",
+                "streak": "12 day streak",
+                "streakText": "Streak extended",
+                "activity": "Activity"
+            }
+        },
+        "ai": {
+            "eyebrow": "AI generation",
+            "title": "Turn notes and PDFs into lessons",
+            "description": "Describe a topic or upload a PDF. The AI picks the best item type for each fact: dates become numbers, steps become sequences, definitions become questions.",
+            "pro": "Pro feature with a free trial quota",
+            "prompt": "Photosynthesis, chapter 3",
+            "file": "biology-notes.pdf",
+            "generated": "Generated items",
+            "items": {
+                "basic": "What does chlorophyll absorb?",
+                "cloze": "Photosynthesis converts ___ energy into ___ energy.",
+                "sequence": "Order the stages of photosynthesis",
+                "list": "Name the inputs of photosynthesis",
+                "number": "How many ATP does the Calvin cycle use per glucose?"
+            }
+        },
+        "modes": {
+            "eyebrow": "Four ways to learn",
+            "title": "One deck, four modes",
+            "description": "Switch between modes whenever you like. They all share your progress."
         },
         "howItWorks": {
-            "title": "Simple, yet powerful",
-            "description": "Get started in minutes and see results in days",
+            "eyebrow": "How it works",
+            "title": "From zero to learning in two minutes",
             "step1": {
-                "title": "Create Your Decks",
-                "description": "Organize your learning material into themed decks. Add cards manually or import them in bulk."
+                "title": "Create a deck",
+                "description": "Give it a name and an optional exam date."
             },
             "step2": {
-                "title": "Study Smart",
-                "description": "Review cards using our spaced repetition algorithm. Rate your confidence and let the system optimize your schedule."
+                "title": "Add items",
+                "description": "Type them, import JSON, or let the AI build them from a PDF."
             },
             "step3": {
-                "title": "Track Progress",
-                "description": "Monitor your learning journey with detailed analytics and maintain your study streaks."
+                "title": "Learn a little every day",
+                "description": "Short sessions, smart reviews, and a streak that grows."
             }
         },
+        "faq": {
+            "title": "Questions and answers",
+            "items": [
+                {
+                    "q": "Is Learn free?",
+                    "a": "Yes. Creating decks, all item types and all learning modes are free. Pro adds unlimited AI generation."
+                },
+                {
+                    "q": "How is this different from Quizlet or Anki?",
+                    "a": "Like Anki, Learn schedules reviews with spaced repetition. Like Duolingo, it turns each item into varied exercises that get harder as you improve. You get both in one app."
+                },
+                {
+                    "q": "Can I import my existing cards?",
+                    "a": "Yes. Paste a JSON list of question and answer cards, or of any item type. Exports use the same format."
+                },
+                {
+                    "q": "Does it work on my phone?",
+                    "a": "Yes. Every exercise works with touch and keyboard, on small and large screens."
+                },
+                {
+                    "q": "What happens if I miss a day?",
+                    "a": "A streak freeze covers one missed day. You earn a new one every seven days of your streak."
+                }
+            ]
+        },
         "cta": {
-            "title": "Ready to supercharge your learning?",
-            "description": "Join our early group of learners who are already using our platform to master new skills and knowledge.",
-            "startToday": "Start Learning Today",
-            "learnMore": "Learn More"
+            "title": "Your next session takes five minutes.",
+            "description": "Create a free account and start with your own material or one of the examples above.",
+            "button": "Start learning for free"
         }
     },
     "dashboard": {
@@ -318,13 +496,13 @@
             "backLabel": "Back",
             "backPlaceholder": "Answer or definition",
             "creating": "Creating...",
-            "createCard": "Create Card",
-            "createMultiple": "Multiple Cards",
-            "singleCard": "Single Card",
+            "createCard": "Add item",
+            "createMultiple": "Import JSON",
+            "singleCard": "Write",
             "creatingMultiple": "Creating cards...",
             "createError": "Error creating card",
             "createFromJson": "Create cards from JSON",
-            "cardCreated": "Card created",
+            "cardCreated": "Item added",
             "cardsCreated": "{success} cards created{errors}",
             "withErrors": ", {count} errors",
             "updateSuccess": "Card updated",
@@ -345,12 +523,13 @@
             "copyWithAiPrompt": "Copy with AI Prompt",
             "copiedToClipboard": "Copied to clipboard",
             "copyFailed": "Failed to copy",
-            "aiGenerate": "AI",
+            "aiGenerate": "Generate with AI",
             "save": "Save",
             "edit": "Edit",
             "delete": "Delete",
             "invalidJson": "The text is not valid JSON",
-            "tooManyItems": "Too many items: import at most 200 at once"
+            "tooManyItems": "Too many items: import at most 200 at once",
+            "addItems": "Add items"
         },
         "ai": {
             "proRequired": "AI flashcard generation is available for Pro users only.",
@@ -389,10 +568,6 @@
             "dismissDisclaimer": "Dismiss AI disclaimer",
             "typesLabel": "Item types",
             "typesHint": "The AI picks the best fitting type for each fact from the selected ones. Diagrams need an image and are added by hand."
-        },
-        "tabs": {
-            "details": "Deck Details",
-            "editCards": "Edit Cards"
         },
         "statistics": {
             "totalCards": "cards total",
@@ -1405,5 +1580,79 @@
         "less": "Less",
         "more": "More",
         "achievements": "Achievements ({unlocked}/{total})"
+    },
+    "decks": {
+        "form": {
+            "title": "Name",
+            "titlePlaceholder": "e.g. Biology exam: cells",
+            "description": "Description",
+            "descriptionPlaceholder": "What is this deck about? (optional)",
+            "tags": "Tags",
+            "tagsPlaceholder": "Type a tag and press Enter",
+            "suggested": "Suggestions:",
+            "suggestions": {
+                "languages": "languages",
+                "math": "math",
+                "science": "science",
+                "history": "history",
+                "geography": "geography",
+                "medicine": "medicine",
+                "law": "law",
+                "programming": "programming"
+            },
+            "deadline": "Exam date or deadline",
+            "deadlineHint": "Optional. The deck counts as finished after this date.",
+            "noDeadline": "No deadline",
+            "quick": {
+                "week": "In 1 week",
+                "month": "In 1 month",
+                "threeMonths": "In 3 months"
+            },
+            "pickDate": "Pick a date",
+            "daysLeft": "{count, plural, =0 {Due today} one {# day left} other {# days left}}",
+            "deadlinePast": "This date has passed",
+            "preview": "Preview",
+            "items": "{count, plural, =0 {No items yet} one {# item} other {# items}}",
+            "until": "until {date}"
+        },
+        "create": {
+            "back": "Back to overview",
+            "title": "Create a new deck",
+            "subtitle": "A deck groups items you want to learn together, for example for one exam.",
+            "steps": {
+                "details": "Details",
+                "items": "Add items",
+                "learn": "Learn"
+            },
+            "submit": "Create deck and add items",
+            "submitting": "Creating…",
+            "success": "Deck created",
+            "error": "The deck could not be created"
+        },
+        "edit": {
+            "back": "Back to deck",
+            "eyebrow": "Edit deck",
+            "openDeck": "Open deck",
+            "learn": "Learn",
+            "tabs": {
+                "items": "Items",
+                "settings": "Settings"
+            },
+            "welcomeTitle": "Your deck is ready!",
+            "welcomeText": "Add your first items below: write them one by one, paste a JSON list, or let the AI create them from a topic or PDF.",
+            "addItems": "Add items",
+            "allItems": "{count, plural, =0 {Items} one {# item} other {# items}}"
+        },
+        "items": {
+            "empty": "No items yet. Add your first one above.",
+            "search": "Search items",
+            "all": "All {count}",
+            "noMatch": "No items match your search."
+        },
+        "settings": {
+            "resetHint": "Start over: every item becomes new again. Your items stay.",
+            "deleteHint": "Remove the deck with all items and learning progress.",
+            "download": "Download JSON"
+        }
     }
 }

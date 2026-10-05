@@ -162,7 +162,7 @@ describe('Deck Actions', () => {
             })
         })
 
-        test('should handle empty form data', async () => {
+        test('should reject empty form data', async () => {
             const mockSession = {
                 user: { id: 'user-1', email: 'test@example.com' },
             }
@@ -173,17 +173,11 @@ describe('Deck Actions', () => {
 
             const result = await createDeck(formData)
 
-            expect(result).toEqual({ success: true, id: 'new-deck-id' })
-            expect(mockDbUtils.createDeck).toHaveBeenCalledWith({
-                title: null,
-                description: null,
-                category: null,
-                activeUntil: null,
-                userId: 'user-1',
-            })
+            expect(result.success).toBe(false)
+            expect(mockDbUtils.createDeck).not.toHaveBeenCalled()
         })
 
-        test('should handle invalid date format', async () => {
+        test('should reject an invalid date', async () => {
             const mockSession = {
                 user: { id: 'user-1', email: 'test@example.com' },
             }
@@ -196,15 +190,29 @@ describe('Deck Actions', () => {
 
             const result = await createDeck(formData)
 
+            expect(result.success).toBe(false)
+            expect(mockDbUtils.createDeck).not.toHaveBeenCalled()
+        })
+
+        test('should store an empty tag list when no category is given', async () => {
+            mockGetServerSession.mockResolvedValue({
+                user: { id: 'user-1', email: 'test@example.com' },
+            })
+            mockDbUtils.createDeck.mockResolvedValue('new-deck-id')
+
+            const formData = new FormData()
+            formData.append('title', '  Test Deck  ')
+
+            const result = await createDeck(formData)
+
             expect(result).toEqual({ success: true, id: 'new-deck-id' })
-            // Invalid date should result in an Invalid Date object
-            expect(mockDbUtils.createDeck).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    title: 'Test Deck',
-                    userId: 'user-1',
-                    activeUntil: expect.any(Date),
-                })
-            )
+            expect(mockDbUtils.createDeck).toHaveBeenCalledWith({
+                title: 'Test Deck',
+                description: '',
+                category: '[]',
+                activeUntil: null,
+                userId: 'user-1',
+            })
         })
     })
 
@@ -333,6 +341,7 @@ describe('Deck Actions', () => {
 
             const formData = new FormData()
             formData.append('id', 'deck-1')
+            formData.append('title', 'Some deck')
 
             const result = await updateDeck(formData)
 
@@ -582,7 +591,7 @@ describe('Deck Actions', () => {
             })
         })
 
-        test('should handle very long deck titles and descriptions', async () => {
+        test('should reject too long deck titles and descriptions', async () => {
             const mockSession = {
                 user: { id: 'user-1', email: 'test@example.com' },
             }
@@ -598,14 +607,8 @@ describe('Deck Actions', () => {
 
             const result = await createDeck(formData)
 
-            expect(result).toEqual({ success: true, id: 'deck-1' })
-            expect(mockDbUtils.createDeck).toHaveBeenCalledWith({
-                title: longTitle,
-                description: longDescription,
-                category: null,
-                activeUntil: null,
-                userId: 'user-1',
-            })
+            expect(result.success).toBe(false)
+            expect(mockDbUtils.createDeck).not.toHaveBeenCalled()
         })
 
         test('should handle session timeout during operation', async () => {

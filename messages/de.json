@@ -143,65 +143,244 @@
     },
     "landing": {
         "hero": {
-            "badge": "Jetzt in der frühen Entwicklung",
-            "title": "Meistere jedes Thema mit",
-            "titleHighlight": "Smarten Lernkarten",
-            "description": "Lerne schneller und erinnere dich länger mit unserem intelligenten Spaced-Repetition-System. Erstelle, lerne und verfolge deinen Fortschritt mit schön gestalteten Lernkarten.",
-            "startLearning": "Kostenlos starten",
-            "viewDemo": "Demo ansehen"
-        },
-        "features": {
-            "title": "Alles was du brauchst, um effektiv zu lernen",
-            "description": "Unsere App kombiniert bewährte Lerntechniken mit moderner Technologie, um dir zu helfen, deine Lernziele zu erreichen.",
-            "spacedRepetition": {
-                "title": "Spaced Repetition",
-                "description": "Intelligenter Algorithmus, der dir Karten kurz bevor du sie vergisst zeigt, um die Lernleistung zu maximieren und die Lernzeit zu minimieren."
+            "badge": "Neu: 9 Elementtypen und 12 Übungsarten",
+            "titleStart": "Lernen, das hängen bleibt,",
+            "titleHighlight": "und sich wie Spielen anfühlt.",
+            "description": "Learn macht aus deinen Notizen kurze, abwechslungsreiche Übungen: wählen, tippen, zuordnen, ordnen und beschriften. Spaced Repetition holt jedes Element zurück, kurz bevor du es vergisst.",
+            "startLearning": "Kostenlos loslernen",
+            "tryIt": "Übung ausprobieren",
+            "trust": [
+                "Kostenlos starten",
+                "Keine Kreditkarte",
+                "Deutsch und Englisch"
+            ],
+            "chips": {
+                "streak": "12 Tage Serie",
+                "goal": "Tagesziel erreicht",
+                "achievement": "Fehlerfrei freigeschaltet"
             },
-            "progressTracking": {
-                "title": "Fortschrittsverfolgung",
-                "description": "Überwache deine Lern-Streaks, Erfolgsraten und täglichen Fortschritt mit detaillierten Analysen und Einblicken."
-            },
-            "responsiveDesign": {
-                "title": "Responsives Design",
-                "description": "Lerne überall und jederzeit. Unsere App funktioniert perfekt auf Desktop, Tablet und Mobilgeräten."
-            },
-            "keyboardShortcuts": {
-                "title": "Tastaturkürzel",
-                "description": "Lerne schneller mit intuitiver Tastaturnavigation. Drehe Karten um und bewerte sie ohne deine Maus zu berühren."
-            },
-            "deckManagement": {
-                "title": "Deck-Verwaltung",
-                "description": "Organisiere deine Lernkarten in Decks nach Kategorie. Importiere Karten in großen Mengen oder erstelle sie einzeln."
-            },
-            "studySessions": {
-                "title": "Lernsitzungen",
-                "description": "Verfolge deine Lernzeit und analysiere deine produktivsten Stunden, um deinen Lernplan zu optimieren."
+            "demo": {
+                "doneTitle": "Lektion geschafft!",
+                "doneText": "Du hast {xp} XP verdient. So fühlt sich jede Sitzung an.",
+                "again": "Nochmal spielen"
             }
+        },
+        "stats": {
+            "types": {
+                "value": "9",
+                "label": "Elementtypen"
+            },
+            "exercises": {
+                "value": "12",
+                "label": "Übungsarten"
+            },
+            "srs": {
+                "value": "SM-2",
+                "label": "Spaced Repetition"
+            },
+            "languages": {
+                "value": "2",
+                "label": "Sprachen"
+            }
+        },
+        "showcase": {
+            "eyebrow": "Ausprobieren",
+            "title": "Jede Übung, direkt hier",
+            "description": "Das sind die echten Übungen aus der App. Wähle eine und leg los. Nichts wird gespeichert.",
+            "tabsLabel": "Übungsarten",
+            "kinds": {
+                "multipleChoice": {
+                    "name": "Auswahl",
+                    "description": "Erkenne die richtige Antwort. Wird für neue Elemente zuerst genutzt, auch mit mehreren richtigen Optionen."
+                },
+                "typeAnswer": {
+                    "name": "Antwort tippen",
+                    "description": "Erinnere dich selbst. Kleine Tippfehler werden verziehen, und du kannst eine Antwort als richtig markieren."
+                },
+                "matchPairs": {
+                    "name": "Paare finden",
+                    "description": "Tippe Begriffe und ihre Partner an. So lernst du mehrere neue Elemente auf einmal kennen."
+                },
+                "fillBlank": {
+                    "name": "Lücken füllen",
+                    "description": "Vervollständige wichtige Sätze mit einer Wortbank. Später tippst du das fehlende Wort."
+                },
+                "orderSequence": {
+                    "name": "Reihenfolge",
+                    "description": "Zeitleisten, Prozessschritte, Ranglisten. Ziehe die Elemente oder nutze die Pfeile."
+                },
+                "listRecall": {
+                    "name": "Alle nennen",
+                    "description": "Nenne alle Elemente einer Menge in beliebiger Reihenfolge, wie bei einem Quiz."
+                },
+                "numberAnswer": {
+                    "name": "Zahlen",
+                    "description": "Jahreszahlen und Werte mit Toleranz und Hinweisen wie höher oder tiefer."
+                },
+                "labelDiagram": {
+                    "name": "Diagramm beschriften",
+                    "description": "Setze die richtigen Namen auf Karten, Grafiken und Diagramme."
+                },
+                "locateOnImage": {
+                    "name": "Stelle finden",
+                    "description": "Tippe auf die richtige Stelle im Bild. Je näher, desto besser."
+                },
+                "firstLetter": {
+                    "name": "Anfangsbuchstaben",
+                    "description": "Lerne Texte wortwörtlich, indem du nur den ersten Buchstaben jedes Wortes tippst."
+                },
+                "buildSentence": {
+                    "name": "Satz bauen",
+                    "description": "Baue einen Satz aus Wortkacheln. Achtung vor den Extrawörtern."
+                },
+                "flashcard": {
+                    "name": "Karteikarte",
+                    "description": "Der Klassiker. Drehe die Karte um und bewerte, wie gut du es wusstest."
+                }
+            }
+        },
+        "itemTypes": {
+            "eyebrow": "Jede Art von Wissen",
+            "title": "Bring deinen Stoff. Wir wählen die Übung.",
+            "description": "Nicht alles ist Frage und Antwort. Jeder Elementtyp wird zu Übungen, die zu ihm passen.",
+            "becomes": "Wird zu"
+        },
+        "mastery": {
+            "eyebrow": "Adaptives Lernen",
+            "title": "Erst erkennen, dann erinnern",
+            "description": "Jedes Element durchläuft vier Stufen. Die Übungen werden schwerer, je besser du wirst, und der Plan passt sich dir an.",
+            "stages": {
+                "new": {
+                    "title": "Neu",
+                    "text": "Du lernst das Element mit Auswahl oder einem Zuordnungsspiel kennen."
+                },
+                "learning": {
+                    "title": "Am Lernen",
+                    "text": "Du tippst die Antwort oder füllst die Lücke selbst."
+                },
+                "familiar": {
+                    "title": "Vertraut",
+                    "text": "Weniger Hilfen und längere Pausen zwischen Wiederholungen."
+                },
+                "mastered": {
+                    "title": "Gemeistert",
+                    "text": "Aus dem Gedächtnis abgerufen, alle paar Wochen geprüft."
+                }
+            },
+            "points": {
+                "mistakes": {
+                    "title": "Fehler kommen zurück",
+                    "text": "Verpasst du etwas, kommt es ein paar Übungen später in derselben Sitzung wieder."
+                },
+                "srs": {
+                    "title": "Spaced Repetition",
+                    "text": "SuperMemo-2 plant jedes Element kurz bevor du es vergessen würdest."
+                },
+                "mixed": {
+                    "title": "Immer gemischt",
+                    "text": "Wiederholungen und neue Elemente sind gemischt, keine Sitzung gleicht der anderen."
+                }
+            }
+        },
+        "motivation": {
+            "eyebrow": "Motivation",
+            "title": "Motivierend, nie nervig",
+            "description": "Gerade genug Spiel, damit du gerne wiederkommst. Keine Herzen, keine Werbung, kein Druck.",
+            "points": {
+                "xp": {
+                    "title": "XP und Serien",
+                    "text": "Sammle XP für jede Übung. Mehrere richtige Antworten in Folge geben einen Bonus."
+                },
+                "goal": {
+                    "title": "Dein Tagesziel",
+                    "text": "Wähle ein Ziel von locker bis intensiv und fülle deinen Ring."
+                },
+                "streak": {
+                    "title": "Serie mit Sicherheitsnetz",
+                    "text": "Ein Serien-Schutz rettet dich, wenn mal etwas dazwischenkommt."
+                },
+                "achievements": {
+                    "title": "Erfolge",
+                    "text": "Meilensteine für Serien, gemeisterte Elemente, perfekte Sitzungen und mehr."
+                }
+            },
+            "mock": {
+                "xp": "XP",
+                "accuracy": "Genauigkeit",
+                "combo": "Beste Serie",
+                "goal": "Tagesziel",
+                "goalValue": "30 / 30 XP",
+                "streak": "12 Tage Serie",
+                "streakText": "Serie verlängert",
+                "activity": "Aktivität"
+            }
+        },
+        "ai": {
+            "eyebrow": "KI-Generierung",
+            "title": "Aus Notizen und PDFs werden Lektionen",
+            "description": "Beschreibe ein Thema oder lade ein PDF hoch. Die KI wählt für jeden Inhalt den besten Elementtyp: Jahreszahlen werden Zahlen, Schritte werden Reihenfolgen, Definitionen werden Fragen.",
+            "pro": "Pro-Funktion mit kostenlosem Testkontingent",
+            "prompt": "Fotosynthese, Kapitel 3",
+            "file": "biologie-notizen.pdf",
+            "generated": "Erstellte Elemente",
+            "items": {
+                "basic": "Was absorbiert Chlorophyll?",
+                "cloze": "Die Fotosynthese wandelt ___ in ___ Energie um.",
+                "sequence": "Ordne die Phasen der Fotosynthese",
+                "list": "Nenne die Ausgangsstoffe der Fotosynthese",
+                "number": "Wie viele ATP braucht der Calvin-Zyklus pro Glukose?"
+            }
+        },
+        "modes": {
+            "eyebrow": "Vier Arten zu lernen",
+            "title": "Ein Stapel, vier Modi",
+            "description": "Wechsle die Modi, wann du willst. Alle teilen deinen Fortschritt."
         },
         "howItWorks": {
-            "title": "Einfach, aber leistungsstark",
-            "description": "Starte in Minuten und sehe Ergebnisse in Tagen",
+            "eyebrow": "So funktioniert's",
+            "title": "In zwei Minuten startklar",
             "step1": {
-                "number": "1",
-                "title": "Erstelle deine Decks",
-                "description": "Organisiere dein Lernmaterial in thematische Decks. Füge Karten manuell hinzu oder importiere sie in großen Mengen."
+                "title": "Stapel erstellen",
+                "description": "Gib ihm einen Namen und optional ein Prüfungsdatum."
             },
             "step2": {
-                "number": "2",
-                "title": "Lerne intelligent",
-                "description": "Wiederhole Karten mit unserem Spaced-Repetition-Algorithmus. Bewerte dein Vertrauen und lass das System deinen Zeitplan optimieren."
+                "title": "Elemente hinzufügen",
+                "description": "Tippe sie ein, importiere JSON oder lass die KI sie aus einem PDF bauen."
             },
             "step3": {
-                "number": "3",
-                "title": "Verfolge Fortschritt",
-                "description": "Überwache deine Lernreise mit detaillierten Analysen und halte deine Lern-Streaks aufrecht."
+                "title": "Jeden Tag ein bisschen lernen",
+                "description": "Kurze Sitzungen, kluge Wiederholungen und eine wachsende Serie."
             }
         },
+        "faq": {
+            "title": "Fragen und Antworten",
+            "items": [
+                {
+                    "q": "Ist Learn kostenlos?",
+                    "a": "Ja. Stapel, alle Elementtypen und alle Lernmodi sind kostenlos. Pro bietet unbegrenzte KI-Generierung."
+                },
+                {
+                    "q": "Was ist anders als bei Quizlet oder Anki?",
+                    "a": "Wie Anki plant Learn Wiederholungen mit Spaced Repetition. Wie Duolingo macht es aus jedem Element abwechslungsreiche Übungen, die mit dir schwerer werden. Du bekommst beides in einer App."
+                },
+                {
+                    "q": "Kann ich meine bestehenden Karten importieren?",
+                    "a": "Ja. Füge eine JSON-Liste mit Frage-Antwort-Karten oder beliebigen Elementtypen ein. Exporte nutzen dasselbe Format."
+                },
+                {
+                    "q": "Funktioniert es auf dem Handy?",
+                    "a": "Ja. Jede Übung funktioniert mit Touch und Tastatur, auf kleinen und grossen Bildschirmen."
+                },
+                {
+                    "q": "Was passiert, wenn ich einen Tag verpasse?",
+                    "a": "Ein Serien-Schutz deckt einen verpassten Tag ab. Alle sieben Serientage bekommst du einen neuen."
+                }
+            ]
+        },
         "cta": {
-            "title": "Bereit, dein Lernen zu verbessern?",
-            "description": "Schließe dich unserer frühen Gruppe von Lernenden an, die bereits unsere Plattform nutzen, um neue Fähigkeiten und Wissen zu meistern.",
-            "startToday": "Heute anfangen",
-            "learnMore": "Mehr erfahren"
+            "title": "Deine nächste Sitzung dauert fünf Minuten.",
+            "description": "Erstelle ein kostenloses Konto und starte mit deinem eigenen Stoff oder einem der Beispiele oben.",
+            "button": "Kostenlos loslernen"
         }
     },
     "dashboard": {
@@ -321,13 +500,13 @@
             "backLabel": "Rückseite",
             "backPlaceholder": "Antwort oder Definition",
             "creating": "Erstelle...",
-            "createCard": "Karte erstellen",
-            "createMultiple": "Mehrere Karten",
+            "createCard": "Element hinzufügen",
+            "createMultiple": "JSON importieren",
             "createError": "Fehler beim Erstellen der Karte",
-            "singleCard": "Einzelne Karte",
+            "singleCard": "Schreiben",
             "creatingMultiple": "Erstelle Karten...",
             "createFromJson": "Karten aus JSON erstellen",
-            "cardCreated": "Karte erstellt",
+            "cardCreated": "Element hinzugefügt",
             "cardsCreated": "{success} Karten erstellt{errors}",
             "withErrors": ", {count} Fehler",
             "updateSuccess": "Karte aktualisiert",
@@ -348,12 +527,13 @@
             "copyWithAiPrompt": "Mit KI-Prompt kopieren",
             "copiedToClipboard": "In Zwischenablage kopiert",
             "copyFailed": "Kopieren fehlgeschlagen",
-            "aiGenerate": "KI",
+            "aiGenerate": "Mit KI erstellen",
             "save": "Speichern",
             "edit": "Bearbeiten",
             "delete": "Löschen",
             "invalidJson": "Der Text ist kein gültiges JSON",
-            "tooManyItems": "Zu viele Elemente: höchstens 200 auf einmal"
+            "tooManyItems": "Zu viele Elemente: höchstens 200 auf einmal",
+            "addItems": "Elemente hinzufügen"
         },
         "ai": {
             "proRequired": "KI-Karteikarten-Generierung ist nur für Pro-Nutzer verfügbar.",
@@ -398,10 +578,6 @@
             "cardsToReview": "Karten zu wiederholen",
             "wasDueBy": "War fällig bis:",
             "dueBy": "Fällig bis:"
-        },
-        "tabs": {
-            "details": "Deck Details",
-            "editCards": "Karten bearbeiten"
         }
     },
     "payment": {
@@ -1408,5 +1584,79 @@
         "less": "Weniger",
         "more": "Mehr",
         "achievements": "Erfolge ({unlocked}/{total})"
+    },
+    "decks": {
+        "form": {
+            "title": "Name",
+            "titlePlaceholder": "z. B. Biologieprüfung: Zellen",
+            "description": "Beschreibung",
+            "descriptionPlaceholder": "Worum geht es in diesem Stapel? (optional)",
+            "tags": "Tags",
+            "tagsPlaceholder": "Tag eingeben und Enter drücken",
+            "suggested": "Vorschläge:",
+            "suggestions": {
+                "languages": "Sprachen",
+                "math": "Mathematik",
+                "science": "Naturwissenschaften",
+                "history": "Geschichte",
+                "geography": "Geografie",
+                "medicine": "Medizin",
+                "law": "Recht",
+                "programming": "Programmieren"
+            },
+            "deadline": "Prüfungsdatum oder Frist",
+            "deadlineHint": "Optional. Nach diesem Datum gilt der Stapel als abgeschlossen.",
+            "noDeadline": "Keine Frist",
+            "quick": {
+                "week": "In 1 Woche",
+                "month": "In 1 Monat",
+                "threeMonths": "In 3 Monaten"
+            },
+            "pickDate": "Datum wählen",
+            "daysLeft": "{count, plural, =0 {Heute fällig} one {Noch # Tag} other {Noch # Tage}}",
+            "deadlinePast": "Dieses Datum ist vorbei",
+            "preview": "Vorschau",
+            "items": "{count, plural, =0 {Noch keine Elemente} one {# Element} other {# Elemente}}",
+            "until": "bis {date}"
+        },
+        "create": {
+            "back": "Zurück zur Übersicht",
+            "title": "Neuen Stapel erstellen",
+            "subtitle": "Ein Stapel bündelt Elemente, die du zusammen lernen willst, zum Beispiel für eine Prüfung.",
+            "steps": {
+                "details": "Details",
+                "items": "Elemente hinzufügen",
+                "learn": "Lernen"
+            },
+            "submit": "Stapel erstellen und Elemente hinzufügen",
+            "submitting": "Wird erstellt…",
+            "success": "Stapel erstellt",
+            "error": "Der Stapel konnte nicht erstellt werden"
+        },
+        "edit": {
+            "back": "Zurück zum Stapel",
+            "eyebrow": "Stapel bearbeiten",
+            "openDeck": "Stapel öffnen",
+            "learn": "Lernen",
+            "tabs": {
+                "items": "Elemente",
+                "settings": "Einstellungen"
+            },
+            "welcomeTitle": "Dein Stapel ist bereit!",
+            "welcomeText": "Füge unten deine ersten Elemente hinzu: einzeln, als JSON-Liste oder lass die KI sie aus einem Thema oder PDF erstellen.",
+            "addItems": "Elemente hinzufügen",
+            "allItems": "{count, plural, =0 {Elemente} one {# Element} other {# Elemente}}"
+        },
+        "items": {
+            "empty": "Noch keine Elemente. Füge oben dein erstes hinzu.",
+            "search": "Elemente durchsuchen",
+            "all": "Alle {count}",
+            "noMatch": "Keine Elemente passen zu deiner Suche."
+        },
+        "settings": {
+            "resetHint": "Neu beginnen: Alle Elemente werden wieder neu. Deine Elemente bleiben.",
+            "deleteHint": "Entferne den Stapel mit allen Elementen und dem Lernfortschritt.",
+            "download": "JSON herunterladen"
+        }
     }
 }
