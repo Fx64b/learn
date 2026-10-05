@@ -8,12 +8,10 @@ import { useState } from 'react'
 
 import { useLocale, useTranslations } from 'next-intl'
 
-import {
-    createFlashcard,
-    createFlashcardsFromJson,
-} from '@/app/actions/flashcard'
+import { createItem, createItemsFromJson } from '@/app/actions/flashcard'
 
 import { AIFlashcardForm } from '@/components/flashcards/ai-flashcard-form'
+import { ItemEditor } from '@/components/items/item-editor'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -22,17 +20,12 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
 
 export function CreateCardForm({ deckId }: { deckId: string }) {
     const t = useTranslations('deck.cards')
     const locale = useLocale()
-    const [singleCard, setSingleCard] = useState({
-        front: '',
-        back: '',
-    })
     const [jsonCards, setJsonCards] = useState('')
     const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -46,6 +39,11 @@ export function CreateCardForm({ deckId }: { deckId: string }) {
   {
     "front": "Nenne drei ...",
     "back": "1. ... 2. ... 3. ..."
+  },
+  {
+    "type": "list",
+    "front": "Nenne alle ...",
+    "content": { "items": ["...", "...", "..."] }
   }
 ]`
         }
@@ -57,6 +55,11 @@ export function CreateCardForm({ deckId }: { deckId: string }) {
   {
     "front": "Name three ...",
     "back": "1. ... 2. ... 3. ..."
+  },
+  {
+    "type": "list",
+    "front": "Name all ...",
+    "content": { "items": ["...", "...", "..."] }
   }
 ]`
     }
@@ -73,7 +76,15 @@ Wichtige Hinweise:
 - "back" ist die Antwort oder Erklärung  
 - Verwende \\n für Zeilenumbrüche in längeren Texten
 - Erstelle mindestens 5-10 Karten pro Thema
-- Variiere die Fragetypen (Definitionen, Aufzählungen, Erklärungen)
+- Ohne "type" ist ein Eintrag eine Frage-Antwort-Karte
+- Weitere Typen (nur wenn passend):
+  {"type":"choice","front":"Frage","content":{"options":["A","B","C"],"answer":["B"]}}
+  {"type":"cloze","content":{"text":"Wasser kocht bei ___ °C","answers":["100"]}}
+  {"type":"list","front":"Nenne alle ...","content":{"items":["A","B",["C","Alias"]]}}
+  {"type":"sequence","front":"Ordne ...","content":{"items":[{"label":"Erstes"},{"label":"Zweites"},{"label":"Drittes"}]}}
+  {"type":"number","front":"Wie hoch ...?","content":{"value":8849,"unit":"m","tolerance":50}}
+  {"type":"pairs","content":{"pairs":[{"left":"A","right":"1"},{"left":"B","right":"2"}]}}
+  {"type":"passage","front":"Zitiere ...","content":{"text":"Wortwörtlicher Text"}}
 
 Thema für die Lernkarten:`
         }
@@ -86,7 +97,15 @@ Important notes:
 - "back" is the answer or explanation (back side)
 - Use \\n for line breaks in longer texts
 - Create at least 5-10 cards per topic
-- Vary question types (definitions, lists, explanations)
+- An entry without "type" is a question/answer card
+- Other types (only where they fit):
+  {"type":"choice","front":"Question","content":{"options":["A","B","C"],"answer":["B"]}}
+  {"type":"cloze","content":{"text":"Water boils at ___ °C","answers":["100"]}}
+  {"type":"list","front":"Name all ...","content":{"items":["A","B",["C","Alias"]]}}
+  {"type":"sequence","front":"Order ...","content":{"items":[{"label":"First"},{"label":"Second"},{"label":"Third"}]}}
+  {"type":"number","front":"How tall ...?","content":{"value":8849,"unit":"m","tolerance":50}}
+  {"type":"pairs","content":{"pairs":[{"left":"A","right":"1"},{"left":"B","right":"2"}]}}
+  {"type":"passage","front":"Recite ...","content":{"text":"Verbatim text"}}
 
 Topic for the flashcards:`
     }
@@ -109,39 +128,18 @@ Topic for the flashcards:`
         copyToClipboard(getAiPrompt())
     }
 
-    const handleSingleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setIsSubmitting(true)
-        const formData = new FormData()
-        formData.append('deckId', deckId)
-        formData.append('front', singleCard.front)
-        formData.append('back', singleCard.back)
-        formData.append('isExamRelevant', 'true')
-
-        const result = await createFlashcard(formData)
-        if (result.success) {
-            toast.success(t('cardCreated'))
-            setSingleCard({ front: '', back: '' })
-        } else {
-            toast.error(t('common.error'))
-        }
-        setIsSubmitting(false)
-    }
-
     const handleBulkSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsSubmitting(true)
 
-        const result = await createFlashcardsFromJson({
+        const result = await createItemsFromJson({
             deckId,
-            cardsJson: jsonCards,
+            json: jsonCards,
         })
 
         if (result.success) {
-            const successCount =
-                result.results?.filter((r) => r.success).length || 0
-            const errorCount =
-                result.results?.filter((r) => !r.success).length || 0
+            const successCount = result.created ?? 0
+            const errorCount = result.errors?.length ?? 0
             const message =
                 errorCount > 0
                     ? t('cardsCreated', {
@@ -150,6 +148,14 @@ Topic for the flashcards:`
                       })
                     : t('cardsCreated', { success: successCount, errors: '' })
             toast.success(message)
+            if (errorCount > 0 && result.errors) {
+                toast.warning(
+                    result.errors
+                        .slice(0, 3)
+                        .map((e) => `#${e.index + 1}: ${e.error}`)
+                        .join('\n')
+                )
+            }
             setJsonCards('')
         } else {
             toast.error(result.error || t('common.error'))
@@ -192,52 +198,21 @@ Topic for the flashcards:`
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <form
-                            onSubmit={handleSingleSubmit}
-                            className="space-y-4"
-                        >
-                            <div>
-                                <label className="mb-1 block text-sm font-medium">
-                                    {t('frontLabel')}
-                                </label>
-                                <Input
-                                    value={singleCard.front}
-                                    onChange={(e) =>
-                                        setSingleCard((prev) => ({
-                                            ...prev,
-                                            front: e.target.value,
-                                        }))
-                                    }
-                                    placeholder={t('frontPlaceholder')}
-                                    required
-                                    className="w-full"
-                                />
-                            </div>
-                            <div>
-                                <label className="mb-1 block text-sm font-medium">
-                                    {t('backLabel')}
-                                </label>
-                                <Textarea
-                                    value={singleCard.back}
-                                    onChange={(e) =>
-                                        setSingleCard((prev) => ({
-                                            ...prev,
-                                            back: e.target.value,
-                                        }))
-                                    }
-                                    placeholder={t('backPlaceholder')}
-                                    className="h-32 w-full resize-none rounded border p-2 sm:h-56"
-                                    required
-                                />
-                            </div>
-                            <Button
-                                type="submit"
-                                disabled={isSubmitting}
-                                className="w-full sm:w-auto"
-                            >
-                                {isSubmitting ? t('creating') : t('createCard')}
-                            </Button>
-                        </form>
+                        <ItemEditor
+                            submitLabel={t('createCard')}
+                            onSubmit={async (item) => {
+                                const result = await createItem({
+                                    deckId,
+                                    item,
+                                })
+                                if (result.success) {
+                                    toast.success(t('cardCreated'))
+                                    return true
+                                }
+                                toast.error(result.error || t('createError'))
+                                return false
+                            }}
+                        />
                     </CardContent>
                 </Card>
             </TabsContent>

@@ -71,13 +71,9 @@ export default function DeckDetailsForm({ deck }: DeckDetailsFormProps) {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [isResetting, setIsResetting] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
-    const [exportData, setExportData] = useState<
-        | {
-              front: string
-              back: string
-          }[]
-        | null
-    >(null)
+    const [exportData, setExportData] = useState<Awaited<
+        ReturnType<typeof getExportableFlashcards>
+    > | null>(null)
     const [isExportDialogOpen, setIsExportDialogOpen] = useState(false)
     const [isCopied, setIsCopied] = useState(false)
     const [isLoadingExport, setIsLoadingExport] = useState(false)

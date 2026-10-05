@@ -135,6 +135,7 @@ vi.mock('@/lib/rate-limit/rate-limit', () => ({
         dataRetrieval: null,
         export: null,
         preferences: null,
+        upload: null,
         paymentStatus: null,
     },
 }))

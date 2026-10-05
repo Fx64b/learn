@@ -7,7 +7,6 @@ import {
     isDue,
 } from '@/lib/learn'
 import {
-    AlertTriangle,
     ArrowRight,
     BarChart3,
     CheckCircle2,
@@ -28,7 +27,6 @@ import { getGamificationSummary } from '@/app/actions/learn'
 
 import { DeckCard } from '@/components/flashcards/deck-card'
 import { GoalRing } from '@/components/gamification/goal-ring'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 
@@ -203,14 +201,6 @@ export default async function Dashboard({ session }: DashboardProps) {
                     </Link>
                 </Button>
             </div>
-
-            <Alert className="max-w-2xl">
-                <AlertTriangle className="h-4 w-4 text-amber-500" />
-                <AlertTitle>{t('dashboard.betaWarning.title')}</AlertTitle>
-                <AlertDescription>
-                    {t('dashboard.betaWarning.description')}
-                </AlertDescription>
-            </Alert>
 
             <section className="space-y-4">
                 <h2 className="text-xl font-semibold tracking-tight">

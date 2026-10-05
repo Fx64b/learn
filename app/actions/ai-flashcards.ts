@@ -11,7 +11,7 @@ import { z } from 'zod'
 import { Session, getServerSession } from 'next-auth'
 import { getTranslations } from 'next-intl/server'
 
-import { createFlashcardsFromJson } from './flashcard'
+import { createItemsFromJson } from './flashcard'
 
 // Constants
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
@@ -568,14 +568,13 @@ export async function generateAIFlashcardsUnified(
             })
 
             // Create flashcards in database
-            const result = await createFlashcardsFromJson({
+            const result = await createItemsFromJson({
                 deckId: params.deckId,
-                cardsJson: JSON.stringify(uniqueCards),
+                json: JSON.stringify(uniqueCards),
             })
 
             if (result.success) {
-                const successCount =
-                    result.results?.filter((r) => r.success).length || 0
+                const successCount = result.created ?? 0
                 onProgress?.(
                     'complete',
                     100,

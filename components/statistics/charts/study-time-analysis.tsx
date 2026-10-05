@@ -4,7 +4,6 @@ import { useMemo } from 'react'
 
 import { useTranslations } from 'next-intl'
 
-import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface StudyTimeAnalysisProps {
@@ -88,9 +87,7 @@ export function StudyTimeAnalysis({ rawData }: StudyTimeAnalysisProps) {
     return (
         <Card>
             <CardHeader>
-                <CardTitle className="flex justify-between">
-                    {t('title')} <Badge variant="outline">{t('beta')}</Badge>
-                </CardTitle>
+                <CardTitle>{t('title')}</CardTitle>
             </CardHeader>
             <CardContent>
                 {data.length === 0 ||
