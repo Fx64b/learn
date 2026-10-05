@@ -154,3 +154,45 @@
     animation: hammer 1.2s ease-in-out infinite;
     transform-origin: bottom center;
 }
+
+/* Exercise feedback animations */
+@theme {
+    --animate-shake: shake 0.4s ease-in-out;
+    --animate-pop: pop 0.35s ease-out;
+
+    @keyframes shake {
+        0%,
+        100% {
+            transform: translateX(0);
+        }
+        20%,
+        60% {
+            transform: translateX(-4px);
+        }
+        40%,
+        80% {
+            transform: translateX(4px);
+        }
+    }
+
+    @keyframes pop {
+        0% {
+            transform: scale(0.6);
+            opacity: 0;
+        }
+        60% {
+            transform: scale(1.15);
+            opacity: 1;
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .animate-shake,
+    .animate-pop {
+        animation: none;
+    }
+}
