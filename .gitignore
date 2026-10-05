@@ -44,3 +44,5 @@ next-env.d.ts
 repomix-output.xml
 
 .idea
+# local databases
+local.db*
