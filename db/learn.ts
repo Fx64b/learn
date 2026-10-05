@@ -87,7 +87,7 @@ export async function getStudyItems(
             )
         )
 
-    // card_reviews holds one row per user and item; keep the newest if not.
+    // card_reviews holds one row per user and item. Keep the newest if not.
     const byId = new Map<string, (typeof rows)[number]>()
     for (const row of rows) {
         const prev = byId.get(row.flashcard.id)
@@ -170,7 +170,7 @@ export async function applyReview(
         prevInterval,
         prevEase
     )
-    // Easy answers keep raising the ease factor; keep it in a sane range.
+    // Easy answers keep raising the ease factor. Keep it in a sane range.
     const easeFactor = Math.round(Math.min(4, newEaseFactor) * 100)
     const nextReview = new Date(now.getTime() + nextInterval * 86_400_000)
     const values = {

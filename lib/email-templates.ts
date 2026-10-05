@@ -1,230 +1,115 @@
 /**
- * Email templates for authentication emails
- * Matches the site design with proper branding and responsive layout
+ * HTML for the sign-in emails. Email clients ignore most CSS, so the layout
+ * uses tables and inline styles, in the chunky emerald look of the app.
  */
 
-interface EmailTemplateParams {
+export interface AuthEmailParams {
     url: string
     siteName: string
+    siteUrl: string
     logoUrl: string
-}
-
-interface WelcomeEmailParams extends EmailTemplateParams {
+    lang: string
     title: string
     heading: string
     message: string
     buttonText: string
+    /** Text before the plain link, for clients that block the button. */
+    linkHint: string
     footerText: string
+    contactEmail: string
+    /** Short bullet points under the button (welcome email). */
+    highlights?: string[]
 }
 
-interface LoginEmailParams extends EmailTemplateParams {
-    title: string
-    heading: string
-    message: string
-    buttonText: string
-    footerText: string
+const COLORS = {
+    page: '#f3f6f4',
+    card: '#ffffff',
+    border: '#e4e7e5',
+    text: '#171717',
+    muted: '#5f6661',
+    emerald: '#10b981',
+    emeraldDark: '#047857',
+    tint: '#ecfdf5',
 }
 
-/**
- * Base email styles matching the site design
- * Uses oklch colors from globals.css and responsive design
- */
-const baseStyles = `
-    body {
-        margin: 0;
-        padding: 0;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
-        background-color: #f5f5f5;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-    }
-    .email-wrapper {
-        width: 100%;
-        background-color: #f5f5f5;
-        padding: 40px 20px;
-    }
-    .email-container {
-        max-width: 600px;
-        margin: 0 auto;
-        background-color: #ffffff;
-        border-radius: 10px;
-        overflow: hidden;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    .email-header {
-        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-        padding: 40px 30px;
-        text-align: center;
-    }
-    .email-logo {
-        max-width: 120px;
-        height: auto;
-        margin-bottom: 10px;
-    }
-    .email-body {
-        padding: 40px 30px;
-    }
-    .email-heading {
-        font-size: 24px;
-        font-weight: 600;
-        color: #1a1a1a;
-        margin: 0 0 20px 0;
-        line-height: 1.3;
-    }
-    .email-text {
-        font-size: 16px;
-        line-height: 1.6;
-        color: #525252;
-        margin: 0 0 30px 0;
-    }
-    .email-button {
-        display: inline-block;
-        padding: 14px 32px;
-        background-color: #1a1a1a;
-        color: #ffffff !important;
-        text-decoration: none;
-        border-radius: 8px;
-        font-weight: 500;
-        font-size: 16px;
-        transition: background-color 0.2s ease;
-    }
-    .email-button:hover {
-        background-color: #2d2d2d;
-    }
-    .email-button-wrapper {
-        text-align: center;
-        margin: 30px 0;
-    }
-    .email-footer {
-        padding: 30px;
-        background-color: #f9f9f9;
-        border-top: 1px solid #ebebeb;
-    }
-    .email-footer-text {
-        font-size: 14px;
-        line-height: 1.6;
-        color: #737373;
-        margin: 0 0 10px 0;
-        text-align: center;
-    }
-    .email-link {
-        color: #1a1a1a;
-        text-decoration: underline;
-        word-break: break-all;
-    }
-    .email-divider {
-        height: 1px;
-        background-color: #ebebeb;
-        margin: 20px 0;
-        border: none;
-    }
-    @media only screen and (max-width: 600px) {
-        .email-wrapper {
-            padding: 20px 10px;
-        }
-        .email-header {
-            padding: 30px 20px;
-        }
-        .email-body {
-            padding: 30px 20px;
-        }
-        .email-heading {
-            font-size: 22px;
-        }
-        .email-text {
-            font-size: 15px;
-        }
-        .email-button {
-            padding: 12px 28px;
-            font-size: 15px;
-        }
-    }
-`
+const FONT =
+    "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
 
-/**
- * Welcome email template for first-time signups
- */
-export function generateWelcomeEmail(params: WelcomeEmailParams): string {
-    return `
-<!DOCTYPE html>
-<html lang="en">
+export function escapeHtml(value: string) {
+    return value
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+}
+
+export function generateAuthEmail(params: AuthEmailParams): string {
+    const e = escapeHtml
+    const url = e(params.url)
+    const highlights = (params.highlights ?? [])
+        .map(
+            (item) => `
+                <tr>
+                    <td width="28" valign="top" style="padding: 4px 0; font-family: ${FONT}; font-size: 16px; color: ${COLORS.emerald}; font-weight: 700;">&#10003;</td>
+                    <td style="padding: 4px 0; font-family: ${FONT}; font-size: 15px; line-height: 22px; color: ${COLORS.text};">${e(item)}</td>
+                </tr>`
+        )
+        .join('')
+
+    return `<!DOCTYPE html>
+<html lang="${e(params.lang)}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>${params.title}</title>
-    <style>${baseStyles}</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>${e(params.title)}</title>
 </head>
-<body>
-    <div class="email-wrapper">
-        <div class="email-container">
-            <div class="email-header">
-                <img src="${params.logoUrl}" alt="${params.siteName}" class="email-logo" />
-            </div>
-            <div class="email-body">
-                <h1 class="email-heading">${params.heading}</h1>
-                <p class="email-text">${params.message}</p>
-                <div class="email-button-wrapper">
-                    <a href="${params.url}" class="email-button">${params.buttonText}</a>
-                </div>
-                <hr class="email-divider" />
-                <p class="email-footer-text" style="text-align: left; color: #737373; font-size: 14px;">
-                    If the button doesn't work, copy and paste this link into your browser:
-                </p>
-                <p class="email-footer-text" style="text-align: left;">
-                    <a href="${params.url}" class="email-link">${params.url}</a>
-                </p>
-            </div>
-            <div class="email-footer">
-                <p class="email-footer-text">${params.footerText}</p>
-            </div>
-        </div>
-    </div>
+<body style="margin: 0; padding: 0; background-color: ${COLORS.page};">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: ${COLORS.page};">
+    <tr>
+        <td align="center" style="padding: 32px 16px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 560px;">
+                <tr>
+                    <td align="center" style="padding: 0 0 20px 0;">
+                        <a href="${e(params.siteUrl)}" style="text-decoration: none;">
+                            <img src="${e(params.logoUrl)}" width="44" height="44" alt="" style="display: inline-block; vertical-align: middle; border: 0;" />
+                            <span style="display: inline-block; vertical-align: middle; padding-left: 8px; font-family: ${FONT}; font-size: 24px; font-weight: 800; color: ${COLORS.text};">${e(params.siteName)}</span>
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="background-color: ${COLORS.card}; border: 2px solid ${COLORS.border}; border-bottom-width: 5px; border-radius: 20px; padding: 36px 32px;">
+                        <h1 style="margin: 0 0 12px 0; font-family: ${FONT}; font-size: 26px; line-height: 32px; font-weight: 800; color: ${COLORS.text};">${e(params.heading)}</h1>
+                        <p style="margin: 0 0 28px 0; font-family: ${FONT}; font-size: 16px; line-height: 25px; color: ${COLORS.muted};">${e(params.message)}</p>
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                                <td align="center">
+                                    <a href="${url}" style="display: inline-block; background-color: ${COLORS.emerald}; border: 2px solid ${COLORS.emeraldDark}; border-bottom-width: 5px; border-radius: 16px; padding: 14px 32px; font-family: ${FONT}; font-size: 15px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; color: #ffffff; text-decoration: none;">${e(params.buttonText)}</a>
+                                </td>
+                            </tr>
+                        </table>
+                        ${
+                            highlights
+                                ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top: 28px; background-color: ${COLORS.tint}; border-radius: 14px;">
+                            <tr><td style="padding: 16px 20px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0">${highlights}</table></td></tr>
+                        </table>`
+                                : ''
+                        }
+                        <p style="margin: 28px 0 6px 0; font-family: ${FONT}; font-size: 13px; line-height: 20px; color: ${COLORS.muted};">${e(params.linkHint)}</p>
+                        <p style="margin: 0; font-family: ${FONT}; font-size: 13px; line-height: 20px; word-break: break-all;"><a href="${url}" style="color: ${COLORS.emeraldDark};">${url}</a></p>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center" style="padding: 24px 16px 0 16px; font-family: ${FONT}; font-size: 13px; line-height: 20px; color: ${COLORS.muted};">
+                        <p style="margin: 0 0 8px 0;">${e(params.footerText)}</p>
+                        <p style="margin: 0;"><a href="mailto:${e(params.contactEmail)}" style="color: ${COLORS.muted};">${e(params.contactEmail)}</a> &middot; <a href="${e(params.siteUrl)}" style="color: ${COLORS.muted};">${e(params.siteUrl.replace(/^https?:\/\//, ''))}</a></p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
 </body>
-</html>
-    `.trim()
-}
-
-/**
- * Login email template for returning users
- */
-export function generateLoginEmail(params: LoginEmailParams): string {
-    return `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>${params.title}</title>
-    <style>${baseStyles}</style>
-</head>
-<body>
-    <div class="email-wrapper">
-        <div class="email-container">
-            <div class="email-header">
-                <img src="${params.logoUrl}" alt="${params.siteName}" class="email-logo" />
-            </div>
-            <div class="email-body">
-                <h1 class="email-heading">${params.heading}</h1>
-                <p class="email-text">${params.message}</p>
-                <div class="email-button-wrapper">
-                    <a href="${params.url}" class="email-button">${params.buttonText}</a>
-                </div>
-                <hr class="email-divider" />
-                <p class="email-footer-text" style="text-align: left; color: #737373; font-size: 14px;">
-                    If the button doesn't work, copy and paste this link into your browser:
-                </p>
-                <p class="email-footer-text" style="text-align: left;">
-                    <a href="${params.url}" class="email-link">${params.url}</a>
-                </p>
-            </div>
-            <div class="email-footer">
-                <p class="email-footer-text">${params.footerText}</p>
-            </div>
-        </div>
-    </div>
-</body>
-</html>
-    `.trim()
+</html>`
 }

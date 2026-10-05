@@ -95,8 +95,8 @@
     "auth": {
         "signIn": "Sign In",
         "signOut": "Sign Out",
-        "signInTitle": "Sign In",
-        "signInDescription": "Sign in with your email address to access your flashcards.",
+        "signInTitle": "Sign in or create an account",
+        "signInDescription": "Enter your email address. We send you a link to sign in, no password needed.",
         "emailPlaceholder": "Email address",
         "sendLoginLink": "Send login link",
         "sendingLink": "Sending link...",
@@ -114,32 +114,49 @@
         "ratelimitExceeded": "Rate limit exceeded. Please try again later.",
         "bulkRatelimitExceeded": "Too many bulk requests. Please wait.",
         "verifyRequest": {
-            "title": "Link sent",
-            "subtitle": "Check your email",
-            "description": "We have sent you a login link to your email address. Please check your inbox and click on the link to continue.",
-            "note": "If you don't receive an email, please also check your spam folder",
-            "backToLogin": "Back to login",
-            "trouble": "Having trouble?\n",
-            "contactSupport": "Contact our support",
-            "orWriteAnEmail": "\nor write us an email at"
+            "title": "Check your inbox",
+            "subtitle": "We sent you a sign-in link",
+            "description": "Open the email and click the button to sign in. You can close this tab.",
+            "tips": [
+                "The link is valid for 24 hours and can be used once.",
+                "No email after a minute? Check your spam folder.",
+                "Use the same device and browser for the best experience."
+            ],
+            "backToLogin": "Use another email address",
+            "trouble": "Still no email?",
+            "contactSupport": "Contact support",
+            "orWriteAnEmail": "or write to"
         },
         "email": {
             "textVersion": "Sign in to Learn by clicking this link: {url}",
             "welcome": {
-                "subject": "Welcome to Learn - Verify your email",
+                "subject": "Welcome to Learn - confirm your email",
                 "heading": "Welcome to Learn!",
-                "message": "Thank you for signing up! We're excited to have you on board. Click the button below to verify your email address and start creating your first flashcard deck.",
-                "button": "Verify Email & Get Started",
-                "footer": "If you didn't create an account with Learn, you can safely ignore this email."
+                "message": "Great to have you here. Confirm your email address with the button below and create your first deck.",
+                "button": "Confirm and start learning",
+                "footer": "You get this email because someone signed up with this address. If it was not you, you can ignore it.",
+                "highlights": [
+                    "Learn with 12 kinds of exercises, from multiple choice to diagrams",
+                    "Collect XP, keep your streak and unlock achievements",
+                    "Let AI turn your notes and PDFs into lessons"
+                ]
             },
             "login": {
-                "subject": "Sign in to Learn",
+                "subject": "Your sign-in link for Learn",
                 "heading": "Welcome back!",
-                "message": "Click the button below to securely sign in to your Learn account. This link will expire in 24 hours for your security.",
-                "button": "Sign In to Your Account",
-                "footer": "If you didn't request this login link, you can safely ignore this email."
-            }
-        }
+                "message": "Click the button below to sign in to Learn. The link is valid for 24 hours and works once.",
+                "button": "Sign in to Learn",
+                "footer": "If you did not request this link, you can ignore this email. Nobody can sign in without it."
+            },
+            "linkHint": "If the button does not work, copy this link into your browser:"
+        },
+        "emailLabel": "Email address",
+        "points": [
+            "No password to remember",
+            "Free to start",
+            "Your progress is saved in your account"
+        ],
+        "legal": "By continuing you agree to our <terms>terms of service</terms> and <privacy>privacy policy</privacy>."
     },
     "landing": {
         "hero": {
@@ -749,7 +766,7 @@
                 "title": "Learning",
                 "dailyGoal": {
                     "label": "Daily goal",
-                    "description": "XP you want to earn each day. Reaching it keeps you motivated; your streak only needs one exercise.",
+                    "description": "XP you want to earn each day. Your streak only needs one exercise.",
                     "casual": "Casual · {xp} XP",
                     "regular": "Regular · {xp} XP",
                     "serious": "Serious · {xp} XP",
@@ -792,7 +809,6 @@
     "footer": {
         "tagline": "The modern flashcard app for effective learning using spaced repetition.",
         "product": "Product",
-        "features": "Features",
         "pricing": "Pricing",
         "roadmap": "Roadmap",
         "support": "Support",
@@ -806,32 +822,6 @@
         "license": "License",
         "madeWith": "Made with",
         "by": "by"
-    },
-    "comingSoon": {
-        "title": "Coming Soon",
-        "subtitle": "This feature is currently under development",
-        "description": "You've discovered a page that's still being crafted. Our development team is working hard to bring you something amazing. Check back soon!",
-        "devProgress": "Development Progress",
-        "devDescription": "Here's what our team is currently working on",
-        "followDev": "You can follow the current development",
-        "here": "here",
-        "questions": "Have questions or suggestions? We'd love to hear from you while we build this feature.",
-        "tasks": {
-            "improveUI": "Improve usability of the user interface",
-            "improveDashboard": "Improve dashboard analytics and statistics",
-            "advancedLearning": "Add advanced learning mode with custom input and AI validation",
-            "documentation": "Write comprehensive documentation"
-        },
-        "priority": {
-            "high": "high",
-            "medium": "medium",
-            "low": "low"
-        },
-        "status": {
-            "inProgress": "in progress",
-            "planning": "planning",
-            "todo": "todo"
-        }
     },
     "pricing": {
         "title": "Choose Your Plan",
@@ -848,10 +838,12 @@
             "title": "Free",
             "description": "Perfect for getting started",
             "features": {
-                "unlimitedCards": "Unlimited flashcards",
+                "unlimitedCards": "Unlimited decks and items",
                 "basicStats": "Basic statistics",
-                "spacedRepetition": "Spaced repetition algorithm"
-            }
+                "spacedRepetition": "Spaced repetition algorithm",
+                "allModes": "All item types and learning modes"
+            },
+            "cta": "Start for free"
         },
         "pro": {
             "title": "Learn Pro",
@@ -860,12 +852,16 @@
             "cta": "Upgrade to Pro",
             "features": {
                 "everything": "Everything in Free",
-                "aiFlashcards": "AI-powered flashcard generation",
+                "aiFlashcards": "Unlimited AI generation from topics and PDFs",
                 "advancedAnalytics": "Advanced learning analytics",
                 "unlimitedDecks": "Unlimited decks",
                 "prioritySupport": "Priority support"
             }
-        }
+        },
+        "eyebrow": "Pricing",
+        "billingPeriod": "Billing period",
+        "questions": "Questions about plans or billing? Visit the <help>help center</help>.",
+        "loadError": "Your current plan could not be loaded."
     },
     "privacy": {
         "title": "Privacy Policy",
@@ -1654,5 +1650,317 @@
             "deleteHint": "Remove the deck with all items and learning progress.",
             "download": "Download JSON"
         }
+    },
+    "roadmap": {
+        "metaTitle": "Roadmap",
+        "eyebrow": "Roadmap",
+        "title": "What's coming next",
+        "description": "Learn keeps growing. These are the areas we are working on now.",
+        "planned": "Planned",
+        "items": {
+            "ai": {
+                "title": "Advanced AI features",
+                "text": "More help from AI while you create and learn."
+            },
+            "uiux": {
+                "title": "UI and UX improvements",
+                "text": "A smoother, faster and clearer app on every screen size."
+            },
+            "gamification": {
+                "title": "Gamification improvements",
+                "text": "More ways to stay motivated, without the pressure."
+            }
+        },
+        "ideaTitle": "Have an idea?",
+        "ideaText": "We would love to hear what would make Learn better for you.",
+        "ideaButton": "Send feedback"
+    },
+    "contact": {
+        "metaTitle": "Contact",
+        "eyebrow": "Contact",
+        "title": "Get in touch",
+        "description": "Questions, feedback or a problem with your account? Write us an email and we will get back to you.",
+        "emailLabel": "Email",
+        "write": "Write an email",
+        "copy": "Copy address",
+        "copied": "Copied",
+        "topicsTitle": "What is it about?",
+        "topics": {
+            "support": {
+                "title": "Support",
+                "text": "Something does not work as expected.",
+                "subject": "Support request"
+            },
+            "billing": {
+                "title": "Billing",
+                "text": "Questions about Pro, payments or invoices.",
+                "subject": "Billing question"
+            },
+            "feedback": {
+                "title": "Feedback and ideas",
+                "text": "Tell us what you would like to see next.",
+                "subject": "Feedback"
+            },
+            "privacy": {
+                "title": "Privacy",
+                "text": "Requests about your personal data.",
+                "subject": "Privacy request"
+            }
+        },
+        "selfHelpTitle": "Maybe you find the answer here",
+        "helpLink": "Help center",
+        "helpText": "Answers to common questions.",
+        "docsLink": "Documentation",
+        "docsText": "Everything about decks, items and learning.",
+        "githubLink": "Report a bug on GitHub",
+        "githubText": "For developers and technical issues."
+    },
+    "help": {
+        "metaTitle": "Help center",
+        "eyebrow": "Help center",
+        "title": "How can we help?",
+        "description": "Answers to the most common questions about decks, learning and your account.",
+        "search": "Search the help center",
+        "noResults": "No answers found for this search.",
+        "stillStuck": "Still stuck?",
+        "stillStuckText": "Write us and we will help you out.",
+        "contactButton": "Contact us",
+        "docsButton": "Read the docs",
+        "categories": [
+            {
+                "key": "start",
+                "title": "Getting started",
+                "items": [
+                    {
+                        "q": "How do I create my first deck?",
+                        "a": "Open the dashboard and click New deck. Give it a name, optional tags and an exam date. Then add items: write them one by one, paste a JSON list or let the AI create them."
+                    },
+                    {
+                        "q": "What is the difference between a deck and an item?",
+                        "a": "A deck is a collection, for example everything for one exam. An item is one piece of knowledge in it, such as a question and answer, a list or a sequence."
+                    },
+                    {
+                        "q": "Which item type should I use?",
+                        "a": "Use question and answer for most facts. Use list for sets you must name completely, sequence for steps and timelines, number for dates and figures, cloze for key sentences, passage for text you must know word for word and diagram for maps and images."
+                    },
+                    {
+                        "q": "Can I import cards from another app?",
+                        "a": "Yes. Export your cards as JSON with front and back fields and paste them in the Import JSON tab. The documentation shows the full format for every item type."
+                    }
+                ]
+            },
+            {
+                "key": "learning",
+                "title": "Learning",
+                "items": [
+                    {
+                        "q": "Why do the exercises change?",
+                        "a": "Every item moves through four stages: new, learning, familiar and mastered. New items start with easier exercises such as multiple choice. Later you type the answer from memory."
+                    },
+                    {
+                        "q": "What happens when I answer wrong?",
+                        "a": "The exercise comes back a few steps later in the same session. Your schedule treats the item as difficult, so you see it again soon."
+                    },
+                    {
+                        "q": "What is the difference between Learn, Flashcards, Match and Test?",
+                        "a": "Learn mixes exercises and adapts to you. Flashcards are classic flip cards that you rate yourself. Match is a timed pairing game. Practice test checks you with 20 questions and does not change your schedule."
+                    },
+                    {
+                        "q": "Why does a session say there is nothing to learn?",
+                        "a": "All items are scheduled for later. You can still practise ahead, use the match game or take a practice test."
+                    },
+                    {
+                        "q": "Can I use the keyboard?",
+                        "a": "Yes. Press 1 to 9 to pick an option, Enter to check or continue, and Space to flip a flashcard. In classic flashcards, press 1 to 4 to rate."
+                    }
+                ]
+            },
+            {
+                "key": "motivation",
+                "title": "XP, streaks and goals",
+                "items": [
+                    {
+                        "q": "How do I earn XP?",
+                        "a": "Every correct exercise gives XP. Harder exercises give more, and several correct answers in a row add a combo bonus. Finishing a session gives a bonus too."
+                    },
+                    {
+                        "q": "How does the streak work?",
+                        "a": "Do at least one exercise per day to keep your streak. Days follow your own time zone."
+                    },
+                    {
+                        "q": "What is a streak freeze?",
+                        "a": "A streak freeze saves your streak when you miss exactly one day. You can hold one, and you earn it back after every seven streak days."
+                    },
+                    {
+                        "q": "Can I change my daily goal?",
+                        "a": "Yes. Open your profile, go to Settings and pick a goal from casual to intense."
+                    }
+                ]
+            },
+            {
+                "key": "account",
+                "title": "Account and billing",
+                "items": [
+                    {
+                        "q": "How do I sign in?",
+                        "a": "Enter your email address and we send you a sign-in link. There is no password to remember."
+                    },
+                    {
+                        "q": "What does Pro include?",
+                        "a": "Pro gives you unlimited AI generation from topics and PDF documents. All learning features are free."
+                    },
+                    {
+                        "q": "How do I cancel Pro?",
+                        "a": "Open your profile, go to Billing and manage your plan. You keep Pro until the end of the period you paid for."
+                    },
+                    {
+                        "q": "How do I delete my data?",
+                        "a": "You can delete decks in their settings at any time. To delete your whole account, write to us from the email address of your account."
+                    }
+                ]
+            },
+            {
+                "key": "trouble",
+                "title": "Troubleshooting",
+                "items": [
+                    {
+                        "q": "I did not receive the sign-in email.",
+                        "a": "Check your spam folder and wait a minute. Links can only be requested a few times in a short period. If it still does not arrive, contact us."
+                    },
+                    {
+                        "q": "My progress was not saved.",
+                        "a": "Results are saved in the background after every exercise. If the connection drops, the app tries again. Check your connection and reload the page."
+                    },
+                    {
+                        "q": "The AI did not create any items.",
+                        "a": "Make the topic more specific or upload a clearer PDF of up to 5 MB. Free accounts have a limited number of generations."
+                    }
+                ]
+            }
+        ]
+    },
+    "docs": {
+        "metaTitle": "Documentation",
+        "eyebrow": "Documentation",
+        "title": "Learn, explained",
+        "description": "Everything about decks, item types, learning modes and progress in one place.",
+        "toc": "On this page",
+        "example": "JSON example",
+        "sections": {
+            "start": {
+                "title": "Getting started",
+                "intro": "Learn has three building blocks: decks, items and sessions.",
+                "steps": [
+                    "Create a deck for a topic or an exam. A deadline is optional.",
+                    "Add items. Write them in the editor, import a JSON list or generate them with AI.",
+                    "Learn a few minutes every day. The app decides what is due and which exercise fits."
+                ]
+            },
+            "items": {
+                "title": "Item types",
+                "intro": "Every item has a type. The type decides which exercises you get. Pick the type that matches the knowledge, not the exercise you want.",
+                "write": {
+                    "basic": "Write a question and a short answer. Add other accepted spellings, separated by commas.",
+                    "choice": "Write the question and at least two options. Tick every correct option.",
+                    "cloze": "Write a sentence and put [square brackets] around each word to hide. Optional wrong words fill the word bank.",
+                    "passage": "Paste the exact text. Keep it short, up to about 40 words per item works best.",
+                    "list": "One entry per line. Separate alternative answers with a slash, for example Australia / Oceania.",
+                    "sequence": "One step per line in the correct order. Add a detail after a vertical bar, for example Moon landing | 1969.",
+                    "number": "Enter the correct value. A tolerance accepts answers that are close enough. The unit is optional.",
+                    "pairs": "Add two to ten pairs of terms and their partners.",
+                    "diagram": "Upload a PNG, JPEG or WebP image and click on it to place markers. Name every marker."
+                }
+            },
+            "modes": {
+                "title": "Learning modes",
+                "intro": "Every deck has four modes. They share your progress, so you can switch at any time.",
+                "dashboard": "On the dashboard, Continue learning starts a session across all your active decks."
+            },
+            "mastery": {
+                "title": "Mastery and sessions",
+                "intro": "Every item moves through four stages. The stage decides how hard the exercises are.",
+                "session": "A session has about twelve exercises. Due reviews come first, then new items fill the rest. Several new short questions can be introduced together as a match exercise.",
+                "retries": "If you answer wrong, the same exercise comes back a few steps later, at most twice. Only your first answer changes the schedule.",
+                "ahead": "When nothing is due, you can practise items that come up next. Practising ahead never changes their schedule."
+            },
+            "scheduling": {
+                "title": "Spaced repetition",
+                "intro": "Learn uses the SuperMemo-2 algorithm. Each answer becomes a grade, and the grade sets the next review date. Intervals are capped at one year.",
+                "grades": [
+                    "Wrong answer: again. The item comes back tomorrow.",
+                    "Correct with help (a typo, extra guesses, mistakes within the allowance): hard.",
+                    "Correct without help: good.",
+                    "Easy is only available when you rate a classic flashcard yourself."
+                ]
+            },
+            "motivation": {
+                "title": "XP, streaks and achievements",
+                "intro": "XP rewards every correct exercise. Wrong answers give no XP, and a correct retry gives half.",
+                "xp": [
+                    "Multiple choice, match and flashcards: 10 XP",
+                    "Typing, gaps, numbers and building sentences: 15 XP",
+                    "Lists, sequences, passages and diagrams: 20 XP",
+                    "Combo: 2 extra XP for every five correct answers in a row, up to 10",
+                    "Finishing a session: 10 XP, plus 10 XP for a perfect session"
+                ],
+                "goal": "Your daily goal is the XP you want to earn each day. Change it in your profile settings.",
+                "streak": "Your streak counts the days in a row with at least one exercise, in your own time zone. A streak freeze covers one missed day, and you earn it back every seven streak days.",
+                "achievementsTitle": "Achievements"
+            },
+            "import": {
+                "title": "Import and export",
+                "intro": "Decks can be exported and imported as JSON. The format is a list of items.",
+                "rules": [
+                    "Entries without a type are question and answer cards with front and back.",
+                    "Other types add type and content, as in the examples above.",
+                    "Up to 200 items per import. Invalid entries are skipped and reported, the rest is imported.",
+                    "Export a deck in its settings to copy or download the JSON."
+                ]
+            },
+            "ai": {
+                "title": "AI generation",
+                "intro": "The AI turns a topic or a PDF into items of fitting types.",
+                "steps": [
+                    "Open a deck, then Edit and the AI tab.",
+                    "Describe the topic or upload a PDF of up to 5 MB.",
+                    "Choose the item types the AI may use. Diagrams are always added by hand.",
+                    "Items the AI gets wrong are dropped, the rest is added to your deck."
+                ],
+                "plans": "Free accounts can try a limited number of generations. Pro has no limit."
+            },
+            "shortcuts": {
+                "title": "Keyboard shortcuts",
+                "rows": [
+                    ["1 to 9", "Pick an option"],
+                    ["Enter", "Check or continue"],
+                    ["Space", "Flip a flashcard"],
+                    ["1 to 4", "Rate a classic flashcard"],
+                    [
+                        "Arrow keys",
+                        "Rate a classic flashcard (left again, down hard, up good, right easy)"
+                    ]
+                ],
+                "key": "Key",
+                "action": "Action"
+            },
+            "account": {
+                "title": "Account and settings",
+                "intro": "Open your profile from the menu at the top right.",
+                "items": [
+                    "Language and theme",
+                    "Daily goal and sound effects",
+                    "Animations for classic flashcards",
+                    "Pro plan and billing",
+                    "Statistics with activity heatmap and achievements"
+                ],
+                "data": "You can delete a deck or reset its progress in its settings. To delete your account, write to contact@fx64b.dev."
+            }
+        }
+    },
+    "notFound": {
+        "title": "This page does not exist",
+        "description": "The link may be old or mistyped. Let us get you back on track.",
+        "home": "Go to the start page",
+        "help": "Visit the help center"
     }
 }

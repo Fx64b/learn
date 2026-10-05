@@ -96,3 +96,14 @@ describe('detectImageType', () => {
         expect(detectImageType(svg)).toBeNull()
     })
 })
+
+describe('documentation examples', () => {
+    it('are all valid imports', async () => {
+        const { DOCS_EXAMPLES } = await import(
+            '@/components/site/docs-examples'
+        )
+        const res = parseImport(JSON.stringify(Object.values(DOCS_EXAMPLES)))
+        expect('errors' in res && res.errors).toEqual([])
+        expect('rows' in res && res.rows).toHaveLength(9)
+    })
+})

@@ -30,7 +30,7 @@ export function comboBonus(combo: number) {
 }
 
 /**
- * XP for one answered exercise. Wrong answers give nothing; a correct retry of
+ * XP for one answered exercise. Wrong answers give nothing. A correct retry of
  * an exercise that was missed earlier in the session gives half.
  */
 export function exerciseXp(input: {

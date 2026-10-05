@@ -25,7 +25,7 @@ export interface ListRecallResponse {
 export interface ListRecallProps extends ExerciseBaseProps<ListRecallResponse> {
     /** e.g. "Name the seven continents". */
     question: string
-    /** Every item to recall. Use an array to accept aliases; the first entry is displayed. */
+    /** Every item to recall. Use an array to accept aliases. The first entry is displayed. */
     answer: (string | string[])[]
     title?: string
     placeholder?: string

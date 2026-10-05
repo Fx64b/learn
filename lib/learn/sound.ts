@@ -62,6 +62,6 @@ export function playSound(name: SoundName) {
             at += duration * 0.85
         }
     } catch {
-        // Audio is a nice-to-have; ignore failures.
+        // Audio is a nice-to-have, so ignore failures.
     }
 }

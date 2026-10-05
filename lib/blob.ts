@@ -1,6 +1,6 @@
 import type { Item } from '@/lib/items'
 
-/** Host suffix of Vercel Blob URLs; only these are ever deleted. */
+/** Host suffix of Vercel Blob URLs. Only these are ever deleted. */
 const BLOB_HOST = '.blob.vercel-storage.com'
 
 export function isBlobConfigured() {
@@ -23,7 +23,7 @@ export function imagesOf(item: Item): string[] {
         : []
 }
 
-/** Deletes uploaded images; failures are logged, never thrown. */
+/** Deletes uploaded images. Failures are logged, never thrown. */
 export async function deleteImages(urls: string[]) {
     if (!urls.length || !isBlobConfigured()) return
     try {

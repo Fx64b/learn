@@ -35,7 +35,7 @@ import { ITEM_TYPE_ICONS } from './item-type-badge'
 interface ItemEditorProps {
     initial?: ItemInput
     submitLabel: string
-    /** Returns true when saved; a new item form is then cleared. */
+    /** Returns true when saved. A new item form is then cleared. */
     onSubmit: (item: ItemInput) => Promise<boolean>
     onCancel?: () => void
 }
@@ -446,7 +446,7 @@ export function ItemEditor({
                                         )
                                     }
                                 />
-                                <span className="text-muted-foreground">–</span>
+                                <span className="text-muted-foreground">-</span>
                                 <Input
                                     value={pair.right}
                                     aria-label={t('editor.right', { n: i + 1 })}

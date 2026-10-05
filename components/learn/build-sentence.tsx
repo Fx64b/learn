@@ -14,7 +14,7 @@ import { normalizeAnswer, shuffle } from './utils'
 
 export interface BuildSentenceProps extends ExerciseBaseProps<string[]> {
     /**
-     * The sentence to rebuild. A string is split into words; pass an array to
+     * The sentence to rebuild. A string is split into words. Pass an array to
      * control the chunks (e.g. whole phrases).
      */
     answer: string | string[]

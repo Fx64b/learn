@@ -51,7 +51,7 @@ interface GenerateFlashcardsParams {
     prompt: string
     file?: File
     documentContent?: string // For when content is already extracted
-    /** Item types to generate; all AI types when empty. */
+    /** Item types to generate. Empty means all AI types. */
     types?: string[]
 }
 
@@ -299,7 +299,7 @@ const TYPE_GUIDE: Record<AiItemType, string> = {
     cloze: 'cloze: a key sentence in "text" with ___ for 1-3 important words and those words in "answers", in order.',
     passage:
         'passage: a short text that must be known word for word (quote, law, definition) in "text", max ~40 words.',
-    list: 'list: a closed set the learner names in any order (e.g. the noble gases) in "items", 3-12 entries; aliases as "A / B".',
+    list: 'list: a closed set the learner names in any order (e.g. the noble gases) in "items", 3-12 entries, aliases as "A / B".',
     sequence:
         'sequence: steps, stages or events in the correct order in "items", 3-8 entries.',
     number: 'number: a key figure or year in "value", with "unit" and a sensible "tolerance" if exactness is not needed.',
@@ -557,7 +557,7 @@ export async function generateAIFlashcardsUnified(
             }
 
             // Remove duplicates
-            // Map to the strict item schema; drop items the model got wrong.
+            // Map to the strict item schema and drop items the model got wrong.
             const uniqueCards = removeDuplicateCards(
                 object.items.filter((item) => allowedTypes.includes(item.type))
             )

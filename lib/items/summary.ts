@@ -52,8 +52,8 @@ export function summarizeContent<K extends ItemType>(
         }
         case 'pairs':
             return (c as ItemContentMap['pairs']).pairs
-                .map((p) => `${p.left} – ${p.right}`)
-                .join('; ')
+                .map((p) => `${p.left} - ${p.right}`)
+                .join(', ')
         case 'diagram':
             return (c as ItemContentMap['diagram']).labels
                 .map((l) => l.label)

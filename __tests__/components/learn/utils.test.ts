@@ -23,7 +23,7 @@ describe('learn utils', () => {
 
     it('finds first letters', () => {
         expect(initialOf('“Four')).toBe('f')
-        expect(initialOf('—')).toBeNull()
+        expect(initialOf('-')).toBeNull()
         expect(initialOf('Élan')).toBe('e')
     })
 

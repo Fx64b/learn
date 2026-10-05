@@ -26,14 +26,14 @@ A deck holds items of nine types. The app turns each item into fitting exercises
 
 ### **Adaptive Learning**
 
-- **Spaced Repetition**: SuperMemo-2 schedules every item; exercises map to SM-2 grades
-- **Mastery Stages**: Items move from New to Learning, Familiar and Mastered; exercises get harder with each stage (recognition first, then recall)
+- **Spaced Repetition**: SuperMemo-2 schedules every item, and each exercise maps to an SM-2 grade
+- **Mastery Stages**: Items move from New to Learning, Familiar and Mastered. Exercises get harder with each stage (recognition first, then recall)
 - **Mistakes Come Back**: A missed exercise returns later in the same session
 - **Four Modes per Deck**: Learn (adaptive), Flashcards (classic flip cards), Match (timed game with personal best) and Practice test (no effect on the schedule)
 
 ### **Light Gamification**
 
-- **XP and Daily Goal**: Earn XP per exercise, with combo bonuses; pick a daily goal
+- **XP and Daily Goal**: Earn XP per exercise with combo bonuses and pick a daily goal
 - **Streaks**: Timezone-aware day streak with one streak freeze
 - **Achievements**: 13 badges for milestones
 - **Progress**: Mastery bars, activity heatmap and an end-of-session summary
@@ -143,7 +143,7 @@ Visit `http://localhost:3000` to start learning!
 **Manual Creation:**
 
 1. Create a new deck or select an existing one
-2. Pick an item type and fill in its form; use the preview to see the exercise
+2. Pick an item type and fill in its form. Use the preview to see the exercise
 3. Start learning immediately
 
 **AI Generation (Pro Feature):**
@@ -156,7 +156,7 @@ Visit `http://localhost:3000` to start learning!
 ### Learning
 
 1. Open a deck and choose Learn, Flashcards, Match or Practice test, or use "Continue learning" on the dashboard for all due items
-2. Answer the exercises; missed ones come back later in the session
+2. Answer the exercises. Missed ones come back later in the session
 3. The SRS adjusts future review intervals automatically
 4. Track XP, streak, mastery and achievements on the dashboard and in your profile
 

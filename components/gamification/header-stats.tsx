@@ -16,7 +16,7 @@ import {
 import { GoalRing } from './goal-ring'
 import { StreakBadge } from './streak-badge'
 
-/** Streak and daily goal in the header; refreshed on every navigation. */
+/** Streak and daily goal in the header, refreshed on every navigation. */
 export function HeaderStats() {
     const t = useTranslations('gamification')
     const pathname = usePathname()

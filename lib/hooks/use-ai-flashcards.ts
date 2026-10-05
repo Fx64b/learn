@@ -4,7 +4,7 @@ interface GenerateParams {
     prompt: string
     deckId: string
     file?: File
-    /** Item types to generate; all when empty. */
+    /** Item types to generate. Empty means all. */
     types?: string[]
 }
 

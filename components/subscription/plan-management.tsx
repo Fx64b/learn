@@ -13,7 +13,7 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { useTranslations } from 'next-intl'
 
@@ -69,11 +69,7 @@ export function PlanManagement() {
     const [showConfirmDialog, setShowConfirmDialog] = useState(false)
     const [selectedPlan, setSelectedPlan] = useState<PlanOption | null>(null)
 
-    useEffect(() => {
-        loadCurrentPlan()
-    }, [])
-
-    const loadCurrentPlan = async () => {
+    const loadCurrentPlan = useCallback(async () => {
         setIsLoading(true)
         try {
             const result = await getCurrentPlan()
@@ -86,7 +82,11 @@ export function PlanManagement() {
         } finally {
             setIsLoading(false)
         }
-    }
+    }, [t])
+
+    useEffect(() => {
+        void loadCurrentPlan()
+    }, [loadCurrentPlan])
 
     const handleBillingPortal = async () => {
         setIsBillingPortalLoading(true)

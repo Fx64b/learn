@@ -2,7 +2,7 @@ import { BLANK_PATTERN, type ItemInput, type ItemType } from '@/lib/items'
 
 import type { DiagramLabel } from '@/components/learn/label-diagram'
 
-/** Flat editor state for every item type; only the fields of one type are used. */
+/** Flat editor state for every item type. Only the fields of one type are used. */
 export interface ItemFormState {
     front: string
     back: string

@@ -14,7 +14,7 @@ import { shuffle } from './utils'
 
 export interface DiagramLabel {
     label: string
-    /** Marker position in percent of the image (0–100). */
+    /** Marker position in percent of the image (0-100). */
     x: number
     y: number
     /** Which side of the marker its label tag appears on. Alternate for crowded markers. */

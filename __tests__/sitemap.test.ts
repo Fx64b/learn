@@ -8,7 +8,7 @@ describe('Sitemap', () => {
 
         const sitemapData = sitemap()
 
-        expect(sitemapData).toHaveLength(5)
+        expect(sitemapData).toHaveLength(9)
 
         const urls = sitemapData.map((entry) => entry.url)
 
@@ -18,6 +18,10 @@ describe('Sitemap', () => {
         expect(urls).toContain('https://learn.fx64b.dev/terms')
         expect(urls).toContain('https://learn.fx64b.dev/privacy')
         expect(urls).toContain('https://learn.fx64b.dev/imprint')
+        expect(urls).toContain('https://learn.fx64b.dev/docs')
+        expect(urls).toContain('https://learn.fx64b.dev/help')
+        expect(urls).toContain('https://learn.fx64b.dev/roadmap')
+        expect(urls).toContain('https://learn.fx64b.dev/contact')
     })
 
     it('should not include deck or auth-required routes', () => {

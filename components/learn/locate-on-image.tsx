@@ -12,7 +12,7 @@ import { ExerciseShell } from './exercise-shell'
 import type { ExerciseBaseProps } from './types'
 import { useExerciseStatus } from './use-exercise-status'
 
-/** Position in percent of the image: x from the left edge, y from the top edge (0–100). */
+/** Position in percent of the image: x from the left edge, y from the top edge (0-100). */
 export interface ImagePoint {
     x: number
     y: number

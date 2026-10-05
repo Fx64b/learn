@@ -22,7 +22,7 @@ export interface StreakUpdate {
 
 /**
  * Records activity on `today`. A single missed day is covered by a streak
- * freeze when one is available; a longer gap restarts the streak.
+ * freeze when one is available. A longer gap restarts the streak.
  */
 export function applyActivity(state: StreakState, today: string): StreakUpdate {
     const unchanged = {

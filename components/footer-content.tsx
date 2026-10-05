@@ -32,14 +32,6 @@ export function FooterContent({ version, currentYear }: FooterContentProps) {
                         <ul className="text-muted-foreground space-y-2">
                             <li>
                                 <Link
-                                    href="/todo"
-                                    className="hover:text-foreground transition-colors"
-                                >
-                                    {t('features')}
-                                </Link>
-                            </li>
-                            <li>
-                                <Link
                                     href="/pricing"
                                     className="hover:text-foreground transition-colors"
                                 >
@@ -48,7 +40,7 @@ export function FooterContent({ version, currentYear }: FooterContentProps) {
                             </li>
                             <li>
                                 <Link
-                                    href="/todo"
+                                    href="/roadmap"
                                     className="hover:text-foreground transition-colors"
                                 >
                                     {t('roadmap')}
@@ -62,7 +54,7 @@ export function FooterContent({ version, currentYear }: FooterContentProps) {
                         <ul className="text-muted-foreground space-y-2">
                             <li>
                                 <Link
-                                    href="/todo"
+                                    href="/docs"
                                     className="hover:text-foreground transition-colors"
                                 >
                                     {t('documentation')}
@@ -70,7 +62,7 @@ export function FooterContent({ version, currentYear }: FooterContentProps) {
                             </li>
                             <li>
                                 <Link
-                                    href="/todo"
+                                    href="/help"
                                     className="hover:text-foreground transition-colors"
                                 >
                                     {t('helpCenter')}
@@ -78,7 +70,7 @@ export function FooterContent({ version, currentYear }: FooterContentProps) {
                             </li>
                             <li>
                                 <Link
-                                    href="/todo"
+                                    href="/contact"
                                     className="hover:text-foreground transition-colors"
                                 >
                                     {t('contact')}

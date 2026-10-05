@@ -16,7 +16,7 @@ export function MasteryBar({
 }: {
     counts: MasteryCounts
     className?: string
-    /** Translated stage names; when given, a legend is shown. */
+    /** Translated stage names. When given, a legend is shown. */
     labels?: Record<keyof MasteryCounts, string>
 }) {
     const total = Object.values(counts).reduce((a, b) => a + b, 0)

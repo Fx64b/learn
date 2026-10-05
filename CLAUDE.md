@@ -84,9 +84,9 @@ This document provides essential context for Claude Code instances working on th
 - `lib/items/` - zod schemas for all item types (single source of truth for editor, import, AI), plus `toItemRow` / `parseItemRow`
 - `lib/learn/` - pure, tested logic: `mastery.ts` (stage from SRS state), `planner.ts` (exercise per item type and stage), `session.ts` (session queue, retries, tests, match game), `grading.ts` (outcome to SM-2 grade), `xp.ts`
 - `lib/gamification/` - streak with freeze (timezone-aware dates), achievements
-- `components/learn/` - exercise components (ported from the design kit); `components/learn/session/` - session runner, end screen, match game
+- `components/learn/` - exercise components (ported from the design kit), `components/learn/session/` - session runner, end screen, match game
 - `app/actions/learn.ts` - load sessions/tests/match games, `submitExerciseResult`, `completeSession`, `completeMatchGame`, `completeTest`
-- Only the first attempt of an item per session writes SRS; retries, practice-ahead and tests never do
+- Only the first attempt of an item per session writes SRS. Retries, practice-ahead and tests never do
 - Views with shuffled content render after mount (`lib/hooks/use-mounted.ts`) to avoid hydration mismatches
 
 ## Development Commands
@@ -178,7 +178,7 @@ BLOB_READ_WRITE_TOKEN="your-blob-token"            # For diagram image uploads
 ### AI Item Generation
 
 - Located in `/app/actions/ai-flashcards.ts` and `/app/api/ai-flashcards/route.ts`
-- The model returns a flat item object (`lib/items/ai.ts`); items that fail the strict schema are dropped
+- The model returns a flat item object (`lib/items/ai.ts`). Items that fail the strict schema are dropped
 - Supports text prompts and PDF file upload
 - Streaming responses with progress tracking
 - Rate limited for free users, unlimited for Pro subscribers

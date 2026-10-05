@@ -74,7 +74,7 @@ export function exerciseLabel(exercise: ExerciseDescriptor): string {
     switch (exercise.kind) {
         case 'matchPairs':
             return exercise.props.answer
-                .map((p) => `${p.left} – ${p.right}`)
+                .map((p) => `${p.left} - ${p.right}`)
                 .join(', ')
         case 'locateOnImage':
             return exercise.props.label

@@ -25,7 +25,7 @@ export interface NumberAnswerProps
     answer: number
     /** Accepted distance from the answer, e.g. 5 for "within 5 years". */
     tolerance?: number
-    /** Guesses allowed; wrong guesses before the last get a higher/lower hint. */
+    /** Guesses allowed. Wrong guesses before the last get a higher/lower hint. */
     attempts?: number
     /** Shown after the input, e.g. "m" or "km²". */
     unit?: string
@@ -90,7 +90,7 @@ export function NumberAnswer({
                     {format(answer)}
                     {tolerance > 0 && ` (±${tolerance})`}
                     {last !== undefined &&
-                        ` — ${t('offBy', { diff: round(Math.abs(last - answer)) })}`}
+                        ` - ${t('offBy', { diff: round(Math.abs(last - answer)) })}`}
                 </>
             }
             canCheck={valid}

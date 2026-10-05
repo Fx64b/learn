@@ -104,7 +104,7 @@ describe('summarizeContent', () => {
                     { left: 'c', right: 'd' },
                 ],
             })
-        ).toBe('a – b; c – d')
+        ).toBe('a - b, c - d')
     })
 })
 
