@@ -25,12 +25,6 @@ export function Header() {
                 {isUrlRoot && !session && (
                     <nav className="hidden items-center space-x-6 md:flex">
                         <Link
-                            href="#features"
-                            className="text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                            {t('features')}
-                        </Link>
-                        <Link
                             href="#how-it-works"
                             className="text-muted-foreground hover:text-foreground transition-colors"
                         >
