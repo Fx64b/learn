@@ -11,6 +11,8 @@ import {
     Save,
     Sparkles,
     Sun,
+    Target,
+    Volume2,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -43,8 +45,17 @@ interface ProfileSettingsProps {
         animationDirection: 'horizontal' | 'vertical'
         theme: 'light' | 'dark' | 'system'
         locale: string
+        soundEnabled: boolean
+        dailyGoalXp: number
     }
 }
+
+const DAILY_GOALS = [
+    { xp: 20, key: 'casual' },
+    { xp: 30, key: 'regular' },
+    { xp: 50, key: 'serious' },
+    { xp: 100, key: 'intense' },
+] as const
 
 export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -57,6 +68,8 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
         animationDirection: initialPreferences.animationDirection,
         theme: initialPreferences.theme,
         locale: initialPreferences.locale,
+        soundEnabled: initialPreferences.soundEnabled,
+        dailyGoalXp: initialPreferences.dailyGoalXp,
     })
 
     const hasChanges =
@@ -65,7 +78,9 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
         localPrefs.animationDirection !==
             initialPreferences.animationDirection ||
         localPrefs.theme !== initialPreferences.theme ||
-        localPrefs.locale !== initialPreferences.locale
+        localPrefs.locale !== initialPreferences.locale ||
+        localPrefs.soundEnabled !== initialPreferences.soundEnabled ||
+        localPrefs.dailyGoalXp !== initialPreferences.dailyGoalXp
 
     const updateLocale = async (value: string) => {
         const locale = value as 'en' | 'de'
@@ -96,13 +111,16 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
         userPreferences.setAnimationSpeed(localPrefs.animationSpeed)
         userPreferences.setAnimationDirection(localPrefs.animationDirection)
         userPreferences.setTheme(localPrefs.theme)
+        userPreferences.setSoundEnabled(localPrefs.soundEnabled)
 
         const result = await updateUserPreferences({
             animationsEnabled: localPrefs.animationsEnabled,
             animationSpeed: localPrefs.animationSpeed,
             animationDirection: localPrefs.animationDirection,
             theme: localPrefs.theme,
-            locale: localPrefs.locale,
+            locale: localPrefs.locale === 'de' ? 'de' : 'en',
+            soundEnabled: localPrefs.soundEnabled,
+            dailyGoalXp: localPrefs.dailyGoalXp,
         })
 
         if (result.success) {
@@ -264,6 +282,82 @@ export function ProfileSettings({ initialPreferences }: ProfileSettingsProps) {
                                         </SelectItem>
                                     </SelectContent>
                                 </Select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="w-full space-y-4">
+                        <div className="flex items-center gap-2">
+                            <Target className="h-5 w-5 text-emerald-500" />
+                            <h3 className="text-lg font-medium">
+                                {t('learning.title')}
+                            </h3>
+                        </div>
+                        <Separator />
+                        <div className="space-y-6">
+                            <div className="space-y-2">
+                                <Label
+                                    htmlFor="daily-goal"
+                                    className="text-sm font-medium"
+                                >
+                                    {t('learning.dailyGoal.label')}
+                                </Label>
+                                <Select
+                                    value={String(localPrefs.dailyGoalXp)}
+                                    onValueChange={(value) =>
+                                        setLocalPrefs((prev) => ({
+                                            ...prev,
+                                            dailyGoalXp: Number(value),
+                                        }))
+                                    }
+                                >
+                                    <SelectTrigger
+                                        id="daily-goal"
+                                        className="w-full"
+                                    >
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {DAILY_GOALS.map((goal) => (
+                                            <SelectItem
+                                                key={goal.xp}
+                                                value={String(goal.xp)}
+                                            >
+                                                {t(
+                                                    `learning.dailyGoal.${goal.key}`,
+                                                    { xp: goal.xp }
+                                                )}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <p className="text-muted-foreground text-xs">
+                                    {t('learning.dailyGoal.description')}
+                                </p>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <div className="space-y-0.5">
+                                    <Label
+                                        htmlFor="sound-enabled"
+                                        className="flex items-center gap-2 text-sm font-medium"
+                                    >
+                                        <Volume2 className="text-muted-foreground h-4 w-4" />
+                                        {t('learning.sound.label')}
+                                    </Label>
+                                    <p className="text-muted-foreground text-xs">
+                                        {t('learning.sound.description')}
+                                    </p>
+                                </div>
+                                <Switch
+                                    id="sound-enabled"
+                                    checked={localPrefs.soundEnabled}
+                                    onCheckedChange={(value) =>
+                                        setLocalPrefs((prev) => ({
+                                            ...prev,
+                                            soundEnabled: value,
+                                        }))
+                                    }
+                                />
                             </div>
                         </div>
                     </div>

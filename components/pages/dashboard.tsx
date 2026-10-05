@@ -1,281 +1,286 @@
-'use server'
-
-import { getDueCards, getFlashcardsByDeckId } from '@/db/utils'
+import { getDeckReviewStates } from '@/db/learn'
 import { isDateCurrent, isDatePast } from '@/lib/date'
+import {
+    type MasteryCounts,
+    type ReviewState,
+    countMastery,
+    isDue,
+} from '@/lib/learn'
 import {
     AlertTriangle,
     ArrowRight,
-    Calendar,
-    Clock,
+    BarChart3,
+    CheckCircle2,
+    Flame,
+    Play,
     Plus,
-    TrendingUp,
+    Sparkles,
+    Target,
+    Zap,
 } from 'lucide-react'
 
-import type React from 'react'
-
-import { Session } from 'next-auth'
+import type { Session } from 'next-auth'
 import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 
 import { getAllDecks } from '@/app/actions/deck'
-import { getLearningProgress } from '@/app/actions/progress'
+import { getGamificationSummary } from '@/app/actions/learn'
 
 import { DeckCard } from '@/components/flashcards/deck-card'
+import { GoalRing } from '@/components/gamification/goal-ring'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 
 interface DashboardProps {
-    session?: Session
+    session: Session
+}
+
+interface DeckStats {
+    total: number
+    due: number
+    mastery: MasteryCounts
 }
 
 export default async function Dashboard({ session }: DashboardProps) {
     const t = await getTranslations()
-    const decks = await getAllDecks()
-    const progressData = session ? await getLearningProgress() : null
-    const allDueCards = session ? await getDueCards(session?.user.id) : []
+    const [decks, states, summary] = await Promise.all([
+        getAllDecks(),
+        getDeckReviewStates(session.user.id),
+        getGamificationSummary(),
+    ])
 
-    const deckStats = await Promise.all(
-        decks.map(async (deck) => {
-            const totalCards = await getFlashcardsByDeckId(deck.id)
-            const deckDueCards = allDueCards.filter(
-                (card) => card.flashcard.deckId === deck.id
-            )
-            return {
-                deck,
-                totalCards: totalCards.length,
-                dueCards: deckDueCards.length,
-            }
-        })
-    )
+    // One query for all decks instead of one per deck.
+    const now = new Date()
+    const reviewsByDeck = new Map<string, (ReviewState | null)[]>()
+    for (const row of states) {
+        const review: ReviewState | null =
+            row.nextReview && row.rating !== null
+                ? {
+                      rating: row.rating,
+                      interval: row.interval ?? 0,
+                      easeFactor: (row.easeFactor ?? 250) / 100,
+                      nextReview: row.nextReview,
+                  }
+                : null
+        const list = reviewsByDeck.get(row.deckId) ?? []
+        list.push(review)
+        reviewsByDeck.set(row.deckId, list)
+    }
+    const statsFor = (deckId: string): DeckStats => {
+        const reviews = reviewsByDeck.get(deckId) ?? []
+        return {
+            total: reviews.length,
+            due: reviews.filter((r) => r && isDue(r, now)).length,
+            mastery: countMastery(reviews),
+        }
+    }
 
-    const currentDecks = deckStats.filter(
-        ({ deck }) => !deck.activeUntil || isDateCurrent(deck.activeUntil)
+    const currentDecks = decks.filter(
+        (deck) => !deck.activeUntil || isDateCurrent(deck.activeUntil)
     )
-    const pastDecks = deckStats.filter(
-        ({ deck }) => deck.activeUntil && isDatePast(deck.activeUntil)
+    const pastDecks = decks.filter(
+        (deck) => deck.activeUntil && isDatePast(deck.activeUntil)
     )
-
-    // Calculate key metrics
-    const totalDueCards = allDueCards.length
-    const successRate =
-        progressData && progressData.totalReviews > 0
-            ? Math.round(
-                  (progressData.totalCorrect / progressData.totalReviews) * 100
-              )
-            : 0
-    const currentStreak = progressData?.streak || 0
+    const activeStats = currentDecks.map((d) => statsFor(d.id))
+    const totalDue = activeStats.reduce((sum, s) => sum + s.due, 0)
+    const totalNew = activeStats.reduce((sum, s) => sum + s.mastery.new, 0)
+    const goalReached = summary ? summary.todayXp >= summary.dailyGoalXp : false
 
     return (
-        <div className="bg-background min-h-screen">
-            {/* Header Section */}
-            <div className="bg-background/95 supports-[backdrop-filter]:bg-background/60 border-b backdrop-blur">
-                <div className="container mx-auto px-4 py-6">
-                    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                        <div>
-                            <h1 className="text-3xl font-bold tracking-tight">
-                                {t('dashboard.title')}
-                            </h1>
-                            <p className="text-muted-foreground">
-                                {t('dashboard.subtitle')}
-                            </p>
-                        </div>
-
-                        {/* Quick Stats - Compact and Essential Only */}
-                        {session && progressData && (
-                            <div className="flex flex-wrap justify-between gap-6 md:justify-start">
-                                <div className="text-center">
-                                    <div className="flex items-center gap-1">
-                                        <Clock className="h-4 w-4 text-orange-500" />
-                                        <span className="text-2xl font-bold">
-                                            {totalDueCards}
-                                        </span>
-                                    </div>
-                                    <p className="text-muted-foreground text-xs">
-                                        {t('dashboard.statistics.dueToday')}
-                                    </p>
-                                </div>
-                                <div className="text-center">
-                                    <div className="flex items-center gap-1">
-                                        <TrendingUp className="h-4 w-4 text-green-500" />
-                                        <span className="text-2xl font-bold">
-                                            {successRate}%
-                                        </span>
-                                    </div>
-                                    <p className="text-muted-foreground text-xs">
-                                        {t('dashboard.statistics.successRate')}
-                                    </p>
-                                </div>
-                                <div className="text-center">
-                                    <div className="flex items-center gap-1">
-                                        <Calendar className="h-4 w-4 text-blue-500" />
-                                        <span className="text-2xl font-bold">
-                                            {currentStreak}
-                                        </span>
-                                    </div>
-                                    <p className="text-muted-foreground text-xs">
-                                        {t('dashboard.statistics.dayStreak')}
-                                    </p>
-                                </div>
-                                <Button
-                                    className="ml-auto md:ml-0"
-                                    variant="ghost"
-                                    asChild
-                                >
-                                    <Link
-                                        href="/profile?tab=stats"
-                                        className="flex items-center gap-1"
-                                    >
-                                        {t(
-                                            'dashboard.statistics.detailedStats'
-                                        )}
-                                        <ArrowRight />
-                                    </Link>
-                                </Button>
-                            </div>
-                        )}
+        <div className="space-y-8 px-4 py-6 sm:py-8">
+            <section className="grid gap-4 md:grid-cols-[1fr_auto]">
+                <div className="flex flex-col justify-between gap-4 rounded-2xl border-2 border-b-4 border-emerald-500 p-5">
+                    <div>
+                        <h1 className="text-2xl font-bold tracking-tight">
+                            {session.user.name
+                                ? t('dashboard.hero.greetingName', {
+                                      name: session.user.name,
+                                  })
+                                : t('dashboard.hero.greeting')}
+                        </h1>
+                        <p className="text-muted-foreground">
+                            {totalDue > 0
+                                ? t('dashboard.hero.due', { count: totalDue })
+                                : totalNew > 0
+                                  ? t('dashboard.hero.new', {
+                                        count: totalNew,
+                                    })
+                                  : t('dashboard.hero.caughtUp')}
+                        </p>
                     </div>
-                </div>
-            </div>
-
-            <div className="container mx-auto px-4 py-8">
-                {/* Beta Warning */}
-                <Alert className="mb-8 max-w-2xl">
-                    <AlertTriangle className="h-4 w-4 text-amber-500" />
-                    <AlertTitle>{t('dashboard.betaWarning.title')}</AlertTitle>
-                    <AlertDescription>
-                        {t('dashboard.betaWarning.description')}
-                    </AlertDescription>
-                </Alert>
-
-                {/* Quick Actions */}
-                <div className="mb-8 flex flex-wrap gap-3">
-                    {totalDueCards > 0 && (
-                        <Button
-                            size="lg"
-                            asChild
-                            className="w-full shadow-sm sm:w-auto"
-                        >
-                            <Link href="/learn/due">
-                                <Clock className="mr-2 h-4 w-4" />
-                                {t('dashboard.quickActions.reviewCards', {
-                                    count: totalDueCards,
-                                })}
+                    <div className="flex flex-wrap gap-2">
+                        {(totalDue > 0 || totalNew > 0) && (
+                            <Button
+                                size="lg"
+                                asChild
+                                className="bg-emerald-500 font-bold text-white hover:bg-emerald-500/90"
+                            >
+                                <Link href="/learn/due">
+                                    <Play className="fill-current" />
+                                    {t('dashboard.hero.continue')}
+                                </Link>
+                            </Button>
+                        )}
+                        <Button size="lg" variant="outline" asChild>
+                            <Link href="/learn/difficult">
+                                <Sparkles />
+                                {t('dashboard.categories.practiceDifficult')}
                             </Link>
                         </Button>
-                    )}
-                    <Button
-                        variant="outline"
-                        size="lg"
-                        asChild
-                        className="w-full sm:w-auto"
-                    >
-                        <Link href="/learn/all">
-                            {t('dashboard.categories.reviewAll')}
-                        </Link>
-                    </Button>
-                    <Button
-                        variant="outline"
-                        size="lg"
-                        asChild
-                        className="w-full sm:w-auto"
-                    >
-                        <Link href="/learn/difficult">
-                            {t('dashboard.categories.practiceDifficult')}
-                        </Link>
-                    </Button>
-                    <Button
-                        variant="outline"
-                        size="lg"
-                        asChild
-                        className="mx-auto mt-2 sm:mx-0 sm:mt-0"
-                    >
-                        <Link href="/deck/create">
-                            <Plus className="mr-2 h-4 w-4" />
-                            {t('dashboard.categories.newDeck')}
-                        </Link>
-                    </Button>
-                </div>
-
-                {/* Main Content - Deck Cards */}
-                <div className="space-y-8">
-                    <div>
-                        <div className="mb-6 flex items-center justify-between">
-                            <h2 className="text-2xl font-semibold tracking-tight">
-                                {t('dashboard.categories.title')}
-                            </h2>
-                        </div>
-
-                        {currentDecks.length > 0 ? (
-                            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                                {currentDecks.map(
-                                    ({ deck, totalCards, dueCards }) => (
-                                        <DeckCard
-                                            key={deck.id}
-                                            deck={deck}
-                                            totalCards={totalCards}
-                                            dueCards={dueCards}
-                                        />
-                                    )
-                                )}
-                            </div>
-                        ) : (
-                            <div className="flex min-h-[200px] flex-col items-center justify-center rounded-lg border border-dashed">
-                                <div className="text-center">
-                                    <h3 className="text-lg font-medium">
-                                        {t('dashboard.quickActions.noDecksYet')}
-                                    </h3>
-                                    <p className="text-muted-foreground mb-4">
-                                        {t(
-                                            'dashboard.quickActions.createFirstDeck'
-                                        )}
-                                    </p>
-                                    <Button asChild>
-                                        <Link href="/deck/create">
-                                            <Plus className="mr-2 h-4 w-4" />
-                                            {t(
-                                                'dashboard.quickActions.createFirstDeckButton'
-                                            )}
-                                        </Link>
-                                    </Button>
-                                </div>
-                            </div>
-                        )}
+                        <Button size="lg" variant="outline" asChild>
+                            <Link href="/deck/create">
+                                <Plus />
+                                {t('dashboard.categories.newDeck')}
+                            </Link>
+                        </Button>
                     </div>
-
-                    {/* Completed Goals Section */}
-                    {pastDecks.length > 0 && (
-                        <>
-                            <Separator />
-                            <div>
-                                <div className="mb-6">
-                                    <h2 className="text-xl font-semibold">
-                                        {t('dashboard.completedGoals.title')}
-                                    </h2>
-                                    <p className="text-muted-foreground text-sm">
-                                        {t(
-                                            'dashboard.completedGoals.description'
-                                        )}
-                                    </p>
-                                </div>
-                                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                                    {pastDecks.map(
-                                        ({ deck, totalCards, dueCards }) => (
-                                            <DeckCard
-                                                key={deck.id}
-                                                deck={deck}
-                                                totalCards={totalCards}
-                                                dueCards={dueCards}
-                                                isPastDue={true}
-                                            />
-                                        )
-                                    )}
-                                </div>
-                            </div>
-                        </>
-                    )}
                 </div>
+
+                {summary && (
+                    <div className="grid grid-cols-3 gap-3 md:grid-cols-1 md:gap-2">
+                        <div className="flex items-center gap-3 rounded-2xl border-2 p-3">
+                            <GoalRing
+                                value={summary.todayXp}
+                                goal={summary.dailyGoalXp}
+                                size={40}
+                            >
+                                {goalReached ? (
+                                    <CheckCircle2 className="size-5 text-emerald-500" />
+                                ) : (
+                                    <Target className="text-muted-foreground size-4" />
+                                )}
+                            </GoalRing>
+                            <div>
+                                <p className="font-bold tabular-nums">
+                                    {summary.todayXp}/{summary.dailyGoalXp}
+                                </p>
+                                <p className="text-muted-foreground text-xs">
+                                    {t('dashboard.stats.dailyGoal')}
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3 rounded-2xl border-2 p-3">
+                            <Flame
+                                className={
+                                    summary.streak > 0 && !summary.streakAtRisk
+                                        ? 'size-8 fill-orange-400 text-orange-500'
+                                        : 'text-muted-foreground size-8'
+                                }
+                            />
+                            <div>
+                                <p className="font-bold tabular-nums">
+                                    {summary.streak}
+                                </p>
+                                <p className="text-muted-foreground text-xs">
+                                    {summary.streakAtRisk
+                                        ? t('dashboard.stats.streakAtRisk')
+                                        : t('dashboard.statistics.dayStreak')}
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3 rounded-2xl border-2 p-3">
+                            <Zap className="size-8 fill-amber-400 text-amber-500" />
+                            <div>
+                                <p className="font-bold tabular-nums">
+                                    {summary.totalXp}
+                                </p>
+                                <p className="text-muted-foreground text-xs">
+                                    {t('dashboard.stats.totalXp')}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </section>
+
+            <div className="flex justify-end">
+                <Button variant="ghost" size="sm" asChild>
+                    <Link href="/profile?tab=stats">
+                        <BarChart3 />
+                        {t('dashboard.statistics.detailedStats')}
+                        <ArrowRight />
+                    </Link>
+                </Button>
             </div>
+
+            <Alert className="max-w-2xl">
+                <AlertTriangle className="h-4 w-4 text-amber-500" />
+                <AlertTitle>{t('dashboard.betaWarning.title')}</AlertTitle>
+                <AlertDescription>
+                    {t('dashboard.betaWarning.description')}
+                </AlertDescription>
+            </Alert>
+
+            <section className="space-y-4">
+                <h2 className="text-xl font-semibold tracking-tight">
+                    {t('dashboard.categories.title')}
+                </h2>
+                {currentDecks.length > 0 ? (
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        {currentDecks.map((deck) => {
+                            const s = statsFor(deck.id)
+                            return (
+                                <DeckCard
+                                    key={deck.id}
+                                    deck={deck}
+                                    totalCards={s.total}
+                                    dueCards={s.due}
+                                    mastery={s.mastery}
+                                />
+                            )
+                        })}
+                    </div>
+                ) : (
+                    <div className="flex min-h-[200px] flex-col items-center justify-center rounded-2xl border-2 border-dashed p-6 text-center">
+                        <h3 className="text-lg font-medium">
+                            {t('dashboard.quickActions.noDecksYet')}
+                        </h3>
+                        <p className="text-muted-foreground mb-4">
+                            {t('dashboard.quickActions.createFirstDeck')}
+                        </p>
+                        <Button asChild>
+                            <Link href="/deck/create">
+                                <Plus />
+                                {t(
+                                    'dashboard.quickActions.createFirstDeckButton'
+                                )}
+                            </Link>
+                        </Button>
+                    </div>
+                )}
+            </section>
+
+            {pastDecks.length > 0 && (
+                <>
+                    <Separator />
+                    <section className="space-y-4">
+                        <div>
+                            <h2 className="text-xl font-semibold">
+                                {t('dashboard.completedGoals.title')}
+                            </h2>
+                            <p className="text-muted-foreground text-sm">
+                                {t('dashboard.completedGoals.description')}
+                            </p>
+                        </div>
+                        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                            {pastDecks.map((deck) => {
+                                const s = statsFor(deck.id)
+                                return (
+                                    <DeckCard
+                                        key={deck.id}
+                                        deck={deck}
+                                        totalCards={s.total}
+                                        dueCards={s.due}
+                                        mastery={s.mastery}
+                                        isPastDue
+                                    />
+                                )
+                            })}
+                        </div>
+                    </section>
+                </>
+            )}
         </div>
     )
 }

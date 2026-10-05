@@ -4,7 +4,12 @@ import { db } from '@/db'
 import * as learnDb from '@/db/learn'
 import { getDeckById } from '@/db/utils'
 import { authOptions } from '@/lib/auth'
-import { displayStreak, isValidTimeZone, localDate } from '@/lib/gamification'
+import {
+    addDays,
+    displayStreak,
+    isValidTimeZone,
+    localDate,
+} from '@/lib/gamification'
 import {
     type ExerciseDescriptor,
     buildMatchGame,
@@ -430,6 +435,49 @@ export async function getGamificationSummary(): Promise<GamificationSummary | nu
         }
     } catch (error) {
         console.error('Error loading gamification summary:', error)
+        return null
+    }
+}
+
+export interface ProfileGamification {
+    summary: GamificationSummary
+    /** Local date of today, YYYY-MM-DD. */
+    today: string
+    activity: { date: string; xp: number; exercises: number }[]
+    achievements: { id: string; unlockedAt: Date }[]
+}
+
+/** Data for the statistics tab: activity heatmap and achievements. */
+export async function getProfileGamification(
+    weeks = 26
+): Promise<ProfileGamification | null> {
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) return null
+    const userId = session.user.id
+    try {
+        const [summary, stats] = await Promise.all([
+            getGamificationSummary(),
+            learnDb.ensureUserStats(db, userId),
+        ])
+        if (!summary) return null
+        const today = localDate(new Date(), stats.timezone)
+        const from = addDays(today, -(weeks * 7 + 6))
+        const [activity, achievements] = await Promise.all([
+            learnDb.getActivitySince(userId, from),
+            learnDb.getUnlockedAchievements(userId),
+        ])
+        return {
+            summary,
+            today,
+            activity: activity.map((a) => ({
+                date: a.date,
+                xp: a.xp,
+                exercises: a.exercises,
+            })),
+            achievements,
+        }
+    } catch (error) {
+        console.error('Error loading profile gamification:', error)
         return null
     }
 }

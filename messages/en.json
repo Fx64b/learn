@@ -232,6 +232,19 @@
             "noDecksYet": "No decks yet",
             "createFirstDeck": "Create your first deck to start learning",
             "createFirstDeckButton": "Create your first deck"
+        },
+        "hero": {
+            "greeting": "Welcome back!",
+            "due": "{count, plural, one {# item is} other {# items are}} waiting for review.",
+            "new": "{count, plural, one {# new item is} other {# new items are}} ready to learn.",
+            "caughtUp": "You're all caught up. Add new items or practise difficult ones.",
+            "continue": "Continue learning",
+            "greetingName": "Welcome back, {name}!"
+        },
+        "stats": {
+            "dailyGoal": "Daily goal",
+            "streakAtRisk": "Learn today to keep it",
+            "totalXp": "Total XP"
         }
     },
     "deck": {
@@ -552,6 +565,21 @@
                     "horizontal": "Horizontal",
                     "vertical": "Vertical",
                     "description": "Determines the main direction of animations."
+                }
+            },
+            "learning": {
+                "title": "Learning",
+                "dailyGoal": {
+                    "label": "Daily goal",
+                    "description": "XP you want to earn each day. Reaching it keeps you motivated; your streak only needs one exercise.",
+                    "casual": "Casual · {xp} XP",
+                    "regular": "Regular · {xp} XP",
+                    "serious": "Serious · {xp} XP",
+                    "intense": "Intense · {xp} XP"
+                },
+                "sound": {
+                    "label": "Sound effects",
+                    "description": "Play short sounds for correct and wrong answers."
                 }
             }
         },
@@ -1197,7 +1225,8 @@
             "matchDescription": "Pair terms against the clock.",
             "test": "Practice test",
             "testDescription": "Check yourself with 20 questions. Does not change your schedule."
-        }
+        },
+        "open": "Open"
     },
     "mastery": {
         "new": "New",
@@ -1271,5 +1300,18 @@
             "title": "All-rounder",
             "description": "Use 5 different item types."
         }
+    },
+    "gamification": {
+        "headerLabel": "{streak} day streak, {xp} of {goal} XP today",
+        "currentStreak": "Current streak",
+        "longestStreak": "Longest streak",
+        "totalXp": "Total XP",
+        "freezes": "Streak freezes",
+        "freezeHint": "A streak freeze saves your streak when you miss one day. You earn one back every 7 streak days.",
+        "activity": "Activity",
+        "dayLabel": "{date}: {xp} XP",
+        "less": "Less",
+        "more": "More",
+        "achievements": "Achievements ({unlocked}/{total})"
     }
 }

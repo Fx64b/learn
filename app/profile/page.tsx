@@ -7,9 +7,11 @@ import { getServerSession } from 'next-auth'
 import { getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
 
+import { getProfileGamification } from '@/app/actions/learn'
 import { getUserPreferences } from '@/app/actions/preferences'
 import { getLearningProgress } from '@/app/actions/progress'
 
+import { GamificationOverview } from '@/components/gamification/gamification-overview'
 import { ProfileSettings } from '@/components/profile-settings'
 import { ProgressDashboard } from '@/components/statistics/progress-dashboard'
 import { PlanManagement } from '@/components/subscription/plan-management'
@@ -43,9 +45,13 @@ export default async function ProfilePage({
         redirect('/login')
     }
 
-    const progressData = await getLearningProgress()
-    const preferencesData = await getUserPreferences()
-    const isPro = await isUserPro(session.user.id)
+    const [progressData, preferencesData, isPro, gamification] =
+        await Promise.all([
+            getLearningProgress(),
+            getUserPreferences(),
+            isUserPro(session.user.id),
+            getProfileGamification(),
+        ])
 
     const preferences = {
         userId: session.user.id,
@@ -56,6 +62,8 @@ export default async function ProfilePage({
         ),
         theme: ensureValidTheme(preferencesData?.theme),
         locale: preferencesData?.locale ?? 'en',
+        soundEnabled: preferencesData?.soundEnabled ?? true,
+        dailyGoalXp: preferencesData?.dailyGoalXp ?? 30,
     }
 
     const defaultTab = tab?.split('?')[0] || 'settings'
@@ -127,6 +135,11 @@ export default async function ProfilePage({
                 </TabsContent>
 
                 <TabsContent value="stats" className="space-y-4">
+                    {gamification && (
+                        <div className="bg-card rounded-lg border p-6 shadow-sm">
+                            <GamificationOverview data={gamification} />
+                        </div>
+                    )}
                     <div className="bg-card rounded-lg border p-6 shadow-sm">
                         {progressData ? (
                             <ProgressDashboard data={progressData} />

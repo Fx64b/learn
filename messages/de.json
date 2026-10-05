@@ -235,6 +235,19 @@
             "noDecksYet": "Noch keine Decks vorhanden",
             "createFirstDeck": "Erstelle dein erstes Deck um zu beginnen",
             "createFirstDeckButton": "Erstes Deck erstellen"
+        },
+        "hero": {
+            "greeting": "Willkommen zurück!",
+            "due": "{count, plural, one {# Element wartet} other {# Elemente warten}} auf die Wiederholung.",
+            "new": "{count, plural, one {# neues Element ist} other {# neue Elemente sind}} bereit zum Lernen.",
+            "caughtUp": "Alles erledigt. Füge neue Elemente hinzu oder übe schwierige.",
+            "continue": "Weiterlernen",
+            "greetingName": "Willkommen zurück, {name}!"
+        },
+        "stats": {
+            "dailyGoal": "Tagesziel",
+            "streakAtRisk": "Lerne heute, um sie zu halten",
+            "totalXp": "XP total"
         }
     },
     "deck": {
@@ -555,6 +568,21 @@
                     "horizontal": "Horizontal",
                     "vertical": "Vertikal",
                     "description": "Bestimmt die Hauptrichtung der Animationen."
+                }
+            },
+            "learning": {
+                "title": "Lernen",
+                "dailyGoal": {
+                    "label": "Tagesziel",
+                    "description": "XP, die du pro Tag sammeln willst. Für deine Serie reicht eine Übung.",
+                    "casual": "Locker · {xp} XP",
+                    "regular": "Normal · {xp} XP",
+                    "serious": "Ernsthaft · {xp} XP",
+                    "intense": "Intensiv · {xp} XP"
+                },
+                "sound": {
+                    "label": "Soundeffekte",
+                    "description": "Kurze Töne bei richtigen und falschen Antworten."
                 }
             }
         },
@@ -1200,7 +1228,8 @@
             "matchDescription": "Ordne Begriffe gegen die Uhr zu.",
             "test": "Übungstest",
             "testDescription": "Prüfe dich mit 20 Fragen. Ändert deinen Lernplan nicht."
-        }
+        },
+        "open": "Öffnen"
     },
     "mastery": {
         "new": "Neu",
@@ -1274,5 +1303,18 @@
             "title": "Allrounder",
             "description": "Nutze 5 verschiedene Elementtypen."
         }
+    },
+    "gamification": {
+        "headerLabel": "{streak} Tage Serie, {xp} von {goal} XP heute",
+        "currentStreak": "Aktuelle Serie",
+        "longestStreak": "Längste Serie",
+        "totalXp": "XP total",
+        "freezes": "Serien-Schutz",
+        "freezeHint": "Ein Serien-Schutz rettet deine Serie, wenn du einen Tag verpasst. Alle 7 Serientage bekommst du einen zurück.",
+        "activity": "Aktivität",
+        "dayLabel": "{date}: {xp} XP",
+        "less": "Weniger",
+        "more": "Mehr",
+        "achievements": "Erfolge ({unlocked}/{total})"
     }
 }
