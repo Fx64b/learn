@@ -1115,5 +1115,12 @@
         "typeYourAnswer": "Type your answer",
         "typoNote": "Watch the spelling: {answer}",
         "iWasRight": "I was right"
+    },
+    "session": {
+        "errors": {
+            "notFound": "Deck or item not found",
+            "invalid": "Invalid data",
+            "save": "Your progress could not be saved. Please try again."
+        }
     }
 }

@@ -1118,5 +1118,12 @@
         "typeYourAnswer": "Tippe deine Antwort",
         "typoNote": "Achte auf die Schreibweise: {answer}",
         "iWasRight": "Ich hatte recht"
+    },
+    "session": {
+        "errors": {
+            "notFound": "Stapel oder Element nicht gefunden",
+            "invalid": "Ungültige Daten",
+            "save": "Dein Fortschritt konnte nicht gespeichert werden. Bitte versuche es erneut."
+        }
     }
 }
