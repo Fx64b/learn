@@ -94,4 +94,15 @@ describe('generateAIFlashcards', () => {
         expect(res.success).toBe(true)
         expect(res.cardsCreated).toBe(3)
     })
+
+    it('reports an unknown model as a configuration error', async () => {
+        vi.mocked(generateObject).mockRejectedValue(
+            new Error(
+                'models/gemini-x is not found for API version v1beta, or is not supported for generateContent.'
+            )
+        )
+        const res = await generateAIFlashcards({ deckId: 'd1', prompt: 'X' })
+        expect(res.success).toBe(false)
+        expect(res.error).toBe('aiConfigError')
+    })
 })

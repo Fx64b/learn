@@ -87,7 +87,7 @@ EMAIL_FROM="learn@yourdomain.com"
 
 # AI Features (Optional)
 GOOGLE_GENERATIVE_AI_API_KEY="your-google-ai-key"
-GOOGLE_AI_MODEL="gemini-3-flash"  # optional, model for AI generation
+GOOGLE_AI_MODEL="gemini-3-flash-preview"  # optional, model for AI generation
 
 # Stripe Subscriptions (Optional)
 STRIPE_SECRET_KEY="your-stripe-secret-key"

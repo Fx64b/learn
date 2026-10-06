@@ -135,7 +135,7 @@ EMAIL_FROM="learn@yourdomain.com"
 
 ```env
 GOOGLE_GENERATIVE_AI_API_KEY="your-google-ai-key"  # For AI features
-GOOGLE_AI_MODEL="gemini-3-flash"                    # Optional, model for AI generation
+GOOGLE_AI_MODEL="gemini-3-flash-preview"            # Optional, model for AI generation
 STRIPE_SECRET_KEY="your-stripe-secret"             # For subscriptions
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="your-stripe-pub"
 STRIPE_WEBHOOK_SECRET="your-webhook-secret"
@@ -181,7 +181,7 @@ BLOB_READ_WRITE_TOKEN="your-blob-token"            # For diagram image uploads
 - Located in `/app/actions/ai-flashcards.ts` and `/app/api/ai-flashcards/route.ts`
 - The model returns a flat item object (`lib/items/ai.ts`). Items that fail the strict schema are dropped
 - Prompts live in `lib/items/ai-prompt.ts`: deck title, description and tags as context, and a count rule (exact number if asked, else 10-60)
-- Model from `GOOGLE_AI_MODEL` (default `gemini-3-flash`). Each run logs the item counts per filter stage
+- Model from `GOOGLE_AI_MODEL` (default `gemini-3-flash-preview`). Each run logs the item counts per filter stage
 - Supports text prompts and PDF file upload
 - Streaming responses with progress tracking
 - Rate limited for free users, unlimited for Pro subscribers

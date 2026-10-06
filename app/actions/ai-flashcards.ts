@@ -38,7 +38,7 @@ const PDF_PARSING_TIMEOUT = 30000
 
 // Gemini 3 Flash: good instruction following and item quality at a low price.
 // GOOGLE_AI_MODEL can switch it, e.g. to gemini-3.1-flash-lite to save cost.
-const AI_MODEL = process.env.GOOGLE_AI_MODEL?.trim() || 'gemini-3-flash'
+const AI_MODEL = process.env.GOOGLE_AI_MODEL?.trim() || 'gemini-3-flash-preview'
 // Thinking tokens count against the output budget. 60 items need up to ~12k
 // tokens, and a cut-off JSON fails the whole generation. Only used tokens are billed.
 const AI_MAX_OUTPUT_TOKENS = 32768
@@ -302,7 +302,14 @@ function handleAIError(
                 requestId,
             }
         }
-        if (message.includes('api key') || message.includes('authentication')) {
+        if (
+            message.includes('api key') ||
+            message.includes('authentication') ||
+            // Unknown or retired model id, e.g. a wrong GOOGLE_AI_MODEL.
+            (message.includes('model') &&
+                (message.includes('not found') ||
+                    message.includes('not supported')))
+        ) {
             return { success: false, error: t('aiConfigError'), requestId }
         }
         if (message.includes('timeout')) {
