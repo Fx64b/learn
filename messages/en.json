@@ -572,7 +572,7 @@
             "documentLabel": "Upload Document (Optional)",
             "dropFile": "Drag and drop a PDF file here, or click to browse",
             "maxFileSize": "Maximum file size: 5MB",
-            "helpText": "AI will create personalized flashcards based on your prompt and optional document. Be specific for better results!",
+            "helpText": "The AI uses your prompt, the optional document and the deck title, description and tags. Without a number in the prompt it creates 10 to 60 items, depending on the material. Ask for a number, for example 15 cards, to get exactly that many.",
             "generateButton": "Generate Flashcards",
             "generating": "Generating...",
             "characters": "characters",
@@ -1921,7 +1921,8 @@
                 "intro": "The AI turns a topic or a PDF into items of fitting types.",
                 "steps": [
                     "Open a deck, then Edit and the AI tab.",
-                    "Describe the topic or upload a PDF of up to 5 MB.",
+                    "Describe the topic or upload a PDF of up to 5 MB. The deck title, description and tags are sent as context.",
+                    "Ask for a number of items if you want one. Otherwise the AI picks 10 to 60, depending on the material.",
                     "Choose the item types the AI may use. Diagrams are always added by hand.",
                     "Items the AI gets wrong are dropped, the rest is added to your deck."
                 ],

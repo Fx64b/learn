@@ -1,15 +1,21 @@
 'use server'
 
+import { getDeckById } from '@/db/utils'
 import { authOptions } from '@/lib/auth'
 import {
     AI_ITEM_TYPES,
     type AiItem,
     type AiItemType,
+    MAX_ITEMS_PER_GENERATION,
     aiItemSchema,
     aiItemStrings,
     aiItemToInput,
+    buildSystemPrompt,
+    buildUserPrompt,
+    dedupeAiItems,
     isAiItemType,
     itemInputSchema,
+    parseDeckTags,
 } from '@/lib/items'
 import { checkAIRateLimitWithDetails } from '@/lib/rate-limit/ai-rate-limit'
 import { google } from '@ai-sdk/google'
@@ -27,23 +33,22 @@ import { createItemsFromJson } from './flashcard'
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 const ALLOWED_FILE_TYPES = ['application/pdf']
 const MAX_PROMPT_LENGTH = 1000
-const MAX_CARDS_PER_GENERATION = 55
 const MAX_DOCUMENT_LENGTH = 50000
 const PDF_PARSING_TIMEOUT = 30000
 
-// Gemini 3.1 Flash-Lite: cheapest generally-available model that still supports
-// structured output. Defaults to `minimal` thinking, so latency/cost stay low.
-const AI_MODEL = 'gemini-3.1-flash-lite'
-// Thinking tokens count against the output budget, so leave headroom above the
-// ~4k tokens a full generation of cards actually needs.
-const AI_MAX_OUTPUT_TOKENS = 8192
+// Gemini 3 Flash: good instruction following and item quality at a low price.
+// GOOGLE_AI_MODEL can switch it, e.g. to gemini-3.1-flash-lite to save cost.
+const AI_MODEL = process.env.GOOGLE_AI_MODEL?.trim() || 'gemini-3-flash'
+// Thinking tokens count against the output budget. 60 items need up to ~12k
+// tokens, and a cut-off JSON fails the whole generation. Only used tokens are billed.
+const AI_MAX_OUTPUT_TOKENS = 32768
 
 // Schemas
 const aiOutputSchema = z.object({
     items: z
         .array(aiItemSchema)
         .min(1)
-        .max(MAX_CARDS_PER_GENERATION + 5), // Allow a few extra for safety to avoid rejection
+        .max(MAX_ITEMS_PER_GENERATION + 5), // A few extra so the whole answer is not rejected
 })
 
 interface GenerateFlashcardsParams {
@@ -281,58 +286,6 @@ function validateAIResponse(
     return true
 }
 
-// Remove duplicates
-function removeDuplicateCards(items: AiItem[]): AiItem[] {
-    const seen = new Set<string>()
-    return items.filter((item) => {
-        const key = `${item.type}:${item.front.toLowerCase().trim()}`
-        if (seen.has(key)) return false
-        seen.add(key)
-        return true
-    })
-}
-
-// AI prompts
-const TYPE_GUIDE: Record<AiItemType, string> = {
-    basic: 'basic: a question in "front" and a short answer in "back". The default for facts and definitions.',
-    choice: 'choice: a question with 3-5 "options" and the "correct" ones copied exactly. Use for common confusions.',
-    cloze: 'cloze: a key sentence in "text" with ___ for 1-3 important words and those words in "answers", in order.',
-    passage:
-        'passage: a short text that must be known word for word (quote, law, definition) in "text", max ~40 words.',
-    list: 'list: a closed set the learner names in any order (e.g. the noble gases) in "items", 3-12 entries, aliases as "A / B".',
-    sequence:
-        'sequence: steps, stages or events in the correct order in "items", 3-8 entries.',
-    number: 'number: a key figure or year in "value", with "unit" and a sensible "tolerance" if exactness is not needed.',
-    pairs: 'pairs: 3-6 term/definition or term/translation "pairs".',
-}
-
-function buildSystemPrompt(types: readonly AiItemType[]): string {
-    return `You are an expert educational content creator. You turn material into learning items for a spaced repetition app with varied exercises.
-
-Choose the item type that fits each piece of knowledge best:
-${types.map((type) => `- ${TYPE_GUIDE[type]}`).join('\n')}
-
-Guidelines:
-1. Each item tests one concept. Break complex topics into several items.
-2. Questions are specific enough to have one clear answer. Avoid yes/no questions.
-3. Answers are short: typed answers should be a few words, not sentences.
-4. Use a mix of types where the material allows it${types.includes('basic') ? ', but basic items should usually be the largest share' : ''}.
-5. Only fill the fields of the chosen type.
-6. Write in the language of the user's request or document.
-7. Do not include HTML, JavaScript or other code.
-8. Generate 5-${MAX_CARDS_PER_GENERATION} items. Quality over quantity.`
-}
-
-function buildUserPrompt(prompt: string, documentContent?: string): string {
-    let userPrompt = `Create learning items for: ${prompt}`
-
-    if (documentContent) {
-        userPrompt += `\n\nBase the items on this document content:\n\n${documentContent}`
-    }
-
-    return userPrompt
-}
-
 // Error handling
 function handleAIError(
     error: unknown,
@@ -383,6 +336,14 @@ export async function generateAIFlashcardsUnified(
         }
 
         const userId = session.user.id
+
+        // Check the deck before any paid AI call. Its title, description and
+        // tags give the model the topic and level.
+        const deck = await getDeckById(params.deckId, userId)
+        if (!deck) {
+            const deckT = await getTranslations('deck')
+            return { success: false, error: deckT('notFound'), requestId }
+        }
 
         onProgress?.('validation', 5, 'Validating input...')
 
@@ -527,7 +488,15 @@ export async function generateAIFlashcardsUnified(
                 model: google(AI_MODEL),
                 schema: aiOutputSchema,
                 system: buildSystemPrompt(allowedTypes),
-                prompt: buildUserPrompt(sanitizedPrompt, documentContent),
+                prompt: buildUserPrompt({
+                    prompt: sanitizedPrompt,
+                    deck: {
+                        title: deck.title,
+                        description: deck.description,
+                        tags: parseDeckTags(deck.category),
+                    },
+                    documentContent,
+                }),
                 // Gemini 3 models are tuned for their default temperature of 1;
                 // lowering it degrades output, so it is intentionally not set.
                 maxTokens: AI_MAX_OUTPUT_TOKENS,
@@ -556,16 +525,40 @@ export async function generateAIFlashcardsUnified(
                 }
             }
 
-            // Remove duplicates
             // Map to the strict item schema and drop items the model got wrong.
-            const uniqueCards = removeDuplicateCards(
-                object.items.filter((item) => allowedTypes.includes(item.type))
+            const ofAllowedType = object.items.filter((item) =>
+                allowedTypes.includes(item.type)
             )
+            const deduped = dedupeAiItems(ofAllowedType)
+            const dropped: string[] = []
+            const uniqueCards = deduped
                 .map(aiItemToInput)
                 .flatMap((input) => {
                     const parsed = itemInputSchema.safeParse(input)
-                    return parsed.success ? [parsed.data] : []
+                    if (parsed.success) return [parsed.data]
+                    dropped.push(
+                        parsed.error.issues
+                            .map((issue) => issue.path.join('.'))
+                            .join(',')
+                    )
+                    return []
                 })
+                .slice(0, MAX_ITEMS_PER_GENERATION)
+
+            console.info('AI generation counts:', {
+                requestId,
+                model: AI_MODEL,
+                returned: object.items.length,
+                afterTypeFilter: ofAllowedType.length,
+                afterDedupe: deduped.length,
+                valid: uniqueCards.length,
+            })
+            if (dropped.length) {
+                console.warn('AI items failed validation:', {
+                    requestId,
+                    fields: dropped,
+                })
+            }
             if (uniqueCards.length === 0) {
                 return {
                     success: false,

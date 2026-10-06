@@ -26,7 +26,7 @@ export const aiItemSchema = z.object({
     front: z
         .string()
         .describe(
-            'Question or task shown to the learner. For cloze and pairs a short title.'
+            'Question or task shown to the learner. For cloze and pairs a short title that is unique for each item.'
         ),
     back: z
         .string()
@@ -148,6 +148,30 @@ export function aiItemToInput(item: AiItem): unknown {
                 },
             }
     }
+}
+
+/**
+ * Removes repeated items. Two items count as the same only if type, prompt
+ * and answer match, so cloze or pairs items that share a title both stay.
+ */
+export function dedupeAiItems(items: AiItem[]): AiItem[] {
+    const seen = new Set<string>()
+    return items.filter((item) => {
+        const answer = [
+            item.back,
+            item.text,
+            item.value,
+            ...(item.correct ?? []),
+            ...(item.items ?? []),
+            ...(item.pairs ?? []).map((p) => `${p.left}=${p.right}`),
+        ]
+            .filter((v) => v !== null && v !== undefined)
+            .join('|')
+        const key = `${item.type}:${item.front}:${answer}`.toLowerCase().trim()
+        if (seen.has(key)) return false
+        seen.add(key)
+        return true
+    })
 }
 
 /** Every string in an AI item, for content safety checks. */
