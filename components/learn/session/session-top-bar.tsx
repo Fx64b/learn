@@ -39,10 +39,12 @@ export function SessionTopBar({
                 aria-valuenow={Math.round(progress * 100)}
             >
                 <div
-                    className="h-full rounded-full bg-emerald-500 transition-[width] duration-500 ease-out"
+                    className="h-full rounded-full bg-emerald-500 pt-1 transition-[width] duration-500 ease-out"
                     style={{ width: `${Math.max(2, progress * 100)}%` }}
                 >
-                    <div className="mx-2 mt-1 h-1 rounded-full bg-white/30" />
+                    {/* Padding on the parent, not a margin here: a child's top
+                        margin collapses through the fill and pushes it down. */}
+                    <div className="mx-2 h-1 rounded-full bg-white/30" />
                 </div>
             </div>
             <span
