@@ -1,4 +1,9 @@
 {
+    "maintenance": {
+        "banner": "Wartungsarbeiten laufen. Die Seite ist vorübergehend nicht verfügbar.",
+        "title": "Wir führen Wartungsarbeiten durch",
+        "description": "Wir spielen grössere Updates ein. Die Seite ist für kurze Zeit nicht verfügbar. Bitte komm bald wieder. Deine Daten sind sicher."
+    },
     "common": {
         "back": "Zurück",
         "backToHome": "Zurück zur Übersicht",

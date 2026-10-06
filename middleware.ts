@@ -1,3 +1,4 @@
+import { isMaintenanceMode } from '@/lib/maintenance'
 import { rateLimitMiddleware } from '@/middleware/ratelimit'
 
 import { getToken } from 'next-auth/jwt'
@@ -6,6 +7,28 @@ import { NextRequest, NextResponse } from 'next/server'
 import { securityMiddleware } from './middleware/security'
 
 export async function middleware(req: NextRequest) {
+    if (isMaintenanceMode()) {
+        const { pathname } = req.nextUrl
+        const isAsset = /\.[a-zA-Z0-9]+$/.test(pathname)
+
+        if (!isAsset) {
+            const headers = { 'Retry-After': '3600' }
+
+            // Block AI requests and page mutations (server actions)
+            if (pathname.startsWith('/api/') || req.method !== 'GET') {
+                return new Response('Service under maintenance', {
+                    status: 503,
+                    headers,
+                })
+            }
+
+            return NextResponse.rewrite(new URL('/maintenance', req.url), {
+                status: 503,
+                headers,
+            })
+        }
+    }
+
     const rateLimitResponse = await rateLimitMiddleware(req)
     if (rateLimitResponse.status === 429) {
         return rateLimitResponse

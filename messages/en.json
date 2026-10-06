@@ -1,4 +1,9 @@
 {
+    "maintenance": {
+        "banner": "Maintenance in progress. The site is temporarily unavailable.",
+        "title": "We are under maintenance",
+        "description": "We are deploying major updates. The site is unavailable for a short time. Please come back soon. Your data is safe."
+    },
     "common": {
         "back": "Back",
         "backToHome": "Back to Overview",

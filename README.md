@@ -165,6 +165,14 @@ pnpm start
 
 (Docker support is planned for future releases)
 
+## Maintenance Mode
+
+Set `MAINTENANCE_MODE=true` in the environment and redeploy to disable the site. Users see a banner and a popup they cannot close, and every page returns HTTP 503. Stripe webhooks, cron jobs and auth callbacks keep working.
+
+To turn it off, remove the variable (or set it to anything else) and redeploy.
+
+To remove the feature from the code, delete `lib/maintenance.ts`, `app/maintenance/`, `components/maintenance/` and the `maintenance` key in `messages/*.json`. Then remove the `isMaintenanceMode` usage in `middleware.ts` and `app/layout.tsx`.
+
 ## Monitoring & Analytics
 
 - **Vercel Analytics**: Automatic performance monitoring

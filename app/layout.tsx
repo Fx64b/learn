@@ -1,4 +1,5 @@
 import { getLocale } from '@/lib/locale'
+import { isMaintenanceMode } from '@/lib/maintenance'
 import deMessages from '@/messages/de.json'
 import enMessages from '@/messages/en.json'
 import { Toaster } from 'sonner'
@@ -9,6 +10,7 @@ import { Analytics } from '@vercel/analytics/react'
 
 import { Footer } from '@/components/footer'
 import { Header } from '@/components/header'
+import { MaintenanceNotice } from '@/components/maintenance/maintenance-notice'
 import { AuthProvider } from '@/components/misc/auth-provider'
 import { LocaleProvider } from '@/components/misc/locale-provider'
 import { ThemeProvider } from '@/components/misc/theme-provider'
@@ -48,6 +50,7 @@ export default async function RootLayout({
                 <AuthProvider>
                     <LocaleProvider initialLocale={locale} messages={messages}>
                         <ThemeProvider>
+                            {isMaintenanceMode() && <MaintenanceNotice />}
                             <Header />
                             <PaymentWarningBanner className="mx-auto max-w-5xl px-4" />
                             <main className="min-h-screen">{children}</main>
