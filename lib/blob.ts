@@ -47,19 +47,29 @@ export function aiUploadPrefix(userId: string) {
     return `${AI_UPLOAD_PREFIX}${userId}/`
 }
 
+/** File names the browser creates for AI uploads, plus Blob's random suffix. */
+const AI_FILE_NAME = /^[A-Za-z0-9._-]+\.pdf$/
+
 /**
- * True only for a Blob URL inside the user's own AI upload folder. This
- * keeps the server from fetching other hosts or other users' files.
+ * The Blob pathname of a PDF in the user's own AI upload folder, or null.
+ * The server only ever reads uploads by this pathname through the Blob SDK,
+ * which resolves it against our own store. It never fetches the given URL.
  */
-export function isOwnAiUpload(url: string, userId: string) {
-    if (!isBlobUrl(url) || !userId) return false
+export function aiUploadPathname(url: string, userId: string): string | null {
+    if (!isBlobUrl(url) || !userId) return null
+    let pathname: string
     try {
-        const { pathname } = new URL(url)
-        return (
-            pathname.startsWith(`/${aiUploadPrefix(userId)}`) &&
-            !pathname.includes('..')
-        )
+        pathname = new URL(url).pathname.slice(1)
     } catch {
-        return false
+        return null
     }
+    const prefix = aiUploadPrefix(userId)
+    if (!pathname.startsWith(prefix)) return null
+    const name = pathname.slice(prefix.length)
+    return AI_FILE_NAME.test(name) && !name.includes('..') ? pathname : null
+}
+
+/** True only for a PDF inside the user's own AI upload folder. */
+export function isOwnAiUpload(url: string, userId: string) {
+    return aiUploadPathname(url, userId) !== null
 }

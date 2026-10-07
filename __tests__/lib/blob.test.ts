@@ -1,4 +1,4 @@
-import { aiUploadPrefix, isOwnAiUpload } from '@/lib/blob'
+import { aiUploadPathname, aiUploadPrefix, isOwnAiUpload } from '@/lib/blob'
 import { describe, expect, it } from 'vitest'
 
 const host = 'https://abc123.public.blob.vercel-storage.com'
@@ -35,5 +35,16 @@ describe('isOwnAiUpload', () => {
 
     it('builds the folder prefix', () => {
         expect(aiUploadPrefix('u1')).toBe('ai-uploads/u1/')
+    })
+
+    it('returns the pathname only for safe PDF file names', () => {
+        expect(
+            aiUploadPathname(`${host}/ai-uploads/u1/notes-x7Yz.pdf`, 'u1')
+        ).toBe('ai-uploads/u1/notes-x7Yz.pdf')
+        for (const name of ['a.txt', 'sub/a.pdf', 'a%20b.pdf', '.pdf']) {
+            expect(
+                aiUploadPathname(`${host}/ai-uploads/u1/${name}`, 'u1')
+            ).toBeNull()
+        }
     })
 })

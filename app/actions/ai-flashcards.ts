@@ -2,7 +2,7 @@
 
 import { getDeckById } from '@/db/utils'
 import { authOptions } from '@/lib/auth'
-import { MAX_PDF_BYTES, deleteBlobs, isOwnAiUpload } from '@/lib/blob'
+import { MAX_PDF_BYTES, aiUploadPathname, deleteBlobs } from '@/lib/blob'
 import {
     AI_ITEM_TYPES,
     type AiItem,
@@ -109,31 +109,29 @@ function sanitizeInput(input: string): string {
 }
 
 /**
- * Downloads the user's uploaded PDF from Blob. Only URLs in the user's own
- * AI upload folder are fetched, with a size cap and a magic-byte check.
+ * Reads the user's uploaded PDF from Blob. Only a validated pathname in the
+ * user's own AI upload folder is read, through the Blob SDK and our own store,
+ * with a size cap and a magic-byte check. The client URL is never fetched.
  */
 async function loadPdf(
     fileUrl: string,
     userId: string
 ): Promise<{ data: Uint8Array } | { error: string }> {
-    if (!isOwnAiUpload(fileUrl, userId)) {
+    const pathname = aiUploadPathname(fileUrl, userId)
+    if (!pathname) {
         return { error: 'invalid_url' }
     }
-    const response = await fetch(fileUrl, {
-        cache: 'no-store',
-        // Never follow a redirect away from the checked Blob URL.
-        redirect: 'error',
-    })
-    if (!response.ok || !response.body) {
+    const { get } = await import('@vercel/blob')
+    const result = await get(pathname, { access: 'public', useCache: false })
+    if (!result || result.statusCode !== 200 || !result.stream) {
         return { error: 'not_found' }
     }
-    const declared = Number(response.headers.get('content-length') ?? 0)
-    if (declared > MAX_PDF_BYTES) {
+    if (result.blob.size > MAX_PDF_BYTES) {
         return { error: 'too_large' }
     }
 
-    // Read with a hard cap, the header can be missing or wrong.
-    const reader = response.body.getReader()
+    // Read with a hard cap as well, in case the stored size is off.
+    const reader = result.stream.getReader()
     const chunks: Uint8Array[] = []
     let size = 0
     for (;;) {
@@ -517,9 +515,11 @@ export async function generateAIFlashcardsUnified(
     } finally {
         if (params.fileUrl) {
             const session = await getServerSession(authOptions)
-            const userId = session?.user?.id
-            if (userId && isOwnAiUpload(params.fileUrl, userId)) {
-                await deleteBlobs([params.fileUrl])
+            const pathname = session?.user?.id
+                ? aiUploadPathname(params.fileUrl, session.user.id)
+                : null
+            if (pathname) {
+                await deleteBlobs([pathname])
             }
         }
     }
