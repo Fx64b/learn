@@ -174,6 +174,7 @@ BLOB_STORE_ID="store_..."                           # Set by Vercel for connecte
 - Stripe webhook signature verification required
 - SQL injection protection via Drizzle parameterized queries
 - Security headers configured in `next.config.ts`
+- The Content-Security-Policy is built in `middleware/security.ts` (`buildCsp`). Any new browser request to another origin needs a `connect-src` entry there. The Vercel toolbar sources are added on preview deployments only
 
 ## Key Business Logic
 
