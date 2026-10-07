@@ -1,16 +1,25 @@
 import { authOptions } from '@/lib/auth'
-import { MAX_PDF_BYTES, aiUploadPrefix, isBlobConfigured } from '@/lib/blob'
+import { MAX_PDF_BYTES, isBlobConfigured, isOwnAiUploadPath } from '@/lib/blob'
 import { checkRateLimit } from '@/lib/rate-limit/rate-limit'
 
 import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'
 
-import { type HandleUploadBody, handleUpload } from '@vercel/blob/client'
+import { issueSignedToken } from '@vercel/blob'
+import {
+    type HandleUploadPresignedBody,
+    handleUploadPresigned,
+} from '@vercel/blob/client'
+
+/** How long a presigned upload URL stays valid. */
+const UPLOAD_WINDOW_MS = 15 * 60 * 1000
 
 /**
- * Issues short-lived client tokens so the browser can upload a PDF for AI
+ * Issues presigned upload URLs so the browser can upload a PDF for AI
  * generation straight to Vercel Blob. Vercel Functions accept at most 4.5 MB
- * per request, so large PDFs cannot pass through our own routes.
+ * per request, so large PDFs cannot pass through our own routes. The
+ * presigned flow works with Vercel OIDC (newer stores) and with a
+ * read-write token (older stores, local dev).
  */
 export async function POST(request: Request) {
     const session = await getServerSession(authOptions)
@@ -25,22 +34,20 @@ export async function POST(request: Request) {
         )
     }
 
-    let body: HandleUploadBody
+    let body: HandleUploadPresignedBody
     try {
-        body = (await request.json()) as HandleUploadBody
+        body = (await request.json()) as HandleUploadPresignedBody
     } catch {
         return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
     }
 
     try {
-        const result = await handleUpload({
+        const result = await handleUploadPresigned({
             request,
             body,
-            onBeforeGenerateToken: async (pathname) => {
-                if (
-                    !pathname.startsWith(aiUploadPrefix(userId)) ||
-                    pathname.includes('..')
-                ) {
+            getSignedToken: async (pathname) => {
+                // Only the user's own folder and safe PDF names.
+                if (!isOwnAiUploadPath(pathname, userId)) {
                     throw new Error('Invalid upload path')
                 }
                 const rate = await checkRateLimit(
@@ -50,10 +57,21 @@ export async function POST(request: Request) {
                 if (!rate.success) {
                     throw new Error('Too many uploads')
                 }
-                return {
+                const validUntil = Date.now() + UPLOAD_WINDOW_MS
+                const token = await issueSignedToken({
+                    pathname,
+                    operations: ['put'],
                     allowedContentTypes: ['application/pdf'],
                     maximumSizeInBytes: MAX_PDF_BYTES,
-                    addRandomSuffix: true,
+                    validUntil,
+                })
+                return {
+                    token,
+                    urlOptions: {
+                        allowedContentTypes: ['application/pdf'],
+                        maximumSizeInBytes: MAX_PDF_BYTES,
+                        validUntil,
+                    },
                 }
             },
         })

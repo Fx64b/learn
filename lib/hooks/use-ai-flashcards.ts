@@ -2,7 +2,7 @@ import { aiUploadPrefix } from '@/lib/blob'
 
 import React, { useCallback, useRef, useState } from 'react'
 
-import { upload } from '@vercel/blob/client'
+import { uploadPresigned } from '@vercel/blob/client'
 
 interface GenerateParams {
     prompt: string
@@ -98,8 +98,8 @@ export function useAIFlashcards() {
                                     percentage: 0,
                                     message: 'Uploading PDF...',
                                 })
-                                const blob = await upload(
-                                    `${aiUploadPrefix(params.userId)}${safeFileName(params.file.name)}`,
+                                const blob = await uploadPresigned(
+                                    `${aiUploadPrefix(params.userId)}${crypto.randomUUID()}-${safeFileName(params.file.name)}`,
                                     params.file,
                                     {
                                         access: 'public',

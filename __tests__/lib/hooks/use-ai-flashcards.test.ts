@@ -2,9 +2,9 @@ import { useAIFlashcards } from '@/lib/hooks/use-ai-flashcards'
 import { act, renderHook } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { upload } from '@vercel/blob/client'
+import { uploadPresigned } from '@vercel/blob/client'
 
-vi.mock('@vercel/blob/client', () => ({ upload: vi.fn() }))
+vi.mock('@vercel/blob/client', () => ({ uploadPresigned: vi.fn() }))
 
 // Mock fetch
 global.fetch = vi.fn()
@@ -145,7 +145,7 @@ describe('useAIFlashcards', () => {
     })
 
     it('uploads the PDF to Blob and sends only its URL', async () => {
-        vi.mocked(upload).mockResolvedValue({
+        vi.mocked(uploadPresigned).mockResolvedValue({
             url: 'https://x.public.blob.vercel-storage.com/ai-uploads/u1/My-Notes-abc.pdf',
         } as never)
         vi.mocked(fetch).mockRejectedValue(new Error('stop here'))
@@ -163,8 +163,10 @@ describe('useAIFlashcards', () => {
             })
         })
 
-        const [path, body, options] = vi.mocked(upload).mock.calls[0]
-        expect(path).toBe('ai-uploads/u1/My-Notes-v2-.pdf')
+        const [path, body, options] = vi.mocked(uploadPresigned).mock.calls[0]
+        expect(path).toMatch(
+            /^ai-uploads\/u1\/[A-Za-z0-9-]+-My-Notes-v2-\.pdf$/
+        )
         expect(body).toBe(file)
         expect(options).toMatchObject({
             access: 'public',
@@ -177,7 +179,7 @@ describe('useAIFlashcards', () => {
     })
 
     it('reports a failed upload without calling the API', async () => {
-        vi.mocked(upload).mockRejectedValue(new Error('token refused'))
+        vi.mocked(uploadPresigned).mockRejectedValue(new Error('token refused'))
         const file = new File(['%PDF-1.7'], 'a.pdf', {
             type: 'application/pdf',
         })

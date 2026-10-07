@@ -140,7 +140,8 @@ STRIPE_SECRET_KEY="your-stripe-secret"             # For subscriptions
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="your-stripe-pub"
 STRIPE_WEBHOOK_SECRET="your-webhook-secret"
 REDIS_URL="your-redis-url"                         # For rate limiting
-BLOB_READ_WRITE_TOKEN="your-blob-token"            # Diagram images and AI PDF upload (public store)
+BLOB_READ_WRITE_TOKEN="your-blob-token"            # Local dev: diagram images and AI PDF upload (public store)
+BLOB_STORE_ID="store_..."                           # Set by Vercel for connected stores (OIDC auth, no token needed)
 ```
 
 ## Code Standards & Guidelines
@@ -182,7 +183,7 @@ BLOB_READ_WRITE_TOKEN="your-blob-token"            # Diagram images and AI PDF u
 - The model returns a flat item object (`lib/items/ai.ts`). Items that fail the strict schema are dropped
 - Prompts live in `lib/items/ai-prompt.ts`: deck title, description and tags as context, and a count rule (exact number if asked, else 10-60)
 - Model from `GOOGLE_AI_MODEL` (default `gemini-3-flash-preview`). Each run logs the item counts per filter stage
-- Supports text prompts and PDFs up to 20 MB. The browser uploads the PDF straight to Vercel Blob (`/api/ai-flashcards/upload` issues the client token), because Vercel Functions accept at most 4.5 MB per request
+- Supports text prompts and PDFs up to 20 MB. The browser uploads the PDF straight to Vercel Blob (`/api/ai-flashcards/upload` issues a presigned URL with `issueSignedToken`, which works with Vercel OIDC and with a read-write token), because Vercel Functions accept at most 4.5 MB per request
 - The server sends the full PDF to Gemini as a file part (text, tables, figures, scanned pages) and deletes the blob afterwards. Only URLs in `ai-uploads/<userId>/` are accepted (`isOwnAiUpload` in `lib/blob.ts`)
 - `/api/cron/cleanup-uploads` deletes leftover AI uploads older than 1 hour
 - Streaming responses with progress tracking

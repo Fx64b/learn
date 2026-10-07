@@ -1,5 +1,11 @@
-import { aiUploadPathname, aiUploadPrefix, isOwnAiUpload } from '@/lib/blob'
-import { describe, expect, it } from 'vitest'
+import {
+    aiUploadPathname,
+    aiUploadPrefix,
+    isBlobConfigured,
+    isOwnAiUpload,
+    isOwnAiUploadPath,
+} from '@/lib/blob'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const host = 'https://abc123.public.blob.vercel-storage.com'
 
@@ -46,5 +52,31 @@ describe('isOwnAiUpload', () => {
                 aiUploadPathname(`${host}/ai-uploads/u1/${name}`, 'u1')
             ).toBeNull()
         }
+    })
+})
+
+describe('isOwnAiUploadPath', () => {
+    it('checks folder and file name', () => {
+        expect(isOwnAiUploadPath('ai-uploads/u1/1f-notes.pdf', 'u1')).toBe(true)
+        expect(isOwnAiUploadPath('ai-uploads/u2/a.pdf', 'u1')).toBe(false)
+        expect(isOwnAiUploadPath('ai-uploads/u1/a.exe', 'u1')).toBe(false)
+        expect(isOwnAiUploadPath('ai-uploads//a.pdf', '')).toBe(false)
+    })
+})
+
+describe('isBlobConfigured', () => {
+    afterEach(() => {
+        vi.unstubAllEnvs()
+    })
+
+    it('accepts a read-write token or an OIDC store id', () => {
+        vi.stubEnv('BLOB_READ_WRITE_TOKEN', '')
+        vi.stubEnv('BLOB_STORE_ID', '')
+        expect(isBlobConfigured()).toBe(false)
+        vi.stubEnv('BLOB_STORE_ID', 'store_abc')
+        expect(isBlobConfigured()).toBe(true)
+        vi.stubEnv('BLOB_STORE_ID', '')
+        vi.stubEnv('BLOB_READ_WRITE_TOKEN', 'vercel_blob_rw_x')
+        expect(isBlobConfigured()).toBe(true)
     })
 })

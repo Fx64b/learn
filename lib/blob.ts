@@ -3,8 +3,15 @@ import type { Item } from '@/lib/items'
 /** Host suffix of Vercel Blob URLs. Only these are ever deleted. */
 const BLOB_HOST = '.blob.vercel-storage.com'
 
+/**
+ * True when Blob credentials exist: a read-write token (older stores, local
+ * dev) or a connected store with Vercel OIDC (newer stores set only
+ * BLOB_STORE_ID, the OIDC token comes from the Vercel runtime).
+ */
 export function isBlobConfigured() {
-    return Boolean(process.env.BLOB_READ_WRITE_TOKEN)
+    return Boolean(
+        process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID
+    )
 }
 
 export function isBlobUrl(url: string) {
@@ -47,7 +54,7 @@ export function aiUploadPrefix(userId: string) {
     return `${AI_UPLOAD_PREFIX}${userId}/`
 }
 
-/** File names the browser creates for AI uploads, plus Blob's random suffix. */
+/** File names the browser creates for AI uploads (random id plus safe name). */
 const AI_FILE_NAME = /^[A-Za-z0-9._-]+\.pdf$/
 
 /**
@@ -63,10 +70,15 @@ export function aiUploadPathname(url: string, userId: string): string | null {
     } catch {
         return null
     }
+    return isOwnAiUploadPath(pathname, userId) ? pathname : null
+}
+
+/** True for a pathname like `ai-uploads/<userId>/<safe-name>.pdf`. */
+export function isOwnAiUploadPath(pathname: string, userId: string) {
     const prefix = aiUploadPrefix(userId)
-    if (!pathname.startsWith(prefix)) return null
+    if (!userId || !pathname.startsWith(prefix)) return false
     const name = pathname.slice(prefix.length)
-    return AI_FILE_NAME.test(name) && !name.includes('..') ? pathname : null
+    return AI_FILE_NAME.test(name) && !name.includes('..')
 }
 
 /** True only for a PDF inside the user's own AI upload folder. */
