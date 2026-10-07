@@ -575,7 +575,8 @@
             "promptPlaceholder": "z.B. 'Erstelle Karteikarten über Photosynthese' oder 'Generiere Fragen aus diesem Biologie-Lehrbuchkapitel'",
             "documentLabel": "Dokument hochladen (Optional)",
             "dropFile": "PDF-Datei hier hineinziehen oder klicken zum Durchsuchen",
-            "maxFileSize": "Maximale Dateigröße: 5MB",
+            "maxFileSize": "Maximale Dateigröße: 20 MB. Die KI liest Text, Tabellen, Abbildungen und gescannte Seiten.",
+            "uploadFailed": "Das PDF konnte nicht hochgeladen werden. Bitte versuchen Sie es erneut. Wenn das wieder passiert, ist der PDF-Upload eventuell noch nicht eingerichtet.",
             "helpText": "Die KI nutzt Ihre Eingabe, das optionale Dokument und Titel, Beschreibung und Tags des Decks. Ohne Zahl in der Eingabe erstellt sie je nach Stoff 10 bis 60 Einträge. Nennen Sie eine Zahl, zum Beispiel 15 Karten, um genau so viele zu erhalten.",
             "generateButton": "Karteikarten generieren",
             "generating": "Generiere...",
@@ -1836,7 +1837,7 @@
                     },
                     {
                         "q": "Die KI hat keine Elemente erstellt.",
-                        "a": "Formuliere das Thema genauer oder lade ein klareres PDF bis 5 MB hoch. Kostenlose Konten haben eine begrenzte Anzahl Generierungen."
+                        "a": "Formuliere das Thema genauer oder lade ein PDF bis 20 MB hoch. Die KI liest Text, Tabellen, Abbildungen und gescannte Seiten. Kostenlose Konten haben eine begrenzte Anzahl Generierungen."
                     }
                 ]
             }
@@ -1925,7 +1926,7 @@
                 "intro": "Die KI macht aus einem Thema oder PDF Elemente in passenden Typen.",
                 "steps": [
                     "Öffne einen Stapel, dann Bearbeiten und den KI-Tab.",
-                    "Beschreibe das Thema oder lade ein PDF bis 5 MB hoch. Titel, Beschreibung und Tags des Decks werden als Kontext mitgeschickt.",
+                    "Beschreibe das Thema oder lade ein PDF bis 20 MB hoch. Die KI liest Text, Tabellen, Abbildungen und gescannte Seiten. Titel, Beschreibung und Tags des Decks werden als Kontext mitgeschickt.",
                     "Nenne eine Anzahl Einträge, wenn du eine bestimmte willst. Sonst wählt die KI je nach Stoff 10 bis 60.",
                     "Wähle die Elementtypen, die die KI nutzen darf. Diagramme werden immer von Hand erstellt.",
                     "Fehlerhafte Elemente werden verworfen, der Rest kommt in deinen Stapel."

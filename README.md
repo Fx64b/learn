@@ -97,7 +97,7 @@ STRIPE_WEBHOOK_SECRET="your-webhook-secret"
 # Rate Limiting (Optional)
 REDIS_URL="your-redis-url"
 
-# Image uploads for diagram items (Optional, Vercel Blob)
+# Diagram images and PDF upload for AI generation (Optional, public Vercel Blob store)
 BLOB_READ_WRITE_TOKEN="your-blob-token"
 ```
 

@@ -1,4 +1,5 @@
 import * as dbUtils from '@/db/utils'
+import { deleteBlobs } from '@/lib/blob'
 import { generateObject } from 'ai'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -20,6 +21,27 @@ vi.mock('@/lib/rate-limit/ai-rate-limit', () => ({
 vi.mock('@/app/actions/flashcard', () => ({
     createItemsFromJson: vi.fn(),
 }))
+vi.mock('@/lib/blob', async (importOriginal) => ({
+    ...(await importOriginal<typeof import('@/lib/blob')>()),
+    deleteBlobs: vi.fn(),
+}))
+
+const PDF_URL =
+    'https://abc.public.blob.vercel-storage.com/ai-uploads/u1/notes-x1.pdf'
+
+function mockFetch(body: string, status = 200) {
+    const fetchMock = vi.fn(
+        async () => new Response(new TextEncoder().encode(body), { status })
+    )
+    vi.stubGlobal('fetch', fetchMock)
+    return fetchMock
+}
+
+const oneItem = {
+    object: {
+        items: [{ type: 'basic', front: 'What is ATP?', back: 'Energy' }],
+    },
+} as never
 
 const deck = {
     id: 'd1',
@@ -85,12 +107,14 @@ describe('generateAIFlashcards', () => {
         })
 
         const call = vi.mocked(generateObject).mock.calls[0][0] as {
-            prompt: string
+            messages: Array<{ content: Array<{ text?: string }> }>
         }
-        expect(call.prompt).toContain('Title: Biology 101')
-        expect(call.prompt).toContain('Description: Cells and organelles')
-        expect(call.prompt).toContain('Tags: Biology, Cells')
-        expect(call.prompt).not.toContain('2030')
+        const text = call.messages[0].content[0].text ?? ''
+        expect(call.messages[0].content).toHaveLength(1)
+        expect(text).toContain('Title: Biology 101')
+        expect(text).toContain('Description: Cells and organelles')
+        expect(text).toContain('Tags: Biology, Cells')
+        expect(text).not.toContain('2030')
         expect(res.success).toBe(true)
         expect(res.cardsCreated).toBe(3)
     })
@@ -104,5 +128,82 @@ describe('generateAIFlashcards', () => {
         const res = await generateAIFlashcards({ deckId: 'd1', prompt: 'X' })
         expect(res.success).toBe(false)
         expect(res.error).toBe('aiConfigError')
+    })
+
+    describe('with an uploaded PDF', () => {
+        it('sends the PDF as a file part and deletes it afterwards', async () => {
+            mockFetch('%PDF-1.7 content')
+            vi.mocked(generateObject).mockResolvedValue(oneItem)
+
+            const res = await generateAIFlashcards({
+                deckId: 'd1',
+                prompt: 'Chapter 3',
+                fileUrl: PDF_URL,
+            })
+
+            expect(res.success).toBe(true)
+            const call = vi.mocked(generateObject).mock.calls[0][0] as {
+                messages: Array<{
+                    content: Array<{ type: string; mimeType?: string }>
+                }>
+            }
+            const parts = call.messages[0].content
+            expect(parts[0].type).toBe('text')
+            expect(parts[1]).toMatchObject({
+                type: 'file',
+                mimeType: 'application/pdf',
+            })
+            expect(deleteBlobs).toHaveBeenCalledWith([PDF_URL])
+        })
+
+        it('deletes the PDF when the model fails', async () => {
+            mockFetch('%PDF-1.7 content')
+            vi.mocked(generateObject).mockRejectedValue(new Error('boom'))
+
+            const res = await generateAIFlashcards({
+                deckId: 'd1',
+                prompt: 'X',
+                fileUrl: PDF_URL,
+            })
+
+            expect(res.success).toBe(false)
+            expect(deleteBlobs).toHaveBeenCalledWith([PDF_URL])
+        })
+
+        it('rejects a file that is not a PDF', async () => {
+            mockFetch('<html>not a pdf</html>')
+
+            const res = await generateAIFlashcards({
+                deckId: 'd1',
+                prompt: 'X',
+                fileUrl: PDF_URL,
+            })
+
+            expect(res.success).toBe(false)
+            expect(generateObject).not.toHaveBeenCalled()
+            expect(deleteBlobs).toHaveBeenCalledWith([PDF_URL])
+        })
+
+        it('never fetches or deletes a URL outside the own folder', async () => {
+            const fetchMock = mockFetch('%PDF-1.7')
+            const foreign =
+                'https://abc.public.blob.vercel-storage.com/ai-uploads/u2/a.pdf'
+
+            for (const fileUrl of [
+                foreign,
+                'https://evil.example.com/ai-uploads/u1/a.pdf',
+            ]) {
+                const res = await generateAIFlashcards({
+                    deckId: 'd1',
+                    prompt: 'X',
+                    fileUrl,
+                })
+                expect(res.success).toBe(false)
+            }
+
+            expect(fetchMock).not.toHaveBeenCalled()
+            expect(generateObject).not.toHaveBeenCalled()
+            expect(deleteBlobs).not.toHaveBeenCalled()
+        })
     })
 })

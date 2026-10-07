@@ -88,16 +88,17 @@ const COUNT_RULE = `Item count:
 export function buildUserPrompt(params: {
     prompt: string
     deck?: PromptDeck
-    documentContent?: string
+    /** True when a PDF is attached to the message as a file part. */
+    hasDocument?: boolean
 }): string {
     const parts: string[] = []
     if (params.deck) parts.push(deckBlock(params.deck))
     parts.push(`Request: ${params.prompt}`)
-    parts.push(COUNT_RULE)
-    if (params.documentContent) {
+    if (params.hasDocument) {
         parts.push(
-            `Base the items on this document content:\n\n${params.documentContent}`
+            'Base the items on the attached PDF document. Use its text, tables, figures and diagrams. Ignore page numbers, headers and footers.'
         )
     }
+    parts.push(COUNT_RULE)
     return parts.join('\n\n')
 }

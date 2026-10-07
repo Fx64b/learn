@@ -17,7 +17,7 @@ export const dynamic = 'force-dynamic'
 const aiFlashcardsSchema = z.object({
     prompt: z.string().min(1).max(1000),
     deckId: z.string().nanoid(),
-    file: z.instanceof(File).optional(),
+    fileUrl: z.string().url().max(1000).optional(),
     types: z.array(z.string().max(20)).max(10).optional(),
 })
 
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
         const formData = await request.formData()
         const prompt = formData.get('prompt') as string
         const deckId = formData.get('deckId') as string
-        const file = formData.get('file') as File | null
+        const fileUrl = formData.get('fileUrl')
         const types = String(formData.get('types') ?? '')
             .split(',')
             .map((t) => t.trim())
@@ -78,7 +78,8 @@ export async function POST(request: NextRequest) {
         const validation = aiFlashcardsSchema.safeParse({
             prompt,
             deckId,
-            file: file || undefined,
+            fileUrl:
+                typeof fileUrl === 'string' && fileUrl ? fileUrl : undefined,
             types: types.length ? types : undefined,
         })
 
@@ -105,7 +106,7 @@ export async function POST(request: NextRequest) {
             const result = await generateAIFlashcards({
                 prompt: validation.data.prompt,
                 deckId: validation.data.deckId,
-                file: validation.data.file,
+                fileUrl: validation.data.fileUrl,
                 types: validation.data.types,
             })
 
@@ -214,7 +215,7 @@ async function processAIRequest(
             {
                 prompt: data.prompt,
                 deckId: data.deckId,
-                file: data.file,
+                fileUrl: data.fileUrl,
                 types: data.types,
             },
             sendProgress

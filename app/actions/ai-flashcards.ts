@@ -2,6 +2,7 @@
 
 import { getDeckById } from '@/db/utils'
 import { authOptions } from '@/lib/auth'
+import { MAX_PDF_BYTES, deleteBlobs, isOwnAiUpload } from '@/lib/blob'
 import {
     AI_ITEM_TYPES,
     type AiItem,
@@ -21,7 +22,6 @@ import { checkAIRateLimitWithDetails } from '@/lib/rate-limit/ai-rate-limit'
 import { google } from '@ai-sdk/google'
 import { generateObject } from 'ai'
 import { randomUUID } from 'crypto'
-import { Output } from 'pdf2json'
 import { z } from 'zod'
 
 import { Session, getServerSession } from 'next-auth'
@@ -30,11 +30,7 @@ import { getTranslations } from 'next-intl/server'
 import { createItemsFromJson } from './flashcard'
 
 // Constants
-const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
-const ALLOWED_FILE_TYPES = ['application/pdf']
 const MAX_PROMPT_LENGTH = 1000
-const MAX_DOCUMENT_LENGTH = 50000
-const PDF_PARSING_TIMEOUT = 30000
 
 // Gemini 3 Flash: good instruction following and item quality at a low price.
 // GOOGLE_AI_MODEL can switch it, e.g. to gemini-3.1-flash-lite to save cost.
@@ -54,8 +50,8 @@ const aiOutputSchema = z.object({
 interface GenerateFlashcardsParams {
     deckId: string
     prompt: string
-    file?: File
-    documentContent?: string // For when content is already extracted
+    /** Blob URL of a PDF the browser uploaded to the user's AI upload folder. */
+    fileUrl?: string
     /** Item types to generate. Empty means all AI types. */
     types?: string[]
 }
@@ -112,143 +108,57 @@ function sanitizeInput(input: string): string {
         .substring(0, MAX_PROMPT_LENGTH)
 }
 
-// File validation using magic bytes
-function validateFileType(
-    buffer: Buffer,
-    declaredType: string
-): { isValid: boolean; error?: string } {
-    if (declaredType !== 'application/pdf') {
-        return { isValid: false, error: 'Only PDF files are supported' }
+/**
+ * Downloads the user's uploaded PDF from Blob. Only URLs in the user's own
+ * AI upload folder are fetched, with a size cap and a magic-byte check.
+ */
+async function loadPdf(
+    fileUrl: string,
+    userId: string
+): Promise<{ data: Uint8Array } | { error: string }> {
+    if (!isOwnAiUpload(fileUrl, userId)) {
+        return { error: 'invalid_url' }
     }
-
-    if (buffer.length < 4) {
-        return { isValid: false, error: 'File too small to be valid' }
-    }
-
-    // Check PDF magic bytes (%PDF)
-    const pdfHeader = buffer.subarray(0, 4)
-    const expectedHeader = Buffer.from([0x25, 0x50, 0x44, 0x46]) // %PDF
-
-    if (!pdfHeader.equals(expectedHeader)) {
-        return { isValid: false, error: 'File is not a valid PDF' }
-    }
-
-    // Additional PDF structure validation
-    const fileString = buffer.toString(
-        'ascii',
-        0,
-        Math.min(1024, buffer.length)
-    )
-    if (!fileString.includes('%PDF-')) {
-        return { isValid: false, error: 'Invalid PDF format' }
-    }
-
-    return { isValid: true }
-}
-
-// Secure PDF parsing with timeout
-async function parsePDFSecurely(
-    buffer: Buffer,
-    requestId: string,
-    userId: string,
-    onProgress?: ProgressCallback
-): Promise<string> {
-    return new Promise(async (resolve, reject) => {
-        const timeoutId = setTimeout(() => {
-            logSecurityEvent({
-                userId,
-                action: 'pdf_parsing_timeout',
-                details: `File size: ${buffer.length} bytes`,
-                severity: 'medium',
-                requestId,
-            })
-            reject(
-                new Error(
-                    'PDF parsing timeout - file may be corrupted or too complex'
-                )
-            )
-        }, PDF_PARSING_TIMEOUT)
-
-        try {
-            onProgress?.('file_parsing', 30, 'Parsing PDF content...')
-
-            // Dynamic import to avoid loading heavy PDF library on every request
-            const pdfModule = await import('pdf2json')
-            const PDFParser = pdfModule.default
-
-            const pdfParser = new PDFParser(null as never, true)
-
-            pdfParser.on('pdfParser_dataError', (errData) => {
-                clearTimeout(timeoutId)
-                logSecurityEvent({
-                    userId,
-                    action: 'pdf_parsing_error',
-                    details: 'Parser error: ' + errData.parserError,
-                    severity: 'medium',
-                    requestId,
-                })
-                reject(new Error('Invalid PDF format or corrupted file'))
-            })
-
-            pdfParser.on('pdfParser_dataReady', (pdfData) => {
-                clearTimeout(timeoutId)
-                onProgress?.('file_parsing', 50, 'Extracting text content...')
-
-                try {
-                    const text = extractTextSafely(pdfData)
-                    if (text.length < 10) {
-                        reject(
-                            new Error('PDF contains insufficient readable text')
-                        )
-                        return
-                    }
-                    resolve(text)
-                } catch (extractionError) {
-                    logSecurityEvent({
-                        userId,
-                        action: 'pdf_text_extraction_error',
-                        details:
-                            extractionError instanceof Error
-                                ? extractionError.message
-                                : 'Unknown error',
-                        severity: 'low',
-                        requestId,
-                    })
-                    reject(new Error('Failed to extract text from PDF'))
-                }
-            })
-
-            // Parse the buffer directly
-            pdfParser.parseBuffer(buffer)
-        } catch (error) {
-            clearTimeout(timeoutId)
-            reject(error)
-        }
+    const response = await fetch(fileUrl, {
+        cache: 'no-store',
+        // Never follow a redirect away from the checked Blob URL.
+        redirect: 'error',
     })
-}
-
-// Safe text extraction from PDF data
-function extractTextSafely(pdfData: Output): string {
-    const pages = pdfData?.Pages || []
-    let text = ''
-
-    for (const page of pages) {
-        const texts = page?.Texts || []
-        for (const textObj of texts) {
-            try {
-                const decodedText = decodeURIComponent(textObj?.R?.[0]?.T || '')
-                if (decodedText.trim()) {
-                    text += decodedText + ' '
-                }
-            } catch {
-                // Skip malformed text
-                continue
-            }
-        }
-        text += '\n'
+    if (!response.ok || !response.body) {
+        return { error: 'not_found' }
+    }
+    const declared = Number(response.headers.get('content-length') ?? 0)
+    if (declared > MAX_PDF_BYTES) {
+        return { error: 'too_large' }
     }
 
-    return text.trim()
+    // Read with a hard cap, the header can be missing or wrong.
+    const reader = response.body.getReader()
+    const chunks: Uint8Array[] = []
+    let size = 0
+    for (;;) {
+        const { done, value } = await reader.read()
+        if (done) break
+        size += value.byteLength
+        if (size > MAX_PDF_BYTES) {
+            await reader.cancel()
+            return { error: 'too_large' }
+        }
+        chunks.push(value)
+    }
+    const data = new Uint8Array(size)
+    let offset = 0
+    for (const chunk of chunks) {
+        data.set(chunk, offset)
+        offset += chunk.byteLength
+    }
+
+    // %PDF- at the start
+    const header = new TextDecoder('ascii').decode(data.subarray(0, 5))
+    if (header !== '%PDF-') {
+        return { error: 'not_pdf' }
+    }
+    return { data }
 }
 
 // Validate AI response for security
@@ -321,7 +231,7 @@ function handleAIError(
 }
 
 // Main unified function
-export async function generateAIFlashcardsUnified(
+async function runGeneration(
     params: GenerateFlashcardsParams,
     onProgress?: ProgressCallback
 ): Promise<AIGenerationResult> {
@@ -393,98 +303,28 @@ export async function generateAIFlashcardsUnified(
             }
         }
 
-        let documentContent = params.documentContent || ''
-
-        // Process file if provided and no content passed
-        if (params.file && !documentContent) {
-            onProgress?.('file_validation', 15, 'Validating file...')
-
-            // Validate file size
-            if (params.file.size > MAX_FILE_SIZE) {
-                return {
-                    success: false,
-                    error: `File too large. Maximum size is ${MAX_FILE_SIZE / 1024 / 1024}MB`,
-                    requestId,
-                }
-            }
-
-            // Validate file type
-            if (!ALLOWED_FILE_TYPES.includes(params.file.type)) {
-                return {
-                    success: false,
-                    error: 'Only PDF files are supported',
-                    requestId,
-                }
-            }
-
-            // Convert file to buffer
-            const arrayBuffer = await params.file.arrayBuffer()
-            const buffer = Buffer.from(arrayBuffer)
-
-            // Validate file type using magic bytes
-            const fileTypeValidation = validateFileType(
-                buffer,
-                params.file.type
-            )
-            if (!fileTypeValidation.isValid) {
+        let pdf: Uint8Array | undefined
+        if (params.fileUrl) {
+            onProgress?.('file_validation', 15, 'Checking PDF...')
+            const loaded = await loadPdf(params.fileUrl, userId)
+            if ('error' in loaded) {
                 logSecurityEvent({
                     userId,
-                    action: 'invalid_file_type',
-                    details: fileTypeValidation.error,
-                    severity: 'high',
+                    action: 'invalid_pdf_upload',
+                    details: loaded.error,
+                    severity: loaded.error === 'invalid_url' ? 'high' : 'low',
                     requestId,
                 })
                 return {
                     success: false,
-                    error: fileTypeValidation.error!,
-                    requestId,
-                }
-            }
-
-            // Parse PDF content
-            try {
-                documentContent = await parsePDFSecurely(
-                    buffer,
-                    requestId,
-                    userId,
-                    onProgress
-                )
-
-                if (documentContent.trim().length < 50) {
-                    return {
-                        success: false,
-                        error: 'PDF contains insufficient readable content',
-                        requestId,
-                    }
-                }
-
-                // Truncate if too long
-                if (documentContent.length > MAX_DOCUMENT_LENGTH) {
-                    documentContent =
-                        documentContent.substring(0, MAX_DOCUMENT_LENGTH) +
-                        '...'
-                }
-            } catch (parseError) {
-                console.error('PDF parsing error:', {
-                    requestId,
-                    userId: userId.substring(0, 8),
                     error:
-                        parseError instanceof Error
-                            ? parseError.message
-                            : 'Unknown error',
-                })
-
-                const errorMessage =
-                    parseError instanceof Error
-                        ? parseError.message
-                        : 'Failed to process PDF file'
-
-                return {
-                    success: false,
-                    error: errorMessage,
+                        loaded.error === 'too_large'
+                            ? t('fileTooLarge', { max: '20 MB' })
+                            : t('fileParseError'),
                     requestId,
                 }
             }
+            pdf = loaded.data
         }
 
         // AI Generation
@@ -495,15 +335,36 @@ export async function generateAIFlashcardsUnified(
                 model: google(AI_MODEL),
                 schema: aiOutputSchema,
                 system: buildSystemPrompt(allowedTypes),
-                prompt: buildUserPrompt({
-                    prompt: sanitizedPrompt,
-                    deck: {
-                        title: deck.title,
-                        description: deck.description,
-                        tags: parseDeckTags(deck.category),
+                messages: [
+                    {
+                        role: 'user',
+                        content: [
+                            {
+                                type: 'text',
+                                text: buildUserPrompt({
+                                    prompt: sanitizedPrompt,
+                                    deck: {
+                                        title: deck.title,
+                                        description: deck.description,
+                                        tags: parseDeckTags(deck.category),
+                                    },
+                                    hasDocument: Boolean(pdf),
+                                }),
+                            },
+                            // Gemini reads the PDF itself: text, tables,
+                            // figures and scanned pages.
+                            ...(pdf
+                                ? [
+                                      {
+                                          type: 'file' as const,
+                                          data: pdf,
+                                          mimeType: 'application/pdf',
+                                      },
+                                  ]
+                                : []),
+                        ],
                     },
-                    documentContent,
-                }),
+                ],
                 // Gemini 3 models are tuned for their default temperature of 1;
                 // lowering it degrades output, so it is intentionally not set.
                 maxTokens: AI_MAX_OUTPUT_TOKENS,
@@ -639,6 +500,27 @@ export async function generateAIFlashcardsUnified(
             success: false,
             error: t('unexpectedError'),
             requestId,
+        }
+    }
+}
+
+/**
+ * Runs a generation and always deletes the uploaded PDF afterwards. The file
+ * is single use, so it is removed on success, error and rejection alike.
+ */
+export async function generateAIFlashcardsUnified(
+    params: GenerateFlashcardsParams,
+    onProgress?: ProgressCallback
+): Promise<AIGenerationResult> {
+    try {
+        return await runGeneration(params, onProgress)
+    } finally {
+        if (params.fileUrl) {
+            const session = await getServerSession(authOptions)
+            const userId = session?.user?.id
+            if (userId && isOwnAiUpload(params.fileUrl, userId)) {
+                await deleteBlobs([params.fileUrl])
+            }
         }
     }
 }

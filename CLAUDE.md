@@ -140,7 +140,7 @@ STRIPE_SECRET_KEY="your-stripe-secret"             # For subscriptions
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="your-stripe-pub"
 STRIPE_WEBHOOK_SECRET="your-webhook-secret"
 REDIS_URL="your-redis-url"                         # For rate limiting
-BLOB_READ_WRITE_TOKEN="your-blob-token"            # For diagram image uploads
+BLOB_READ_WRITE_TOKEN="your-blob-token"            # Diagram images and AI PDF upload (public store)
 ```
 
 ## Code Standards & Guidelines
@@ -182,7 +182,9 @@ BLOB_READ_WRITE_TOKEN="your-blob-token"            # For diagram image uploads
 - The model returns a flat item object (`lib/items/ai.ts`). Items that fail the strict schema are dropped
 - Prompts live in `lib/items/ai-prompt.ts`: deck title, description and tags as context, and a count rule (exact number if asked, else 10-60)
 - Model from `GOOGLE_AI_MODEL` (default `gemini-3-flash-preview`). Each run logs the item counts per filter stage
-- Supports text prompts and PDF file upload
+- Supports text prompts and PDFs up to 20 MB. The browser uploads the PDF straight to Vercel Blob (`/api/ai-flashcards/upload` issues the client token), because Vercel Functions accept at most 4.5 MB per request
+- The server sends the full PDF to Gemini as a file part (text, tables, figures, scanned pages) and deletes the blob afterwards. Only URLs in `ai-uploads/<userId>/` are accepted (`isOwnAiUpload` in `lib/blob.ts`)
+- `/api/cron/cleanup-uploads` deletes leftover AI uploads older than 1 hour
 - Streaming responses with progress tracking
 - Rate limited for free users, unlimited for Pro subscribers
 - Validates generated content before saving
@@ -215,7 +217,7 @@ BLOB_READ_WRITE_TOKEN="your-blob-token"            # For diagram image uploads
 - **Database**: Turso (edge-distributed SQLite)
 - **Email**: Resend for transactional emails
 - **Monitoring**: Vercel Analytics enabled
-- **Cron Jobs**: Payment recovery runs daily at 12:00 UTC
+- **Cron Jobs**: Payment recovery runs daily at 12:00 UTC, AI upload cleanup daily at 03:00 UTC
 
 ## Common Development Tasks
 

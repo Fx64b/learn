@@ -45,17 +45,18 @@ describe('buildUserPrompt', () => {
         expect(prompt).toContain('create exactly that number')
     })
 
-    it('puts the document after the request and the count rule', () => {
-        const prompt = buildUserPrompt({
+    it('mentions the attached PDF only when there is one', () => {
+        const withPdf = buildUserPrompt({
             prompt: 'Summarize',
             deck,
-            documentContent: 'DOCUMENT BODY',
+            hasDocument: true,
         })
-        expect(prompt.indexOf('Request:')).toBeLessThan(
-            prompt.indexOf('Item count:')
+        expect(withPdf).toContain('attached PDF document')
+        expect(withPdf.indexOf('Request:')).toBeLessThan(
+            withPdf.indexOf('attached PDF document')
         )
-        expect(prompt.indexOf('Item count:')).toBeLessThan(
-            prompt.indexOf('DOCUMENT BODY')
+        expect(buildUserPrompt({ prompt: 'Summarize', deck })).not.toContain(
+            'attached PDF'
         )
     })
 

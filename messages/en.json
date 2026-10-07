@@ -571,7 +571,8 @@
             "promptPlaceholder": "e.g., 'Create flashcards about photosynthesis' or 'Generate questions from this biology textbook chapter'",
             "documentLabel": "Upload Document (Optional)",
             "dropFile": "Drag and drop a PDF file here, or click to browse",
-            "maxFileSize": "Maximum file size: 5MB",
+            "maxFileSize": "Maximum file size: 20 MB. The AI reads text, tables, figures and scanned pages.",
+            "uploadFailed": "The PDF could not be uploaded. Please try again. If this keeps happening, PDF upload may not be set up yet.",
             "helpText": "The AI uses your prompt, the optional document and the deck title, description and tags. Without a number in the prompt it creates 10 to 60 items, depending on the material. Ask for a number, for example 15 cards, to get exactly that many.",
             "generateButton": "Generate Flashcards",
             "generating": "Generating...",
@@ -1832,7 +1833,7 @@
                     },
                     {
                         "q": "The AI did not create any items.",
-                        "a": "Make the topic more specific or upload a clearer PDF of up to 5 MB. Free accounts have a limited number of generations."
+                        "a": "Make the topic more specific or upload a PDF of up to 20 MB. The AI reads text, tables, figures and scanned pages. Free accounts have a limited number of generations."
                     }
                 ]
             }
@@ -1921,7 +1922,7 @@
                 "intro": "The AI turns a topic or a PDF into items of fitting types.",
                 "steps": [
                     "Open a deck, then Edit and the AI tab.",
-                    "Describe the topic or upload a PDF of up to 5 MB. The deck title, description and tags are sent as context.",
+                    "Describe the topic or upload a PDF of up to 20 MB. The AI reads text, tables, figures and scanned pages. The deck title, description and tags are sent as context.",
                     "Ask for a number of items if you want one. Otherwise the AI picks 10 to 60, depending on the material.",
                     "Choose the item types the AI may use. Diagrams are always added by hand.",
                     "Items the AI gets wrong are dropped, the rest is added to your deck."
