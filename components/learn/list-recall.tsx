@@ -92,13 +92,14 @@ export function ListRecall({
             matchesAny(value, items[i], { ignoreAccents: true })
         )
         if (already) {
-            setMessage({ text: t('alreadyNamed'), key: Date.now() })
+            setMessage((prev) => ({
+                text: t('alreadyNamed'),
+                key: (prev?.key ?? 0) + 1,
+            }))
         } else {
             setWrongGuesses((prev) => [...prev, value.trim()])
-            setMessage({
-                text: t('notOnList', { value: value.trim() }),
-                key: Date.now(),
-            })
+            const text = t('notOnList', { value: value.trim() })
+            setMessage((prev) => ({ text, key: (prev?.key ?? 0) + 1 }))
         }
         setValue('')
     }

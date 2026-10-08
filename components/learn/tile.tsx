@@ -5,12 +5,7 @@ import { cn } from '@/lib/utils'
 import type * as React from 'react'
 
 export type TileState =
-    | 'default'
-    | 'selected'
-    | 'correct'
-    | 'incorrect'
-    | 'hint'
-    | 'muted'
+    'default' | 'selected' | 'correct' | 'incorrect' | 'hint' | 'muted'
 
 const tileStates: Record<TileState, string> = {
     default: 'border-border bg-card enabled:hover:bg-accent',

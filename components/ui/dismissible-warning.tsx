@@ -1,8 +1,9 @@
 'use client'
 
+import { useMounted } from '@/lib/hooks/use-mounted'
 import { AlertTriangle, X } from 'lucide-react'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -16,18 +17,13 @@ interface DismissibleWarningProps {
 }
 
 export function DismissibleWarning({
-    id,
     message,
     dismissText,
     variant = 'default',
     className = '',
 }: DismissibleWarningProps) {
     const [isVisible, setIsVisible] = useState(true)
-    const [isClient, setIsClient] = useState(false)
-
-    useEffect(() => {
-        setIsClient(true)
-    }, [id])
+    const isClient = useMounted()
 
     const handleDismiss = () => {
         setIsVisible(false)

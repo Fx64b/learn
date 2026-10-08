@@ -46,9 +46,7 @@ import {
 type Executor = Pick<typeof db, 'select' | 'insert' | 'update' | 'delete'>
 
 export type StudyScope =
-    | { type: 'deck'; deckId: string }
-    | { type: 'due' }
-    | { type: 'difficult' }
+    { type: 'deck'; deckId: string } | { type: 'due' } | { type: 'difficult' }
 
 /** Ease factor (x100) below which an item counts as difficult. */
 const DIFFICULT_EASE = 250

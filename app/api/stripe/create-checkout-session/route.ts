@@ -300,7 +300,7 @@ async function createCheckoutSession(
     const checkoutConfig: Stripe.Checkout.SessionCreateParams = {
         success_url: `${billingUrl}?success=true`,
         cancel_url: pricingUrl,
-        payment_method_types: ['card'],
+        allowed_payment_method_types: ['card'],
         mode: 'subscription',
         billing_address_collection: 'auto',
         line_items: [

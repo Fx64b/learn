@@ -73,8 +73,9 @@ export function LearnSession({
     const [summary, setSummary] = useState<SummaryData | null>(null)
 
     const sessionId = useRef(nanoid())
-    const startedAt = useRef(Date.now())
-    const exerciseStart = useRef(Date.now())
+    // Set on mount, Date.now() must not run during render
+    const startedAt = useRef(0)
+    const exerciseStart = useRef(0)
     const outcome = useRef<ExerciseOutcome | null>(null)
     const stats = useRef({
         answered: 0,
@@ -124,6 +125,11 @@ export function LearnSession({
         setXp(0)
         setSummary(null)
         setRun((r) => r + 1)
+    }, [])
+
+    useEffect(() => {
+        startedAt.current = Date.now()
+        exerciseStart.current = Date.now()
     }, [])
 
     const handleResult = useCallback(

@@ -2,7 +2,7 @@
 
 import { useUserPreferences } from '@/store/userPreferences'
 
-import { createContext, useEffect, useState } from 'react'
+import { createContext, useEffect } from 'react'
 
 type Theme = 'dark' | 'light' | 'system'
 
@@ -19,12 +19,8 @@ const ThemeProviderContext = createContext<{
 })
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
-    const userPreferences = useUserPreferences()
-    const [theme, setTheme] = useState<Theme>('system' as Theme)
-
-    useEffect(() => {
-        setTheme(userPreferences.theme as Theme)
-    }, [userPreferences.theme])
+    const theme = useUserPreferences((s) => s.theme) as Theme
+    const setTheme = useUserPreferences((s) => s.setTheme)
 
     useEffect(() => {
         const root = window.document.documentElement

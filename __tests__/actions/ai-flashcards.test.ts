@@ -1,6 +1,6 @@
 import * as dbUtils from '@/db/utils'
 import { deleteBlobs } from '@/lib/blob'
-import { NoObjectGeneratedError, generateObject } from 'ai'
+import { NoObjectGeneratedError, generateText } from 'ai'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { getServerSession } from 'next-auth'
@@ -14,7 +14,7 @@ vi.mock('@/db/utils', () => ({
 }))
 vi.mock('ai', async (importOriginal) => ({
     ...(await importOriginal<typeof import('ai')>()),
-    generateObject: vi.fn(),
+    generateText: vi.fn(),
 }))
 vi.mock('@ai-sdk/google', () => ({ google: vi.fn(() => 'model') }))
 vi.mock('@/lib/rate-limit/ai-rate-limit', () => ({
@@ -51,7 +51,7 @@ function mockBlob(body: string) {
 }
 
 const oneItem = {
-    object: {
+    output: {
         items: [{ type: 'basic', front: 'What is ATP?', back: 'Energy' }],
     },
 } as never
@@ -73,7 +73,7 @@ describe('generateAIFlashcards', () => {
             user: { id: 'u1', email: 'a@b.c' },
         } as never)
         vi.mocked(dbUtils.getDeckById).mockImplementation(async (id, userId) =>
-            id === 'd1' && userId === 'u1' ? deck : undefined
+            id === 'd1' && userId === 'u1' ? deck : (undefined as never)
         )
         vi.mocked(dbUtils.getDeckItemFronts).mockResolvedValue([])
         vi.mocked(createItemsFromJson).mockImplementation(async ({ json }) => ({
@@ -90,12 +90,12 @@ describe('generateAIFlashcards', () => {
             prompt: 'Photosynthesis',
         })
         expect(res.success).toBe(false)
-        expect(generateObject).not.toHaveBeenCalled()
+        expect(generateText).not.toHaveBeenCalled()
     })
 
     it('sends deck context and saves all valid items', async () => {
-        vi.mocked(generateObject).mockResolvedValue({
-            object: {
+        vi.mocked(generateText).mockResolvedValue({
+            output: {
                 items: [
                     { type: 'basic', front: 'What is ATP?', back: 'Energy' },
                     {
@@ -120,7 +120,7 @@ describe('generateAIFlashcards', () => {
             prompt: 'Organelles',
         })
 
-        const call = vi.mocked(generateObject).mock.calls[0][0] as {
+        const call = vi.mocked(generateText).mock.calls[0][0] as {
             messages: Array<{ content: Array<{ text?: string }> }>
         }
         const text = call.messages[0].content[0].text ?? ''
@@ -134,9 +134,9 @@ describe('generateAIFlashcards', () => {
     })
 
     it('passes the chosen item count into the prompt', async () => {
-        vi.mocked(generateObject).mockResolvedValue(oneItem)
+        vi.mocked(generateText).mockResolvedValue(oneItem)
         await generateAIFlashcards({ deckId: 'd1', prompt: 'X', count: 20 })
-        const call = vi.mocked(generateObject).mock.calls[0][0] as {
+        const call = vi.mocked(generateText).mock.calls[0][0] as {
             messages: Array<{ content: Array<{ text?: string }> }>
         }
         expect(call.messages[0].content[0].text).toContain(
@@ -145,9 +145,9 @@ describe('generateAIFlashcards', () => {
     })
 
     it('caps thinking and sets a time limit', async () => {
-        vi.mocked(generateObject).mockResolvedValue(oneItem)
+        vi.mocked(generateText).mockResolvedValue(oneItem)
         await generateAIFlashcards({ deckId: 'd1', prompt: 'X' })
-        const call = vi.mocked(generateObject).mock.calls[0][0] as {
+        const call = vi.mocked(generateText).mock.calls[0][0] as unknown as {
             providerOptions: {
                 google: { thinkingConfig: { thinkingBudget: number } }
             }
@@ -162,14 +162,14 @@ describe('generateAIFlashcards', () => {
     it('reports a time-out with the timeout message', async () => {
         const error = new Error('The operation was aborted due to timeout')
         error.name = 'TimeoutError'
-        vi.mocked(generateObject).mockRejectedValue(error)
+        vi.mocked(generateText).mockRejectedValue(error)
         const res = await generateAIFlashcards({ deckId: 'd1', prompt: 'X' })
         expect(res.success).toBe(false)
         expect(res.error).toBe('aiTimeoutError')
     })
 
     it('reports an unknown model as a configuration error', async () => {
-        vi.mocked(generateObject).mockRejectedValue(
+        vi.mocked(generateText).mockRejectedValue(
             new Error(
                 'models/gemini-x is not found for API version v1beta, or is not supported for generateContent.'
             )
@@ -180,7 +180,7 @@ describe('generateAIFlashcards', () => {
     })
 
     it('reports a cut-off answer with its own message', async () => {
-        vi.mocked(generateObject).mockRejectedValue(
+        vi.mocked(generateText).mockRejectedValue(
             new NoObjectGeneratedError({
                 message: 'No object generated: could not parse the response.',
                 text: '{"items":[{"type":"basic"',
@@ -189,7 +189,20 @@ describe('generateAIFlashcards', () => {
                     timestamp: new Date(),
                     modelId: 'm',
                 },
-                usage: { promptTokens: 1, completionTokens: 2, totalTokens: 3 },
+                usage: {
+                    inputTokens: 1,
+                    inputTokenDetails: {
+                        noCacheTokens: 1,
+                        cacheReadTokens: undefined,
+                        cacheWriteTokens: undefined,
+                    },
+                    outputTokens: 2,
+                    outputTokenDetails: {
+                        textTokens: 2,
+                        reasoningTokens: undefined,
+                    },
+                    totalTokens: 3,
+                },
                 finishReason: 'length',
             })
         )
@@ -199,8 +212,8 @@ describe('generateAIFlashcards', () => {
     })
 
     it('uses a real message when every item is invalid', async () => {
-        vi.mocked(generateObject).mockResolvedValue({
-            object: { items: [{ type: 'basic', front: 'Q', back: null }] },
+        vi.mocked(generateText).mockResolvedValue({
+            output: { items: [{ type: 'basic', front: 'Q', back: null }] },
         } as never)
         const res = await generateAIFlashcards({ deckId: 'd1', prompt: 'X' })
         expect(res.success).toBe(false)
@@ -212,8 +225,8 @@ describe('generateAIFlashcards', () => {
             'What is ATP?',
             'Name the cell organelles',
         ])
-        vi.mocked(generateObject).mockResolvedValue({
-            object: {
+        vi.mocked(generateText).mockResolvedValue({
+            output: {
                 items: [
                     { type: 'basic', front: 'what is  ATP', back: 'Energy' },
                     { type: 'basic', front: 'What is DNA?', back: 'Genes' },
@@ -224,7 +237,7 @@ describe('generateAIFlashcards', () => {
         const res = await generateAIFlashcards({ deckId: 'd1', prompt: 'X' })
 
         expect(dbUtils.getDeckItemFronts).toHaveBeenCalledWith('d1')
-        const call = vi.mocked(generateObject).mock.calls[0][0] as {
+        const call = vi.mocked(generateText).mock.calls[0][0] as {
             messages: Array<{ content: Array<{ text?: string }> }>
         }
         const text = call.messages[0].content[0].text ?? ''
@@ -242,7 +255,7 @@ describe('generateAIFlashcards', () => {
 
     it('reports when every item is already in the deck', async () => {
         vi.mocked(dbUtils.getDeckItemFronts).mockResolvedValue(['What is ATP?'])
-        vi.mocked(generateObject).mockResolvedValue(oneItem)
+        vi.mocked(generateText).mockResolvedValue(oneItem)
         const res = await generateAIFlashcards({ deckId: 'd1', prompt: 'X' })
         expect(res.success).toBe(false)
         expect(res.error).toBe('allItemsExist')
@@ -252,7 +265,7 @@ describe('generateAIFlashcards', () => {
     describe('with an uploaded PDF', () => {
         it('sends the PDF as a file part and deletes it afterwards', async () => {
             mockBlob('%PDF-1.7 content')
-            vi.mocked(generateObject).mockResolvedValue(oneItem)
+            vi.mocked(generateText).mockResolvedValue(oneItem)
 
             const res = await generateAIFlashcards({
                 deckId: 'd1',
@@ -266,23 +279,23 @@ describe('generateAIFlashcards', () => {
                 access: 'public',
                 useCache: false,
             })
-            const call = vi.mocked(generateObject).mock.calls[0][0] as {
+            const call = vi.mocked(generateText).mock.calls[0][0] as {
                 messages: Array<{
-                    content: Array<{ type: string; mimeType?: string }>
+                    content: Array<{ type: string; mediaType?: string }>
                 }>
             }
             const parts = call.messages[0].content
             expect(parts[0].type).toBe('text')
             expect(parts[1]).toMatchObject({
                 type: 'file',
-                mimeType: 'application/pdf',
+                mediaType: 'application/pdf',
             })
             expect(deleteBlobs).toHaveBeenCalledWith([PDF_PATH])
         })
 
         it('deletes the PDF when the model fails', async () => {
             mockBlob('%PDF-1.7 content')
-            vi.mocked(generateObject).mockRejectedValue(new Error('boom'))
+            vi.mocked(generateText).mockRejectedValue(new Error('boom'))
 
             const res = await generateAIFlashcards({
                 deckId: 'd1',
@@ -304,7 +317,7 @@ describe('generateAIFlashcards', () => {
             })
 
             expect(res.success).toBe(false)
-            expect(generateObject).not.toHaveBeenCalled()
+            expect(generateText).not.toHaveBeenCalled()
             expect(deleteBlobs).toHaveBeenCalledWith([PDF_PATH])
         })
 
@@ -326,7 +339,7 @@ describe('generateAIFlashcards', () => {
             }
 
             expect(getMock).not.toHaveBeenCalled()
-            expect(generateObject).not.toHaveBeenCalled()
+            expect(generateText).not.toHaveBeenCalled()
             expect(deleteBlobs).not.toHaveBeenCalled()
         })
     })

@@ -36,7 +36,7 @@ describe('Stripe Utilities', () => {
         process.env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PRICE_ID =
             'price_monthly_test'
         process.env.NEXT_PUBLIC_STRIPE_PRO_YEARLY_PRICE_ID = 'price_yearly_test'
-        process.env.NODE_ENV = 'test'
+        Object.assign(process.env, { NODE_ENV: 'test' })
 
         vi.clearAllMocks()
     })
@@ -125,7 +125,7 @@ describe('Stripe Utilities', () => {
 
         it('should warn when using test keys in production', () => {
             // @ts-ignore
-            process.env.NODE_ENV = 'production'
+            Object.assign(process.env, { NODE_ENV: 'production' })
             process.env.STRIPE_SECRET_KEY = 'sk_test_12345'
 
             const isTestMode = process.env.STRIPE_SECRET_KEY.includes('test')
@@ -186,7 +186,7 @@ describe('Stripe Utilities', () => {
             process.env.STRIPE_SECRET_KEY = 'invalid_format'
 
             expect(() => {
-                if (!process.env.STRIPE_SECRET_KEY.startsWith('sk_')) {
+                if (!process.env.STRIPE_SECRET_KEY!.startsWith('sk_')) {
                     throw new Error(
                         'STRIPE_SECRET_KEY must start with "sk_" - please check your Stripe secret key'
                     )
@@ -197,7 +197,7 @@ describe('Stripe Utilities', () => {
 
     describe('Environment-specific Configurations', () => {
         it('should handle development environment', () => {
-            process.env.NODE_ENV = 'development'
+            Object.assign(process.env, { NODE_ENV: 'development' })
             process.env.STRIPE_SECRET_KEY = 'sk_test_dev_12345'
 
             const isTestMode = process.env.STRIPE_SECRET_KEY.includes('test')
@@ -208,7 +208,7 @@ describe('Stripe Utilities', () => {
         })
 
         it('should handle production environment with live keys', () => {
-            process.env.NODE_ENV = 'production'
+            Object.assign(process.env, { NODE_ENV: 'production' })
             process.env.STRIPE_SECRET_KEY = 'sk_live_12345'
 
             const isTestMode = process.env.STRIPE_SECRET_KEY.includes('test')

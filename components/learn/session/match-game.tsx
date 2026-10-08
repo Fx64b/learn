@@ -110,6 +110,8 @@ export function MatchGame({
 
     function pick(card: Card) {
         if (finalMs !== null || cleared.has(card.id)) return
+        // pick runs in a click handler, not during render
+        // eslint-disable-next-line react-hooks/purity
         const start = startedAt ?? Date.now()
         if (startedAt === null) {
             setStartedAt(start)
@@ -130,6 +132,7 @@ export function MatchGame({
             setCleared(next)
             if (soundEnabled) playSound('correct')
             if (next.size === cards.length) {
+                // eslint-disable-next-line react-hooks/purity
                 void finish(Date.now() - start + penalty)
             }
         } else {

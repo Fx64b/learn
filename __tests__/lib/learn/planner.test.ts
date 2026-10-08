@@ -1,3 +1,4 @@
+import type { ItemOf } from '@/lib/items'
 import {
     numericDistractors,
     pickDistractors,
@@ -125,7 +126,10 @@ describe('distractors', () => {
 describe('planMatchBatch', () => {
     it('drops items with duplicate texts', () => {
         const ex = planMatchBatch(
-            [...CAPITALS.slice(0, 3), basic('Canada', 'Other')],
+            [
+                ...CAPITALS.slice(0, 3),
+                basic('Canada', 'Other'),
+            ] as ItemOf<'basic'>[],
             ctx()
         )
         expect(ex.itemIds).toHaveLength(3)

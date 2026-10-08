@@ -165,7 +165,7 @@ describe('learn actions', () => {
     })
 
     it('checks deck ownership for tests', async () => {
-        vi.mocked(getDeckById).mockResolvedValue(undefined)
+        vi.mocked(getDeckById).mockResolvedValue(undefined as never)
         const res = await completeTest({ deckId: 'd1', total: 10, correct: 9 })
         expect(res.success).toBe(false)
     })

@@ -21,7 +21,7 @@ import {
 } from '@/lib/items'
 import { checkAIRateLimitWithDetails } from '@/lib/rate-limit/ai-rate-limit'
 import { google } from '@ai-sdk/google'
-import { NoObjectGeneratedError, generateObject } from 'ai'
+import { NoObjectGeneratedError, Output, generateText } from 'ai'
 import { randomUUID } from 'crypto'
 import { z } from 'zod'
 
@@ -356,9 +356,13 @@ async function runGeneration(
         onProgress?.('ai_generation', 60, 'Generating flashcards with AI...')
 
         try {
-            const { object, finishReason, usage } = await generateObject({
+            const {
+                output: object,
+                finishReason,
+                usage,
+            } = await generateText({
                 model: google(AI_MODEL),
-                schema: aiOutputSchema,
+                output: Output.object({ schema: aiOutputSchema }),
                 system: buildSystemPrompt(allowedTypes),
                 messages: [
                     {
@@ -385,7 +389,7 @@ async function runGeneration(
                                       {
                                           type: 'file' as const,
                                           data: pdf,
-                                          mimeType: 'application/pdf',
+                                          mediaType: 'application/pdf',
                                       },
                                   ]
                                 : []),
@@ -394,7 +398,7 @@ async function runGeneration(
                 ],
                 // Gemini 3 models are tuned for their default temperature of 1;
                 // lowering it degrades output, so it is intentionally not set.
-                maxTokens: AI_MAX_OUTPUT_TOKENS,
+                maxOutputTokens: AI_MAX_OUTPUT_TOKENS,
                 providerOptions: {
                     google: {
                         thinkingConfig: { thinkingBudget: AI_THINKING_BUDGET },
@@ -455,8 +459,8 @@ async function runGeneration(
                 model: AI_MODEL,
                 pdfBytes: pdf?.byteLength ?? 0,
                 finishReason,
-                promptTokens: usage?.promptTokens,
-                completionTokens: usage?.completionTokens,
+                inputTokens: usage?.inputTokens,
+                outputTokens: usage?.outputTokens,
                 returned: object.items.length,
                 afterTypeFilter: ofAllowedType.length,
                 afterDedupe: deduped.length,

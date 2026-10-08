@@ -3,9 +3,8 @@ import deMessages from '@/messages/de.json'
 import enMessages from '@/messages/en.json'
 import { Toaster } from 'sonner'
 
+import { Analytics } from '@vercel/analytics/next'
 import { Inter } from 'next/font/google'
-
-import { Analytics } from '@vercel/analytics/react'
 
 import { Footer } from '@/components/footer'
 import { Header } from '@/components/header'

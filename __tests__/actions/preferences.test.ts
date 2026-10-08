@@ -179,9 +179,9 @@ describe('Preferences Actions', () => {
                 notAuthenticated: 'Not authenticated',
             }
             mockGetTranslations.mockResolvedValue(
-                (key: string) =>
+                ((key: string) =>
                     mockTranslations[key as keyof typeof mockTranslations] ||
-                    key
+                    key) as never
             )
         })
 
@@ -257,7 +257,7 @@ describe('Preferences Actions', () => {
             const updateData = {
                 theme: 'light' as const,
                 animationsEnabled: true,
-                locale: 'de',
+                locale: 'de' as const,
             }
 
             const result = await updateUserPreferences(updateData)

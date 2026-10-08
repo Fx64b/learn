@@ -25,6 +25,22 @@ interface PaymentWarningBannerProps {
     className?: string
 }
 
+/** True if the banner was dismissed for this status in the last 24 hours. */
+function wasDismissedRecently(status: PaymentRecoveryStatus['status']) {
+    const dismissedData = localStorage.getItem('payment-warning-dismissed')
+    if (!dismissedData) return false
+    try {
+        const parsed = JSON.parse(dismissedData)
+        const hoursSinceDismissal =
+            (Date.now() - parsed.timestamp) / (1000 * 60 * 60)
+        return hoursSinceDismissal < 24 && parsed.status === status
+    } catch (e) {
+        console.error('Error parsing dismissed data:', e)
+        // Invalid data, proceed to show banner
+        return false
+    }
+}
+
 export function PaymentWarningBanner({
     className = '',
 }: PaymentWarningBannerProps) {
@@ -32,47 +48,53 @@ export function PaymentWarningBanner({
     const t = useTranslations('payment.recovery')
     const [recoveryStatus, setRecoveryStatus] =
         useState<PaymentRecoveryStatus | null>(null)
-    const [isLoading, setIsLoading] = useState(true)
     const [isDismissed, setIsDismissed] = useState(false)
     const [isUpdatingPayment, setIsUpdatingPayment] = useState(false)
+    const userId = session?.user?.id
 
     useEffect(() => {
-        if (session?.user?.id) {
-            checkSubscriptionAndRecoveryStatus()
-        } else {
-            setIsLoading(false)
-        }
-    }, [session])
+        if (!userId) return
+        let cancelled = false
 
-    const checkSubscriptionAndRecoveryStatus = async () => {
-        try {
-            // First check if user has valid subscription
-            const subscriptionResponse = await fetch(
-                '/api/user/subscription-status'
-            )
-            if (subscriptionResponse.ok) {
-                const { isPro } = await subscriptionResponse.json()
+        async function checkSubscriptionAndRecoveryStatus() {
+            try {
+                // First check if user has valid subscription
+                const subscriptionResponse = await fetch(
+                    '/api/user/subscription-status'
+                )
+                if (subscriptionResponse.ok) {
+                    const { isPro } = await subscriptionResponse.json()
 
-                // If user has valid pro subscription, no need to check recovery status
-                if (isPro) {
-                    setRecoveryStatus(null)
-                    setIsLoading(false)
-                    return
+                    // If user has valid pro subscription, no need to check recovery status
+                    if (isPro) {
+                        if (!cancelled) setRecoveryStatus(null)
+                        return
+                    }
                 }
-            }
 
-            // Only check recovery status if user doesn't have valid subscription
-            const recoveryResponse = await fetch('/api/payment/recovery-status')
-            if (recoveryResponse.ok) {
-                const data = await recoveryResponse.json()
-                setRecoveryStatus(data.recoveryStatus)
+                // Only check recovery status if user doesn't have valid subscription
+                const recoveryResponse = await fetch(
+                    '/api/payment/recovery-status'
+                )
+                if (recoveryResponse.ok && !cancelled) {
+                    const data = await recoveryResponse.json()
+                    const status: PaymentRecoveryStatus | null =
+                        data.recoveryStatus
+                    setIsDismissed(
+                        status ? wasDismissedRecently(status.status) : false
+                    )
+                    setRecoveryStatus(status)
+                }
+            } catch (error) {
+                console.error('Error fetching status:', error)
             }
-        } catch (error) {
-            console.error('Error fetching status:', error)
-        } finally {
-            setIsLoading(false)
         }
-    }
+
+        void checkSubscriptionAndRecoveryStatus()
+        return () => {
+            cancelled = true
+        }
+    }, [userId])
 
     const handleUpdatePayment = async () => {
         setIsUpdatingPayment(true)
@@ -103,28 +125,9 @@ export function PaymentWarningBanner({
         )
     }
 
-    // Don't show if loading, no recovery status, or dismissed
-    if (isLoading || !recoveryStatus || isDismissed) {
+    // Don't show while loading, without recovery status, or when dismissed
+    if (!recoveryStatus || isDismissed) {
         return null
-    }
-
-    // Check if previously dismissed (expire dismissal after 24 hours)
-    const dismissedData = localStorage.getItem('payment-warning-dismissed')
-    if (dismissedData) {
-        try {
-            const parsed = JSON.parse(dismissedData)
-            const hoursSinceDismissal =
-                (Date.now() - parsed.timestamp) / (1000 * 60 * 60)
-            if (
-                hoursSinceDismissal < 24 &&
-                parsed.status === recoveryStatus.status
-            ) {
-                return null
-            }
-        } catch (e) {
-            console.error('Error parsing dismissed data:', e)
-            // Invalid data, proceed to show banner
-        }
     }
 
     const getAlertVariant = () => {

@@ -42,7 +42,7 @@ describe('Deck Actions', () => {
             notAuthenticated: 'Not authenticated',
         }
 
-        mockGetTranslations.mockImplementation((namespace: string) => {
+        mockGetTranslations.mockImplementation(((namespace: string) => {
             return Promise.resolve((key: string) => {
                 if (namespace === 'auth') {
                     return (
@@ -56,7 +56,7 @@ describe('Deck Actions', () => {
                     key
                 )
             })
-        })
+        }) as never)
     })
 
     describe('createDeck', () => {
@@ -337,7 +337,7 @@ describe('Deck Actions', () => {
                 user: { id: 'user-1', email: 'test@example.com' },
             }
             mockGetServerSession.mockResolvedValue(mockSession)
-            mockDbUtils.getDeckById.mockResolvedValue(null)
+            mockDbUtils.getDeckById.mockResolvedValue(null as never)
 
             const formData = new FormData()
             formData.append('id', 'deck-1')
@@ -420,7 +420,7 @@ describe('Deck Actions', () => {
                 user: { id: 'user-1', email: 'test@example.com' },
             }
             mockGetServerSession.mockResolvedValue(mockSession)
-            mockDbUtils.getDeckById.mockResolvedValue(null)
+            mockDbUtils.getDeckById.mockResolvedValue(null as never)
 
             const result = await resetDeckProgress('deck-1')
 
@@ -468,7 +468,7 @@ describe('Deck Actions', () => {
                 title: 'Test Deck',
             }
             mockDbUtils.getDeckById.mockResolvedValue(mockExistingDeck as any)
-            mockDbUtils.deleteDeck.mockResolvedValue(undefined)
+            mockDbUtils.deleteDeck.mockResolvedValue(undefined as never)
 
             const result = await deleteDeck('deck-1')
 
@@ -496,7 +496,7 @@ describe('Deck Actions', () => {
                 user: { id: 'user-1', email: 'test@example.com' },
             }
             mockGetServerSession.mockResolvedValue(mockSession)
-            mockDbUtils.getDeckById.mockResolvedValue(null)
+            mockDbUtils.getDeckById.mockResolvedValue(null as never)
 
             const result = await deleteDeck('deck-1')
 
@@ -533,7 +533,7 @@ describe('Deck Actions', () => {
                 user: { id: 'user-1', email: 'test@example.com' },
             }
             mockGetServerSession.mockResolvedValue(mockSession)
-            mockDbUtils.getDeckById.mockResolvedValue(null)
+            mockDbUtils.getDeckById.mockResolvedValue(null as never)
 
             const result = await deleteDeck('')
 
