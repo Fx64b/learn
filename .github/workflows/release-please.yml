@@ -1,0 +1,33 @@
+name: Release Please
+
+on:
+    push:
+        branches:
+            - main
+    workflow_dispatch:
+
+permissions:
+    contents: write
+    issues: write
+    pull-requests: write
+
+concurrency:
+    group: release-please
+    cancel-in-progress: false
+
+jobs:
+    release-please:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: googleapis/release-please-action@v5
+              id: release
+              with:
+                  # A personal access token, so the release PR also runs the
+                  # CI checks. PRs opened with GITHUB_TOKEN start no workflows.
+                  token: ${{ secrets.RELEASE_TOKEN || github.token }}
+                  config-file: release-please-config.json
+                  manifest-file: .release-please-manifest.json
+
+            - name: Summary
+              if: ${{ steps.release.outputs.release_created }}
+              run: echo "Released ${{ steps.release.outputs.tag_name }}" >> "$GITHUB_STEP_SUMMARY"

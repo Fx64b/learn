@@ -222,6 +222,15 @@ BLOB_STORE_ID="store_..."                           # Set by Vercel for connecte
 - **Monitoring**: Vercel Analytics enabled
 - **Cron Jobs**: Payment recovery runs daily at 12:00 UTC, AI upload cleanup daily at 03:00 UTC
 
+### Releases
+
+- release-please (`.github/workflows/release-please.yml`) runs on every push to `main` and keeps one release PR open with the next version and `CHANGELOG.md`
+- Merging the release PR bumps `package.json`, creates the `vX.Y.Z` tag and the GitHub release
+- Versions come from Conventional Commits: `feat` is minor, `fix`, `perf`, `refactor`, `docs`, `style` and `test` are patch, `feat!` or a `BREAKING CHANGE:` footer is major. `chore`, `ci` and `build` do not release
+- A `Release-As: X.Y.Z` footer in a commit body forces that version
+- Config: `release-please-config.json`, current version: `.release-please-manifest.json`
+- The workflow uses the `RELEASE_TOKEN` secret (falls back to `GITHUB_TOKEN`, but then the release PR does not start CI)
+
 ## Common Development Tasks
 
 ### Adding a New shadcn Component
