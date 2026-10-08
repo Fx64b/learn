@@ -189,14 +189,14 @@ export default async function LandingPage() {
                     className="pointer-events-none absolute inset-x-0 -top-24 -z-10 h-[36rem] bg-[radial-gradient(ellipse_at_top,rgb(16_185_129/0.18),transparent_60%)]"
                 />
                 <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-14 md:py-20 lg:grid-cols-[1.05fr_1fr]">
-                    <div className="space-y-7 text-center lg:text-left">
-                        <span className="inline-flex items-center gap-2 rounded-full border-2 border-emerald-500/40 bg-emerald-50 px-3 py-1 text-sm font-semibold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
-                            <Sparkles className="size-4" aria-hidden />
+                    <div className="min-w-0 space-y-7 text-center lg:text-left">
+                        <span className="inline-flex max-w-full items-center gap-2 rounded-full border-2 border-emerald-500/40 bg-emerald-50 px-3 py-1 text-sm font-semibold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
+                            <Sparkles className="size-4 shrink-0" aria-hidden />
                             {t('hero.badge')}
                         </span>
                         <h1 className="text-4xl leading-[1.05] font-extrabold tracking-tight text-balance sm:text-5xl lg:text-6xl">
                             {t('hero.titleStart')}{' '}
-                            <span className="relative whitespace-nowrap text-emerald-500">
+                            <span className="relative inline-block text-emerald-500">
                                 {t('hero.titleHighlight')}
                                 <svg
                                     aria-hidden
@@ -246,7 +246,7 @@ export default async function LandingPage() {
                         </ul>
                     </div>
 
-                    <div className="relative mx-auto w-full max-w-md lg:max-w-none">
+                    <div className="relative mx-auto w-full max-w-md min-w-0 lg:max-w-none">
                         <FloatingChip className="-top-5 -left-6 text-orange-500">
                             <Flame className="size-5 fill-orange-400" />
                             {t('hero.chips.streak')}
@@ -424,7 +424,7 @@ export default async function LandingPage() {
             {/* Motivation */}
             <section className="bg-muted/30 py-20">
                 <div className="mx-auto grid max-w-5xl items-center gap-12 px-4 lg:grid-cols-2">
-                    <div>
+                    <div className="min-w-0">
                         <SectionHeading
                             eyebrow={t('motivation.eyebrow')}
                             title={t('motivation.title')}
@@ -466,7 +466,10 @@ export default async function LandingPage() {
 
                     <div
                         aria-hidden
-                        className={cn(chunky, 'space-y-4 p-5 shadow-xl')}
+                        className={cn(
+                            chunky,
+                            'min-w-0 space-y-4 p-4 shadow-xl sm:p-5'
+                        )}
                     >
                         <div className="grid grid-cols-3 gap-2">
                             {(
@@ -568,15 +571,20 @@ export default async function LandingPage() {
 
             {/* AI */}
             <section className="mx-auto grid max-w-5xl items-center gap-12 px-4 py-20 lg:grid-cols-2">
-                <div aria-hidden className="order-2 space-y-3 lg:order-1">
+                <div
+                    aria-hidden
+                    className="order-2 min-w-0 space-y-3 lg:order-1"
+                >
                     <div className={cn(chunky, 'space-y-3 p-4')}>
                         <div className="bg-muted/60 rounded-xl px-3 py-2 text-sm">
                             <Sparkles className="mr-1.5 inline size-4 text-violet-500" />
                             {t('ai.prompt')}
                         </div>
                         <div className="flex items-center gap-2 rounded-xl border-2 border-dashed px-3 py-2 text-sm">
-                            <FileText className="text-muted-foreground size-4" />
-                            {t('ai.file')}
+                            <FileText className="text-muted-foreground size-4 shrink-0" />
+                            <span className="min-w-0 truncate">
+                                {t('ai.file')}
+                            </span>
                         </div>
                     </div>
                     <div className="flex justify-center">
@@ -620,7 +628,7 @@ export default async function LandingPage() {
                         })}
                     </div>
                 </div>
-                <div className="order-1 lg:order-2">
+                <div className="order-1 min-w-0 lg:order-2">
                     <SectionHeading
                         eyebrow={t('ai.eyebrow')}
                         title={t('ai.title')}

@@ -137,7 +137,7 @@ export default async function Dashboard({ session }: DashboardProps) {
 
                 {summary && (
                     <div className="grid grid-cols-3 gap-3 md:grid-cols-1 md:gap-2">
-                        <div className="flex items-center gap-3 rounded-2xl border-2 p-3">
+                        <div className="flex min-w-0 flex-col items-center gap-2 rounded-2xl border-2 p-3 text-center sm:flex-row sm:gap-3 sm:text-left">
                             <GoalRing
                                 value={summary.todayXp}
                                 goal={summary.dailyGoalXp}
@@ -149,7 +149,7 @@ export default async function Dashboard({ session }: DashboardProps) {
                                     <Target className="text-muted-foreground size-4" />
                                 )}
                             </GoalRing>
-                            <div>
+                            <div className="min-w-0">
                                 <p className="font-bold tabular-nums">
                                     {summary.todayXp}/{summary.dailyGoalXp}
                                 </p>
@@ -158,7 +158,7 @@ export default async function Dashboard({ session }: DashboardProps) {
                                 </p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-3 rounded-2xl border-2 p-3">
+                        <div className="flex min-w-0 flex-col items-center gap-2 rounded-2xl border-2 p-3 text-center sm:flex-row sm:gap-3 sm:text-left">
                             <Flame
                                 className={
                                     summary.streak > 0 && !summary.streakAtRisk
@@ -166,7 +166,7 @@ export default async function Dashboard({ session }: DashboardProps) {
                                         : 'text-muted-foreground size-8'
                                 }
                             />
-                            <div>
+                            <div className="min-w-0">
                                 <p className="font-bold tabular-nums">
                                     {summary.streak}
                                 </p>
@@ -177,9 +177,9 @@ export default async function Dashboard({ session }: DashboardProps) {
                                 </p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-3 rounded-2xl border-2 p-3">
-                            <Zap className="size-8 fill-amber-400 text-amber-500" />
-                            <div>
+                        <div className="flex min-w-0 flex-col items-center gap-2 rounded-2xl border-2 p-3 text-center sm:flex-row sm:gap-3 sm:text-left">
+                            <Zap className="size-8 shrink-0 fill-amber-400 text-amber-500" />
+                            <div className="min-w-0">
                                 <p className="font-bold tabular-nums">
                                     {summary.totalXp}
                                 </p>

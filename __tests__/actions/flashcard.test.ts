@@ -48,7 +48,7 @@ describe('item actions', () => {
             user: { id: 'u1' },
         } as never)
         db.getDeckById.mockImplementation(async (id, userId) =>
-            id === 'd1' && userId === 'u1' ? deck : undefined
+            id === 'd1' && userId === 'u1' ? deck : (undefined as never)
         )
         db.getFlashcardById.mockResolvedValue(card)
         db.createItems.mockResolvedValue(['new-id'])

@@ -188,7 +188,7 @@ describe('Locale Actions', () => {
         test('should use secure cookies in production environment', async () => {
             // Mock production environment
             const originalEnv = process.env.NODE_ENV
-            process.env.NODE_ENV = 'production'
+            Object.assign(process.env, { NODE_ENV: 'production' })
 
             const mockSession = {
                 user: { id: 'user-1', email: 'test@example.com' },
@@ -210,7 +210,7 @@ describe('Locale Actions', () => {
             )
 
             // Restore environment
-            process.env.NODE_ENV = originalEnv
+            Object.assign(process.env, { NODE_ENV: originalEnv })
         })
 
         test('should handle session retrieval errors', async () => {

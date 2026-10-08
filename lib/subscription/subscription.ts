@@ -134,7 +134,8 @@ export async function invalidateSubscriptionCache(
     }
 
     try {
-        revalidateTag(`subscription-${userId}`)
+        // Expire at once, the status must be fresh after a webhook
+        revalidateTag(`subscription-${userId}`, { expire: 0 })
     } catch (error) {
         console.error('Error invalidating subscription cache:', error)
         // Don't throw - cache invalidation failure shouldn't break the app

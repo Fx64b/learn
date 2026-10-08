@@ -83,14 +83,12 @@ export function gradeOutcome(
         }
         case 'numberAnswer': {
             const response = outcome.response as
-                | NumberAnswerResponse
-                | undefined
+                NumberAnswerResponse | undefined
             return all((response?.guesses.length ?? 1) > 1 ? 2 : 3)
         }
         case 'firstLetter': {
             const response = outcome.response as
-                | FirstLetterRecallResponse
-                | undefined
+                FirstLetterRecallResponse | undefined
             return all(response?.mistakes ? 2 : 3)
         }
         default:

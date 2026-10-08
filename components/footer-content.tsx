@@ -1,10 +1,11 @@
 'use client'
 
-import { Github, Heart } from 'lucide-react'
+import { Heart } from 'lucide-react'
 
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 
+import { GithubIcon } from '@/components/misc/github-icon'
 import { Logo } from '@/components/misc/logo'
 import { Separator } from '@/components/ui/separator'
 
@@ -19,8 +20,8 @@ export function FooterContent({ version, currentYear }: FooterContentProps) {
     return (
         <footer className="mt-8 py-6">
             <div className="border-border container mx-auto max-w-5xl border-t px-4">
-                <div className="mt-8 grid gap-8 md:grid-cols-4">
-                    <div>
+                <div className="mt-8 grid grid-cols-2 gap-8 md:grid-cols-4">
+                    <div className="col-span-2 md:col-span-1">
                         <div className="mb-4 flex items-center space-x-2">
                             <Logo />
                         </div>
@@ -177,7 +178,7 @@ export function FooterContent({ version, currentYear }: FooterContentProps) {
                         className="hover:text-foreground"
                         aria-label="GitHub Repository"
                     >
-                        <Github className="h-4 w-4" />
+                        <GithubIcon className="h-4 w-4" />
                     </Link>
                 </div>
             </div>

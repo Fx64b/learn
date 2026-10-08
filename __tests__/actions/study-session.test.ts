@@ -52,8 +52,9 @@ describe('Study Session Actions', () => {
             notAuthenticated: 'Not authenticated',
         }
         mockGetTranslations.mockResolvedValue(
-            (key: string) =>
-                mockTranslations[key as keyof typeof mockTranslations] || key
+            ((key: string) =>
+                mockTranslations[key as keyof typeof mockTranslations] ||
+                key) as never
         )
 
         // Mock db operations
@@ -121,7 +122,7 @@ describe('Study Session Actions', () => {
 
             expect(result).toEqual({ success: true, id: 'test-session-id' })
             expect(mockDb.insert).toHaveBeenCalledWith(studySessions)
-            expect(mockDb.insert().values).toHaveBeenCalledWith({
+            expect(mockDb.insert(studySessions).values).toHaveBeenCalledWith({
                 id: 'test-session-id',
                 userId: 'user-1',
                 deckId: 'deck-1',
@@ -154,7 +155,7 @@ describe('Study Session Actions', () => {
 
             expect(result).toEqual({ success: true, id: 'existing-session-id' })
             expect(mockDb.update).toHaveBeenCalledWith(studySessions)
-            expect(mockDb.update().set).toHaveBeenCalledWith({
+            expect(mockDb.update(studySessions).set).toHaveBeenCalledWith({
                 endTime: studyData.endTime,
                 duration: 2700000,
                 cardsReviewed: 25,

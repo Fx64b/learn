@@ -23,8 +23,7 @@ export interface LocateOnImageResponse extends ImagePoint {
     distance: number
 }
 
-export interface LocateOnImageProps
-    extends ExerciseBaseProps<LocateOnImageResponse> {
+export interface LocateOnImageProps extends ExerciseBaseProps<LocateOnImageResponse> {
     /** e.g. "Where is iron (Fe)?" */
     question: string
     image: string

@@ -30,10 +30,13 @@ export function ItemTypeBadge({
     type,
     label,
     className,
+    labelClassName,
 }: {
     type: ItemType
     label: string
     className?: string
+    /** For example `sr-only sm:not-sr-only` to show only the icon on phones. */
+    labelClassName?: string
 }) {
     const Icon = ITEM_TYPE_ICONS[type]
     return (
@@ -42,9 +45,10 @@ export function ItemTypeBadge({
                 'bg-muted text-muted-foreground inline-flex shrink-0 items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-medium',
                 className
             )}
+            title={label}
         >
             <Icon className="size-3.5" aria-hidden />
-            {label}
+            <span className={labelClassName}>{label}</span>
         </span>
     )
 }

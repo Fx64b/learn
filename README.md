@@ -2,7 +2,7 @@
 
 <img src="public/logo-dark.png" alt="Logo" style="width: 150px;" />
 
-A learning app that mixes the Duolingo and Quizlet styles: varied, bite-sized exercises on top of a spaced repetition system (SRS), with light gamification. Built with Next.js 15, TypeScript, and Turso database. Features AI-powered item generation and Pro subscription plans. Available in English and German.
+A learning app that mixes the Duolingo and Quizlet styles: varied, bite-sized exercises on top of a spaced repetition system (SRS), with light gamification. Built with Next.js 16, TypeScript, and Turso database. Features AI-powered item generation and Pro subscription plans. Available in English and German.
 
 [![Build and Lint](https://github.com/Fx64b/learn/actions/workflows/build-lint.yml/badge.svg)](https://github.com/Fx64b/learn/actions/workflows/build-lint.yml)
 
@@ -61,7 +61,7 @@ A deck holds items of nine types. The app turns each item into fitting exercises
 
 ### Prerequisites
 
-- Node.js 18+ and pnpm
+- Node.js 22.12+ and pnpm
 - [Turso](https://turso.tech/) database
 - [Resend](https://resend.com/) for emails
 - [Google AI](https://aistudio.google.com/) API key (for AI features)
@@ -127,7 +127,7 @@ Visit `http://localhost:3000` to start learning!
 
 ## Technology Stack
 
-- **Framework**: Next.js 15 with App Router
+- **Framework**: Next.js 16 with App Router
 - **Language**: TypeScript with strict type checking
 - **Database**: Turso (LibSQL) with Drizzle ORM
 - **Authentication**: NextAuth.js

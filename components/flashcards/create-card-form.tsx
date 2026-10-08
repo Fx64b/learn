@@ -192,7 +192,7 @@ Topic for the flashcards:`
                         aria-selected={mode === key}
                         onClick={() => setMode(key)}
                         className={cn(
-                            'focus-visible:ring-ring/50 flex min-w-0 items-center justify-center gap-2 rounded-xl px-2 py-2 text-sm font-semibold transition-colors outline-none focus-visible:ring-[3px]',
+                            'focus-visible:ring-ring/50 flex min-w-0 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-xs font-semibold transition-colors outline-none focus-visible:ring-[3px] sm:flex-row sm:gap-2 sm:text-sm',
                             mode === key
                                 ? 'bg-background text-foreground shadow-sm'
                                 : 'text-muted-foreground hover:text-foreground'
@@ -205,7 +205,9 @@ Topic for the flashcards:`
                             )}
                             aria-hidden
                         />
-                        <span className="truncate">{label}</span>
+                        <span className="text-center leading-tight sm:truncate">
+                            {label}
+                        </span>
                     </button>
                 ))}
             </div>

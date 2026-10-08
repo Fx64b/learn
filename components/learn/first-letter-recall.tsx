@@ -18,8 +18,7 @@ export interface FirstLetterRecallResponse {
     missedWords: string[]
 }
 
-export interface FirstLetterRecallProps
-    extends ExerciseBaseProps<FirstLetterRecallResponse> {
+export interface FirstLetterRecallProps extends ExerciseBaseProps<FirstLetterRecallResponse> {
     /** The passage to recite word for word. */
     answer: string
     /** What to recite, e.g. "Recite the first sentence of the Gettysburg Address". */

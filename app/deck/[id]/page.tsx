@@ -126,7 +126,10 @@ export default async function DeckPage({
                     <Button variant="outline" size="sm" asChild>
                         <Link href={`/deck/${deck.id}/edit`}>
                             <Pencil className="size-4" />
-                            {t('edit')}
+                            {/* Icon only on phones, so the title keeps its width */}
+                            <span className="sr-only sm:not-sr-only">
+                                {t('edit')}
+                            </span>
                         </Link>
                     </Button>
                 </div>
@@ -251,6 +254,7 @@ export default async function DeckPage({
                                     <ItemTypeBadge
                                         type={item.type}
                                         label={ti(item.type)}
+                                        labelClassName="sr-only sm:not-sr-only"
                                     />
                                 </li>
                             )

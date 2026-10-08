@@ -50,7 +50,7 @@ describe('Export Actions', () => {
                 },
             ]
 
-            mockGetFlashcardsByDeckId.mockResolvedValue(mockFlashcards)
+            mockGetFlashcardsByDeckId.mockResolvedValue(mockFlashcards as never)
 
             const result = await getExportableFlashcards('deck-1')
 
@@ -99,7 +99,7 @@ describe('Export Actions', () => {
                 } as any,
             ]
 
-            mockGetFlashcardsByDeckId.mockResolvedValue(mockFlashcards)
+            mockGetFlashcardsByDeckId.mockResolvedValue(mockFlashcards as never)
 
             const result = await getExportableFlashcards('deck-1')
 
@@ -125,7 +125,7 @@ describe('Export Actions', () => {
                 },
             ]
 
-            mockGetFlashcardsByDeckId.mockResolvedValue(mockFlashcards)
+            mockGetFlashcardsByDeckId.mockResolvedValue(mockFlashcards as never)
 
             const result = await getExportableFlashcards('deck-1')
 

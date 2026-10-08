@@ -83,24 +83,24 @@ export default async function ProfilePage({
                 <TabsList className="grid h-fit w-full max-w-md grid-cols-3">
                     <TabsTrigger
                         value="settings"
-                        className="flex items-center gap-2"
+                        className="flex min-w-0 items-center gap-2 px-1 text-xs sm:text-sm"
                     >
-                        <UserCircle className="h-4 w-4" />
-                        <span>{t('tabs.settings')}</span>
+                        <UserCircle className="hidden h-4 w-4 sm:block" />
+                        <span className="truncate">{t('tabs.settings')}</span>
                     </TabsTrigger>
                     <TabsTrigger
                         value="billing"
-                        className="flex items-center gap-2"
+                        className="flex min-w-0 items-center gap-2 px-1 text-xs sm:text-sm"
                     >
-                        <CreditCard className="h-4 w-4" />
-                        <span>{t('tabs.billing')}</span>
+                        <CreditCard className="hidden h-4 w-4 sm:block" />
+                        <span className="truncate">{t('tabs.billing')}</span>
                     </TabsTrigger>
                     <TabsTrigger
                         value="stats"
-                        className="flex items-center gap-2"
+                        className="flex min-w-0 items-center gap-2 px-1 text-xs sm:text-sm"
                     >
-                        <BarChart2 className="h-4 w-4" />
-                        <span>{t('tabs.statistics')}</span>
+                        <BarChart2 className="hidden h-4 w-4 sm:block" />
+                        <span className="truncate">{t('tabs.statistics')}</span>
                     </TabsTrigger>
                 </TabsList>
 

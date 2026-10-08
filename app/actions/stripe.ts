@@ -239,7 +239,7 @@ async function createNewCheckoutSession(
     const sessionConfig: Stripe.Checkout.SessionCreateParams = {
         success_url: `${origin}/profile?tab=billing&success=true`,
         cancel_url: `${origin}/pricing`,
-        payment_method_types: ['card'],
+        allowed_payment_method_types: ['card'],
         mode: 'subscription',
         billing_address_collection: 'auto',
         line_items: [
@@ -493,9 +493,9 @@ export async function changeSubscriptionPlan(newPriceId: string) {
 
             // When changing intervals, we must start a new billing cycle
             if (isChangingInterval) {
-                updateConfig.billing_cycle_anchor = 'now'
+                updateConfig.billing_cycle_anchor = { type: 'now' }
             } else {
-                updateConfig.billing_cycle_anchor = 'unchanged'
+                updateConfig.billing_cycle_anchor = { type: 'unchanged' }
             }
 
             const updatedSubscription = await stripe.subscriptions.update(

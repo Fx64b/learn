@@ -680,9 +680,8 @@ async function upsertSubscription(
 
     // Invalidate cache for this user
     try {
-        const { invalidateSubscriptionCache } = await import(
-            '@/lib/subscription/subscription'
-        )
+        const { invalidateSubscriptionCache } =
+            await import('@/lib/subscription/subscription')
         await invalidateSubscriptionCache(userId)
     } catch (error) {
         console.error('Error invalidating cache:', error)

@@ -4,7 +4,7 @@ This document provides essential context for Claude Code instances working on th
 
 ## Project Overview
 
-**Learn** is a learning app built with Next.js 15 that mixes Duolingo-style exercises with Quizlet-style decks on top of spaced repetition (SuperMemo-2). It features:
+**Learn** is a learning app built with Next.js 16 that mixes Duolingo-style exercises with Quizlet-style decks on top of spaced repetition (SuperMemo-2). It features:
 
 - Nine item types (Q&A, choice, cloze, passage, list, sequence, number, pairs, diagram) that are turned into varied exercises
 - Learn sessions, classic flashcards, a timed match game and practice tests
@@ -17,7 +17,8 @@ This document provides essential context for Claude Code instances working on th
 
 ## Tech Stack
 
-- **Framework**: Next.js 15 with App Router, TypeScript (strict mode)
+- **Framework**: Next.js 16 with App Router and Turbopack, TypeScript 6 (strict mode), React 19
+- **Runtime**: Node.js 22.12 or newer (CI uses Node 24)
 - **Database**: Turso (LibSQL) with Drizzle ORM
 - **Authentication**: NextAuth.js with email provider (Resend)
 - **UI**: shadcn/ui components with Tailwind CSS v4
@@ -44,7 +45,7 @@ This document provides essential context for Claude Code instances working on th
   /subscription    # Stripe and payment logic
   /rate-limit      # Rate limiting with Upstash Redis
 /db                # Database schema and migrations
-/middleware        # Security and rate limiting middleware
+/middleware        # Security and rate limiting helpers, used by /proxy.ts
 /types             # TypeScript type definitions
 /messages          # i18n translation files (en.json, de.json)
 ```
@@ -69,7 +70,7 @@ This document provides essential context for Claude Code instances working on th
 - Email-only auth via NextAuth.js (no OAuth providers)
 - Protected routes: `/learn/*`, `/profile`, `/deck/*`
 - AI API endpoints require authentication
-- Middleware handles route protection and redirects
+- `proxy.ts` (Next.js 16 name for middleware) handles route protection and redirects
 
 ### Spaced Repetition System
 
@@ -154,6 +155,7 @@ BLOB_STORE_ID="store_..."                           # Set by Vercel for connecte
 
 ### Component Guidelines
 
+- ESLint uses `eslint-config-next` with the React Hooks v7 rules (`react-hooks/purity`, `set-state-in-effect`, `refs`). Do not call `Date.now()` or read `ref.current` during render, and do not call `setState` synchronously in an effect
 - Use shadcn/ui components instead of custom ones when possible
 - Add new shadcn components via: `pnpm dlx shadcn@latest add <component>`
 - **NEVER** manually edit files in `/components/ui/`
@@ -169,7 +171,7 @@ BLOB_STORE_ID="store_..."                           # Set by Vercel for connecte
 
 ### Security Guidelines
 
-- All AI API endpoints require authentication (enforced in middleware)
+- All AI API endpoints require authentication (enforced in `proxy.ts`)
 - Rate limiting implemented via Upstash Redis
 - Stripe webhook signature verification required
 - SQL injection protection via Drizzle parameterized queries
@@ -181,7 +183,7 @@ BLOB_STORE_ID="store_..."                           # Set by Vercel for connecte
 ### AI Item Generation
 
 - Located in `/app/actions/ai-flashcards.ts` and `/app/api/ai-flashcards/route.ts`
-- The model returns a flat item object (`lib/items/ai.ts`). Items that fail the strict schema are dropped
+- Uses AI SDK `generateText` with `Output.object` (structured output). The model returns a flat item object (`lib/items/ai.ts`). Items that fail the strict schema are dropped
 - Prompts live in `lib/items/ai-prompt.ts`: deck title, description and tags as context, and a count rule (the amount picked in the form, else an exact number from the prompt, else 10-60)
 - The prompts of items already in the deck (newest 200, cut to 120 characters) go to the model as context. New items whose normalized prompt (`promptKey`) matches an existing one are not saved
 - Model from `GOOGLE_AI_MODEL` (default `gemini-3-flash-preview`). Each run logs the item counts per filter stage
@@ -195,6 +197,7 @@ BLOB_STORE_ID="store_..."                           # Set by Vercel for connecte
 ### Subscription System
 
 - Stripe integration with automatic payment recovery
+- The SDK pins API version `2026-09-30.endive` (`lib/subscription/stripe/stripe-server.ts`). The webhook endpoint in the Stripe dashboard must use the same API version
 - Daily cron job (`/api/cron/payment-recovery`) handles failed payments
 - Grace period system with email notifications
 - Subscription status affects AI feature access
@@ -272,7 +275,7 @@ pnpm dlx shadcn@latest add button  # Example: adding button component
 
 - Verify NEXTAUTH_SECRET is set
 - Check Resend API key and email configuration
-- Ensure proper session handling in middleware
+- Ensure proper session handling in `proxy.ts`
 
 ### Stripe Integration
 

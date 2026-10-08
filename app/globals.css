@@ -118,6 +118,14 @@
     }
     body {
         @apply bg-background text-foreground;
+        /* Long words (German compounds, URLs) wrap instead of overflowing */
+        overflow-wrap: break-word;
+    }
+    h1,
+    h2,
+    h3 {
+        /* Hyphenates by the <html lang> of the active locale */
+        hyphens: auto;
     }
 }
 

@@ -19,8 +19,7 @@ export interface NumberAnswerResponse {
     guesses: number[]
 }
 
-export interface NumberAnswerProps
-    extends ExerciseBaseProps<NumberAnswerResponse> {
+export interface NumberAnswerProps extends ExerciseBaseProps<NumberAnswerResponse> {
     question: string
     answer: number
     /** Accepted distance from the answer, e.g. 5 for "within 5 years". */

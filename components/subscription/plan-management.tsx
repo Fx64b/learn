@@ -70,7 +70,6 @@ export function PlanManagement() {
     const [selectedPlan, setSelectedPlan] = useState<PlanOption | null>(null)
 
     const loadCurrentPlan = useCallback(async () => {
-        setIsLoading(true)
         try {
             const result = await getCurrentPlan()
             if (result.success && result.currentPlan) {
@@ -85,7 +84,10 @@ export function PlanManagement() {
     }, [t])
 
     useEffect(() => {
-        void loadCurrentPlan()
+        async function load() {
+            await loadCurrentPlan()
+        }
+        void load()
     }, [loadCurrentPlan])
 
     const handleBillingPortal = async () => {
@@ -132,6 +134,7 @@ export function PlanManagement() {
             if (response.ok && data.success) {
                 toast.success(data.message || t('planChanged'))
                 setTimeout(async () => {
+                    setIsLoading(true)
                     await loadCurrentPlan()
                 }, 1000) // Refresh current plan
             } else {

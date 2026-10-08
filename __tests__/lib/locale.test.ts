@@ -42,7 +42,7 @@ describe('Locale Library', () => {
                 animationDirection: 'horizontal' as const,
                 theme: 'dark' as const,
             }
-            mockGetUserPreferences.mockResolvedValue(mockPreferences)
+            mockGetUserPreferences.mockResolvedValue(mockPreferences as never)
 
             const result = await getLocale()
 
@@ -64,7 +64,7 @@ describe('Locale Library', () => {
                 animationDirection: 'horizontal' as const,
                 theme: 'dark' as const,
             }
-            mockGetUserPreferences.mockResolvedValue(mockPreferences)
+            mockGetUserPreferences.mockResolvedValue(mockPreferences as never)
 
             const result = await getLocale()
 
@@ -100,7 +100,7 @@ describe('Locale Library', () => {
                 animationDirection: 'horizontal' as const,
                 theme: 'dark' as const,
             }
-            mockGetUserPreferences.mockResolvedValue(mockPreferences)
+            mockGetUserPreferences.mockResolvedValue(mockPreferences as never)
 
             mockCookieStore.get.mockReturnValue({ value: 'de' })
 
@@ -240,7 +240,7 @@ describe('Locale Library', () => {
                 animationDirection: 'horizontal' as const,
                 theme: 'dark' as const,
             }
-            mockGetUserPreferences.mockResolvedValue(mockPreferences)
+            mockGetUserPreferences.mockResolvedValue(mockPreferences as never)
 
             mockCookieStore.get.mockReturnValue({ value: 'de' })
 
@@ -286,7 +286,7 @@ describe('Locale Library', () => {
                 animationDirection: 'horizontal' as const,
                 theme: 'dark' as const,
             }
-            mockGetUserPreferences.mockResolvedValue(mockPreferences)
+            mockGetUserPreferences.mockResolvedValue(mockPreferences as never)
 
             // Cookie has different value
             mockCookieStore.get.mockReturnValue({ value: 'de' })
@@ -327,7 +327,7 @@ describe('Locale Library', () => {
                 animationDirection: 'horizontal' as const,
                 theme: 'dark' as const,
             }
-            mockGetUserPreferences.mockResolvedValue(mockPreferences)
+            mockGetUserPreferences.mockResolvedValue(mockPreferences as never)
 
             // Make multiple concurrent calls
             const promises = [getLocale(), getLocale(), getLocale()]

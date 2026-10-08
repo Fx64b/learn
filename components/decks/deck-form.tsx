@@ -114,7 +114,7 @@ export function DeckForm({
             onSubmit={submit}
             className="grid items-start gap-6 lg:grid-cols-[1fr_20rem]"
         >
-            <div className="bg-card space-y-6 rounded-2xl border-2 border-b-4 p-5 sm:p-6">
+            <div className="bg-card min-w-0 space-y-6 rounded-2xl border-2 border-b-4 p-5 sm:p-6">
                 <div className="space-y-2">
                     <Label htmlFor="deck-title" className="text-base font-bold">
                         {t('title')}
@@ -275,7 +275,7 @@ export function DeckForm({
                 </div>
             </div>
 
-            <aside className="space-y-2 lg:sticky lg:top-6">
+            <aside className="min-w-0 space-y-2 lg:sticky lg:top-6">
                 <p className="text-muted-foreground text-xs font-bold tracking-widest uppercase">
                     {t('preview')}
                 </p>

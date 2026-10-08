@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 import { securityMiddleware } from './middleware/security'
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
     const rateLimitResponse = await rateLimitMiddleware(req)
     if (rateLimitResponse.status === 429) {
         return rateLimitResponse

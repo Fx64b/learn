@@ -8,7 +8,7 @@ import { Shuffle } from 'lucide-react'
 import { nanoid } from 'nanoid'
 import { toast } from 'sonner'
 
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
@@ -60,10 +60,13 @@ export function ClassicMode({ deckId, cards, backHref }: ClassicModeProps) {
     const [combo, setCombo] = useState(0)
     const [xp, setXp] = useState(0)
     const [summary, setSummary] = useState<SummaryData | null>(null)
+    // Remounts the flashcard on restart
+    const [run, setRun] = useState(0)
+    // Timestamps are set on mount, Date.now() must not run during render
     const session = useRef({
         id: nanoid(),
-        startedAt: Date.now(),
-        cardStart: Date.now(),
+        startedAt: 0,
+        cardStart: 0,
         correct: 0,
         bestCombo: 0,
         missed: [] as string[],
@@ -88,7 +91,13 @@ export function ClassicMode({ deckId, cards, backHref }: ClassicModeProps) {
         setCombo(0)
         setXp(0)
         setSummary(null)
+        setRun((r) => r + 1)
     }
+
+    useEffect(() => {
+        session.current.startedAt = Date.now()
+        session.current.cardStart = Date.now()
+    }, [])
 
     async function finish(finalXp: number) {
         const s = session.current
@@ -200,7 +209,7 @@ export function ClassicMode({ deckId, cards, backHref }: ClassicModeProps) {
                 </Button>
             </div>
             <Flashcard
-                key={`${session.current.id}-${card.id}`}
+                key={`${run}-${card.id}`}
                 front={card.front}
                 back={card.back}
                 onRating={handleRating}
