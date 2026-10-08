@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
+import { HeaderStats } from '@/components/gamification/header-stats'
 import { LanguageSelector } from '@/components/misc/language-selector'
 import { Logo } from '@/components/misc/logo'
 
@@ -24,12 +25,6 @@ export function Header() {
                 {isUrlRoot && !session && (
                     <nav className="hidden items-center space-x-6 md:flex">
                         <Link
-                            href="#features"
-                            className="text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                            {t('features')}
-                        </Link>
-                        <Link
                             href="#how-it-works"
                             className="text-muted-foreground hover:text-foreground transition-colors"
                         >
@@ -45,7 +40,7 @@ export function Header() {
                 )}
 
                 <div className="flex items-center gap-2">
-                    {!session && <LanguageSelector />}
+                    {session ? <HeaderStats /> : <LanguageSelector />}
                     <UserNav />
                 </div>
             </div>

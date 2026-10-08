@@ -1,5 +1,9 @@
 export interface FlashcardType {
     id: string
+    /** Item type, see lib/items/schema.ts */
+    type?: string
+    /** Type-specific JSON content */
+    content?: string | null
     front: string
     back: string
     deckId: string

@@ -5,6 +5,7 @@ import { userPreferences } from '@/db/schema'
 import { authOptions } from '@/lib/auth'
 import { checkRateLimit } from '@/lib/rate-limit/rate-limit'
 import { eq } from 'drizzle-orm'
+import { z } from 'zod'
 
 import { getServerSession } from 'next-auth'
 import { getTranslations } from 'next-intl/server'
@@ -38,17 +39,27 @@ export async function getUserPreferences() {
             animationSpeed: 200,
             animationDirection: 'horizontal',
             theme: 'dark',
+            soundEnabled: true,
+            dailyGoalXp: 30,
         }
     )
 }
 
-export async function updateUserPreferences(data: {
-    animationsEnabled?: boolean
-    animationSpeed?: number
-    animationDirection?: 'horizontal' | 'vertical'
-    theme?: 'light' | 'dark' | 'system'
-    locale?: string
-}) {
+const preferencesSchema = z
+    .object({
+        animationsEnabled: z.boolean(),
+        animationSpeed: z.number().int().min(0).max(2000),
+        animationDirection: z.enum(['horizontal', 'vertical']),
+        theme: z.enum(['light', 'dark', 'system']),
+        locale: z.enum(['en', 'de']),
+        soundEnabled: z.boolean(),
+        dailyGoalXp: z.number().int().min(10).max(500),
+    })
+    .partial()
+
+export async function updateUserPreferences(
+    input: z.input<typeof preferencesSchema>
+) {
     const authT = await getTranslations('auth')
 
     try {
@@ -68,6 +79,13 @@ export async function updateUserPreferences(data: {
                 error: authT('ratelimitExceeded'),
             }
         }
+
+        // Only known fields: never let a client write e.g. the user id.
+        const parsed = preferencesSchema.safeParse(input)
+        if (!parsed.success) {
+            return { success: false, error: 'Invalid preferences' }
+        }
+        const data = parsed.data
 
         const existing = await db
             .select()
@@ -91,6 +109,8 @@ export async function updateUserPreferences(data: {
                 animationDirection: data.animationDirection ?? 'horizontal',
                 theme: data.theme ?? 'dark',
                 locale: data.locale ?? 'en',
+                soundEnabled: data.soundEnabled ?? true,
+                dailyGoalXp: data.dailyGoalXp ?? 30,
                 updatedAt: new Date(),
             })
         }

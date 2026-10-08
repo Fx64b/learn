@@ -1,51 +1,71 @@
 'use server'
 
+import { getDeckById, getDeckItemFronts } from '@/db/utils'
 import { authOptions } from '@/lib/auth'
+import { MAX_PDF_BYTES, aiUploadPathname, deleteBlobs } from '@/lib/blob'
+import {
+    AI_ITEM_TYPES,
+    type AiItem,
+    type AiItemType,
+    MAX_ITEMS_PER_GENERATION,
+    aiItemSchema,
+    aiItemStrings,
+    aiItemToInput,
+    buildSystemPrompt,
+    buildUserPrompt,
+    dedupeAiItems,
+    isAiItemType,
+    itemInputSchema,
+    parseDeckTags,
+    promptKey,
+} from '@/lib/items'
 import { checkAIRateLimitWithDetails } from '@/lib/rate-limit/ai-rate-limit'
 import { google } from '@ai-sdk/google'
-import { generateObject } from 'ai'
+import { NoObjectGeneratedError, generateObject } from 'ai'
 import { randomUUID } from 'crypto'
-import { Output } from 'pdf2json'
 import { z } from 'zod'
 
 import { Session, getServerSession } from 'next-auth'
 import { getTranslations } from 'next-intl/server'
 
-import { createFlashcardsFromJson } from './flashcard'
+import { createItemsFromJson } from './flashcard'
 
 // Constants
-const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
-const ALLOWED_FILE_TYPES = ['application/pdf']
 const MAX_PROMPT_LENGTH = 1000
-const MAX_CARDS_PER_GENERATION = 55
-const MAX_DOCUMENT_LENGTH = 50000
-const PDF_PARSING_TIMEOUT = 30000
 
-// Gemini 3.1 Flash-Lite: cheapest generally-available model that still supports
-// structured output. Defaults to `minimal` thinking, so latency/cost stay low.
-const AI_MODEL = 'gemini-3.1-flash-lite'
-// Thinking tokens count against the output budget, so leave headroom above the
-// ~4k tokens a full generation of cards actually needs.
-const AI_MAX_OUTPUT_TOKENS = 8192
+// Gemini 3 Flash: good instruction following and item quality at a low price.
+// GOOGLE_AI_MODEL can switch it, e.g. to gemini-3.1-flash-lite to save cost.
+const AI_MODEL = process.env.GOOGLE_AI_MODEL?.trim() || 'gemini-3-flash-preview'
+// Thinking tokens count against the output budget, and long PDFs make the
+// model think more. A cut-off JSON fails the whole generation, so use the
+// model maximum. Only used tokens are billed.
+const AI_MAX_OUTPUT_TOKENS = 65536
+// Gemini 3 Flash thinks a lot by default. On a 3 MB slide deck it used
+// about 48k of 64k output tokens for thinking, cut off the JSON and ran
+// into the 300 s function limit. Turning items into JSON needs little
+// reasoning, so cap it.
+const AI_THINKING_BUDGET = 2048
+// Stop before Vercel kills the function (maxDuration 300 s), so the user
+// gets a clear message instead of a dropped connection.
+const AI_TIMEOUT_MS = 240_000
 
 // Schemas
-const flashcardSchema = z.object({
-    flashcards: z
-        .array(
-            z.object({
-                front: z.string().min(1).max(500),
-                back: z.string().min(1).max(2000),
-            })
-        )
+const aiOutputSchema = z.object({
+    items: z
+        .array(aiItemSchema)
         .min(1)
-        .max(MAX_CARDS_PER_GENERATION + 5), // Allow a few extra for safety to avoid rejection
+        .max(MAX_ITEMS_PER_GENERATION + 5), // A few extra so the whole answer is not rejected
 })
 
 interface GenerateFlashcardsParams {
     deckId: string
     prompt: string
-    file?: File
-    documentContent?: string // For when content is already extracted
+    /** Blob URL of a PDF the browser uploaded to the user's AI upload folder. */
+    fileUrl?: string
+    /** Item types to generate. Empty means all AI types. */
+    types?: string[]
+    /** About how many items to create. Undefined lets the model choose. */
+    count?: number
 }
 
 interface AIGenerationResult {
@@ -59,7 +79,8 @@ interface AIGenerationResult {
     paymentIssue?: boolean
     resetTime?: Date
     requestId: string
-    flashcards?: Array<{ front: string; back: string }> // Add this for validation
+    /** Created items (type and prompt), for the result view. */
+    items?: Array<{ type: string; front: string }>
 }
 
 type ProgressCallback = (
@@ -99,152 +120,65 @@ function sanitizeInput(input: string): string {
         .substring(0, MAX_PROMPT_LENGTH)
 }
 
-// File validation using magic bytes
-function validateFileType(
-    buffer: Buffer,
-    declaredType: string
-): { isValid: boolean; error?: string } {
-    if (declaredType !== 'application/pdf') {
-        return { isValid: false, error: 'Only PDF files are supported' }
+/**
+ * Reads the user's uploaded PDF from Blob. Only a validated pathname in the
+ * user's own AI upload folder is read, through the Blob SDK and our own store,
+ * with a size cap and a magic-byte check. The client URL is never fetched.
+ */
+async function loadPdf(
+    fileUrl: string,
+    userId: string
+): Promise<{ data: Uint8Array } | { error: string }> {
+    const pathname = aiUploadPathname(fileUrl, userId)
+    if (!pathname) {
+        return { error: 'invalid_url' }
+    }
+    const { get } = await import('@vercel/blob')
+    const result = await get(pathname, { access: 'public', useCache: false })
+    if (!result || result.statusCode !== 200 || !result.stream) {
+        return { error: 'not_found' }
+    }
+    if (result.blob.size > MAX_PDF_BYTES) {
+        return { error: 'too_large' }
     }
 
-    if (buffer.length < 4) {
-        return { isValid: false, error: 'File too small to be valid' }
-    }
-
-    // Check PDF magic bytes (%PDF)
-    const pdfHeader = buffer.subarray(0, 4)
-    const expectedHeader = Buffer.from([0x25, 0x50, 0x44, 0x46]) // %PDF
-
-    if (!pdfHeader.equals(expectedHeader)) {
-        return { isValid: false, error: 'File is not a valid PDF' }
-    }
-
-    // Additional PDF structure validation
-    const fileString = buffer.toString(
-        'ascii',
-        0,
-        Math.min(1024, buffer.length)
-    )
-    if (!fileString.includes('%PDF-')) {
-        return { isValid: false, error: 'Invalid PDF format' }
-    }
-
-    return { isValid: true }
-}
-
-// Secure PDF parsing with timeout
-async function parsePDFSecurely(
-    buffer: Buffer,
-    requestId: string,
-    userId: string,
-    onProgress?: ProgressCallback
-): Promise<string> {
-    return new Promise(async (resolve, reject) => {
-        const timeoutId = setTimeout(() => {
-            logSecurityEvent({
-                userId,
-                action: 'pdf_parsing_timeout',
-                details: `File size: ${buffer.length} bytes`,
-                severity: 'medium',
-                requestId,
-            })
-            reject(
-                new Error(
-                    'PDF parsing timeout - file may be corrupted or too complex'
-                )
-            )
-        }, PDF_PARSING_TIMEOUT)
-
-        try {
-            onProgress?.('file_parsing', 30, 'Parsing PDF content...')
-
-            // Dynamic import to avoid loading heavy PDF library on every request
-            const pdfModule = await import('pdf2json')
-            const PDFParser = pdfModule.default
-
-            const pdfParser = new PDFParser(null as never, true)
-
-            pdfParser.on('pdfParser_dataError', (errData) => {
-                clearTimeout(timeoutId)
-                logSecurityEvent({
-                    userId,
-                    action: 'pdf_parsing_error',
-                    details: 'Parser error: ' + errData.parserError,
-                    severity: 'medium',
-                    requestId,
-                })
-                reject(new Error('Invalid PDF format or corrupted file'))
-            })
-
-            pdfParser.on('pdfParser_dataReady', (pdfData) => {
-                clearTimeout(timeoutId)
-                onProgress?.('file_parsing', 50, 'Extracting text content...')
-
-                try {
-                    const text = extractTextSafely(pdfData)
-                    if (text.length < 10) {
-                        reject(
-                            new Error('PDF contains insufficient readable text')
-                        )
-                        return
-                    }
-                    resolve(text)
-                } catch (extractionError) {
-                    logSecurityEvent({
-                        userId,
-                        action: 'pdf_text_extraction_error',
-                        details:
-                            extractionError instanceof Error
-                                ? extractionError.message
-                                : 'Unknown error',
-                        severity: 'low',
-                        requestId,
-                    })
-                    reject(new Error('Failed to extract text from PDF'))
-                }
-            })
-
-            // Parse the buffer directly
-            pdfParser.parseBuffer(buffer)
-        } catch (error) {
-            clearTimeout(timeoutId)
-            reject(error)
+    // Read with a hard cap as well, in case the stored size is off.
+    const reader = result.stream.getReader()
+    const chunks: Uint8Array[] = []
+    let size = 0
+    for (;;) {
+        const { done, value } = await reader.read()
+        if (done) break
+        size += value.byteLength
+        if (size > MAX_PDF_BYTES) {
+            await reader.cancel()
+            return { error: 'too_large' }
         }
-    })
-}
-
-// Safe text extraction from PDF data
-function extractTextSafely(pdfData: Output): string {
-    const pages = pdfData?.Pages || []
-    let text = ''
-
-    for (const page of pages) {
-        const texts = page?.Texts || []
-        for (const textObj of texts) {
-            try {
-                const decodedText = decodeURIComponent(textObj?.R?.[0]?.T || '')
-                if (decodedText.trim()) {
-                    text += decodedText + ' '
-                }
-            } catch {
-                // Skip malformed text
-                continue
-            }
-        }
-        text += '\n'
+        chunks.push(value)
+    }
+    const data = new Uint8Array(size)
+    let offset = 0
+    for (const chunk of chunks) {
+        data.set(chunk, offset)
+        offset += chunk.byteLength
     }
 
-    return text.trim()
+    // %PDF- at the start
+    const header = new TextDecoder('ascii').decode(data.subarray(0, 5))
+    if (header !== '%PDF-') {
+        return { error: 'not_pdf' }
+    }
+    return { data }
 }
 
 // Validate AI response for security
 function validateAIResponse(
-    flashcards: Array<{ front: string; back: string }>,
+    items: AiItem[],
     requestId: string,
     userId: string
 ): boolean {
-    for (const card of flashcards) {
+    for (const item of items) {
+        const strings = aiItemStrings(item)
         // Check for dangerous patterns
         const dangerousPatterns = [
             /<script/i,
@@ -257,7 +191,7 @@ function validateAIResponse(
         ]
 
         for (const pattern of dangerousPatterns) {
-            if (pattern.test(card.front) || pattern.test(card.back)) {
+            if (strings.some((text) => pattern.test(text))) {
                 logSecurityEvent({
                     userId,
                     action: 'malicious_ai_response',
@@ -268,63 +202,8 @@ function validateAIResponse(
                 return false
             }
         }
-
-        // Validate length constraints
-        if (card.front.length > 500 || card.back.length > 2000) {
-            logSecurityEvent({
-                userId,
-                action: 'ai_response_length_violation',
-                details: `Front: ${card.front.length}, Back: ${card.back.length}`,
-                severity: 'low',
-                requestId,
-            })
-            return false
-        }
     }
     return true
-}
-
-// Remove duplicates
-function removeDuplicateCards(
-    cards: Array<{ front: string; back: string }>
-): Array<{ front: string; back: string }> {
-    const seen = new Set<string>()
-    return cards.filter((card) => {
-        const key = card.front.toLowerCase().trim()
-        if (seen.has(key)) return false
-        seen.add(key)
-        return true
-    })
-}
-
-// AI prompts
-function buildSystemPrompt(): string {
-    return `You are an expert educational content creator specializing in creating effective flashcards for learning and memorization.
-
-Your task is to generate high-quality flashcards based on the user's request. Follow these guidelines:
-
-1. Create clear, concise questions on the front of each card
-2. Provide comprehensive but digestible answers on the back
-3. Focus on key concepts, definitions, and important facts
-4. Use various question types: definitions, explanations, comparisons, examples
-5. Ensure each flashcard tests a single concept or piece of information
-6. Make questions specific enough to have a clear answer
-7. Avoid yes/no questions unless absolutely necessary
-8. Use active recall principles - questions should require thinking, not just recognition
-9. For complex topics, break them down into multiple simpler cards
-10. Maintain consistent difficulty appropriate to the topic
-11. Do not include any HTML, JavaScript, or other code in the responses
-12. Generate 5-${MAX_CARDS_PER_GENERATION} flashcards. Quality over quantity.`
-}
-
-function buildUserPrompt(prompt: string, documentContent?: string): string {
-    let userPrompt = `Create flashcards for: ${prompt}`
-
-    if (documentContent) {
-        userPrompt += `\n\nBase the flashcards on this document content:\n\n${documentContent}`
-    }
-
-    return userPrompt
 }
 
 // Error handling
@@ -333,6 +212,13 @@ function handleAIError(
     t: (key: string, params?: Record<string, string | number | Date>) => string,
     requestId: string
 ): AIGenerationResult {
+    // The answer hit the output limit, usually with a very long document.
+    if (
+        NoObjectGeneratedError.isInstance(error) &&
+        error.finishReason === 'length'
+    ) {
+        return { success: false, error: t('aiTruncated'), requestId }
+    }
     if (error instanceof Error) {
         const message = error.message.toLowerCase()
 
@@ -343,10 +229,21 @@ function handleAIError(
                 requestId,
             }
         }
-        if (message.includes('api key') || message.includes('authentication')) {
+        if (
+            message.includes('api key') ||
+            message.includes('authentication') ||
+            // Unknown or retired model id, e.g. a wrong GOOGLE_AI_MODEL.
+            (message.includes('model') &&
+                (message.includes('not found') ||
+                    message.includes('not supported')))
+        ) {
             return { success: false, error: t('aiConfigError'), requestId }
         }
-        if (message.includes('timeout')) {
+        if (
+            message.includes('timeout') ||
+            error.name === 'TimeoutError' ||
+            error.name === 'AbortError'
+        ) {
             return { success: false, error: t('aiTimeoutError'), requestId }
         }
     }
@@ -355,7 +252,7 @@ function handleAIError(
 }
 
 // Main unified function
-export async function generateAIFlashcardsUnified(
+async function runGeneration(
     params: GenerateFlashcardsParams,
     onProgress?: ProgressCallback
 ): Promise<AIGenerationResult> {
@@ -378,10 +275,26 @@ export async function generateAIFlashcardsUnified(
 
         const userId = session.user.id
 
+        // Check the deck before any paid AI call. Its title, description and
+        // tags give the model the topic and level.
+        const deck = await getDeckById(params.deckId, userId)
+        if (!deck) {
+            const deckT = await getTranslations('deck')
+            return { success: false, error: deckT('notFound'), requestId }
+        }
+
+        // Prompts already in the deck: context for the model, and a filter
+        // so a repeated question is never saved twice.
+        const existingFronts = await getDeckItemFronts(deck.id)
+
         onProgress?.('validation', 5, 'Validating input...')
 
         // Input validation
         const sanitizedPrompt = sanitizeInput(params.prompt)
+        const requestedTypes = (params.types ?? []).filter(isAiItemType)
+        const allowedTypes: readonly AiItemType[] = requestedTypes.length
+            ? requestedTypes
+            : AI_ITEM_TYPES
         if (!sanitizedPrompt) {
             return {
                 success: false,
@@ -415,112 +328,79 @@ export async function generateAIFlashcardsUnified(
             }
         }
 
-        let documentContent = params.documentContent || ''
-
-        // Process file if provided and no content passed
-        if (params.file && !documentContent) {
-            onProgress?.('file_validation', 15, 'Validating file...')
-
-            // Validate file size
-            if (params.file.size > MAX_FILE_SIZE) {
-                return {
-                    success: false,
-                    error: `File too large. Maximum size is ${MAX_FILE_SIZE / 1024 / 1024}MB`,
-                    requestId,
-                }
-            }
-
-            // Validate file type
-            if (!ALLOWED_FILE_TYPES.includes(params.file.type)) {
-                return {
-                    success: false,
-                    error: 'Only PDF files are supported',
-                    requestId,
-                }
-            }
-
-            // Convert file to buffer
-            const arrayBuffer = await params.file.arrayBuffer()
-            const buffer = Buffer.from(arrayBuffer)
-
-            // Validate file type using magic bytes
-            const fileTypeValidation = validateFileType(
-                buffer,
-                params.file.type
-            )
-            if (!fileTypeValidation.isValid) {
+        let pdf: Uint8Array | undefined
+        if (params.fileUrl) {
+            onProgress?.('file_validation', 15, 'Checking PDF...')
+            const loaded = await loadPdf(params.fileUrl, userId)
+            if ('error' in loaded) {
                 logSecurityEvent({
                     userId,
-                    action: 'invalid_file_type',
-                    details: fileTypeValidation.error,
-                    severity: 'high',
+                    action: 'invalid_pdf_upload',
+                    details: loaded.error,
+                    severity: loaded.error === 'invalid_url' ? 'high' : 'low',
                     requestId,
                 })
                 return {
                     success: false,
-                    error: fileTypeValidation.error!,
-                    requestId,
-                }
-            }
-
-            // Parse PDF content
-            try {
-                documentContent = await parsePDFSecurely(
-                    buffer,
-                    requestId,
-                    userId,
-                    onProgress
-                )
-
-                if (documentContent.trim().length < 50) {
-                    return {
-                        success: false,
-                        error: 'PDF contains insufficient readable content',
-                        requestId,
-                    }
-                }
-
-                // Truncate if too long
-                if (documentContent.length > MAX_DOCUMENT_LENGTH) {
-                    documentContent =
-                        documentContent.substring(0, MAX_DOCUMENT_LENGTH) +
-                        '...'
-                }
-            } catch (parseError) {
-                console.error('PDF parsing error:', {
-                    requestId,
-                    userId: userId.substring(0, 8),
                     error:
-                        parseError instanceof Error
-                            ? parseError.message
-                            : 'Unknown error',
-                })
-
-                const errorMessage =
-                    parseError instanceof Error
-                        ? parseError.message
-                        : 'Failed to process PDF file'
-
-                return {
-                    success: false,
-                    error: errorMessage,
+                        loaded.error === 'too_large'
+                            ? t('fileTooLarge', { max: '20 MB' })
+                            : t('fileParseError'),
                     requestId,
                 }
             }
+            pdf = loaded.data
         }
 
         // AI Generation
         onProgress?.('ai_generation', 60, 'Generating flashcards with AI...')
 
         try {
-            const { object } = await generateObject({
+            const { object, finishReason, usage } = await generateObject({
                 model: google(AI_MODEL),
-                schema: flashcardSchema,
-                system: buildSystemPrompt(),
-                prompt: buildUserPrompt(sanitizedPrompt, documentContent),
+                schema: aiOutputSchema,
+                system: buildSystemPrompt(allowedTypes),
+                messages: [
+                    {
+                        role: 'user',
+                        content: [
+                            {
+                                type: 'text',
+                                text: buildUserPrompt({
+                                    prompt: sanitizedPrompt,
+                                    deck: {
+                                        title: deck.title,
+                                        description: deck.description,
+                                        tags: parseDeckTags(deck.category),
+                                    },
+                                    hasDocument: Boolean(pdf),
+                                    count: params.count,
+                                    existing: existingFronts,
+                                }),
+                            },
+                            // Gemini reads the PDF itself: text, tables,
+                            // figures and scanned pages.
+                            ...(pdf
+                                ? [
+                                      {
+                                          type: 'file' as const,
+                                          data: pdf,
+                                          mimeType: 'application/pdf',
+                                      },
+                                  ]
+                                : []),
+                        ],
+                    },
+                ],
                 // Gemini 3 models are tuned for their default temperature of 1;
                 // lowering it degrades output, so it is intentionally not set.
                 maxTokens: AI_MAX_OUTPUT_TOKENS,
+                providerOptions: {
+                    google: {
+                        thinkingConfig: { thinkingBudget: AI_THINKING_BUDGET },
+                    },
+                },
+                abortSignal: AbortSignal.timeout(AI_TIMEOUT_MS),
             })
 
             onProgress?.(
@@ -529,7 +409,7 @@ export async function generateAIFlashcardsUnified(
                 'Validating generated flashcards...'
             )
 
-            if (!object.flashcards || object.flashcards.length === 0) {
+            if (!object.items || object.items.length === 0) {
                 return {
                     success: false,
                     error: t('noFlashcardsGenerated'),
@@ -538,7 +418,7 @@ export async function generateAIFlashcardsUnified(
             }
 
             // Security validation
-            if (!validateAIResponse(object.flashcards, requestId, userId)) {
+            if (!validateAIResponse(object.items, requestId, userId)) {
                 return {
                     success: false,
                     error: 'Generated content failed security validation',
@@ -546,12 +426,56 @@ export async function generateAIFlashcardsUnified(
                 }
             }
 
-            // Remove duplicates
-            const uniqueCards = removeDuplicateCards(object.flashcards)
+            // Map to the strict item schema and drop items the model got wrong.
+            const ofAllowedType = object.items.filter((item) =>
+                allowedTypes.includes(item.type)
+            )
+            const deduped = dedupeAiItems(ofAllowedType)
+            const dropped: string[] = []
+            const validCards = deduped.map(aiItemToInput).flatMap((input) => {
+                const parsed = itemInputSchema.safeParse(input)
+                if (parsed.success) return [parsed.data]
+                dropped.push(
+                    parsed.error.issues
+                        .map((issue) => issue.path.join('.'))
+                        .join(',')
+                )
+                return []
+            })
+            // Drop questions that are already in the deck.
+            const existingKeys = new Set(existingFronts.map(promptKey))
+            const uniqueCards = validCards
+                .filter(
+                    (card) => !existingKeys.has(promptKey(card.front ?? ''))
+                )
+                .slice(0, MAX_ITEMS_PER_GENERATION)
+
+            console.info('AI generation counts:', {
+                requestId,
+                model: AI_MODEL,
+                pdfBytes: pdf?.byteLength ?? 0,
+                finishReason,
+                promptTokens: usage?.promptTokens,
+                completionTokens: usage?.completionTokens,
+                returned: object.items.length,
+                afterTypeFilter: ofAllowedType.length,
+                afterDedupe: deduped.length,
+                valid: validCards.length,
+                existingInDeck: existingFronts.length,
+                new: uniqueCards.length,
+            })
+            if (dropped.length) {
+                console.warn('AI items failed validation:', {
+                    requestId,
+                    fields: dropped,
+                })
+            }
             if (uniqueCards.length === 0) {
                 return {
                     success: false,
-                    error: t('noDuplicateCards'),
+                    error: validCards.length
+                        ? t('allItemsExist')
+                        : t('noDuplicateCards'),
                     requestId,
                 }
             }
@@ -562,20 +486,19 @@ export async function generateAIFlashcardsUnified(
             logSecurityEvent({
                 userId,
                 action: 'successful_ai_generation',
-                details: `Generated ${uniqueCards.length} cards`,
+                details: `Generated ${uniqueCards.length} items`,
                 severity: 'low',
                 requestId,
             })
 
             // Create flashcards in database
-            const result = await createFlashcardsFromJson({
+            const result = await createItemsFromJson({
                 deckId: params.deckId,
-                cardsJson: JSON.stringify(uniqueCards),
+                json: JSON.stringify(uniqueCards),
             })
 
             if (result.success) {
-                const successCount =
-                    result.results?.filter((r) => r.success).length || 0
+                const successCount = result.created ?? 0
                 onProgress?.(
                     'complete',
                     100,
@@ -589,7 +512,10 @@ export async function generateAIFlashcardsUnified(
                     tier: rateLimitResult.tier,
                     remaining: rateLimitResult.remaining,
                     requestId,
-                    flashcards: uniqueCards,
+                    items: uniqueCards.map((item) => ({
+                        type: item.type,
+                        front: item.front ?? '',
+                    })),
                 }
             } else {
                 return {
@@ -606,6 +532,15 @@ export async function generateAIFlashcardsUnified(
                     aiError instanceof Error
                         ? aiError.message
                         : 'Unknown AI error',
+                ...(NoObjectGeneratedError.isInstance(aiError)
+                    ? {
+                          finishReason: aiError.finishReason,
+                          usage: aiError.usage,
+                          textLength: aiError.text?.length ?? 0,
+                      }
+                    : {}),
+                model: AI_MODEL,
+                pdfBytes: pdf?.byteLength ?? 0,
             })
             return handleAIError(aiError, t, requestId)
         }
@@ -619,6 +554,29 @@ export async function generateAIFlashcardsUnified(
             success: false,
             error: t('unexpectedError'),
             requestId,
+        }
+    }
+}
+
+/**
+ * Runs a generation and always deletes the uploaded PDF afterwards. The file
+ * is single use, so it is removed on success, error and rejection alike.
+ */
+export async function generateAIFlashcardsUnified(
+    params: GenerateFlashcardsParams,
+    onProgress?: ProgressCallback
+): Promise<AIGenerationResult> {
+    try {
+        return await runGeneration(params, onProgress)
+    } finally {
+        if (params.fileUrl) {
+            const session = await getServerSession(authOptions)
+            const pathname = session?.user?.id
+                ? aiUploadPathname(params.fileUrl, session.user.id)
+                : null
+            if (pathname) {
+                await deleteBlobs([pathname])
+            }
         }
     }
 }

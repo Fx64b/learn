@@ -2,6 +2,10 @@ import { useAIFlashcards } from '@/lib/hooks/use-ai-flashcards'
 import { act, renderHook } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { uploadPresigned } from '@vercel/blob/client'
+
+vi.mock('@vercel/blob/client', () => ({ uploadPresigned: vi.fn() }))
+
 // Mock fetch
 global.fetch = vi.fn()
 
@@ -138,5 +142,61 @@ describe('useAIFlashcards', () => {
                 expect(error).toBeDefined()
             }
         })
+    })
+
+    it('uploads the PDF to Blob and sends only its URL', async () => {
+        vi.mocked(uploadPresigned).mockResolvedValue({
+            url: 'https://x.public.blob.vercel-storage.com/ai-uploads/u1/My-Notes-abc.pdf',
+        } as never)
+        vi.mocked(fetch).mockRejectedValue(new Error('stop here'))
+        const file = new File(['%PDF-1.7'], 'My Notes (v2).pdf', {
+            type: 'application/pdf',
+        })
+
+        const { result } = renderHook(() => useAIFlashcards())
+        await act(async () => {
+            await result.current.generateFlashcards({
+                deckId: 'd1',
+                prompt: 'X',
+                file,
+                userId: 'u1',
+            })
+        })
+
+        const [path, body, options] = vi.mocked(uploadPresigned).mock.calls[0]
+        expect(path).toMatch(
+            /^ai-uploads\/u1\/[A-Za-z0-9-]+-My-Notes-v2-\.pdf$/
+        )
+        expect(body).toBe(file)
+        expect(options).toMatchObject({
+            access: 'public',
+            handleUploadUrl: '/api/ai-flashcards/upload',
+            contentType: 'application/pdf',
+        })
+        const form = vi.mocked(fetch).mock.calls[0][1]?.body as FormData
+        expect(form.get('fileUrl')).toContain('/ai-uploads/u1/')
+        expect(form.get('file')).toBeNull()
+    })
+
+    it('reports a failed upload without calling the API', async () => {
+        vi.mocked(uploadPresigned).mockRejectedValue(new Error('token refused'))
+        const file = new File(['%PDF-1.7'], 'a.pdf', {
+            type: 'application/pdf',
+        })
+
+        const { result } = renderHook(() => useAIFlashcards())
+        let res: Awaited<ReturnType<typeof result.current.generateFlashcards>>
+        await act(async () => {
+            res = await result.current.generateFlashcards({
+                deckId: 'd1',
+                prompt: 'X',
+                file,
+                userId: 'u1',
+            })
+        })
+
+        expect(res!.success).toBe(false)
+        expect(res!.errorCode).toBe('upload_failed')
+        expect(fetch).not.toHaveBeenCalled()
     })
 })

@@ -78,6 +78,13 @@
             "when": 1752949191777,
             "tag": "0010_soft_carnage",
             "breakpoints": true
+        },
+        {
+            "idx": 11,
+            "version": "6",
+            "when": 1791199357307,
+            "tag": "0011_natural_maddog",
+            "breakpoints": true
         }
     ]
 }

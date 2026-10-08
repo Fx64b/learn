@@ -1,59 +1,62 @@
-import { CheckCircle } from 'lucide-react'
+import { CONTACT_EMAIL } from '@/lib/contact'
+import { Check, MailCheck } from 'lucide-react'
 
 import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 
-import { Button } from '@/components/ui/button'
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card'
+import { AuthShell } from '@/components/site/auth-shell'
+import { secondaryButton } from '@/components/site/styles'
 
 export default async function VerifyRequestPage() {
     const t = await getTranslations('auth.verifyRequest')
 
     return (
-        <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center px-4">
-            <Card className="w-full max-w-md">
-                <CardHeader className="text-center">
-                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
-                        <CheckCircle className="h-8 w-8 text-green-600" />
-                    </div>
-                    <CardTitle className="text-2xl">{t('title')}</CardTitle>
-                    <CardDescription>{t('subtitle')}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <p className="text-muted-foreground bg-muted rounded-lg p-4 text-center text-sm">
-                        {t('description')}
-                    </p>
-                    <p className="text-sm">{t('note')}</p>
-                </CardContent>
-                <CardFooter className="flex flex-col gap-2">
-                    <Button asChild variant="outline" className="w-full">
-                        <Link href="/login">{t('backToLogin')}</Link>
-                    </Button>
-                    <p className="text-muted-foreground text-center text-xs">
-                        {t('trouble')}{' '}
-                        <Link
-                            href="/todo"
-                            className="text-primary hover:underline"
+        <AuthShell>
+            <div className="space-y-6 text-center">
+                <span className="animate-pop mx-auto flex size-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400">
+                    <MailCheck className="size-8" aria-hidden />
+                </span>
+                <div className="space-y-2">
+                    <h1 className="text-2xl font-extrabold tracking-tight">
+                        {t('title')}
+                    </h1>
+                    <p className="font-semibold">{t('subtitle')}</p>
+                    <p className="text-muted-foreground">{t('description')}</p>
+                </div>
+                <ul className="bg-muted/50 space-y-2 rounded-xl p-4 text-left text-sm">
+                    {(t.raw('tips') as string[]).map((tip) => (
+                        <li
+                            key={tip}
+                            className="text-muted-foreground flex gap-2"
                         >
-                            {t('contactSupport')}
-                        </Link>
-                        {t('orWriteAnEmail')}{' '}
-                        <Link
-                            href="mailto:learn@fx64b.dev"
-                            className="text-primary hover:underline"
-                        >
-                            learn@fx64b.dev
-                        </Link>
-                    </p>
-                </CardFooter>
-            </Card>
-        </div>
+                            <Check
+                                className="mt-0.5 size-4 shrink-0 text-emerald-500"
+                                aria-hidden
+                            />
+                            {tip}
+                        </li>
+                    ))}
+                </ul>
+                <Link href="/login" className={`${secondaryButton} w-full`}>
+                    {t('backToLogin')}
+                </Link>
+                <p className="text-muted-foreground text-sm">
+                    {t('trouble')}{' '}
+                    <Link
+                        href="/contact"
+                        className="font-semibold text-emerald-600 hover:underline dark:text-emerald-400"
+                    >
+                        {t('contactSupport')}
+                    </Link>{' '}
+                    {t('orWriteAnEmail')}{' '}
+                    <a
+                        href={`mailto:${CONTACT_EMAIL}`}
+                        className="font-semibold text-emerald-600 hover:underline dark:text-emerald-400"
+                    >
+                        {CONTACT_EMAIL}
+                    </a>
+                </p>
+            </div>
+        </AuthShell>
     )
 }

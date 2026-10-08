@@ -1,6 +1,7 @@
 'use server'
 
 import { authOptions } from '@/lib/auth'
+import { parseItemRow, toExportItem } from '@/lib/items'
 import { checkRateLimit } from '@/lib/rate-limit/rate-limit'
 
 import { getServerSession } from 'next-auth'
@@ -24,8 +25,6 @@ export async function getExportableFlashcards(deckId: string) {
 
     const flashcards = await getFlashcardsByDeckId(deckId)
 
-    return flashcards.map((card) => ({
-        front: card.front,
-        back: card.back,
-    }))
+    // Basic cards export as { front, back }; other types add type and content.
+    return flashcards.map((card) => toExportItem(parseItemRow(card)))
 }

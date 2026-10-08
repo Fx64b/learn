@@ -1,6 +1,13 @@
 import { users } from '@/db/auth-schema'
 import { sql } from 'drizzle-orm'
-import { index, integer, sqliteTable, text } from 'drizzle-orm/sqlite-core'
+import {
+    index,
+    integer,
+    primaryKey,
+    sqliteTable,
+    text,
+    uniqueIndex,
+} from 'drizzle-orm/sqlite-core'
 
 export * from './auth-schema'
 
@@ -32,6 +39,11 @@ export const flashcards = sqliteTable(
         deckId: text('deck_id')
             .notNull()
             .references(() => decks.id),
+        // Item type, see lib/items/schema.ts. Legacy cards are 'basic'.
+        type: text('type').notNull().default('basic'),
+        // Type-specific JSON content. Null for legacy basic cards.
+        content: text('content'),
+        // Prompt shown for the item and a plain-text answer summary
         front: text('front').notNull(),
         back: text('back').notNull(),
         isExamRelevant: integer('is_exam_relevant', { mode: 'boolean' })
@@ -101,6 +113,8 @@ export const reviewEvents = sqliteTable(
         rating: integer('rating').notNull(),
         easeFactor: integer('ease_factor').notNull(),
         interval: integer('interval').notNull(),
+        // Exercise kind that produced this review (null for legacy reviews)
+        exerciseType: text('exercise_type'),
         createStamp: integer('create_stamp', { mode: 'timestamp' })
             .default(sql`CURRENT_TIMESTAMP`)
             .notNull(),
@@ -159,10 +173,89 @@ export const userPreferences = sqliteTable('user_preferences', {
         .default('horizontal'),
     theme: text('theme').notNull().default('dark'),
     locale: text('locale').notNull().default('en'),
+    soundEnabled: integer('sound_enabled', { mode: 'boolean' })
+        .notNull()
+        .default(true),
+    dailyGoalXp: integer('daily_goal_xp').notNull().default(30),
     updatedAt: integer('updated_at', { mode: 'timestamp' })
         .default(sql`CURRENT_TIMESTAMP`)
         .notNull(),
 })
+
+export const userStats = sqliteTable('user_stats', {
+    userId: text('user_id')
+        .notNull()
+        .references(() => users.id)
+        .primaryKey(),
+    totalXp: integer('total_xp').notNull().default(0),
+    currentStreak: integer('current_streak').notNull().default(0),
+    longestStreak: integer('longest_streak').notNull().default(0),
+    // Local calendar date (YYYY-MM-DD) of the last day with activity
+    lastActiveDate: text('last_active_date'),
+    streakFreezes: integer('streak_freezes').notNull().default(1),
+    timezone: text('timezone').notNull().default('UTC'),
+    updatedAt: integer('updated_at', { mode: 'timestamp' })
+        .default(sql`CURRENT_TIMESTAMP`)
+        .notNull(),
+})
+
+export const dailyActivity = sqliteTable(
+    'daily_activity',
+    {
+        userId: text('user_id')
+            .notNull()
+            .references(() => users.id),
+        // Local calendar date (YYYY-MM-DD) in the user's timezone
+        date: text('date').notNull(),
+        xp: integer('xp').notNull().default(0),
+        exercises: integer('exercises').notNull().default(0),
+        correct: integer('correct').notNull().default(0),
+        timeMs: integer('time_ms').notNull().default(0),
+    },
+    (table) => ({
+        pk: primaryKey({ columns: [table.userId, table.date] }),
+    })
+)
+
+export const userAchievements = sqliteTable(
+    'user_achievements',
+    {
+        userId: text('user_id')
+            .notNull()
+            .references(() => users.id),
+        achievementId: text('achievement_id').notNull(),
+        unlockedAt: integer('unlocked_at', { mode: 'timestamp' })
+            .default(sql`CURRENT_TIMESTAMP`)
+            .notNull(),
+    },
+    (table) => ({
+        pk: primaryKey({ columns: [table.userId, table.achievementId] }),
+    })
+)
+
+export const deckRecords = sqliteTable(
+    'deck_records',
+    {
+        id: text('id').primaryKey().notNull(),
+        userId: text('user_id')
+            .notNull()
+            .references(() => users.id),
+        deckId: text('deck_id')
+            .notNull()
+            .references(() => decks.id),
+        bestMatchMs: integer('best_match_ms'),
+        bestTestScore: integer('best_test_score'), // percent 0-100
+        updatedAt: integer('updated_at', { mode: 'timestamp' })
+            .default(sql`CURRENT_TIMESTAMP`)
+            .notNull(),
+    },
+    (table) => ({
+        userDeckIdx: uniqueIndex('deck_records_user_deck_idx').on(
+            table.userId,
+            table.deckId
+        ),
+    })
+)
 
 export const subscriptions = sqliteTable(
     'subscriptions',

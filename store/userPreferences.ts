@@ -7,6 +7,7 @@ const initialState = {
     animationDirection: 'horizontal' as const,
     theme: 'dark' as const,
     locale: 'en' as const,
+    soundEnabled: true,
 }
 
 interface UserPreferencesState {
@@ -15,6 +16,8 @@ interface UserPreferencesState {
     animationDirection: 'horizontal' | 'vertical'
     theme: 'light' | 'dark' | 'system'
     locale: 'en' | 'de'
+    soundEnabled: boolean
+    setSoundEnabled: (enabled: boolean) => void
     setAnimationsEnabled: (enabled: boolean) => void
     setAnimationSpeed: (speed: number) => void
     setAnimationDirection: (direction: 'horizontal' | 'vertical') => void
@@ -38,6 +41,8 @@ export const useUserPreferences = create<UserPreferencesState>()(
                 set((state) => ({ ...state, animationDirection: direction })),
             setTheme: (theme) => set((state) => ({ ...state, theme })),
             setLocale: (locale) => set((state) => ({ ...state, locale })),
+            setSoundEnabled: (soundEnabled) =>
+                set((state) => ({ ...state, soundEnabled })),
         }),
         {
             name: 'user-preferences',

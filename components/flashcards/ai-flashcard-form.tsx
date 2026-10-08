@@ -1,14 +1,19 @@
 'use client'
 
+import { MAX_PDF_BYTES } from '@/lib/blob'
 import { useAIFlashcards } from '@/lib/hooks/use-ai-flashcards'
+import { AI_ITEM_TYPES, type AiItemType, ITEM_COUNT_OPTIONS } from '@/lib/items'
+import { cn } from '@/lib/utils'
 import { FileText, Loader2, Sparkles, Upload, X, XCircle } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { useCallback, useState } from 'react'
 
+import { useSession } from 'next-auth/react'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 
+import { ITEM_TYPE_ICONS } from '@/components/items/item-type-badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -22,12 +27,14 @@ interface AIFlashcardFormProps {
     deckId: string
 }
 
-// TODO: evaluate if it make sense to extract file content client side and just send the text to the api to save request time, bandwitdh and cost
-// For now only consider this if timeout issues persist or if cpu time explodes
-
 export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
     const t = useTranslations('deck.ai')
+    const ti = useTranslations('items.types')
+    const [types, setTypes] = useState<AiItemType[]>([...AI_ITEM_TYPES])
+    /** About how many items to create. Undefined lets the AI choose. */
+    const [count, setCount] = useState<number | undefined>()
     const router = useRouter()
+    const { data: session } = useSession()
     const [prompt, setPrompt] = useState('')
     const [file, setFile] = useState<File | null>(null)
     const [dragActive, setDragActive] = useState(false)
@@ -53,6 +60,10 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
 
             const droppedFile = e.dataTransfer.files?.[0]
             if (droppedFile && droppedFile.type === 'application/pdf') {
+                if (droppedFile.size > MAX_PDF_BYTES) {
+                    toast.error(t('fileTooLarge', { max: '20 MB' }))
+                    return
+                }
                 setFile(droppedFile)
             } else {
                 toast.error(t('invalidFileType'))
@@ -64,6 +75,10 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0]
         if (selectedFile && selectedFile.type === 'application/pdf') {
+            if (selectedFile.size > MAX_PDF_BYTES) {
+                toast.error(t('fileTooLarge', { max: '20 MB' }))
+                return
+            }
             setFile(selectedFile)
         } else {
             toast.error(t('invalidFileType'))
@@ -84,8 +99,8 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
 
         try {
             // Validate file size if present
-            if (file && file.size > 5 * 1024 * 1024) {
-                toast.error(t('fileTooLarge', { max: '5MB' }))
+            if (file && file.size > MAX_PDF_BYTES) {
+                toast.error(t('fileTooLarge', { max: '20 MB' }))
                 return
             }
 
@@ -93,12 +108,26 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
                 deckId,
                 prompt: prompt.trim(),
                 file: file || undefined,
+                userId: session?.user?.id,
+                types:
+                    types.length === AI_ITEM_TYPES.length ? undefined : types,
+                count,
             })
 
             if (result.requiresPro) {
                 // Show upgrade modal or redirect
                 toast.error(result.error || t('proRequired'))
                 router.push('/pricing')
+                return
+            }
+
+            if (result.errorCode === 'upload_failed') {
+                toast.error(t('uploadFailed'))
+                return
+            }
+            if (result.errorCode === 'stream_ended') {
+                toast.error(t('streamEnded'))
+                router.refresh()
                 return
             }
 
@@ -165,6 +194,86 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
                     </div>
 
                     <div className="space-y-2">
+                        <Label>{t('typesLabel')}</Label>
+                        <div className="flex flex-wrap gap-2">
+                            {AI_ITEM_TYPES.map((type) => {
+                                const Icon = ITEM_TYPE_ICONS[type]
+                                const active = types.includes(type)
+                                return (
+                                    <button
+                                        key={type}
+                                        type="button"
+                                        aria-pressed={active}
+                                        onClick={() =>
+                                            setTypes((prev) =>
+                                                active
+                                                    ? prev.length > 1
+                                                        ? prev.filter(
+                                                              (t) => t !== type
+                                                          )
+                                                        : prev
+                                                    : [...prev, type]
+                                            )
+                                        }
+                                        className={cn(
+                                            'focus-visible:ring-ring/50 inline-flex items-center gap-1.5 rounded-full border-2 px-3 py-1 text-xs font-medium transition-colors outline-none focus-visible:ring-[3px]',
+                                            active
+                                                ? 'border-sky-500 bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-300'
+                                                : 'text-muted-foreground hover:bg-accent'
+                                        )}
+                                    >
+                                        <Icon
+                                            className="size-3.5"
+                                            aria-hidden
+                                        />
+                                        {ti(type)}
+                                    </button>
+                                )
+                            })}
+                        </div>
+                        <p className="text-muted-foreground text-xs">
+                            {t('typesHint')}
+                        </p>
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label id="ai-count-label">{t('countLabel')}</Label>
+                        <div
+                            role="radiogroup"
+                            aria-labelledby="ai-count-label"
+                            className="bg-muted inline-flex flex-wrap gap-1 rounded-xl p-1"
+                        >
+                            {[undefined, ...ITEM_COUNT_OPTIONS].map((value) => {
+                                const active = count === value
+                                return (
+                                    <button
+                                        key={value ?? 'auto'}
+                                        type="button"
+                                        role="radio"
+                                        aria-checked={active}
+                                        onClick={() => setCount(value)}
+                                        className={cn(
+                                            'focus-visible:ring-ring/50 rounded-lg px-3 py-1.5 text-sm font-semibold tabular-nums transition-colors outline-none focus-visible:ring-[3px]',
+                                            active
+                                                ? 'bg-background text-foreground shadow-sm'
+                                                : 'text-muted-foreground hover:text-foreground'
+                                        )}
+                                    >
+                                        {value === undefined
+                                            ? t('countAuto')
+                                            : t('countAbout', { count: value })}
+                                    </button>
+                                )
+                            })}
+                        </div>
+                        <p className="text-muted-foreground text-xs">
+                            {count === undefined
+                                ? t('countHintAuto')
+                                : t('countHint', { count })}
+                        </p>
+                    </div>
+
+                    <div className="space-y-2">
                         <Label>{t('documentLabel')}</Label>
                         <div
                             className={`relative rounded-lg border-2 border-dashed p-6 text-center transition-colors ${
@@ -222,7 +331,7 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
                         </div>
                     </div>
 
-                    {file && file.size > 2 * 1024 * 1024 && (
+                    {file && file.size > 8 * 1024 * 1024 && (
                         <DismissibleWarning
                             id="largeFileUpload"
                             message={t('largeFileWarning')}

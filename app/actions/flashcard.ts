@@ -2,116 +2,106 @@
 
 import * as dbUtils from '@/db/utils'
 import { authOptions } from '@/lib/auth'
+import { deleteImages, imagesOf } from '@/lib/blob'
+import { parseImport, parseItemRow, toItemRow } from '@/lib/items'
 import { checkRateLimit } from '@/lib/rate-limit/rate-limit'
 
 import { getServerSession } from 'next-auth'
 import { getTranslations } from 'next-intl/server'
 import { revalidatePath } from 'next/cache'
 
-export async function createFlashcard(formData: FormData) {
+type Failure = { success: false; error: string }
+
+/** Authenticates, rate limits and checks that the deck belongs to the user. */
+async function authorizeDeck(
+    deckId: string,
+    limit: 'cardMutation' | 'bulkCreate'
+): Promise<{ userId: string } | Failure> {
     const authT = await getTranslations('auth')
     const t = await getTranslations('deck.cards')
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) {
+        return { success: false, error: authT('notAuthenticated') }
+    }
+    const rate = await checkRateLimit(`user:${session.user.id}:${limit}`, limit)
+    if (!rate.success) {
+        return {
+            success: false,
+            error:
+                limit === 'bulkCreate'
+                    ? authT('bulkRatelimitExceeded')
+                    : authT('ratelimitExceeded'),
+        }
+    }
+    const deck =
+        typeof deckId === 'string' &&
+        (await dbUtils.getDeckById(deckId, session.user.id))
+    if (!deck) return { success: false, error: t('unauthorized') }
+    return { userId: session.user.id }
+}
 
+/** Loads an item and checks that its deck belongs to the user. */
+async function authorizeItem(id: string) {
+    const t = await getTranslations('deck.cards')
+    const item = typeof id === 'string' && (await dbUtils.getFlashcardById(id))
+    if (!item) return { success: false as const, error: t('notFound') }
+    const auth = await authorizeDeck(item.deckId, 'cardMutation')
+    if (!('userId' in auth)) return auth
+    return { item }
+}
+
+function revalidateDeck(deckId: string) {
+    revalidatePath(`/deck/${deckId}`)
+    revalidatePath(`/deck/${deckId}/edit`)
+}
+
+/** Creates one item of any type (see lib/items/schema.ts). */
+export async function createItem(data: { deckId: string; item: unknown }) {
+    const t = await getTranslations('deck.cards')
     try {
-        const session = await getServerSession(authOptions)
-        if (!session?.user?.id) {
-            return { success: false, error: authT('notAuthenticated') }
-        }
+        const auth = await authorizeDeck(data.deckId, 'cardMutation')
+        if (!('userId' in auth)) return auth
 
-        const rateLimitResult = await checkRateLimit(
-            `user:${session.user.id}:create-card`
-        )
+        const row = toItemRow(data.item)
+        if (!row.success) return { success: false, error: row.error }
 
-        if (!rateLimitResult.success) {
-            return {
-                success: false,
-                error: authT('ratelimitExceeded'),
-            }
-        }
-
-        const deckId = formData.get('deckId') as string
-        const front = formData.get('front') as string
-        const back = formData.get('back') as string
-        const isExamRelevant = formData.get('isExamRelevant') === 'true'
-
-        const id = await dbUtils.createFlashcard({
-            deckId,
-            front,
-            back,
-            isExamRelevant,
-        })
-
-        revalidatePath(`/learn/${deckId}`)
+        const [id] = await dbUtils.createItems(data.deckId, [row.data])
+        revalidateDeck(data.deckId)
         return { success: true, id }
     } catch (error) {
-        console.error('Error creating flashcard:', error)
+        console.error('Error creating item:', error)
         return { success: false, error: t('createError') }
     }
 }
 
-export async function createFlashcardsFromJson(data: {
+/**
+ * Creates items from a JSON import (array of items or classic
+ * `{ front, back }` cards). Invalid entries are skipped and reported.
+ */
+export async function createItemsFromJson(data: {
     deckId: string
-    cardsJson: string
+    json: string
 }) {
-    const authT = await getTranslations('auth')
     const t = await getTranslations('deck.cards')
-
     try {
-        const session = await getServerSession(authOptions)
-        if (!session?.user?.id) {
-            return { success: false, error: authT('notAuthenticated') }
+        const auth = await authorizeDeck(data.deckId, 'bulkCreate')
+        if (!('userId' in auth)) return auth
+
+        const parsed = parseImport(data.json)
+        if ('error' in parsed) {
+            return { success: false, error: t(parsed.error) }
         }
-
-        const rateLimitResult = await checkRateLimit(
-            `user:${session.user.id}:bulk-create`,
-            'bulkCreate'
-        )
-
-        if (!rateLimitResult.success) {
-            return {
-                success: false,
-                error: authT('bulkRatelimitExceeded'),
-            }
-        }
-
-        const cards = JSON.parse(data.cardsJson)
-
-        if (!Array.isArray(cards)) {
-            return { success: false, error: t('invalidJsonArray') }
-        }
-
-        const results = []
-
-        for (const card of cards) {
-            if (!card.front || !card.back) {
-                results.push({
-                    success: false,
-                    error: t('missingFields'),
-                    front: card.front,
-                })
-                continue
-            }
-
-            const id = await dbUtils.createFlashcard({
-                deckId: data.deckId,
-                front: card.front,
-                back: card.back,
-                isExamRelevant: card.isExamRelevant ?? true,
-            })
-
-            results.push({ success: true, id })
-        }
-
-        revalidatePath(`/deck/${data.deckId}/edit`)
-        revalidatePath(`/learn/${data.deckId}`)
-
-        return { success: true, results }
-    } catch (error) {
-        console.error('Error creating cards:', error)
+        const ids = await dbUtils.createItems(data.deckId, parsed.rows)
+        revalidateDeck(data.deckId)
         return {
-            success: false,
-            error: t('bulkCreateError'),
+            success: true,
+            created: ids.length,
+            errors: parsed.errors,
+            types: parsed.rows.map((r) => r.type),
         }
+    } catch (error) {
+        console.error('Error importing items:', error)
+        return { success: false, error: t('bulkCreateError') }
     }
 }
 
@@ -138,132 +128,42 @@ export async function getFlashcardsByDeckId(deckId: string) {
     }
 }
 
-export async function reviewCard(flashcardId: string, rating: number) {
-    const authT = await getTranslations('auth')
+export async function updateItem(data: { id: string; item: unknown }) {
     const t = await getTranslations('deck.cards')
-
     try {
-        const session = await getServerSession(authOptions)
-        if (!session?.user?.id) {
-            return { success: false, error: authT('notAuthenticated') }
-        }
+        const auth = await authorizeItem(data.id)
+        if (!('item' in auth)) return auth
 
-        const rateLimitResult = await checkRateLimit(
-            `user:${session.user.id}:review`,
-            'studyReview'
+        const row = toItemRow(data.item)
+        if (!row.success) return { success: false, error: row.error }
+
+        await dbUtils.updateItem(data.id, row.data)
+
+        // Remove images that the new version no longer uses.
+        const before = imagesOf(parseItemRow(auth.item))
+        const after = new Set(
+            imagesOf(parseItemRow({ ...auth.item, ...row.data, id: data.id }))
         )
+        await deleteImages(before.filter((url) => !after.has(url)))
 
-        if (!rateLimitResult.success) {
-            return {
-                success: false,
-                error: authT('ratelimitExceeded'),
-            }
-        }
-
-        const result = await dbUtils.reviewCard({
-            flashcardId,
-            userId: session.user.id,
-            rating,
-        })
-
-        revalidatePath(`/learn/${flashcardId.split('-')[0]}`)
-        return { success: true, ...result }
-    } catch (error) {
-        console.error('Error reviewing card:', error)
-        return { success: false, error: t('reviewError') }
-    }
-}
-
-export async function updateFlashcard(data: {
-    id: string
-    front: string
-    back: string
-    isExamRelevant: boolean
-}) {
-    const authT = await getTranslations('auth')
-    const t = await getTranslations('deck.cards')
-
-    try {
-        const session = await getServerSession(authOptions)
-        if (!session?.user?.id) {
-            return { success: false, error: authT('notAuthenticated') }
-        }
-
-        const rateLimitResult = await checkRateLimit(
-            `user:${session.user.id}:card-update`,
-            'cardMutation'
-        )
-
-        if (!rateLimitResult.success) {
-            return {
-                success: false,
-                error: authT('ratelimitExceeded'),
-            }
-        }
-
-        const flashcard = await dbUtils.getFlashcardById(data.id)
-        if (!flashcard) {
-            return { success: false, error: t('notFound') }
-        }
-
-        const deck = await dbUtils.getDeckById(
-            flashcard.deckId,
-            session.user.id
-        )
-        if (!deck) {
-            return { success: false, error: t('unauthorized') }
-        }
-
-        await dbUtils.updateFlashcard({
-            id: data.id,
-            front: data.front,
-            back: data.back,
-            isExamRelevant: data.isExamRelevant,
-        })
-
-        revalidatePath(`/deck/${flashcard.deckId}/edit`)
-        revalidatePath(`/learn/${flashcard.deckId}`)
-
+        revalidateDeck(auth.item.deckId)
         return { success: true }
     } catch (error) {
-        console.error('Error updating card:', error)
+        console.error('Error updating item:', error)
         return { success: false, error: t('updateError') }
     }
 }
 
 export async function deleteFlashcard(id: string) {
     const t = await getTranslations('deck.cards')
-    const authT = await getTranslations('auth')
-
     try {
-        const session = await getServerSession(authOptions)
-        if (!session?.user?.id) {
-            return { success: false, error: authT('notAuthenticated') }
-        }
+        const auth = await authorizeItem(id)
+        if (!('item' in auth)) return auth
 
-        const rateLimitResult = await checkRateLimit(
-            `user:${session.user.id}:card-delete`,
-            'cardMutation'
-        )
+        await dbUtils.deleteItem(id)
+        await deleteImages(imagesOf(parseItemRow(auth.item)))
 
-        if (!rateLimitResult.success) {
-            return {
-                success: false,
-                error: authT('ratelimitExceeded'),
-            }
-        }
-
-        const flashcard = await dbUtils.getFlashcardById(id)
-        if (!flashcard) {
-            return { success: false, error: t('notFound') }
-        }
-
-        const deckId = flashcard.deckId
-        await dbUtils.deleteFlashcard(id)
-
-        revalidatePath(`/deck/${deckId}/edit`)
-        revalidatePath(`/learn/${deckId}`)
-
+        revalidateDeck(auth.item.deckId)
         return { success: true }
     } catch (error) {
         console.error('Error deleting card:', error)

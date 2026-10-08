@@ -12,10 +12,10 @@ Todos and improvements according to ai.
 ## UX/UI Enhancements:
 
 1. **Gamification Elements**
-    - Add streaks for daily study (DONE)
-    - Create achievement badges
-    - Add experience points/levels
-    - Implement study goals and rewards
+    - Add streaks for daily study (DONE, with streak freeze)
+    - Create achievement badges (DONE)
+    - Add experience points (DONE, no levels by design)
+    - Implement study goals and rewards (DONE, daily XP goal)
 
 2. **Organization Features**
     - Add card tagging system
@@ -30,7 +30,7 @@ Todos and improvements according to ai.
     - Search across all content
 
 4. **Enhanced Card Features**
-    - Add image support for flashcards
+    - Add image support for flashcards (DONE for diagram items)
     - Support for audio pronunciation
     - Multi-language support
     - Rich text formatting options

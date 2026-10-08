@@ -62,6 +62,11 @@ export const limits = redis
               limiter: Ratelimit.slidingWindow(50, '1h'), // 50 preference updates per hour
               analytics: true,
           }),
+          upload: new Ratelimit({
+              redis: redis,
+              limiter: Ratelimit.slidingWindow(30, '1h'), // 30 image uploads per hour
+              analytics: true,
+          }),
           paymentStatus: new Ratelimit({
               redis: redis,
               limiter: Ratelimit.slidingWindow(100, '1h'), // 100 payment status checks per hour
@@ -79,6 +84,7 @@ export const limits = redis
           dataRetrieval: null,
           export: null,
           preferences: null,
+          upload: null,
           paymentStatus: null,
       }
 

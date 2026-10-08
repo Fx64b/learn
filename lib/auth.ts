@@ -1,6 +1,7 @@
 import { db } from '@/db'
 import { users } from '@/db/auth-schema'
-import { generateLoginEmail, generateWelcomeEmail } from '@/lib/email-templates'
+import { CONTACT_EMAIL } from '@/lib/contact'
+import { generateAuthEmail } from '@/lib/email-templates'
 import { checkRateLimit } from '@/lib/rate-limit/rate-limit'
 import { DrizzleAdapter } from '@auth/drizzle-adapter'
 import { eq } from 'drizzle-orm'
@@ -8,7 +9,7 @@ import { Resend } from 'resend'
 
 import { NextAuthOptions } from 'next-auth'
 import EmailProvider from 'next-auth/providers/email'
-import { getTranslations } from 'next-intl/server'
+import { getLocale, getTranslations } from 'next-intl/server'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -49,39 +50,28 @@ export const authOptions: NextAuthOptions = {
                         .limit(1)
 
                     const isNewUser = existingUser.length === 0
-                    const logoUrl = 'https://learn.fx64b.dev/logo-dark.png'
-                    const siteName = 'Learn'
-
-                    let htmlContent: string
-                    let subject: string
-
-                    if (isNewUser) {
-                        // Welcome email for new users
-                        subject = t('email.welcome.subject')
-                        htmlContent = generateWelcomeEmail({
-                            url,
-                            siteName,
-                            logoUrl,
-                            title: subject,
-                            heading: t('email.welcome.heading'),
-                            message: t('email.welcome.message'),
-                            buttonText: t('email.welcome.button'),
-                            footerText: t('email.welcome.footer'),
-                        })
-                    } else {
-                        // Login email for returning users
-                        subject = t('email.login.subject')
-                        htmlContent = generateLoginEmail({
-                            url,
-                            siteName,
-                            logoUrl,
-                            title: subject,
-                            heading: t('email.login.heading'),
-                            message: t('email.login.message'),
-                            buttonText: t('email.login.button'),
-                            footerText: t('email.login.footer'),
-                        })
-                    }
+                    const siteUrl =
+                        process.env.NEXT_PUBLIC_SITE_URL ||
+                        'https://learn.fx64b.dev'
+                    const kind = isNewUser ? 'welcome' : 'login'
+                    const subject = t(`email.${kind}.subject`)
+                    const htmlContent = generateAuthEmail({
+                        url,
+                        siteName: 'Learn',
+                        siteUrl,
+                        logoUrl: `${siteUrl}/logo-light.png`,
+                        lang: await getLocale(),
+                        title: subject,
+                        heading: t(`email.${kind}.heading`),
+                        message: t(`email.${kind}.message`),
+                        buttonText: t(`email.${kind}.button`),
+                        linkHint: t('email.linkHint'),
+                        footerText: t(`email.${kind}.footer`),
+                        contactEmail: CONTACT_EMAIL,
+                        highlights: isNewUser
+                            ? (t.raw('email.welcome.highlights') as string[])
+                            : undefined,
+                    })
 
                     const result = await resend.emails.send({
                         from,

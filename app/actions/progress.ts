@@ -1,8 +1,10 @@
 'use server'
 
 import { db } from '@/db'
+import { ensureUserStats } from '@/db/learn'
 import { cardReviews, decks, flashcards, reviewEvents } from '@/db/schema'
 import { authOptions } from '@/lib/auth'
+import { displayStreak, localDate } from '@/lib/gamification'
 import { checkRateLimit } from '@/lib/rate-limit/rate-limit'
 import { and, desc, eq, gte, isNull, lte, or, sql } from 'drizzle-orm'
 
@@ -184,54 +186,7 @@ export async function getLearningProgress() {
 }
 
 async function calculateStreak(userId: string): Promise<number> {
-    const reviewDates = await db
-        .select({
-            date: sql<string>`DATE(${reviewEvents.reviewedAt}, 'unixepoch', 'localtime')`.as(
-                'date'
-            ),
-        })
-        .from(reviewEvents)
-        .where(eq(reviewEvents.userId, userId))
-        .groupBy(
-            sql`DATE(${reviewEvents.reviewedAt}, 'unixepoch', 'localtime')`
-        )
-        .orderBy(
-            desc(
-                sql`DATE(${reviewEvents.reviewedAt}, 'unixepoch', 'localtime')`
-            )
-        )
-
-    if (reviewDates.length === 0) return 0
-
-    const today = new Date()
-    const todayStr = today.toISOString().split('T')[0]
-
-    let streak = 0
-    let currentDate = new Date(today)
-    let currentDateStr = currentDate.toISOString().split('T')[0]
-
-    const studiedToday = reviewDates.some((date) => date.date === todayStr)
-
-    if (!studiedToday) {
-        const yesterday = new Date(today)
-        yesterday.setDate(yesterday.getDate() - 1)
-        const yesterdayStr = yesterday.toISOString().split('T')[0]
-
-        if (reviewDates.length > 0 && reviewDates[0].date === yesterdayStr) {
-            currentDate = yesterday
-            currentDateStr = yesterdayStr
-        }
-    }
-
-    for (let i = 0; i < reviewDates.length; i++) {
-        if (reviewDates[i].date === currentDateStr) {
-            streak++
-            currentDate.setDate(currentDate.getDate() - 1)
-            currentDateStr = currentDate.toISOString().split('T')[0]
-        } else {
-            break
-        }
-    }
-
-    return streak
+    // The streak is kept in user_stats in the user's own timezone.
+    const stats = await ensureUserStats(db, userId)
+    return displayStreak(stats, localDate(new Date(), stats.timezone))
 }

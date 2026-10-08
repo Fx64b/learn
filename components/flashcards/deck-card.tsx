@@ -1,5 +1,6 @@
 import { parseCategoryToTags } from '@/lib/category-parser'
 import { fromUTCDateOnly } from '@/lib/date'
+import type { MasteryCounts } from '@/lib/learn'
 import { DeckType } from '@/types'
 import { format } from 'date-fns'
 import { AlertTriangle, PencilIcon } from 'lucide-react'
@@ -7,6 +8,7 @@ import { AlertTriangle, PencilIcon } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 
+import { MasteryBar } from '@/components/gamification/mastery-bar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -28,6 +30,7 @@ interface DeckCardProps {
     deck: DeckType
     totalCards: number
     dueCards: number
+    mastery?: MasteryCounts
     isPastDue?: boolean
 }
 
@@ -35,6 +38,7 @@ export async function DeckCard({
     deck,
     totalCards,
     dueCards,
+    mastery,
     isPastDue = false,
 }: DeckCardProps) {
     const t = await getTranslations()
@@ -47,7 +51,14 @@ export async function DeckCard({
         >
             <CardHeader className="pb-2">
                 <div className="flex items-center justify-between gap-2">
-                    <CardTitle>{deck.title}</CardTitle>
+                    <CardTitle>
+                        <Link
+                            href={`/deck/${deck.id}`}
+                            className="hover:underline"
+                        >
+                            {deck.title}
+                        </Link>
+                    </CardTitle>
 
                     {isPastDue && (
                         <TooltipProvider>
@@ -101,7 +112,10 @@ export async function DeckCard({
                 )}
             </CardHeader>
             <CardContent className="mt-auto pb-2">
-                <div className="space-y-1">
+                <div className="space-y-2">
+                    {mastery && totalCards > 0 && (
+                        <MasteryBar counts={mastery} />
+                    )}
                     <p className="text-sm">
                         <b>{totalCards}</b> {t('deck.statistics.totalCards')}
                     </p>
@@ -113,13 +127,19 @@ export async function DeckCard({
                     )}
                 </div>
             </CardContent>
-            <CardFooter className="mt-auto flex gap-8 md:gap-2">
-                <Link href={`/learn/${deck.id}`} className="flex-1">
-                    <Button className="w-full" size="sm">
-                        {t('common.learn')}
-                    </Button>
-                </Link>
+            <CardFooter className="mt-auto flex gap-2">
+                <Button className="flex-1" size="sm" asChild>
+                    <Link href={`/learn/${deck.id}`}>{t('common.learn')}</Link>
+                </Button>
                 <Button variant="outline" size="sm" asChild>
+                    <Link href={`/deck/${deck.id}`}>{t('deckPage.open')}</Link>
+                </Button>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    asChild
+                    aria-label={t('deckPage.edit')}
+                >
                     <Link href={`/deck/${deck.id}/edit`}>
                         <PencilIcon />
                     </Link>

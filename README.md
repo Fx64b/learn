@@ -2,24 +2,45 @@
 
 <img src="public/logo-dark.png" alt="Logo" style="width: 150px;" />
 
-A modern flashcard application for effective learning using the Spaced Repetition System (SRS). Built with Next.js 15, TypeScript, and Turso database. Features AI-powered flashcard generation and Pro subscription plans. Available in English and German.
+A learning app that mixes the Duolingo and Quizlet styles: varied, bite-sized exercises on top of a spaced repetition system (SRS), with light gamification. Built with Next.js 15, TypeScript, and Turso database. Features AI-powered item generation and Pro subscription plans. Available in English and German.
 
 [![Build and Lint](https://github.com/Fx64b/learn/actions/workflows/build-lint.yml/badge.svg)](https://github.com/Fx64b/learn/actions/workflows/build-lint.yml)
 
-> [!IMPORTANT]  
-> This project is currently in **beta**. While core features are stable, some features may change based on user feedback.
-
 ## Core Features
 
-### **Smart Learning System**
+### **Rich Item Types**
 
-- **Spaced Repetition Algorithm**: Optimized review intervals based on SuperMemo-2
-- **Progress Tracking**: Detailed statistics and learning analytics
-- **Multiple Study Modes**: Focus on due cards, difficult cards, or all cards
+A deck holds items of nine types. The app turns each item into fitting exercises:
+
+| Item              | Exercises                                                                   |
+| ----------------- | --------------------------------------------------------------------------- |
+| Question & answer | Multiple choice, match pairs, type the answer, self-graded flashcard        |
+| Multiple choice   | Single or "select all" choice                                               |
+| Cloze             | Fill the blanks from a word bank, then type the missing word                |
+| Passage           | Build the sentence from tiles, then type the first letter of each word      |
+| List              | Name every member of a set in any order                                     |
+| Sequence          | Put steps or events in order                                                |
+| Number            | Multiple choice, then type the number with tolerance and higher/lower hints |
+| Pairs             | Match terms and their counterparts                                          |
+| Diagram           | Label markers on an uploaded image, then tap the right spot                 |
+
+### **Adaptive Learning**
+
+- **Spaced Repetition**: SuperMemo-2 schedules every item, and each exercise maps to an SM-2 grade
+- **Mastery Stages**: Items move from New to Learning, Familiar and Mastered. Exercises get harder with each stage (recognition first, then recall)
+- **Mistakes Come Back**: A missed exercise returns later in the same session
+- **Four Modes per Deck**: Learn (adaptive), Flashcards (classic flip cards), Match (timed game with personal best) and Practice test (no effect on the schedule)
+
+### **Light Gamification**
+
+- **XP and Daily Goal**: Earn XP per exercise with combo bonuses and pick a daily goal
+- **Streaks**: Timezone-aware day streak with one streak freeze
+- **Achievements**: 13 badges for milestones
+- **Progress**: Mastery bars, activity heatmap and an end-of-session summary
 
 ### **AI-Powered Creation**
 
-- **AI Flashcard Generation**: Create flashcards from text prompts or PDF documents
+- **AI Item Generation**: Create items of mixed types from text prompts or PDF documents
 - **Intelligent Content Processing**: Automatically extract key concepts and definitions
 - **Quality Validation**: AI-generated content is validated for educational value
 
@@ -32,7 +53,7 @@ A modern flashcard application for effective learning using the Spaced Repetitio
 ### **Essential Tools**
 
 - **Deck Management**: Organize flashcards into themed collections
-- **Export Functionality**: Export decks for backup or sharing
+- **Import and Export**: JSON import and export of all item types (classic `{ front, back }` cards still work)
 - **Multi-language Support**: Available in English and German
 - **Responsive Design**: Works seamlessly on desktop and mobile
 
@@ -66,6 +87,7 @@ EMAIL_FROM="learn@yourdomain.com"
 
 # AI Features (Optional)
 GOOGLE_GENERATIVE_AI_API_KEY="your-google-ai-key"
+GOOGLE_AI_MODEL="gemini-3-flash-preview"  # optional, model for AI generation
 
 # Stripe Subscriptions (Optional)
 STRIPE_SECRET_KEY="your-stripe-secret-key"
@@ -74,6 +96,9 @@ STRIPE_WEBHOOK_SECRET="your-webhook-secret"
 
 # Rate Limiting (Optional)
 REDIS_URL="your-redis-url"
+
+# Diagram images and PDF upload for AI generation (Optional, public Vercel Blob store)
+BLOB_READ_WRITE_TOKEN="your-blob-token"
 ```
 
 ### Installation
@@ -114,27 +139,27 @@ Visit `http://localhost:3000` to start learning!
 
 ## Usage
 
-### Creating Flashcards
+### Creating Items
 
 **Manual Creation:**
 
-1. Create a new deck or select existing one
-2. Add flashcards with front/back content
-3. Start studying immediately
+1. Create a new deck or select an existing one
+2. Pick an item type and fill in its form. Use the preview to see the exercise
+3. Start learning immediately
 
 **AI Generation (Pro Feature):**
 
-1. Navigate to any deck
-2. Click the "AI" Tab
-3. Enter a topic and optionally upload a PDF document
-4. Let AI create optimized flashcards for you
+1. Open a deck and click the "AI" tab
+2. Enter a topic and optionally upload a PDF document
+3. Choose the item types the AI may use
+4. The AI picks the best fitting type for each piece of knowledge
 
-### Study Sessions
+### Learning
 
-1. Select a study mode (Due, Difficult, or All cards)
-2. Review each flashcard and rate your confidence
-3. The algorithm adjusts future review intervals automatically
-4. Track your progress in the statistics dashboard
+1. Open a deck and choose Learn, Flashcards, Match or Practice test, or use "Continue learning" on the dashboard for all due items
+2. Answer the exercises. Missed ones come back later in the session
+3. The SRS adjusts future review intervals automatically
+4. Track XP, streak, mastery and achievements on the dashboard and in your profile
 
 ### Subscription Management
 

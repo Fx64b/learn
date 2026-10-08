@@ -130,6 +130,8 @@ describe('Preferences Actions', () => {
                 animationSpeed: 200,
                 animationDirection: 'horizontal',
                 theme: 'dark',
+                soundEnabled: true,
+                dailyGoalXp: 30,
             })
         })
 
@@ -269,6 +271,8 @@ describe('Preferences Actions', () => {
                 animationDirection: 'horizontal', // default
                 theme: 'light',
                 locale: 'de',
+                soundEnabled: true,
+                dailyGoalXp: 30,
                 updatedAt: expect.any(Date),
             })
             expect(mockRevalidatePath).toHaveBeenCalledWith('/profile')
@@ -334,6 +338,8 @@ describe('Preferences Actions', () => {
                 animationDirection: 'vertical',
                 theme: 'dark', // default
                 locale: 'en', // default
+                soundEnabled: true,
+                dailyGoalXp: 30,
                 updatedAt: expect.any(Date),
             })
         })
@@ -373,6 +379,8 @@ describe('Preferences Actions', () => {
                 animationDirection: 'horizontal',
                 theme: 'system',
                 locale: 'en',
+                soundEnabled: true,
+                dailyGoalXp: 30,
                 updatedAt: expect.any(Date),
             })
         })
@@ -474,6 +482,26 @@ describe('Preferences Actions', () => {
                 animationSpeed: 500,
                 updatedAt: expect.any(Date),
             })
+        })
+    })
+
+    describe('updateUserPreferences validation', () => {
+        test('rejects unknown values and never writes them', async () => {
+            mockGetServerSession.mockResolvedValue({
+                user: { id: 'user-1', email: 'test@example.com' },
+            })
+            const mockInsert = vi.fn()
+            const mockUpdate = vi.fn()
+            mockDb.insert = mockInsert
+            mockDb.update = mockUpdate
+
+            const result = await updateUserPreferences({
+                theme: 'neon' as never,
+            })
+
+            expect(result.success).toBe(false)
+            expect(mockInsert).not.toHaveBeenCalled()
+            expect(mockUpdate).not.toHaveBeenCalled()
         })
     })
 })

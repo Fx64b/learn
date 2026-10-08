@@ -4,9 +4,12 @@ This document provides essential context for Claude Code instances working on th
 
 ## Project Overview
 
-**Learn** is a modern flashcard application built with Next.js 15 that implements spaced repetition learning (SuperMemo-2 algorithm). It features:
+**Learn** is a learning app built with Next.js 15 that mixes Duolingo-style exercises with Quizlet-style decks on top of spaced repetition (SuperMemo-2). It features:
 
-- AI-powered flashcard generation from text/PDFs (using Google AI/Gemini)
+- Nine item types (Q&A, choice, cloze, passage, list, sequence, number, pairs, diagram) that are turned into varied exercises
+- Learn sessions, classic flashcards, a timed match game and practice tests
+- Light gamification: XP, daily goal, streak with freeze, mastery stages, achievements
+- AI-powered generation of mixed item types from text/PDFs (using Google AI/Gemini)
 - Stripe-based Pro subscription system with automatic payment recovery
 - Multi-language support (English/German) via next-intl
 - Comprehensive spaced repetition system with progress tracking
@@ -50,12 +53,16 @@ This document provides essential context for Claude Code instances working on th
 
 - `users` - NextAuth.js user accounts
 - `decks` - Flashcard collections with user ownership
-- `flashcards` - Individual cards with difficulty tracking
+- `flashcards` - Items: `type` + `content` (JSON) + `front` (prompt) / `back` (plain-text answer summary)
 - `cardReviews` - Latest SRS state per user/card
 - `reviewEvents` - Historical review data for analytics
 - `studySessions` - Learning session tracking
 - `subscriptions` - Stripe subscription management
 - `paymentRecoveryEvents` - Automated payment recovery system
+- `userStats` - XP total, streak, streak freezes, timezone
+- `dailyActivity` - XP / exercises per user and local date (streak, daily goal, heatmap)
+- `userAchievements` - Unlocked achievements (definitions in `lib/gamification/achievements.ts`)
+- `deckRecords` - Personal bests for match game and practice test
 
 ### Authentication & Authorization
 
@@ -70,6 +77,17 @@ This document provides essential context for Claude Code instances working on th
 - Grades: 1=Again, 2=Hard, 3=Good, 4=Easy
 - Intervals capped at 365 days
 - Reviews tracked in `cardReviews` (current state) and `reviewEvents` (history)
+- `db/learn.ts` `applyReview` is the only place that writes SRS state
+
+### Items and Learning Engine
+
+- `lib/items/` - zod schemas for all item types (single source of truth for editor, import, AI), plus `toItemRow` / `parseItemRow`
+- `lib/learn/` - pure, tested logic: `mastery.ts` (stage from SRS state), `planner.ts` (exercise per item type and stage), `session.ts` (session queue, retries, tests, match game), `grading.ts` (outcome to SM-2 grade), `xp.ts`
+- `lib/gamification/` - streak with freeze (timezone-aware dates), achievements
+- `components/learn/` - exercise components (ported from the design kit), `components/learn/session/` - session runner, end screen, match game
+- `app/actions/learn.ts` - load sessions/tests/match games, `submitExerciseResult`, `completeSession`, `completeMatchGame`, `completeTest`
+- Only the first attempt of an item per session writes SRS. Retries, practice-ahead and tests never do
+- Views with shuffled content render after mount (`lib/hooks/use-mounted.ts`) to avoid hydration mismatches
 
 ## Development Commands
 
@@ -117,10 +135,13 @@ EMAIL_FROM="learn@yourdomain.com"
 
 ```env
 GOOGLE_GENERATIVE_AI_API_KEY="your-google-ai-key"  # For AI features
+GOOGLE_AI_MODEL="gemini-3-flash-preview"            # Optional, model for AI generation
 STRIPE_SECRET_KEY="your-stripe-secret"             # For subscriptions
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="your-stripe-pub"
 STRIPE_WEBHOOK_SECRET="your-webhook-secret"
 REDIS_URL="your-redis-url"                         # For rate limiting
+BLOB_READ_WRITE_TOKEN="your-blob-token"            # Local dev: diagram images and AI PDF upload (public store)
+BLOB_STORE_ID="store_..."                           # Set by Vercel for connected stores (OIDC auth, no token needed)
 ```
 
 ## Code Standards & Guidelines
@@ -153,13 +174,20 @@ REDIS_URL="your-redis-url"                         # For rate limiting
 - Stripe webhook signature verification required
 - SQL injection protection via Drizzle parameterized queries
 - Security headers configured in `next.config.ts`
+- The Content-Security-Policy is built in `middleware/security.ts` (`buildCsp`). Any new browser request to another origin needs a `connect-src` entry there. The Vercel toolbar sources are added on preview deployments only
 
 ## Key Business Logic
 
-### AI Flashcard Generation
+### AI Item Generation
 
 - Located in `/app/actions/ai-flashcards.ts` and `/app/api/ai-flashcards/route.ts`
-- Supports text prompts and PDF file upload
+- The model returns a flat item object (`lib/items/ai.ts`). Items that fail the strict schema are dropped
+- Prompts live in `lib/items/ai-prompt.ts`: deck title, description and tags as context, and a count rule (the amount picked in the form, else an exact number from the prompt, else 10-60)
+- The prompts of items already in the deck (newest 200, cut to 120 characters) go to the model as context. New items whose normalized prompt (`promptKey`) matches an existing one are not saved
+- Model from `GOOGLE_AI_MODEL` (default `gemini-3-flash-preview`). Each run logs the item counts per filter stage
+- Supports text prompts and PDFs up to 20 MB. The browser uploads the PDF straight to Vercel Blob (`/api/ai-flashcards/upload` issues a presigned URL with `issueSignedToken`, which works with Vercel OIDC and with a read-write token), because Vercel Functions accept at most 4.5 MB per request
+- The server sends the full PDF to Gemini as a file part (text, tables, figures, scanned pages) and deletes the blob afterwards. Only URLs in `ai-uploads/<userId>/` are accepted (`isOwnAiUpload` in `lib/blob.ts`)
+- `/api/cron/cleanup-uploads` deletes leftover AI uploads older than 1 hour
 - Streaming responses with progress tracking
 - Rate limited for free users, unlimited for Pro subscribers
 - Validates generated content before saving
@@ -192,7 +220,16 @@ REDIS_URL="your-redis-url"                         # For rate limiting
 - **Database**: Turso (edge-distributed SQLite)
 - **Email**: Resend for transactional emails
 - **Monitoring**: Vercel Analytics enabled
-- **Cron Jobs**: Payment recovery runs daily at 12:00 UTC
+- **Cron Jobs**: Payment recovery runs daily at 12:00 UTC, AI upload cleanup daily at 03:00 UTC
+
+### Releases
+
+- release-please (`.github/workflows/release-please.yml`) runs on every push to `main` and keeps one release PR open with the next version and `CHANGELOG.md`
+- Merging the release PR bumps `package.json`, creates the `vX.Y.Z` tag and the GitHub release
+- Versions come from Conventional Commits: `feat` is minor, `fix`, `perf`, `refactor`, `docs`, `style` and `test` are patch, `feat!` or a `BREAKING CHANGE:` footer is major. `chore`, `ci` and `build` do not release
+- A `Release-As: X.Y.Z` footer in a commit body forces that version
+- Config: `release-please-config.json`, current version: `.release-please-manifest.json`
+- The workflow uses the `RELEASE_TOKEN` secret (falls back to `GITHUB_TOKEN`, but then the release PR does not start CI)
 
 ## Common Development Tasks
 
@@ -269,4 +306,4 @@ pnpm dlx shadcn@latest add button  # Example: adding button component
 
 ---
 
-Built with ❤️ by [Fx64b](https://fx64b.dev) | Last updated: 2025-08-04
+Built with ❤️ by [Fx64b](https://fx64b.dev) | Last updated: 2026-10-05
