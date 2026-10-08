@@ -183,6 +183,7 @@ BLOB_STORE_ID="store_..."                           # Set by Vercel for connecte
 - Located in `/app/actions/ai-flashcards.ts` and `/app/api/ai-flashcards/route.ts`
 - The model returns a flat item object (`lib/items/ai.ts`). Items that fail the strict schema are dropped
 - Prompts live in `lib/items/ai-prompt.ts`: deck title, description and tags as context, and a count rule (the amount picked in the form, else an exact number from the prompt, else 10-60)
+- The prompts of items already in the deck (newest 200, cut to 120 characters) go to the model as context. New items whose normalized prompt (`promptKey`) matches an existing one are not saved
 - Model from `GOOGLE_AI_MODEL` (default `gemini-3-flash-preview`). Each run logs the item counts per filter stage
 - Supports text prompts and PDFs up to 20 MB. The browser uploads the PDF straight to Vercel Blob (`/api/ai-flashcards/upload` issues a presigned URL with `issueSignedToken`, which works with Vercel OIDC and with a read-write token), because Vercel Functions accept at most 4.5 MB per request
 - The server sends the full PDF to Gemini as a file part (text, tables, figures, scanned pages) and deletes the blob afterwards. Only URLs in `ai-uploads/<userId>/` are accepted (`isOwnAiUpload` in `lib/blob.ts`)

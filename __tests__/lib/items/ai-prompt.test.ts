@@ -2,6 +2,7 @@ import {
     AI_ITEM_TYPES,
     type AiItem,
     DEFAULT_MIN_ITEMS,
+    MAX_EXISTING_PROMPTS,
     MAX_ITEMS_PER_GENERATION,
     buildSystemPrompt,
     buildUserPrompt,
@@ -9,6 +10,7 @@ import {
     dedupeAiItems,
     parseDeckTags,
     parseItemCount,
+    promptKey,
 } from '@/lib/items'
 import { describe, expect, it } from 'vitest'
 
@@ -167,5 +169,46 @@ describe('chosen item count', () => {
         expect(parseItemCount(61)).toBeUndefined()
         expect(parseItemCount('abc')).toBeUndefined()
         expect(parseItemCount(undefined)).toBeUndefined()
+    })
+})
+
+describe('existing items context', () => {
+    it('lists existing prompts before the count rule', () => {
+        const prompt = buildUserPrompt({
+            prompt: 'X',
+            existing: ['What is ATP?', '  ', '<b>Name</b> the organelles'],
+        })
+        expect(prompt).toContain('Already in this deck (2 items)')
+        expect(prompt).toContain('- What is ATP?')
+        expect(prompt).toContain('- bName/b the organelles')
+        expect(prompt.indexOf('Already in this deck')).toBeLessThan(
+            prompt.indexOf('Item count')
+        )
+    })
+
+    it('limits the amount and length of existing prompts', () => {
+        const existing = Array.from(
+            { length: MAX_EXISTING_PROMPTS + 50 },
+            (_, i) => `Q${i} ${'x'.repeat(300)}`
+        )
+        const prompt = buildUserPrompt({ prompt: 'X', existing })
+        expect(prompt).toContain(`(${MAX_EXISTING_PROMPTS} items)`)
+        expect(prompt).toContain(`- Q${MAX_EXISTING_PROMPTS - 1} `)
+        expect(prompt).not.toContain(`- Q${MAX_EXISTING_PROMPTS} `)
+        expect(prompt).not.toContain('x'.repeat(120))
+    })
+
+    it('adds no block without existing prompts', () => {
+        expect(buildUserPrompt({ prompt: 'X', existing: [] })).not.toContain(
+            'Already in this deck'
+        )
+    })
+})
+
+describe('promptKey', () => {
+    it('ignores case, extra spaces and end marks', () => {
+        expect(promptKey('  What is  ATP? ')).toBe('what is atp')
+        expect(promptKey('what is atp')).toBe('what is atp')
+        expect(promptKey('Define: osmosis.')).toBe('define: osmosis')
     })
 })

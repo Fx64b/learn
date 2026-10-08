@@ -1,6 +1,6 @@
 'use server'
 
-import { getDeckById } from '@/db/utils'
+import { getDeckById, getDeckItemFronts } from '@/db/utils'
 import { authOptions } from '@/lib/auth'
 import { MAX_PDF_BYTES, aiUploadPathname, deleteBlobs } from '@/lib/blob'
 import {
@@ -17,6 +17,7 @@ import {
     isAiItemType,
     itemInputSchema,
     parseDeckTags,
+    promptKey,
 } from '@/lib/items'
 import { checkAIRateLimitWithDetails } from '@/lib/rate-limit/ai-rate-limit'
 import { google } from '@ai-sdk/google'
@@ -282,6 +283,10 @@ async function runGeneration(
             return { success: false, error: deckT('notFound'), requestId }
         }
 
+        // Prompts already in the deck: context for the model, and a filter
+        // so a repeated question is never saved twice.
+        const existingFronts = await getDeckItemFronts(deck.id)
+
         onProgress?.('validation', 5, 'Validating input...')
 
         // Input validation
@@ -370,6 +375,7 @@ async function runGeneration(
                                     },
                                     hasDocument: Boolean(pdf),
                                     count: params.count,
+                                    existing: existingFronts,
                                 }),
                             },
                             // Gemini reads the PDF itself: text, tables,
@@ -426,18 +432,22 @@ async function runGeneration(
             )
             const deduped = dedupeAiItems(ofAllowedType)
             const dropped: string[] = []
-            const uniqueCards = deduped
-                .map(aiItemToInput)
-                .flatMap((input) => {
-                    const parsed = itemInputSchema.safeParse(input)
-                    if (parsed.success) return [parsed.data]
-                    dropped.push(
-                        parsed.error.issues
-                            .map((issue) => issue.path.join('.'))
-                            .join(',')
-                    )
-                    return []
-                })
+            const validCards = deduped.map(aiItemToInput).flatMap((input) => {
+                const parsed = itemInputSchema.safeParse(input)
+                if (parsed.success) return [parsed.data]
+                dropped.push(
+                    parsed.error.issues
+                        .map((issue) => issue.path.join('.'))
+                        .join(',')
+                )
+                return []
+            })
+            // Drop questions that are already in the deck.
+            const existingKeys = new Set(existingFronts.map(promptKey))
+            const uniqueCards = validCards
+                .filter(
+                    (card) => !existingKeys.has(promptKey(card.front ?? ''))
+                )
                 .slice(0, MAX_ITEMS_PER_GENERATION)
 
             console.info('AI generation counts:', {
@@ -450,7 +460,9 @@ async function runGeneration(
                 returned: object.items.length,
                 afterTypeFilter: ofAllowedType.length,
                 afterDedupe: deduped.length,
-                valid: uniqueCards.length,
+                valid: validCards.length,
+                existingInDeck: existingFronts.length,
+                new: uniqueCards.length,
             })
             if (dropped.length) {
                 console.warn('AI items failed validation:', {
@@ -461,7 +473,9 @@ async function runGeneration(
             if (uniqueCards.length === 0) {
                 return {
                     success: false,
-                    error: t('noDuplicateCards'),
+                    error: validCards.length
+                        ? t('allItemsExist')
+                        : t('noDuplicateCards'),
                     requestId,
                 }
             }

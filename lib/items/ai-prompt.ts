@@ -4,6 +4,20 @@ import type { AiItemType } from './ai'
 export const MAX_ITEMS_PER_GENERATION = 60
 /** Lower end of the range the model picks from when no count is requested. */
 export const DEFAULT_MIN_ITEMS = 10
+/** Most existing item prompts sent as context, newest first. */
+export const MAX_EXISTING_PROMPTS = 200
+/** Length cut for each existing prompt in the context. */
+const EXISTING_PROMPT_LENGTH = 120
+
+/** Normalized form for comparing item prompts (case, spaces, end marks). */
+export function promptKey(text: string): string {
+    return text
+        .toLowerCase()
+        .replace(/\s+/g, ' ')
+        .replace(/[\s?!.:]+$/, '')
+        .trim()
+}
+
 /** Item counts the user can pick in the AI form. Auto means none. */
 export const ITEM_COUNT_OPTIONS = [10, 20, 40, 60] as const
 
@@ -109,6 +123,8 @@ export function buildUserPrompt(params: {
     hasDocument?: boolean
     /** Amount the user picked in the form. Undefined means automatic. */
     count?: number
+    /** Prompts of items already in the deck, newest first. */
+    existing?: readonly string[]
 }): string {
     const parts: string[] = []
     if (params.deck) parts.push(deckBlock(params.deck))
@@ -116,6 +132,15 @@ export function buildUserPrompt(params: {
     if (params.hasDocument) {
         parts.push(
             'Base the items on the attached PDF document. Use its text, tables, figures and diagrams. Ignore page numbers, headers and footers.'
+        )
+    }
+    const existing = (params.existing ?? [])
+        .map((front) => cleanPromptText(front, EXISTING_PROMPT_LENGTH))
+        .filter(Boolean)
+        .slice(0, MAX_EXISTING_PROMPTS)
+    if (existing.length) {
+        parts.push(
+            `Already in this deck (${existing.length} items). Do not repeat these questions or ask the same fact in other words. Cover other facts instead:\n${existing.map((front) => `- ${front}`).join('\n')}`
         )
     }
     const count = parseItemCount(params.count)

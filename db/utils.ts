@@ -1,5 +1,5 @@
 import type { ItemRowValues } from '@/lib/items'
-import { and, eq, inArray, sql } from 'drizzle-orm'
+import { and, desc, eq, inArray, sql } from 'drizzle-orm'
 import { nanoid } from 'nanoid'
 
 import { db } from './index'
@@ -82,6 +82,16 @@ export async function getFlashcardsByDeckId(deckId: string, userId?: string) {
         .select()
         .from(flashcards)
         .where(eq(flashcards.deckId, deckId))
+}
+
+/** Prompts of a deck's items, newest first. The caller checks ownership. */
+export async function getDeckItemFronts(deckId: string): Promise<string[]> {
+    const rows = await db
+        .select({ front: flashcards.front })
+        .from(flashcards)
+        .where(eq(flashcards.deckId, deckId))
+        .orderBy(desc(flashcards.createdAt))
+    return rows.map((row) => row.front)
 }
 
 export async function getFlashcardById(id: string) {

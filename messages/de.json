@@ -563,6 +563,7 @@
             "fileContentTooShort": "Dateiinhalt ist zu kurz, um sinnvolle Karteikarten zu generieren.",
             "fileParseError": "Die hochgeladene Datei konnte nicht gelesen werden. Bitte versuchen Sie eine andere Datei.",
             "aiTimeoutError": "Die KI hat zu lange gebraucht. Bitte versuchen Sie es mit einem kürzeren PDF oder weniger Einträgen erneut.",
+            "allItemsExist": "Alle erzeugten Einträge sind bereits in diesem Deck. Versuchen Sie ein anderes Thema oder einen anderen Teil des Dokuments.",
             "noDuplicateCards": "Die Antwort der KI war nicht verwendbar. Bitte versuchen Sie es erneut oder fordern Sie weniger Einträge an.",
             "aiTruncated": "Die Antwort der KI wurde abgeschnitten, weil das Dokument sehr lang ist. Bitte fordern Sie weniger Einträge an oder verwenden Sie ein kürzeres PDF.",
             "streamEnded": "Die Verbindung wurde vor dem Ergebnis getrennt. Große PDFs können eine Weile dauern. Bitte laden Sie die Seite neu, um zu sehen, ob Einträge hinzugefügt wurden, und versuchen Sie es dann erneut.",

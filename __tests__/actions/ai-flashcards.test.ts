@@ -8,7 +8,10 @@ import { getServerSession } from 'next-auth'
 import { generateAIFlashcards } from '@/app/actions/ai-flashcards'
 import { createItemsFromJson } from '@/app/actions/flashcard'
 
-vi.mock('@/db/utils', () => ({ getDeckById: vi.fn() }))
+vi.mock('@/db/utils', () => ({
+    getDeckById: vi.fn(),
+    getDeckItemFronts: vi.fn(),
+}))
 vi.mock('ai', async (importOriginal) => ({
     ...(await importOriginal<typeof import('ai')>()),
     generateObject: vi.fn(),
@@ -72,6 +75,7 @@ describe('generateAIFlashcards', () => {
         vi.mocked(dbUtils.getDeckById).mockImplementation(async (id, userId) =>
             id === 'd1' && userId === 'u1' ? deck : undefined
         )
+        vi.mocked(dbUtils.getDeckItemFronts).mockResolvedValue([])
         vi.mocked(createItemsFromJson).mockImplementation(async ({ json }) => ({
             success: true,
             created: JSON.parse(json).length,
@@ -201,6 +205,48 @@ describe('generateAIFlashcards', () => {
         const res = await generateAIFlashcards({ deckId: 'd1', prompt: 'X' })
         expect(res.success).toBe(false)
         expect(res.error).toBe('noDuplicateCards')
+    })
+
+    it('sends existing questions and skips repeats', async () => {
+        vi.mocked(dbUtils.getDeckItemFronts).mockResolvedValue([
+            'What is ATP?',
+            'Name the cell organelles',
+        ])
+        vi.mocked(generateObject).mockResolvedValue({
+            object: {
+                items: [
+                    { type: 'basic', front: 'what is  ATP', back: 'Energy' },
+                    { type: 'basic', front: 'What is DNA?', back: 'Genes' },
+                ],
+            },
+        } as never)
+
+        const res = await generateAIFlashcards({ deckId: 'd1', prompt: 'X' })
+
+        expect(dbUtils.getDeckItemFronts).toHaveBeenCalledWith('d1')
+        const call = vi.mocked(generateObject).mock.calls[0][0] as {
+            messages: Array<{ content: Array<{ text?: string }> }>
+        }
+        const text = call.messages[0].content[0].text ?? ''
+        expect(text).toContain('Already in this deck (2 items)')
+        expect(text).toContain('- Name the cell organelles')
+        expect(res.success).toBe(true)
+        expect(res.cardsCreated).toBe(1)
+        const saved = JSON.parse(
+            vi.mocked(createItemsFromJson).mock.calls[0][0].json
+        )
+        expect(saved).toEqual([
+            expect.objectContaining({ front: 'What is DNA?' }),
+        ])
+    })
+
+    it('reports when every item is already in the deck', async () => {
+        vi.mocked(dbUtils.getDeckItemFronts).mockResolvedValue(['What is ATP?'])
+        vi.mocked(generateObject).mockResolvedValue(oneItem)
+        const res = await generateAIFlashcards({ deckId: 'd1', prompt: 'X' })
+        expect(res.success).toBe(false)
+        expect(res.error).toBe('allItemsExist')
+        expect(createItemsFromJson).not.toHaveBeenCalled()
     })
 
     describe('with an uploaded PDF', () => {
