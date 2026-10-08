@@ -20,7 +20,7 @@ import {
 } from '@/lib/items'
 import { checkAIRateLimitWithDetails } from '@/lib/rate-limit/ai-rate-limit'
 import { google } from '@ai-sdk/google'
-import { generateObject } from 'ai'
+import { NoObjectGeneratedError, generateObject } from 'ai'
 import { randomUUID } from 'crypto'
 import { z } from 'zod'
 
@@ -35,9 +35,10 @@ const MAX_PROMPT_LENGTH = 1000
 // Gemini 3 Flash: good instruction following and item quality at a low price.
 // GOOGLE_AI_MODEL can switch it, e.g. to gemini-3.1-flash-lite to save cost.
 const AI_MODEL = process.env.GOOGLE_AI_MODEL?.trim() || 'gemini-3-flash-preview'
-// Thinking tokens count against the output budget. 60 items need up to ~12k
-// tokens, and a cut-off JSON fails the whole generation. Only used tokens are billed.
-const AI_MAX_OUTPUT_TOKENS = 32768
+// Thinking tokens count against the output budget, and long PDFs make the
+// model think more. A cut-off JSON fails the whole generation, so use the
+// model maximum. Only used tokens are billed.
+const AI_MAX_OUTPUT_TOKENS = 65536
 
 // Schemas
 const aiOutputSchema = z.object({
@@ -200,6 +201,13 @@ function handleAIError(
     t: (key: string, params?: Record<string, string | number | Date>) => string,
     requestId: string
 ): AIGenerationResult {
+    // The answer hit the output limit, usually with a very long document.
+    if (
+        NoObjectGeneratedError.isInstance(error) &&
+        error.finishReason === 'length'
+    ) {
+        return { success: false, error: t('aiTruncated'), requestId }
+    }
     if (error instanceof Error) {
         const message = error.message.toLowerCase()
 
@@ -329,7 +337,7 @@ async function runGeneration(
         onProgress?.('ai_generation', 60, 'Generating flashcards with AI...')
 
         try {
-            const { object } = await generateObject({
+            const { object, finishReason, usage } = await generateObject({
                 model: google(AI_MODEL),
                 schema: aiOutputSchema,
                 system: buildSystemPrompt(allowedTypes),
@@ -414,6 +422,10 @@ async function runGeneration(
             console.info('AI generation counts:', {
                 requestId,
                 model: AI_MODEL,
+                pdfBytes: pdf?.byteLength ?? 0,
+                finishReason,
+                promptTokens: usage?.promptTokens,
+                completionTokens: usage?.completionTokens,
                 returned: object.items.length,
                 afterTypeFilter: ofAllowedType.length,
                 afterDedupe: deduped.length,
@@ -485,6 +497,15 @@ async function runGeneration(
                     aiError instanceof Error
                         ? aiError.message
                         : 'Unknown AI error',
+                ...(NoObjectGeneratedError.isInstance(aiError)
+                    ? {
+                          finishReason: aiError.finishReason,
+                          usage: aiError.usage,
+                          textLength: aiError.text?.length ?? 0,
+                      }
+                    : {}),
+                model: AI_MODEL,
+                pdfBytes: pdf?.byteLength ?? 0,
             })
             return handleAIError(aiError, t, requestId)
         }

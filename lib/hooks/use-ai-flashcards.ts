@@ -33,8 +33,11 @@ interface AIGenerationResult {
     resetTime?: Date
     requestId: string
     items?: Array<{ type: string; front: string }>
-    /** Set when the PDF upload failed before generation started. */
-    errorCode?: 'upload_failed'
+    /**
+     * upload_failed: the PDF upload failed before generation started.
+     * stream_ended: the server closed the stream without a result.
+     */
+    errorCode?: 'upload_failed' | 'stream_ended'
 }
 
 /** Keeps letters, digits, dot, dash and underscore in the file name. */
@@ -177,105 +180,116 @@ export function useAIFlashcards() {
                                     throw new Error('No response body')
                                 }
 
-                                // Handle SSE stream
+                                // Handle SSE stream. Events end with a
+                                // blank line and can span several network
+                                // chunks, so keep the rest in a buffer.
                                 const reader = response.body.getReader()
                                 const decoder = new TextDecoder()
+                                let buffer = ''
+                                let settled = false
+
+                                const settle = (result: AIGenerationResult) => {
+                                    settled = true
+                                    cleanup()
+                                    resolve(result)
+                                }
+
+                                const handleEvent = (event: string) => {
+                                    const payload = event
+                                        .split('\n')
+                                        .filter((line) =>
+                                            line.startsWith('data: ')
+                                        )
+                                        .map((line) => line.slice(6))
+                                        .join('\n')
+                                    if (!payload) return
+                                    let data
+                                    try {
+                                        data = JSON.parse(payload)
+                                    } catch (parseError) {
+                                        console.error(
+                                            'Failed to parse SSE message:',
+                                            parseError
+                                        )
+                                        return
+                                    }
+                                    if (data.type === 'progress') {
+                                        setProgress({
+                                            step:
+                                                data.progress?.step ||
+                                                'processing',
+                                            percentage:
+                                                data.progress?.percentage || 0,
+                                            message:
+                                                data.progress?.message ||
+                                                'Processing...',
+                                        })
+                                    } else if (data.type === 'success') {
+                                        settle(data.data)
+                                    } else if (data.type === 'error') {
+                                        settle(
+                                            data.data?.error
+                                                ? data.data
+                                                : {
+                                                      ...data.data,
+                                                      success: false,
+                                                      error:
+                                                          data.error ||
+                                                          'Unknown error',
+                                                      requestId:
+                                                          data.data
+                                                              ?.requestId ||
+                                                          crypto.randomUUID(),
+                                                  }
+                                        )
+                                    } else if (data.type === 'rate_limit') {
+                                        settle(
+                                            data.data || {
+                                                success: false,
+                                                error:
+                                                    data.error ||
+                                                    'Rate limit exceeded',
+                                                requiresPro: true,
+                                                requestId: crypto.randomUUID(),
+                                            }
+                                        )
+                                    }
+                                }
 
                                 function readStream(): Promise<void> {
                                     return reader
                                         .read()
                                         .then(({ done, value }) => {
+                                            if (!done) {
+                                                buffer += decoder.decode(
+                                                    value,
+                                                    { stream: true }
+                                                )
+                                            } else {
+                                                buffer += decoder.decode()
+                                            }
+                                            const events = buffer.split('\n\n')
+                                            // The last part may be incomplete.
+                                            buffer = done
+                                                ? ''
+                                                : (events.pop() ?? '')
+                                            for (const event of events) {
+                                                handleEvent(event)
+                                                if (settled) return
+                                            }
                                             if (done) {
-                                                cleanup()
+                                                // The server closed the stream
+                                                // without a result, e.g. after
+                                                // a function timeout.
+                                                settle({
+                                                    success: false,
+                                                    error: 'The connection closed before the result arrived.',
+                                                    errorCode: 'stream_ended',
+                                                    requestId:
+                                                        crypto.randomUUID(),
+                                                })
                                                 return
                                             }
-
-                                            const chunk = decoder.decode(
-                                                value,
-                                                {
-                                                    stream: true,
-                                                }
-                                            )
-                                            const lines = chunk.split('\n')
-
-                                            for (const line of lines) {
-                                                if (line.startsWith('data: ')) {
-                                                    try {
-                                                        const data = JSON.parse(
-                                                            line.slice(6)
-                                                        )
-
-                                                        if (
-                                                            data.type ===
-                                                            'progress'
-                                                        ) {
-                                                            setProgress({
-                                                                step:
-                                                                    data
-                                                                        .progress
-                                                                        ?.step ||
-                                                                    'processing',
-                                                                percentage:
-                                                                    data
-                                                                        .progress
-                                                                        ?.percentage ||
-                                                                    0,
-                                                                message:
-                                                                    data
-                                                                        .progress
-                                                                        ?.message ||
-                                                                    'Processing...',
-                                                            })
-                                                        } else if (
-                                                            data.type ===
-                                                            'success'
-                                                        ) {
-                                                            cleanup()
-                                                            resolve(data.data)
-                                                            return
-                                                        } else if (
-                                                            data.type ===
-                                                            'error'
-                                                        ) {
-                                                            cleanup()
-                                                            resolve(
-                                                                data.data || {
-                                                                    success: false,
-                                                                    error:
-                                                                        data.error ||
-                                                                        'Unknown error',
-                                                                    requestId:
-                                                                        crypto.randomUUID(),
-                                                                }
-                                                            )
-                                                            return
-                                                        } else if (
-                                                            data.type ===
-                                                            'rate_limit'
-                                                        ) {
-                                                            cleanup()
-                                                            resolve(
-                                                                data.data || {
-                                                                    success: false,
-                                                                    error:
-                                                                        data.error ||
-                                                                        'Rate limit exceeded',
-                                                                    requiresPro: true,
-                                                                    requestId:
-                                                                        crypto.randomUUID(),
-                                                                }
-                                                            )
-                                                            return
-                                                        }
-                                                    } catch (parseError) {
-                                                        console.error(
-                                                            'Failed to parse SSE message:',
-                                                            parseError
-                                                        )
-                                                    }
-                                                }
-                                            }
-
                                             return readStream()
                                         })
                                 }

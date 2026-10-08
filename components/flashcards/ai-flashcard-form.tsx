@@ -122,6 +122,11 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
                 toast.error(t('uploadFailed'))
                 return
             }
+            if (result.errorCode === 'stream_ended') {
+                toast.error(t('streamEnded'))
+                router.refresh()
+                return
+            }
 
             if (result.success) {
                 toast.success(result.message || t('success'))

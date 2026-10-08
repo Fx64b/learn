@@ -1,6 +1,6 @@
 import * as dbUtils from '@/db/utils'
 import { deleteBlobs } from '@/lib/blob'
-import { generateObject } from 'ai'
+import { NoObjectGeneratedError, generateObject } from 'ai'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { getServerSession } from 'next-auth'
@@ -9,7 +9,10 @@ import { generateAIFlashcards } from '@/app/actions/ai-flashcards'
 import { createItemsFromJson } from '@/app/actions/flashcard'
 
 vi.mock('@/db/utils', () => ({ getDeckById: vi.fn() }))
-vi.mock('ai', () => ({ generateObject: vi.fn() }))
+vi.mock('ai', async (importOriginal) => ({
+    ...(await importOriginal<typeof import('ai')>()),
+    generateObject: vi.fn(),
+}))
 vi.mock('@ai-sdk/google', () => ({ google: vi.fn(() => 'model') }))
 vi.mock('@/lib/rate-limit/ai-rate-limit', () => ({
     checkAIRateLimitWithDetails: vi.fn(async () => ({
@@ -135,6 +138,34 @@ describe('generateAIFlashcards', () => {
         const res = await generateAIFlashcards({ deckId: 'd1', prompt: 'X' })
         expect(res.success).toBe(false)
         expect(res.error).toBe('aiConfigError')
+    })
+
+    it('reports a cut-off answer with its own message', async () => {
+        vi.mocked(generateObject).mockRejectedValue(
+            new NoObjectGeneratedError({
+                message: 'No object generated: could not parse the response.',
+                text: '{"items":[{"type":"basic"',
+                response: {
+                    id: 'r',
+                    timestamp: new Date(),
+                    modelId: 'm',
+                },
+                usage: { promptTokens: 1, completionTokens: 2, totalTokens: 3 },
+                finishReason: 'length',
+            })
+        )
+        const res = await generateAIFlashcards({ deckId: 'd1', prompt: 'X' })
+        expect(res.success).toBe(false)
+        expect(res.error).toBe('aiTruncated')
+    })
+
+    it('uses a real message when every item is invalid', async () => {
+        vi.mocked(generateObject).mockResolvedValue({
+            object: { items: [{ type: 'basic', front: 'Q', back: null }] },
+        } as never)
+        const res = await generateAIFlashcards({ deckId: 'd1', prompt: 'X' })
+        expect(res.success).toBe(false)
+        expect(res.error).toBe('noDuplicateCards')
     })
 
     describe('with an uploaded PDF', () => {
