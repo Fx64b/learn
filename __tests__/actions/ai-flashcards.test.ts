@@ -129,6 +129,17 @@ describe('generateAIFlashcards', () => {
         expect(res.cardsCreated).toBe(3)
     })
 
+    it('passes the chosen item count into the prompt', async () => {
+        vi.mocked(generateObject).mockResolvedValue(oneItem)
+        await generateAIFlashcards({ deckId: 'd1', prompt: 'X', count: 20 })
+        const call = vi.mocked(generateObject).mock.calls[0][0] as {
+            messages: Array<{ content: Array<{ text?: string }> }>
+        }
+        expect(call.messages[0].content[0].text).toContain(
+            'the user chose about 20 items'
+        )
+    })
+
     it('reports an unknown model as a configuration error', async () => {
         vi.mocked(generateObject).mockRejectedValue(
             new Error(

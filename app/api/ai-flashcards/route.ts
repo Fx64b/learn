@@ -19,6 +19,7 @@ const aiFlashcardsSchema = z.object({
     deckId: z.string().nanoid(),
     fileUrl: z.string().url().max(1000).optional(),
     types: z.array(z.string().max(20)).max(10).optional(),
+    count: z.coerce.number().int().min(1).max(60).optional(),
 })
 
 interface SSEMessage {
@@ -81,6 +82,7 @@ export async function POST(request: NextRequest) {
             fileUrl:
                 typeof fileUrl === 'string' && fileUrl ? fileUrl : undefined,
             types: types.length ? types : undefined,
+            count: formData.get('count') || undefined,
         })
 
         if (!validation.success) {
@@ -108,6 +110,7 @@ export async function POST(request: NextRequest) {
                 deckId: validation.data.deckId,
                 fileUrl: validation.data.fileUrl,
                 types: validation.data.types,
+                count: validation.data.count,
             })
 
             return NextResponse.json(result)
@@ -217,6 +220,7 @@ async function processAIRequest(
                 deckId: data.deckId,
                 fileUrl: data.fileUrl,
                 types: data.types,
+                count: data.count,
             },
             sendProgress
         )

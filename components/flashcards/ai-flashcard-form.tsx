@@ -2,7 +2,7 @@
 
 import { MAX_PDF_BYTES } from '@/lib/blob'
 import { useAIFlashcards } from '@/lib/hooks/use-ai-flashcards'
-import { AI_ITEM_TYPES, type AiItemType } from '@/lib/items'
+import { AI_ITEM_TYPES, type AiItemType, ITEM_COUNT_OPTIONS } from '@/lib/items'
 import { cn } from '@/lib/utils'
 import { FileText, Loader2, Sparkles, Upload, X, XCircle } from 'lucide-react'
 import { toast } from 'sonner'
@@ -31,6 +31,8 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
     const t = useTranslations('deck.ai')
     const ti = useTranslations('items.types')
     const [types, setTypes] = useState<AiItemType[]>([...AI_ITEM_TYPES])
+    /** About how many items to create. Undefined lets the AI choose. */
+    const [count, setCount] = useState<number | undefined>()
     const router = useRouter()
     const { data: session } = useSession()
     const [prompt, setPrompt] = useState('')
@@ -109,6 +111,7 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
                 userId: session?.user?.id,
                 types:
                     types.length === AI_ITEM_TYPES.length ? undefined : types,
+                count,
             })
 
             if (result.requiresPro) {
@@ -230,6 +233,43 @@ export function AIFlashcardForm({ deckId }: AIFlashcardFormProps) {
                         </div>
                         <p className="text-muted-foreground text-xs">
                             {t('typesHint')}
+                        </p>
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label id="ai-count-label">{t('countLabel')}</Label>
+                        <div
+                            role="radiogroup"
+                            aria-labelledby="ai-count-label"
+                            className="bg-muted inline-flex flex-wrap gap-1 rounded-xl p-1"
+                        >
+                            {[undefined, ...ITEM_COUNT_OPTIONS].map((value) => {
+                                const active = count === value
+                                return (
+                                    <button
+                                        key={value ?? 'auto'}
+                                        type="button"
+                                        role="radio"
+                                        aria-checked={active}
+                                        onClick={() => setCount(value)}
+                                        className={cn(
+                                            'focus-visible:ring-ring/50 rounded-lg px-3 py-1.5 text-sm font-semibold tabular-nums transition-colors outline-none focus-visible:ring-[3px]',
+                                            active
+                                                ? 'bg-background text-foreground shadow-sm'
+                                                : 'text-muted-foreground hover:text-foreground'
+                                        )}
+                                    >
+                                        {value === undefined
+                                            ? t('countAuto')
+                                            : t('countAbout', { count: value })}
+                                    </button>
+                                )
+                            })}
+                        </div>
+                        <p className="text-muted-foreground text-xs">
+                            {count === undefined
+                                ? t('countHintAuto')
+                                : t('countHint', { count })}
                         </p>
                     </div>
 

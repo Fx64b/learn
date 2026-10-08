@@ -8,6 +8,7 @@ import {
     cleanPromptText,
     dedupeAiItems,
     parseDeckTags,
+    parseItemCount,
 } from '@/lib/items'
 import { describe, expect, it } from 'vitest'
 
@@ -142,5 +143,29 @@ describe('dedupeAiItems', () => {
             { type: 'basic', front: 'capital of france?', back: 'paris' },
         ]
         expect(dedupeAiItems(items)).toHaveLength(1)
+    })
+})
+
+describe('chosen item count', () => {
+    it('replaces the automatic rule with the chosen amount', () => {
+        const prompt = buildUserPrompt({ prompt: 'X', count: 40 })
+        expect(prompt).toContain('the user chose about 40 items')
+        expect(prompt).not.toContain('between 10 and 60')
+    })
+
+    it('keeps the automatic rule without a valid count', () => {
+        for (const count of [undefined, 0, 61, 2.5]) {
+            const prompt = buildUserPrompt({ prompt: 'X', count })
+            expect(prompt).toContain('between 10 and 60')
+        }
+    })
+
+    it('parses only whole numbers from 1 to 60', () => {
+        expect(parseItemCount('20')).toBe(20)
+        expect(parseItemCount(60)).toBe(60)
+        expect(parseItemCount(0)).toBeUndefined()
+        expect(parseItemCount(61)).toBeUndefined()
+        expect(parseItemCount('abc')).toBeUndefined()
+        expect(parseItemCount(undefined)).toBeUndefined()
     })
 })

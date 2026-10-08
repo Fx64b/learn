@@ -55,6 +55,8 @@ interface GenerateFlashcardsParams {
     fileUrl?: string
     /** Item types to generate. Empty means all AI types. */
     types?: string[]
+    /** About how many items to create. Undefined lets the model choose. */
+    count?: number
 }
 
 interface AIGenerationResult {
@@ -355,6 +357,7 @@ async function runGeneration(
                                         tags: parseDeckTags(deck.category),
                                     },
                                     hasDocument: Boolean(pdf),
+                                    count: params.count,
                                 }),
                             },
                             // Gemini reads the PDF itself: text, tables,

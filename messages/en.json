@@ -588,6 +588,11 @@
             "aiDisclaimer": "AI responses are in early stages and may contain errors. Please verify all information before use.",
             "dismissDisclaimer": "Dismiss AI disclaimer",
             "typesLabel": "Item types",
+            "countLabel": "Number of items",
+            "countAuto": "Auto",
+            "countAbout": "~{count}",
+            "countHintAuto": "The AI picks 10 to 60 items, depending on the material. A number in your prompt also works.",
+            "countHint": "The AI aims for about {count} items. If the material is too small, it creates fewer.",
             "typesHint": "The AI picks the best fitting type for each fact from the selected ones. Diagrams need an image and are added by hand."
         },
         "statistics": {

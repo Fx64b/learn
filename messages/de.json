@@ -592,6 +592,11 @@
             "aiDisclaimer": "KI-Antworten befinden sich in frühen Stadien und können Fehler enthalten. Bitte überprüfen Sie alle Informationen vor der Verwendung.",
             "dismissDisclaimer": "KI-Haftungsausschluss schließen",
             "typesLabel": "Elementtypen",
+            "countLabel": "Anzahl Einträge",
+            "countAuto": "Automatisch",
+            "countAbout": "~{count}",
+            "countHintAuto": "Die KI wählt je nach Stoff 10 bis 60 Einträge. Eine Zahl in Ihrer Eingabe funktioniert auch.",
+            "countHint": "Die KI zielt auf etwa {count} Einträge. Ist der Stoff zu klein, erstellt sie weniger.",
             "typesHint": "Die KI wählt für jeden Inhalt den passendsten der ausgewählten Typen. Diagramme brauchen ein Bild und werden von Hand erstellt."
         },
         "statistics": {

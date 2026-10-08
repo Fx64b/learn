@@ -4,6 +4,18 @@ import type { AiItemType } from './ai'
 export const MAX_ITEMS_PER_GENERATION = 60
 /** Lower end of the range the model picks from when no count is requested. */
 export const DEFAULT_MIN_ITEMS = 10
+/** Item counts the user can pick in the AI form. Auto means none. */
+export const ITEM_COUNT_OPTIONS = [10, 20, 40, 60] as const
+
+/** A valid user-chosen item count, or undefined for automatic. */
+export function parseItemCount(value: unknown): number | undefined {
+    const count = Number(value)
+    return Number.isInteger(count) &&
+        count >= 1 &&
+        count <= MAX_ITEMS_PER_GENERATION
+        ? count
+        : undefined
+}
 
 const TYPE_GUIDE: Record<AiItemType, string> = {
     basic: 'basic: a question in "front" and a short answer in "back". The default for facts and definitions.',
@@ -85,11 +97,18 @@ const COUNT_RULE = `Item count:
 - Otherwise choose between ${DEFAULT_MIN_ITEMS} and ${MAX_ITEMS_PER_GENERATION} items: about ${DEFAULT_MIN_ITEMS}-20 for a narrow topic or a short text, 30-${MAX_ITEMS_PER_GENERATION} for a broad topic or a long document. Cover all important facts.
 - Never create fewer than ${DEFAULT_MIN_ITEMS} items unless the request asks for fewer.`
 
+/** Count rule when the user picked an amount in the form. */
+function chosenCountRule(count: number) {
+    return `Item count: the user chose about ${count} items in the app. Create close to ${count} items (at most ${MAX_ITEMS_PER_GENERATION}). Use this amount even if the request text names another number. If the material is too small for ${count} good items, create fewer instead of repeating facts.`
+}
+
 export function buildUserPrompt(params: {
     prompt: string
     deck?: PromptDeck
     /** True when a PDF is attached to the message as a file part. */
     hasDocument?: boolean
+    /** Amount the user picked in the form. Undefined means automatic. */
+    count?: number
 }): string {
     const parts: string[] = []
     if (params.deck) parts.push(deckBlock(params.deck))
@@ -99,6 +118,7 @@ export function buildUserPrompt(params: {
             'Base the items on the attached PDF document. Use its text, tables, figures and diagrams. Ignore page numbers, headers and footers.'
         )
     }
-    parts.push(COUNT_RULE)
+    const count = parseItemCount(params.count)
+    parts.push(count ? chosenCountRule(count) : COUNT_RULE)
     return parts.join('\n\n')
 }

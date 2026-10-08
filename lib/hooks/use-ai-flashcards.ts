@@ -13,6 +13,8 @@ interface GenerateParams {
     userId?: string
     /** Item types to generate. Empty means all. */
     types?: string[]
+    /** About how many items to create. Undefined lets the AI choose. */
+    count?: number
 }
 
 interface Progress {
@@ -154,6 +156,9 @@ export function useAIFlashcards() {
                         }
                         if (fileUrl) {
                             formData.append('fileUrl', fileUrl)
+                        }
+                        if (params.count) {
+                            formData.append('count', String(params.count))
                         }
 
                         // Use SSE for real-time progress updates

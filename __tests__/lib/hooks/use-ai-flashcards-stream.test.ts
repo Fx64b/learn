@@ -87,4 +87,25 @@ describe('useAIFlashcards stream parsing', () => {
         expect(res.success).toBe(false)
         expect(res.error).toBe('Nope')
     })
+
+    it('sends the chosen item count', async () => {
+        const fetchMock = vi.fn(async () =>
+            streamResponse([
+                `data: ${JSON.stringify({ type: 'success', data: { success: true, requestId: 'r' } })}\n\n`,
+            ])
+        )
+        vi.stubGlobal('fetch', fetchMock)
+        const { result } = renderHook(() => useAIFlashcards())
+        await act(async () => {
+            await result.current.generateFlashcards({
+                deckId: 'd1',
+                prompt: 'X',
+                count: 40,
+            })
+        })
+        const form = (fetchMock.mock.calls[0] as unknown[])[1] as {
+            body: FormData
+        }
+        expect(form.body.get('count')).toBe('40')
+    })
 })
