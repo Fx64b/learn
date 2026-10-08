@@ -39,6 +39,14 @@ const AI_MODEL = process.env.GOOGLE_AI_MODEL?.trim() || 'gemini-3-flash-preview'
 // model think more. A cut-off JSON fails the whole generation, so use the
 // model maximum. Only used tokens are billed.
 const AI_MAX_OUTPUT_TOKENS = 65536
+// Gemini 3 Flash thinks a lot by default. On a 3 MB slide deck it used
+// about 48k of 64k output tokens for thinking, cut off the JSON and ran
+// into the 300 s function limit. Turning items into JSON needs little
+// reasoning, so cap it.
+const AI_THINKING_BUDGET = 2048
+// Stop before Vercel kills the function (maxDuration 300 s), so the user
+// gets a clear message instead of a dropped connection.
+const AI_TIMEOUT_MS = 240_000
 
 // Schemas
 const aiOutputSchema = z.object({
@@ -230,7 +238,11 @@ function handleAIError(
         ) {
             return { success: false, error: t('aiConfigError'), requestId }
         }
-        if (message.includes('timeout')) {
+        if (
+            message.includes('timeout') ||
+            error.name === 'TimeoutError' ||
+            error.name === 'AbortError'
+        ) {
             return { success: false, error: t('aiTimeoutError'), requestId }
         }
     }
@@ -377,6 +389,12 @@ async function runGeneration(
                 // Gemini 3 models are tuned for their default temperature of 1;
                 // lowering it degrades output, so it is intentionally not set.
                 maxTokens: AI_MAX_OUTPUT_TOKENS,
+                providerOptions: {
+                    google: {
+                        thinkingConfig: { thinkingBudget: AI_THINKING_BUDGET },
+                    },
+                },
+                abortSignal: AbortSignal.timeout(AI_TIMEOUT_MS),
             })
 
             onProgress?.(

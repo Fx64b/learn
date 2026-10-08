@@ -140,6 +140,30 @@ describe('generateAIFlashcards', () => {
         )
     })
 
+    it('caps thinking and sets a time limit', async () => {
+        vi.mocked(generateObject).mockResolvedValue(oneItem)
+        await generateAIFlashcards({ deckId: 'd1', prompt: 'X' })
+        const call = vi.mocked(generateObject).mock.calls[0][0] as {
+            providerOptions: {
+                google: { thinkingConfig: { thinkingBudget: number } }
+            }
+            abortSignal: AbortSignal
+        }
+        expect(
+            call.providerOptions.google.thinkingConfig.thinkingBudget
+        ).toBeLessThanOrEqual(4096)
+        expect(call.abortSignal).toBeInstanceOf(AbortSignal)
+    })
+
+    it('reports a time-out with the timeout message', async () => {
+        const error = new Error('The operation was aborted due to timeout')
+        error.name = 'TimeoutError'
+        vi.mocked(generateObject).mockRejectedValue(error)
+        const res = await generateAIFlashcards({ deckId: 'd1', prompt: 'X' })
+        expect(res.success).toBe(false)
+        expect(res.error).toBe('aiTimeoutError')
+    })
+
     it('reports an unknown model as a configuration error', async () => {
         vi.mocked(generateObject).mockRejectedValue(
             new Error(
