@@ -50,7 +50,8 @@ export default async function EditDeckPage({
                         <ArrowLeft className="size-5" />
                     </Link>
                 </Button>
-                <div className="min-w-0 flex-1">
+                {/* The minimum width moves the buttons to their own row on phones */}
+                <div className="min-w-48 flex-1">
                     <p className="text-muted-foreground text-sm font-semibold">
                         {t('eyebrow')}
                     </p>
@@ -58,7 +59,7 @@ export default async function EditDeckPage({
                         {deck.title}
                     </h1>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex w-full gap-2 sm:w-auto [&>*]:flex-1 sm:[&>*]:flex-none">
                     <Button variant="outline" asChild>
                         <Link href={`/deck/${deck.id}`}>{t('openDeck')}</Link>
                     </Button>
@@ -80,7 +81,7 @@ export default async function EditDeckPage({
                 defaultValue={tab === 'settings' ? 'settings' : 'items'}
                 className="space-y-6"
             >
-                <TabsList className="h-auto rounded-xl p-1">
+                <TabsList className="h-auto w-full rounded-xl p-1 sm:w-auto">
                     <TabsTrigger
                         value="items"
                         className="gap-2 rounded-lg px-4 py-2"
