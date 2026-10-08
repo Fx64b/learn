@@ -24,6 +24,13 @@
 
 * **dashboard:** redesign layout and add quick stats for improved user experience ([58f13b5](https://github.com/Fx64b/learn/commit/58f13b5c04189f04a43a0828893c5f634c08b405))
 
+## [3.0.1](https://github.com/Fx64b/learn/compare/v3.0.0...v3.0.1) (2026-10-08)
+
+
+### Bug Fixes
+
+* **ai:** send Gemini a lean output schema ([90d6dc8](https://github.com/Fx64b/learn/commit/90d6dc86656dcf1e968ae1324c4deedba72e0690))
+
 ## [3.0.0](https://github.com/Fx64b/learn/compare/v2.0.0...v3.0.0) (2026-10-08)
 
 
