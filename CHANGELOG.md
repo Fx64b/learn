@@ -24,6 +24,22 @@
 
 * **dashboard:** redesign layout and add quick stats for improved user experience ([58f13b5](https://github.com/Fx64b/learn/commit/58f13b5c04189f04a43a0828893c5f634c08b405))
 
+## [3.0.0](https://github.com/Fx64b/learn/compare/v2.0.0...v3.0.0) (2026-10-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* Node.js 22.12 or newer is required. The Stripe webhook endpoint must be moved to API version 2026-09-30.endive.
+
+### Features
+
+* migrate to Next.js 16 and update all dependencies ([3d8ba50](https://github.com/Fx64b/learn/commit/3d8ba50ec1c565ec6396ec3b58c899b9cb1661ab))
+
+
+### Bug Fixes
+
+* make landing page and app layouts work on phones ([b64a74b](https://github.com/Fx64b/learn/commit/b64a74b800ca60ea8f9fd88a469ed4667b78202f))
+
 ## [2.0.0](https://github.com/Fx64b/learn/compare/v1.14.0...v2.0.0) (2026-10-08)
 
 
