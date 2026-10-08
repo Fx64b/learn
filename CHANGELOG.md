@@ -24,6 +24,50 @@
 
 * **dashboard:** redesign layout and add quick stats for improved user experience ([58f13b5](https://github.com/Fx64b/learn/commit/58f13b5c04189f04a43a0828893c5f634c08b405))
 
+## [2.0.0](https://github.com/Fx64b/learn/compare/v1.14.0...v2.0.0) (2026-10-08)
+
+
+### Features
+
+* **ai:** add deck context, smarter item count and Gemini 3 Flash ([f7c6cb1](https://github.com/Fx64b/learn/commit/f7c6cb11d593c2ae3b483e5f77d53bb6fca47dde))
+* **ai:** generate mixed item types ([1370779](https://github.com/Fx64b/learn/commit/1370779a0cf03882ad50aa20df0f2a19aab6b33c))
+* **ai:** give the AI the deck's existing questions and skip repeats ([f93a504](https://github.com/Fx64b/learn/commit/f93a504f21d63f424a2dc4d1fb66cf48a35e5a49))
+* **ai:** let the user pick about how many items to generate ([9139d06](https://github.com/Fx64b/learn/commit/9139d06206d9d2dddaff4a93861096dd3b2ec2f0))
+* **ai:** read full PDFs up to 20 MB with Gemini ([ae46916](https://github.com/Fx64b/learn/commit/ae46916765d8fdea52cf544ea9af5c66dc26f3b6))
+* **gamification:** add XP, streaks, achievements and learn actions ([06e460a](https://github.com/Fx64b/learn/commit/06e460a186b4a7722a674b3d18a27218c66603a5))
+* **gamification:** show streak, daily goal and achievements ([995c359](https://github.com/Fx64b/learn/commit/995c359f5792e60003534b1e74708b324ca6dc4c))
+* **items:** add item types, gamification tables and migration ([857ad34](https://github.com/Fx64b/learn/commit/857ad3443f02b8b08409e9bf5e7fa22464d78c9d))
+* **items:** editor for all item types, image upload, import/export ([9d259d1](https://github.com/Fx64b/learn/commit/9d259d1b99c3632544451edd5ed4147d0d3a7a1e))
+* **landing, decks:** redesign landing page and deck create/edit ([c01681d](https://github.com/Fx64b/learn/commit/c01681d8a2557659f0d0d5239b9bcdc0bd187e7a))
+* **learn:** add adaptive learning engine ([9700890](https://github.com/Fx64b/learn/commit/970089034901e973f3c09e7e1d3ae79403df22d8))
+* **learn:** add learn session, deck page, flashcards, match and test modes ([431f820](https://github.com/Fx64b/learn/commit/431f820c3aaf7be10a8535eaf9ec66fb1ebf3665))
+* **learn:** port Duolingo/Quizlet style exercise components ([b98e4a9](https://github.com/Fx64b/learn/commit/b98e4a9d369c6a90bed6331cb08d48f22a903c25))
+* **site:** add docs, help, roadmap and contact pages, restyle public pages ([91f5ddf](https://github.com/Fx64b/learn/commit/91f5ddf40a9cee911f1e58be5c30e1b9483152b5))
+
+
+### Bug Fixes
+
+* **ai:** cap model thinking and time out before Vercel does ([d06167e](https://github.com/Fx64b/learn/commit/d06167e09d3b818e0e949e36e31f427692e959fa))
+* **ai:** read large SSE results and explain failed generations ([31dc9fb](https://github.com/Fx64b/learn/commit/31dc9fb88f3ab9d5c9ee80493b28fced99d37611))
+* **ai:** read uploaded PDFs through the Blob SDK, not by URL ([77c1c63](https://github.com/Fx64b/learn/commit/77c1c63ef4af16868a3a4491e5e5f0d9d8bbccd3))
+* **ai:** replace retired gemini-1.5-flash with gemini-3.1-flash-lite ([a821aa7](https://github.com/Fx64b/learn/commit/a821aa7cd657275526ef0257c6456b97277d3fdb))
+* **ai:** use gemini-3-flash-preview model id ([e7f2544](https://github.com/Fx64b/learn/commit/e7f2544928e24941fe4daf15aec7af36802e8cce))
+* **csp:** allow Vercel Blob uploads and the preview toolbar ([25dc66f](https://github.com/Fx64b/learn/commit/25dc66f1959b97bd8a3140caac490e35aed5e569))
+* **header:** remove features link from landing nav ([deaef69](https://github.com/Fx64b/learn/commit/deaef69ff1dd9c3323bed41d62f72eb21b84413c))
+* **learn:** fill sessions with new items and avoid hydration mismatches ([b423005](https://github.com/Fx64b/learn/commit/b423005d2233d3649ae1c8092d75e65f44f96505))
+* **session:** keep the progress fill aligned with its track ([1e3897c](https://github.com/Fx64b/learn/commit/1e3897c101f097beff7d52bd401584c1beb5da33))
+* **upload:** support Vercel Blob stores that use OIDC ([171ab35](https://github.com/Fx64b/learn/commit/171ab3525338f949637da484e6110e6082f42c86))
+
+
+### Documentation
+
+* describe item types, learning engine and gamification ([60fd3ad](https://github.com/Fx64b/learn/commit/60fd3ad78ac91f2df463b8823515bcca0c8ed28f))
+
+
+### Continuous Integration
+
+* replace semantic-release with release-please ([3b4300a](https://github.com/Fx64b/learn/commit/3b4300a7182f98efff363faeddbb4e22c1a6665c))
+
 ## [1.12.1](https://github.com/Fx64b/learn/compare/v1.12.0...v1.12.1) (2025-08-05)
 
 
