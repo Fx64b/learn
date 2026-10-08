@@ -3,6 +3,7 @@
 import { getDeckById, getDeckItemFronts } from '@/db/utils'
 import { authOptions } from '@/lib/auth'
 import { MAX_PDF_BYTES, aiUploadPathname, deleteBlobs } from '@/lib/blob'
+import { geminiOutputSchema } from '@/lib/gemini-schema'
 import {
     AI_ITEM_TYPES,
     type AiItem,
@@ -21,7 +22,7 @@ import {
 } from '@/lib/items'
 import { checkAIRateLimitWithDetails } from '@/lib/rate-limit/ai-rate-limit'
 import { google } from '@ai-sdk/google'
-import { NoObjectGeneratedError, Output, generateText } from 'ai'
+import { APICallError, NoObjectGeneratedError, Output, generateText } from 'ai'
 import { randomUUID } from 'crypto'
 import { z } from 'zod'
 
@@ -362,7 +363,10 @@ async function runGeneration(
                 usage,
             } = await generateText({
                 model: google(AI_MODEL),
-                output: Output.object({ schema: aiOutputSchema }),
+                // Gemini gets a lean schema; a complex one fails with a bare 400.
+                output: Output.object({
+                    schema: geminiOutputSchema(aiOutputSchema),
+                }),
                 system: buildSystemPrompt(allowedTypes),
                 messages: [
                     {
@@ -541,6 +545,12 @@ async function runGeneration(
                           finishReason: aiError.finishReason,
                           usage: aiError.usage,
                           textLength: aiError.text?.length ?? 0,
+                      }
+                    : {}),
+                ...(APICallError.isInstance(aiError)
+                    ? {
+                          statusCode: aiError.statusCode,
+                          responseBody: aiError.responseBody?.slice(0, 1000),
                       }
                     : {}),
                 model: AI_MODEL,
